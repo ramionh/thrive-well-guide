@@ -1,15 +1,13 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LogIn } from "lucide-react";
 
 const Index = () => {
   const { user, isLoading } = useUser();
   const navigate = useNavigate();
   
-  // Redirect to dashboard if user has completed onboarding
   useEffect(() => {
     if (!isLoading && user?.onboardingCompleted) {
       navigate("/dashboard");
@@ -26,7 +24,6 @@ const Index = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section */}
       <section className="flex-1 flex flex-col md:flex-row items-center justify-center px-4 py-12 md:py-24">
         <div className="text-center md:text-left md:w-1/2 space-y-6 md:pr-8">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
@@ -42,6 +39,14 @@ const Index = () => {
             >
               Get Started
               <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button
+              variant="outline"
+              className="text-lg px-8 py-6"
+              onClick={() => navigate("/auth")}
+            >
+              Login
+              <LogIn className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -87,7 +92,6 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Features Section */}
       <section className="bg-muted py-12 px-4">
         <div className="container mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-12">Why Choose 40+Ripped?</h2>
@@ -128,7 +132,6 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Footer */}
       <footer className="bg-background py-8 px-4 border-t">
         <div className="container mx-auto text-center text-muted-foreground">
           <p>© 2025 40+Ripped. All rights reserved.</p>
