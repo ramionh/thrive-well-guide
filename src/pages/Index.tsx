@@ -27,7 +27,7 @@ const Index = () => {
       <section className="flex-1 flex flex-col md:flex-row items-center justify-center px-4 py-12 md:py-24">
         <div className="text-center md:text-left md:w-1/2 space-y-6 md:pr-8">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-            Fitness <span className="text-thrive-blue">After 40</span> Starts Here
+            Getting <span className="text-thrive-blue">Ripped at 40+</span> Starts Here
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-md mx-auto md:mx-0">
             Personalized fitness tracking and wellness strategies designed specifically for those 40 and beyond.
