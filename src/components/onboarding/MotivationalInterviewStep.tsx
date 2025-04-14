@@ -29,29 +29,29 @@ const MotivationalInterviewStep: React.FC<MotivationalInterviewStepProps> = ({ o
     {
       id: "sleep",
       title: "Sleep",
-      question: "What changes do you want to make to your sleep habits? Why is this important to you?",
+      question: "How can improving your sleep support your fitness goals after 40?",
     },
     {
       id: "nutrition",
       title: "Nutrition",
-      question: "How do you feel about your current eating habits? What would you like to change?",
+      question: "What nutritional changes will help you stay fit and energetic?",
     },
     {
       id: "exercise",
       title: "Exercise",
-      question: "What type of physical activity do you enjoy? How would increasing your activity benefit you?",
+      question: "What type of physical activity motivates you to stay consistent?",
     },
     {
       id: "mindfulness",
       title: "Mindfulness",
-      question: "How do you currently manage stress? What practices would you like to incorporate?",
+      question: "How will mental wellness support your fitness journey?",
     },
   ];
   
   return (
     <div className="space-y-6">
       <p className="text-sm text-muted-foreground">
-        Take some time to reflect on these questions. Your answers will help us understand your motivations and customize your experience.
+        Take a moment to reflect. Your insights will help us create a personalized 40+Ripped fitness plan.
       </p>
       
       <Tabs defaultValue="sleep" value={activeTab} onValueChange={setActiveTab}>
@@ -68,7 +68,7 @@ const MotivationalInterviewStep: React.FC<MotivationalInterviewStepProps> = ({ o
             </Label>
             <Textarea
               id={`response-${category.id}`}
-              placeholder="Your thoughts..."
+              placeholder="Your thoughts on fitness after 40..."
               rows={5}
               value={motivationalResponses[category.id] || ""}
               onChange={(e) => handleSaveResponse(category.id, e.target.value)}

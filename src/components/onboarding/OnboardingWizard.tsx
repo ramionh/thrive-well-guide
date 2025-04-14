@@ -16,23 +16,23 @@ const OnboardingWizard: React.FC = () => {
   
   const steps = [
     {
-      title: "Welcome to ThriveWell",
-      description: "Let's get to know you better to personalize your experience.",
+      title: "Welcome to 40+Ripped",
+      description: "Let's get to know you better to personalize your fitness journey.",
       component: <UserInfoStep onNext={() => setOnboardingStep(1)} />
     },
     {
       title: "Set Your Goals",
-      description: "Define what you want to achieve on your wellness journey.",
+      description: "Define what you want to achieve in your wellness transformation.",
       component: <GoalSettingStep onNext={() => setOnboardingStep(2)} />
     },
     {
       title: "Your Motivation",
-      description: "Let's understand what drives you to make positive changes.",
+      description: "Let's understand what drives you to make positive changes after 40.",
       component: <MotivationalInterviewStep onNext={() => setOnboardingStep(3)} />
     },
     {
       title: "All Set!",
-      description: "You're ready to start your wellness journey.",
+      description: "You're ready to start your fitness journey.",
       component: <SuccessStep onComplete={() => {
         completeOnboarding();
         navigate("/dashboard");
@@ -47,7 +47,7 @@ const OnboardingWizard: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-lg shadow-lg animate-fade-in">
         <CardHeader>
-          <CardTitle className="text-2xl text-thrive-blue">{currentStep.title}</CardTitle>
+          <CardTitle className="text-2xl text-thrive-blue">40+Ripped Onboarding</CardTitle>
           <CardDescription>{currentStep.description}</CardDescription>
           <Progress value={progress} className="h-2 mt-2" />
         </CardHeader>
