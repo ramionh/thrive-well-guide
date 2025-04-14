@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,10 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 const ProfilePage: React.FC = () => {
   const { user, motivationalResponses } = useUser();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const [name, setName] = React.useState(user?.name || "");
   const [email, setEmail] = React.useState(user?.email || "");
@@ -25,6 +28,37 @@ const ProfilePage: React.FC = () => {
       description: "Your profile changes have been saved successfully.",
     });
   };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        toast({
+          title: "Logout Error",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Clear local storage and redirect to home
+      localStorage.removeItem("thrivewell_user");
+      navigate("/");
+      
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Logout Error",
+        description: "An unexpected error occurred during logout.",
+        variant: "destructive"
+      });
+    }
+  };
   
   if (!user) {
     return <div>Loading...</div>;
@@ -32,7 +66,17 @@ const ProfilePage: React.FC = () => {
   
   return (
     <div className="container mx-auto max-w-4xl animate-fade-in">
-      <h1 className="text-3xl font-bold mb-6">Your Profile</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Your Profile</h1>
+        <Button 
+          variant="destructive" 
+          onClick={handleLogout}
+          className="flex items-center gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </Button>
+      </div>
       
       <Tabs defaultValue="info">
         <TabsList className="mb-6">
