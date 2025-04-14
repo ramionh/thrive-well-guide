@@ -8,6 +8,7 @@ import { UserProvider } from "@/context/UserContext";
 import { Layout } from "@/components/Layout";
 
 import Index from "./pages/Index";
+import AuthPage from "./pages/AuthPage";
 import Dashboard from "./components/dashboard/Dashboard";
 import OnboardingWizard from "./components/onboarding/OnboardingWizard";
 import ProgressPage from "./pages/ProgressPage";
@@ -28,6 +29,7 @@ const App = () => (
           <Layout>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<AuthPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/progress" element={<ProgressPage />} />
