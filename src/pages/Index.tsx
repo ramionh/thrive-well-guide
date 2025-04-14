@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -43,7 +44,10 @@ const Index = () => {
             <Button
               variant="outline"
               className="text-lg px-8 py-6"
-              onClick={() => navigate("/auth")}
+              onClick={() => {
+                localStorage.removeItem("thrivewell_user");
+                navigate("/auth");
+              }}
             >
               Login
               <LogIn className="ml-2 h-5 w-5" />

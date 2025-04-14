@@ -16,7 +16,8 @@ const AuthPage = () => {
   const [loading, setLoading] = React.useState(false);
 
   useEffect(() => {
-    if (user) {
+    // Only redirect if there's a user AND they have completed onboarding
+    if (user && user.onboardingCompleted) {
       navigate('/dashboard');
     }
   }, [user, navigate]);
