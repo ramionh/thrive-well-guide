@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
@@ -28,9 +28,10 @@ const ProfilePage: React.FC = () => {
       description: "Your profile changes have been saved successfully.",
     });
   };
-
+  
   const handleLogout = async () => {
     try {
+      // Sign out from Supabase which will clear the JWT token
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -43,14 +44,14 @@ const ProfilePage: React.FC = () => {
       }
       
       // Clear local storage and redirect to home
-      localStorage.removeItem("thrivewell_user");
+      localStorage.clear(); // Clear all local storage data
       navigate("/");
       
       toast({
         title: "Logged Out",
         description: "You have been successfully logged out.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Logout error:", error);
       toast({
         title: "Logout Error",
