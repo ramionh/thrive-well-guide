@@ -43,6 +43,15 @@ const OnboardingWizard: React.FC = () => {
   const currentStep = steps[onboardingStep];
   const progress = ((onboardingStep + 1) / steps.length) * 100;
   
+  const handleBackClick = () => {
+    if (onboardingStep > 0) {
+      setOnboardingStep(onboardingStep - 1);
+    } else {
+      // Navigate to home page when on first step
+      navigate("/");
+    }
+  };
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-lg shadow-lg animate-fade-in">
@@ -57,10 +66,9 @@ const OnboardingWizard: React.FC = () => {
         <CardFooter className="flex justify-between">
           <Button 
             variant="ghost" 
-            onClick={() => onboardingStep > 0 ? setOnboardingStep(onboardingStep - 1) : null}
-            disabled={onboardingStep === 0}
+            onClick={handleBackClick}
           >
-            Back
+            {onboardingStep === 0 ? "Return to Home" : "Back"}
           </Button>
         </CardFooter>
       </Card>
