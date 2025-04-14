@@ -30,10 +30,10 @@ const Index = () => {
       <section className="flex-1 flex flex-col md:flex-row items-center justify-center px-4 py-12 md:py-24">
         <div className="text-center md:text-left md:w-1/2 space-y-6 md:pr-8">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-            Your <span className="text-thrive-blue">Wellness</span> Journey Starts Here
+            Fitness <span className="text-thrive-blue">After 40</span> Starts Here
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-md mx-auto md:mx-0">
-            Track your health metrics, set personalized goals, and transform your wellbeing with our science-backed approach.
+            Personalized fitness tracking and wellness strategies designed specifically for those 40 and beyond.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Button 
@@ -53,34 +53,34 @@ const Index = () => {
             <div className="grid grid-cols-2 gap-4 relative">
               <div className="bg-white shadow-lg rounded-lg p-4 transform hover:-translate-y-1 transition-transform">
                 <div className="w-8 h-8 bg-thrive-blue/10 rounded-full flex items-center justify-center mb-3">
-                  <span className="text-thrive-blue">🌙</span>
+                  <span className="text-thrive-blue">💪</span>
                 </div>
-                <h3 className="font-medium">Sleep Better</h3>
-                <p className="text-sm text-muted-foreground">Optimize your sleep for better health</p>
+                <h3 className="font-medium">Strength Training</h3>
+                <p className="text-sm text-muted-foreground">Age-appropriate resistance workouts</p>
               </div>
               
               <div className="bg-white shadow-lg rounded-lg p-4 transform hover:-translate-y-1 transition-transform">
                 <div className="w-8 h-8 bg-thrive-orange/10 rounded-full flex items-center justify-center mb-3">
-                  <span className="text-thrive-orange">🍎</span>
+                  <span className="text-thrive-orange">🥗</span>
                 </div>
-                <h3 className="font-medium">Eat Well</h3>
-                <p className="text-sm text-muted-foreground">Track nutrition and build healthy habits</p>
+                <h3 className="font-medium">Nutrition</h3>
+                <p className="text-sm text-muted-foreground">Metabolic health tracking</p>
               </div>
               
               <div className="bg-white shadow-lg rounded-lg p-4 transform hover:-translate-y-1 transition-transform">
                 <div className="w-8 h-8 bg-thrive-teal/10 rounded-full flex items-center justify-center mb-3">
-                  <span className="text-thrive-teal">💪</span>
+                  <span className="text-thrive-teal">🏋️</span>
                 </div>
-                <h3 className="font-medium">Stay Active</h3>
-                <p className="text-sm text-muted-foreground">Find exercise that works for you</p>
+                <h3 className="font-medium">Recovery</h3>
+                <p className="text-sm text-muted-foreground">Smart rest and recuperation</p>
               </div>
               
               <div className="bg-white shadow-lg rounded-lg p-4 transform hover:-translate-y-1 transition-transform">
                 <div className="w-8 h-8 bg-thrive-purple/10 rounded-full flex items-center justify-center mb-3">
                   <span className="text-thrive-purple">🧠</span>
                 </div>
-                <h3 className="font-medium">Mindfulness</h3>
-                <p className="text-sm text-muted-foreground">Reduce stress and improve focus</p>
+                <h3 className="font-medium">Mindset</h3>
+                <p className="text-sm text-muted-foreground">Mental wellness strategies</p>
               </div>
             </div>
           </div>
@@ -90,31 +90,31 @@ const Index = () => {
       {/* Features Section */}
       <section className="bg-muted py-12 px-4">
         <div className="container mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-12">Why Choose ThriveWell?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-12">Why Choose 40+Ripped?</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-card p-6 rounded-lg shadow-sm">
               <div className="w-12 h-12 bg-thrive-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-thrive-blue text-xl">📊</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Personalized Goals</h3>
-              <p className="text-muted-foreground">Set and track goals tailored to your unique wellness journey.</p>
+              <h3 className="text-xl font-semibold mb-2">Personalized Fitness</h3>
+              <p className="text-muted-foreground">Tailored workout plans for 40+ individuals.</p>
             </div>
             
             <div className="bg-card p-6 rounded-lg shadow-sm">
               <div className="w-12 h-12 bg-thrive-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-thrive-teal text-xl">🔄</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Habit Building</h3>
-              <p className="text-muted-foreground">Develop lasting habits through our motivational approach.</p>
+              <h3 className="text-xl font-semibold mb-2">Adaptive Strategies</h3>
+              <p className="text-muted-foreground">Evolving approach to fitness as you age.</p>
             </div>
             
             <div className="bg-card p-6 rounded-lg shadow-sm">
               <div className="w-12 h-12 bg-thrive-orange/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-thrive-orange text-xl">📱</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Simple Tracking</h3>
-              <p className="text-muted-foreground">Easily log your progress and see your improvements over time.</p>
+              <h3 className="text-xl font-semibold mb-2">Easy Tracking</h3>
+              <p className="text-muted-foreground">Monitor progress with simple tools.</p>
             </div>
           </div>
           
@@ -131,8 +131,8 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-background py-8 px-4 border-t">
         <div className="container mx-auto text-center text-muted-foreground">
-          <p>© 2025 ThriveWell. All rights reserved.</p>
-          <p className="text-sm mt-2">Made with ❤️ for your wellbeing</p>
+          <p>© 2025 40+Ripped. All rights reserved.</p>
+          <p className="text-sm mt-2">Made with ❤️ for fitness after 40</p>
         </div>
       </footer>
     </div>
