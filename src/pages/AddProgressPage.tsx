@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
+import { StoplightControl } from "@/components/ui/stoplight-control";
 import { useNavigate } from "react-router-dom";
 import { Moon, Apple, Dumbbell } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const AddProgressPage: React.FC = () => {
   const { user, updateGoal, addVital } = useUser();
@@ -30,70 +31,97 @@ const AddProgressPage: React.FC = () => {
   const [selectedGoal, setSelectedGoal] = useState("");
   const [goalProgress, setGoalProgress] = useState("");
   
-  const handleSaveProgress = () => {
-    // Update selected goal if one is chosen
-    if (selectedGoal && goalProgress) {
-      updateGoal(selectedGoal, {
-        currentValue: parseFloat(goalProgress)
+  const [sleepAdherence, setSleepAdherence] = useState<"red" | "yellow" | "green">("yellow");
+  const [nutritionAdherence, setNutritionAdherence] = useState<"red" | "yellow" | "green">("yellow");
+  const [exerciseAdherence, setExerciseAdherence] = useState<"red" | "yellow" | "green">("yellow");
+  const [goalsAdherence, setGoalsAdherence] = useState<"red" | "yellow" | "green">("yellow");
+  
+  const handleSaveProgress = async () => {
+    try {
+      if (selectedGoal && goalProgress) {
+        updateGoal(selectedGoal, {
+          currentValue: parseFloat(goalProgress)
+        });
+      }
+      
+      addVital({
+        name: "Sleep Duration",
+        value: parseFloat(sleepHours),
+        unit: "hours",
+        category: "sleep"
+      });
+      
+      addVital({
+        name: "Sleep Quality",
+        value: sleepQuality[0],
+        unit: "%",
+        category: "sleep"
+      });
+      
+      addVital({
+        name: "Calories",
+        value: parseInt(calories),
+        unit: "kcal",
+        category: "nutrition"
+      });
+      
+      addVital({
+        name: "Protein",
+        value: parseInt(protein),
+        unit: "g",
+        category: "nutrition"
+      });
+      
+      addVital({
+        name: "Water",
+        value: parseInt(water),
+        unit: "glasses",
+        category: "nutrition"
+      });
+      
+      addVital({
+        name: "Exercise",
+        value: parseInt(exerciseMinutes),
+        unit: "minutes",
+        category: "exercise"
+      });
+      
+      addVital({
+        name: "Steps",
+        value: parseInt(steps),
+        unit: "steps",
+        category: "exercise"
+      });
+      
+      const { error } = await supabase.from("daily_health_tracking").insert([{
+        user_id: user?.id,
+        sleep_hours: parseFloat(sleepHours),
+        sleep_adherence: sleepAdherence,
+        calories: parseInt(calories),
+        protein: parseInt(protein),
+        water: parseInt(water),
+        nutrition_adherence: nutritionAdherence,
+        exercise_minutes: parseInt(exerciseMinutes),
+        steps: parseInt(steps),
+        exercise_adherence: exerciseAdherence,
+        goals_adherence: goalsAdherence,
+      }]);
+
+      if (error) throw error;
+      
+      toast({
+        title: "Progress updated",
+        description: "Your wellness data has been saved successfully.",
+      });
+      
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save your progress. Please try again.",
       });
     }
-    
-    // Add vitals
-    addVital({
-      name: "Sleep Duration",
-      value: parseFloat(sleepHours),
-      unit: "hours",
-      category: "sleep"
-    });
-    
-    addVital({
-      name: "Sleep Quality",
-      value: sleepQuality[0],
-      unit: "%",
-      category: "sleep"
-    });
-    
-    addVital({
-      name: "Calories",
-      value: parseInt(calories),
-      unit: "kcal",
-      category: "nutrition"
-    });
-    
-    addVital({
-      name: "Protein",
-      value: parseInt(protein),
-      unit: "g",
-      category: "nutrition"
-    });
-    
-    addVital({
-      name: "Water",
-      value: parseInt(water),
-      unit: "glasses",
-      category: "nutrition"
-    });
-    
-    addVital({
-      name: "Exercise",
-      value: parseInt(exerciseMinutes),
-      unit: "minutes",
-      category: "exercise"
-    });
-    
-    addVital({
-      name: "Steps",
-      value: parseInt(steps),
-      unit: "steps",
-      category: "exercise"
-    });
-    
-    toast({
-      title: "Progress updated",
-      description: "Your wellness data has been saved successfully.",
-    });
-    
-    navigate("/dashboard");
   };
   
   return (
@@ -126,9 +154,16 @@ const AddProgressPage: React.FC = () => {
         
         <TabsContent value="sleep">
           <Card>
-            <CardHeader>
-              <CardTitle>Sleep Tracking</CardTitle>
-              <CardDescription>How well did you sleep?</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Sleep Tracking</CardTitle>
+                <CardDescription>How well did you sleep?</CardDescription>
+              </div>
+              <StoplightControl
+                value={sleepAdherence}
+                onValueChange={setSleepAdherence}
+                label="Sleep Goal Adherence"
+              />
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
@@ -174,9 +209,16 @@ const AddProgressPage: React.FC = () => {
         
         <TabsContent value="nutrition">
           <Card>
-            <CardHeader>
-              <CardTitle>Nutrition Tracking</CardTitle>
-              <CardDescription>Track your daily nutrition</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Nutrition Tracking</CardTitle>
+                <CardDescription>Track your daily nutrition</CardDescription>
+              </div>
+              <StoplightControl
+                value={nutritionAdherence}
+                onValueChange={setNutritionAdherence}
+                label="Nutrition Goal Adherence"
+              />
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
@@ -226,9 +268,16 @@ const AddProgressPage: React.FC = () => {
         
         <TabsContent value="exercise">
           <Card>
-            <CardHeader>
-              <CardTitle>Exercise Tracking</CardTitle>
-              <CardDescription>Track your physical activity</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Exercise Tracking</CardTitle>
+                <CardDescription>Track your physical activity</CardDescription>
+              </div>
+              <StoplightControl
+                value={exerciseAdherence}
+                onValueChange={setExerciseAdherence}
+                label="Exercise Goal Adherence"
+              />
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
@@ -264,9 +313,16 @@ const AddProgressPage: React.FC = () => {
         
         <TabsContent value="goals">
           <Card>
-            <CardHeader>
-              <CardTitle>Update Goal Progress</CardTitle>
-              <CardDescription>Track your progress towards your goals</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Update Goal Progress</CardTitle>
+                <CardDescription>Track your progress towards your goals</CardDescription>
+              </div>
+              <StoplightControl
+                value={goalsAdherence}
+                onValueChange={setGoalsAdherence}
+                label="Overall Goals Adherence"
+              />
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
