@@ -14,11 +14,15 @@ export type Database = {
           calories: number | null
           created_at: string
           date: string
+          exercise_adherence: string | null
           exercise_minutes: number | null
+          goals_adherence: string | null
           id: string
           mood: number | null
           notes: string | null
+          nutrition_adherence: string | null
           protein: number | null
+          sleep_adherence: string | null
           sleep_hours: number | null
           updated_at: string
           user_id: string
@@ -27,11 +31,15 @@ export type Database = {
           calories?: number | null
           created_at?: string
           date?: string
+          exercise_adherence?: string | null
           exercise_minutes?: number | null
+          goals_adherence?: string | null
           id?: string
           mood?: number | null
           notes?: string | null
+          nutrition_adherence?: string | null
           protein?: number | null
+          sleep_adherence?: string | null
           sleep_hours?: number | null
           updated_at?: string
           user_id: string
@@ -40,11 +48,15 @@ export type Database = {
           calories?: number | null
           created_at?: string
           date?: string
+          exercise_adherence?: string | null
           exercise_minutes?: number | null
+          goals_adherence?: string | null
           id?: string
           mood?: number | null
           notes?: string | null
+          nutrition_adherence?: string | null
           protein?: number | null
+          sleep_adherence?: string | null
           sleep_hours?: number | null
           updated_at?: string
           user_id?: string

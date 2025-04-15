@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
+import { StoplightControl } from "@/components/ui/stoplight-control";
 import { supabase } from "@/integrations/supabase/client";
 import { Moon, Dumbbell, Pizza, Beef, Smile } from "lucide-react";
 
@@ -18,6 +19,10 @@ interface HealthFormData {
   protein: number;
   mood: number;
   notes: string;
+  sleep_adherence: "red" | "yellow" | "green";
+  exercise_adherence: "red" | "yellow" | "green";
+  nutrition_adherence: "red" | "yellow" | "green";
+  goals_adherence: "red" | "yellow" | "green";
 }
 
 const DailyHealthForm = () => {
@@ -31,6 +36,10 @@ const DailyHealthForm = () => {
       protein: 100,
       mood: 5,
       notes: "",
+      sleep_adherence: "yellow",
+      exercise_adherence: "yellow",
+      nutrition_adherence: "yellow",
+      goals_adherence: "yellow",
     },
   });
 
@@ -38,6 +47,10 @@ const DailyHealthForm = () => {
   const sleepHours = watch("sleep_hours");
   const exerciseMinutes = watch("exercise_minutes");
   const moodValue = watch("mood");
+  const sleepAdherence = watch("sleep_adherence");
+  const exerciseAdherence = watch("exercise_adherence");
+  const nutritionAdherence = watch("nutrition_adherence");
+  const goalsAdherence = watch("goals_adherence");
 
   const onSubmit = async (data: HealthFormData) => {
     try {
@@ -84,6 +97,12 @@ const DailyHealthForm = () => {
           </div>
         </div>
 
+        <StoplightControl
+          value={sleepAdherence}
+          onValueChange={(value) => setValue("sleep_adherence", value)}
+          label="Sleep Goal Adherence"
+        />
+
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Dumbbell className="h-5 w-5 text-thrive-blue" />
@@ -99,6 +118,12 @@ const DailyHealthForm = () => {
             {exerciseMinutes} minutes
           </div>
         </div>
+
+        <StoplightControl
+          value={exerciseAdherence}
+          onValueChange={(value) => setValue("exercise_adherence", value)}
+          label="Exercise Goal Adherence"
+        />
 
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -124,6 +149,12 @@ const DailyHealthForm = () => {
           />
         </div>
 
+        <StoplightControl
+          value={nutritionAdherence}
+          onValueChange={(value) => setValue("nutrition_adherence", value)}
+          label="Nutrition Goal Adherence"
+        />
+
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Smile className="h-5 w-5 text-thrive-teal" />
@@ -139,6 +170,12 @@ const DailyHealthForm = () => {
             {moodValue}/10
           </div>
         </div>
+
+        <StoplightControl
+          value={goalsAdherence}
+          onValueChange={(value) => setValue("goals_adherence", value)}
+          label="Overall Goals Adherence"
+        />
 
         <div>
           <Label>Notes</Label>
