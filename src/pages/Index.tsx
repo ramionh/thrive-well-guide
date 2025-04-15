@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { ArrowRight, LogIn } from "lucide-react";
+import DailyHealthForm from "@/components/health/DailyHealthForm";
 
 const Index = () => {
   const { user, isLoading } = useUser();
@@ -19,6 +20,14 @@ const Index = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <DailyHealthForm />
       </div>
     );
   }
