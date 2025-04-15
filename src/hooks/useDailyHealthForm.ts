@@ -42,14 +42,16 @@ export const useDailyHealthForm = () => {
 
   const onSubmit = async (data: HealthFormData) => {
     try {
-      if (!user?.id) {
-        throw new Error("User not authenticated");
+      // Validate that user exists and has a valid UUID
+      if (!user || !user.id || typeof user.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id)) {
+        throw new Error("User not authenticated or invalid user ID format");
       }
 
       const { error } = await supabase.from("daily_health_tracking").insert([
         {
           user_id: user.id,
           ...data,
+          date: new Date().toISOString().split('T')[0], // Add current date in YYYY-MM-DD format
         },
       ]);
 

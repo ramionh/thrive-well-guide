@@ -20,8 +20,9 @@ export const useProgressSubmit = () => {
     goalsForm: GoalsFormState
   ) => {
     try {
-      if (!user?.id) {
-        throw new Error("User not authenticated");
+      // Validate that user exists and has a valid UUID
+      if (!user || !user.id || typeof user.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id)) {
+        throw new Error("User not authenticated or invalid user ID format");
       }
 
       if (goalsForm.selectedGoal && goalsForm.goalProgress) {
@@ -30,9 +31,8 @@ export const useProgressSubmit = () => {
         });
       }
       
-      // Save to database
+      // Save to database with proper date field
       const { error } = await supabase.from("daily_health_tracking").insert([{
-        // Use a valid UUID string format, not just "1"
         user_id: user.id,
         sleep_hours: parseFloat(sleepForm.sleepHours),
         sleep_adherence: sleepForm.sleepAdherence,
@@ -44,6 +44,7 @@ export const useProgressSubmit = () => {
         steps: parseInt(exerciseForm.steps),
         exercise_adherence: exerciseForm.exerciseAdherence,
         goals_adherence: goalsForm.goalsAdherence,
+        date: new Date().toISOString().split('T')[0], // Add current date in YYYY-MM-DD format
       }]);
 
       if (error) throw error;

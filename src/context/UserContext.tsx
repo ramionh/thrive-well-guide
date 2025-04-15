@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Define the types for our app
@@ -47,9 +46,9 @@ type UserContextType = {
 // Create the context
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Mock initial user data
+// Mock initial user data with valid UUID
 const initialUser: User = {
-  id: "1",
+  id: "00000000-0000-0000-0000-000000000000", // Valid UUID format
   name: "",
   email: "",
   onboardingCompleted: false,
@@ -74,11 +73,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (savedUser) {
           setUser(JSON.parse(savedUser));
         } else {
-          setUser(initialUser);
+          // Ensure the user has a valid UUID format
+          setUser({
+            ...initialUser,
+            id: crypto.randomUUID() // Generate a proper UUID
+          });
         }
       } catch (error) {
         console.error("Error loading user data:", error);
-        setUser(initialUser);
+        // Ensure the user has a valid UUID format
+        setUser({
+          ...initialUser,
+          id: crypto.randomUUID() // Generate a proper UUID
+        });
       } finally {
         setIsLoading(false);
       }
@@ -107,7 +114,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user) {
       const newGoal: Goal = {
         ...goal,
-        id: Math.random().toString(36).substring(2, 9),
+        id: crypto.randomUUID(), // Use proper UUID
         createdAt: new Date(),
       };
       
@@ -135,7 +142,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user) {
       const newVital: Vital = {
         ...vital,
-        id: Math.random().toString(36).substring(2, 9),
+        id: crypto.randomUUID(), // Use proper UUID
         date: new Date(),
       };
       
