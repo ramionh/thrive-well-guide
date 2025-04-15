@@ -20,15 +20,20 @@ export const useProgressSubmit = () => {
     goalsForm: GoalsFormState
   ) => {
     try {
+      if (!user?.id) {
+        throw new Error("User not authenticated");
+      }
+
       if (goalsForm.selectedGoal && goalsForm.goalProgress) {
         updateGoal(goalsForm.selectedGoal, {
           currentValue: parseFloat(goalsForm.goalProgress)
         });
       }
       
-      // Save to database - updated to include water and steps columns
+      // Save to database
       const { error } = await supabase.from("daily_health_tracking").insert([{
-        user_id: user?.id,
+        // Use a valid UUID string format, not just "1"
+        user_id: user.id,
         sleep_hours: parseFloat(sleepForm.sleepHours),
         sleep_adherence: sleepForm.sleepAdherence,
         calories: parseInt(nutritionForm.calories),
@@ -50,12 +55,12 @@ export const useProgressSubmit = () => {
       
       navigate("/dashboard");
     } catch (error) {
+      console.error("Error saving progress:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to save your progress. Please try again.",
       });
-      console.error("Error saving progress:", error);
     }
   };
   

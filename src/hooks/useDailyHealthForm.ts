@@ -42,9 +42,13 @@ export const useDailyHealthForm = () => {
 
   const onSubmit = async (data: HealthFormData) => {
     try {
+      if (!user?.id) {
+        throw new Error("User not authenticated");
+      }
+
       const { error } = await supabase.from("daily_health_tracking").insert([
         {
-          user_id: user?.id,
+          user_id: user.id,
           ...data,
         },
       ]);
@@ -56,12 +60,12 @@ export const useDailyHealthForm = () => {
         description: "Your health data has been recorded.",
       });
     } catch (error) {
+      console.error("Error saving health data:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to save your health data. Please try again.",
       });
-      console.error("Error saving health data:", error);
     }
   };
 
