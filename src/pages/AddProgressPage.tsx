@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
@@ -14,9 +14,11 @@ import { useNutritionForm, NutritionFormState } from "@/hooks/useNutritionForm";
 import { useExerciseForm, ExerciseFormState } from "@/hooks/useExerciseForm";
 import { useGoalsForm, GoalsFormState } from "@/hooks/useGoalsForm";
 import { useProgressSubmit } from "@/hooks/useProgressSubmit";
+import { useToast } from "@/components/ui/use-toast";
 
 const AddProgressPage: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   // State for each tab's form data
   const [sleepFormData, setSleepFormData] = useState<SleepFormState | null>(null);
@@ -24,12 +26,42 @@ const AddProgressPage: React.FC = () => {
   const [exerciseFormData, setExerciseFormData] = useState<ExerciseFormState | null>(null);
   const [goalsFormData, setGoalsFormData] = useState<GoalsFormState | null>(null);
   
+  // Add state to track if all required data is present
+  const [isFormComplete, setIsFormComplete] = useState(false);
+  
   // Form submission logic
   const { handleSaveProgress } = useProgressSubmit();
   
+  // Check if all required form data is available
+  useEffect(() => {
+    const checkFormCompletion = () => {
+      const isSleepComplete = !!sleepFormData?.sleepHours;
+      const isNutritionComplete = !!nutritionFormData?.calories && 
+                                !!nutritionFormData?.protein && 
+                                !!nutritionFormData?.water;
+      const isExerciseComplete = !!exerciseFormData?.exerciseMinutes && 
+                               !!exerciseFormData?.steps;
+      const isGoalsComplete = !!goalsFormData?.goalsAdherence;
+      
+      setIsFormComplete(
+        isSleepComplete && 
+        isNutritionComplete && 
+        isExerciseComplete && 
+        isGoalsComplete
+      );
+    };
+    
+    checkFormCompletion();
+  }, [sleepFormData, nutritionFormData, exerciseFormData, goalsFormData]);
+  
   const handleSubmit = () => {
+    // Validate that all form data is available
     if (!sleepFormData || !nutritionFormData || !exerciseFormData || !goalsFormData) {
-      console.error("Missing form data");
+      toast({
+        variant: "destructive",
+        title: "Missing data",
+        description: "Please fill out all sections before saving your progress.",
+      });
       return;
     }
     
@@ -90,6 +122,7 @@ const AddProgressPage: React.FC = () => {
         <Button 
           className="bg-thrive-green hover:bg-thrive-green/90"
           onClick={handleSubmit}
+          disabled={!isFormComplete}
         >
           Save Progress
         </Button>

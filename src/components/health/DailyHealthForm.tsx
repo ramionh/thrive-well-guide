@@ -1,18 +1,20 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { StoplightControl } from "@/components/ui/stoplight-control";
 import { Slider } from "@/components/ui/slider";
-import { Smile } from "lucide-react";
+import { Smile, Droplets } from "lucide-react";
 import { useDailyHealthForm } from "@/hooks/useDailyHealthForm";
 import SleepSection from "./SleepSection";
 import ExerciseSection from "./ExerciseSection";
 import NutritionSection from "./NutritionSection";
+import { Input } from "@/components/ui/input";
 
 const DailyHealthForm = () => {
-  const { register, handleSubmit, setValue, watch, onSubmit } = useDailyHealthForm();
+  const { register, handleSubmit, setValue, watch, onSubmit, formState } = useDailyHealthForm();
+  const [steps, setSteps] = useState(8000);
 
   // Watch the values to display them in the UI
   const sleepHours = watch("sleep_hours");
@@ -22,6 +24,15 @@ const DailyHealthForm = () => {
   const exerciseAdherence = watch("exercise_adherence");
   const nutritionAdherence = watch("nutrition_adherence");
   const goalsAdherence = watch("goals_adherence");
+
+  // Update the steps value
+  const handleStepsChange = (value: number) => {
+    setSteps(value);
+    setValue("steps", value);
+  };
+
+  // Check if the form is complete
+  const isFormComplete = Object.keys(formState.errors).length === 0 && formState.isValid;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-2xl mx-auto p-6">
@@ -38,7 +49,9 @@ const DailyHealthForm = () => {
         <ExerciseSection
           exerciseMinutes={exerciseMinutes}
           exerciseAdherence={exerciseAdherence}
+          steps={steps}
           onExerciseMinutesChange={([value]) => setValue("exercise_minutes", value)}
+          onStepsChange={handleStepsChange}
           onAdherenceChange={(value) => setValue("exercise_adherence", value)}
         />
 
@@ -47,6 +60,21 @@ const DailyHealthForm = () => {
           nutritionAdherence={nutritionAdherence}
           onAdherenceChange={(value) => setValue("nutrition_adherence", value)}
         />
+
+        <div className="space-y-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Droplets className="h-5 w-5 text-thrive-blue" />
+              <Label>Water Intake (glasses)</Label>
+            </div>
+            <Input
+              type="number"
+              min="0"
+              {...register("water", { required: true })}
+              className="w-full"
+            />
+          </div>
+        </div>
 
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -84,6 +112,7 @@ const DailyHealthForm = () => {
       <Button 
         type="submit" 
         className="w-full bg-thrive-blue hover:bg-thrive-blue/90"
+        disabled={!isFormComplete}
       >
         Save Today's Progress
       </Button>

@@ -9,6 +9,8 @@ interface HealthFormData {
   exercise_minutes: number;
   calories: number;
   protein: number;
+  water: number;
+  steps: number;
   mood: number;
   notes: string;
   sleep_adherence: "red" | "yellow" | "green";
@@ -20,12 +22,14 @@ interface HealthFormData {
 export const useDailyHealthForm = () => {
   const { user } = useUser();
   const { toast } = useToast();
-  const { register, handleSubmit, setValue, watch } = useForm<HealthFormData>({
+  const { register, handleSubmit, setValue, watch, formState } = useForm<HealthFormData>({
     defaultValues: {
       sleep_hours: 7,
       exercise_minutes: 30,
       calories: 2000,
       protein: 100,
+      water: 8,
+      steps: 8000,
       mood: 5,
       notes: "",
       sleep_adherence: "yellow",
@@ -33,6 +37,7 @@ export const useDailyHealthForm = () => {
       nutrition_adherence: "yellow",
       goals_adherence: "yellow",
     },
+    mode: "onChange"
   });
 
   const onSubmit = async (data: HealthFormData) => {
@@ -56,6 +61,7 @@ export const useDailyHealthForm = () => {
         title: "Error",
         description: "Failed to save your health data. Please try again.",
       });
+      console.error("Error saving health data:", error);
     }
   };
 
@@ -64,6 +70,7 @@ export const useDailyHealthForm = () => {
     handleSubmit,
     setValue,
     watch,
+    formState,
     onSubmit,
   };
 };
