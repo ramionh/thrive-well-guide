@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,12 +11,12 @@ import SleepMetrics from "./SleepMetrics";
 import NutritionMetrics from "./NutritionMetrics";
 import ExerciseMetrics from "./ExerciseMetrics";
 import GoalProgress from "./GoalProgress";
+import HistoryButton from "./HistoryButton";
 
 const Dashboard: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   
-  // Redirect to onboarding if not completed
   if (!user?.onboardingCompleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -48,13 +47,16 @@ const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold">Welcome back, {user.name || "Friend"}</h1>
           <p className="text-muted-foreground">Here's an overview of your wellness journey</p>
         </div>
-        <Button 
-          className="mt-4 md:mt-0 bg-thrive-blue hover:bg-thrive-blue/90"
-          onClick={() => navigate("/add-progress")}
-        >
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Record Progress
-        </Button>
+        <div className="flex gap-3 mt-4 md:mt-0">
+          <HistoryButton />
+          <Button 
+            className="bg-thrive-blue hover:bg-thrive-blue/90"
+            onClick={() => navigate("/add-progress")}
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Record Progress
+          </Button>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
