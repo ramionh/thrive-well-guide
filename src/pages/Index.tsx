@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,7 @@ const Index = () => {
               className="bg-thrive-blue hover:bg-thrive-blue/90 text-lg px-8 py-6"
               onClick={() => navigate("/onboarding")}
             >
-              Get Started
+              Start Your Journey
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button
