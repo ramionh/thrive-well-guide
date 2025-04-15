@@ -24,6 +24,7 @@ export type Database = {
           protein: number | null
           sleep_adherence: string | null
           sleep_hours: number | null
+          steps: number | null
           updated_at: string
           user_id: string
         }
@@ -41,6 +42,7 @@ export type Database = {
           protein?: number | null
           sleep_adherence?: string | null
           sleep_hours?: number | null
+          steps?: number | null
           updated_at?: string
           user_id: string
         }
@@ -58,6 +60,7 @@ export type Database = {
           protein?: number | null
           sleep_adherence?: string | null
           sleep_hours?: number | null
+          steps?: number | null
           updated_at?: string
           user_id?: string
         }

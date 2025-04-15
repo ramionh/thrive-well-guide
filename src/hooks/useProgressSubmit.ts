@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/context/UserContext";
@@ -78,7 +77,7 @@ export const useProgressSubmit = () => {
         category: "exercise"
       });
       
-      // Save to database
+      // Save to database - updated to include steps column
       const { error } = await supabase.from("daily_health_tracking").insert([{
         user_id: user?.id,
         sleep_hours: parseFloat(sleepForm.sleepHours),
@@ -88,7 +87,7 @@ export const useProgressSubmit = () => {
         water: parseInt(nutritionForm.water),
         nutrition_adherence: nutritionForm.nutritionAdherence,
         exercise_minutes: parseInt(exerciseForm.exerciseMinutes),
-        steps: parseInt(exerciseForm.steps),
+        steps: parseInt(exerciseForm.steps), // Added steps column
         exercise_adherence: exerciseForm.exerciseAdherence,
         goals_adherence: goalsForm.goalsAdherence,
       }]);
