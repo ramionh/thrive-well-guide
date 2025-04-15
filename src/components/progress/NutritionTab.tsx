@@ -3,28 +3,34 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import ProgressTabLayout from "./ProgressTabLayout";
+import { useNutritionForm, NutritionFormState } from "@/hooks/useNutritionForm";
 
 interface NutritionTabProps {
-  calories: string;
-  setCalories: (value: string) => void;
-  protein: string;
-  setProtein: (value: string) => void;
-  water: string;
-  setWater: (value: string) => void;
-  nutritionAdherence: "red" | "yellow" | "green";
-  setNutritionAdherence: (value: "red" | "yellow" | "green") => void;
+  initialValues?: Partial<NutritionFormState>;
+  onChange?: (values: NutritionFormState) => void;
 }
 
 const NutritionTab: React.FC<NutritionTabProps> = ({
-  calories,
-  setCalories,
-  protein,
-  setProtein,
-  water,
-  setWater,
-  nutritionAdherence,
-  setNutritionAdherence,
+  initialValues,
+  onChange
 }) => {
+  const {
+    calories, 
+    setCalories, 
+    protein, 
+    setProtein, 
+    water, 
+    setWater, 
+    nutritionAdherence, 
+    setNutritionAdherence,
+    getFormData
+  } = useNutritionForm(initialValues);
+
+  // Notify parent component when values change
+  React.useEffect(() => {
+    onChange?.(getFormData());
+  }, [calories, protein, water, nutritionAdherence]);
+
   return (
     <ProgressTabLayout
       title="Nutrition Tracking"
@@ -79,4 +85,3 @@ const NutritionTab: React.FC<NutritionTabProps> = ({
 };
 
 export default NutritionTab;
-

@@ -4,24 +4,32 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import ProgressTabLayout from "./ProgressTabLayout";
+import { useSleepForm, SleepFormState } from "@/hooks/useSleepForm";
 
 interface SleepTabProps {
-  sleepHours: string;
-  setSleepHours: (value: string) => void;
-  sleepQuality: number[];
-  setSleepQuality: (value: number[]) => void;
-  sleepAdherence: "red" | "yellow" | "green";
-  setSleepAdherence: (value: "red" | "yellow" | "green") => void;
+  initialValues?: Partial<SleepFormState>;
+  onChange?: (values: SleepFormState) => void;
 }
 
 const SleepTab: React.FC<SleepTabProps> = ({
-  sleepHours,
-  setSleepHours,
-  sleepQuality,
-  setSleepQuality,
-  sleepAdherence,
-  setSleepAdherence,
+  initialValues,
+  onChange
 }) => {
+  const { 
+    sleepHours, 
+    setSleepHours, 
+    sleepQuality, 
+    setSleepQuality, 
+    sleepAdherence, 
+    setSleepAdherence,
+    getFormData
+  } = useSleepForm(initialValues);
+
+  // Notify parent component when values change
+  React.useEffect(() => {
+    onChange?.(getFormData());
+  }, [sleepHours, sleepQuality, sleepAdherence]);
+
   return (
     <ProgressTabLayout
       title="Sleep Tracking"
@@ -72,4 +80,3 @@ const SleepTab: React.FC<SleepTabProps> = ({
 };
 
 export default SleepTab;
-

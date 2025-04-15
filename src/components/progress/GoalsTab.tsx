@@ -5,25 +5,32 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProgressTabLayout from "./ProgressTabLayout";
 import { useUser } from "@/context/UserContext";
+import { useGoalsForm, GoalsFormState } from "@/hooks/useGoalsForm";
 
 interface GoalsTabProps {
-  selectedGoal: string;
-  setSelectedGoal: (value: string) => void;
-  goalProgress: string;
-  setGoalProgress: (value: string) => void;
-  goalsAdherence: "red" | "yellow" | "green";
-  setGoalsAdherence: (value: "red" | "yellow" | "green") => void;
+  initialValues?: Partial<GoalsFormState>;
+  onChange?: (values: GoalsFormState) => void;
 }
 
 const GoalsTab: React.FC<GoalsTabProps> = ({
-  selectedGoal,
-  setSelectedGoal,
-  goalProgress,
-  setGoalProgress,
-  goalsAdherence,
-  setGoalsAdherence,
+  initialValues,
+  onChange
 }) => {
   const { user } = useUser();
+  const {
+    selectedGoal, 
+    setSelectedGoal, 
+    goalProgress, 
+    setGoalProgress, 
+    goalsAdherence, 
+    setGoalsAdherence,
+    getFormData
+  } = useGoalsForm(initialValues);
+
+  // Notify parent component when values change
+  React.useEffect(() => {
+    onChange?.(getFormData());
+  }, [selectedGoal, goalProgress, goalsAdherence]);
 
   return (
     <ProgressTabLayout
@@ -71,4 +78,3 @@ const GoalsTab: React.FC<GoalsTabProps> = ({
 };
 
 export default GoalsTab;
-

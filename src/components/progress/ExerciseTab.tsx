@@ -3,24 +3,32 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import ProgressTabLayout from "./ProgressTabLayout";
+import { useExerciseForm, ExerciseFormState } from "@/hooks/useExerciseForm";
 
 interface ExerciseTabProps {
-  exerciseMinutes: string;
-  setExerciseMinutes: (value: string) => void;
-  steps: string;
-  setSteps: (value: string) => void;
-  exerciseAdherence: "red" | "yellow" | "green";
-  setExerciseAdherence: (value: "red" | "yellow" | "green") => void;
+  initialValues?: Partial<ExerciseFormState>;
+  onChange?: (values: ExerciseFormState) => void;
 }
 
 const ExerciseTab: React.FC<ExerciseTabProps> = ({
-  exerciseMinutes,
-  setExerciseMinutes,
-  steps,
-  setSteps,
-  exerciseAdherence,
-  setExerciseAdherence,
+  initialValues,
+  onChange
 }) => {
+  const {
+    exerciseMinutes, 
+    setExerciseMinutes, 
+    steps, 
+    setSteps, 
+    exerciseAdherence, 
+    setExerciseAdherence,
+    getFormData
+  } = useExerciseForm(initialValues);
+
+  // Notify parent component when values change
+  React.useEffect(() => {
+    onChange?.(getFormData());
+  }, [exerciseMinutes, steps, exerciseAdherence]);
+
   return (
     <ProgressTabLayout
       title="Exercise Tracking"
@@ -61,4 +69,3 @@ const ExerciseTab: React.FC<ExerciseTabProps> = ({
 };
 
 export default ExerciseTab;
-
