@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { ArrowRight, LogIn } from "lucide-react";
-import DailyHealthForm from "@/components/health/DailyHealthForm";
 
 const Index = () => {
   const { user, isLoading } = useUser();
@@ -26,8 +25,18 @@ const Index = () => {
 
   if (user) {
     return (
-      <div className="min-h-screen bg-background">
-        <DailyHealthForm />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-6">
+          <h1 className="text-3xl font-bold">Welcome to 40+Ripped!</h1>
+          <p className="text-muted-foreground">You're signed in. Let's get started!</p>
+          <Button
+            className="bg-thrive-blue hover:bg-thrive-blue/90"
+            onClick={() => navigate("/dashboard")}
+          >
+            Go to Dashboard
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </div>
       </div>
     );
   }
@@ -53,10 +62,7 @@ const Index = () => {
             <Button
               variant="outline"
               className="text-lg px-8 py-6"
-              onClick={() => {
-                localStorage.removeItem("thrivewell_user");
-                navigate("/auth");
-              }}
+              onClick={() => navigate("/auth")}
             >
               Login
               <LogIn className="ml-2 h-5 w-5" />
