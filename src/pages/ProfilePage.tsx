@@ -31,7 +31,6 @@ const ProfilePage: React.FC = () => {
   
   const handleLogout = async () => {
     try {
-      // Sign out from Supabase which will clear the JWT token
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -44,7 +43,7 @@ const ProfilePage: React.FC = () => {
       }
       
       // Clear local storage and redirect to home
-      localStorage.clear(); // Clear all local storage data
+      localStorage.clear();
       navigate("/");
       
       toast({
