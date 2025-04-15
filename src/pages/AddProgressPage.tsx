@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { useUser } from "@/context/UserContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
-import { StoplightControl } from "@/components/ui/stoplight-control";
 import { useNavigate } from "react-router-dom";
 import { Moon, Apple, Dumbbell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+import SleepTab from "@/components/progress/SleepTab";
+import NutritionTab from "@/components/progress/NutritionTab";
+import ExerciseTab from "@/components/progress/ExerciseTab";
+import GoalsTab from "@/components/progress/GoalsTab";
 
 const AddProgressPage: React.FC = () => {
   const { user, updateGoal, addVital } = useUser();
@@ -20,22 +19,21 @@ const AddProgressPage: React.FC = () => {
   
   const [sleepHours, setSleepHours] = useState("7.5");
   const [sleepQuality, setSleepQuality] = useState([70]);
+  const [sleepAdherence, setSleepAdherence] = useState<"red" | "yellow" | "green">("yellow");
   
   const [calories, setCalories] = useState("2000");
   const [protein, setProtein] = useState("90");
   const [water, setWater] = useState("6");
+  const [nutritionAdherence, setNutritionAdherence] = useState<"red" | "yellow" | "green">("yellow");
   
   const [exerciseMinutes, setExerciseMinutes] = useState("45");
   const [steps, setSteps] = useState("8000");
+  const [exerciseAdherence, setExerciseAdherence] = useState<"red" | "yellow" | "green">("yellow");
   
   const [selectedGoal, setSelectedGoal] = useState("");
   const [goalProgress, setGoalProgress] = useState("");
-  
-  const [sleepAdherence, setSleepAdherence] = useState<"red" | "yellow" | "green">("yellow");
-  const [nutritionAdherence, setNutritionAdherence] = useState<"red" | "yellow" | "green">("yellow");
-  const [exerciseAdherence, setExerciseAdherence] = useState<"red" | "yellow" | "green">("yellow");
   const [goalsAdherence, setGoalsAdherence] = useState<"red" | "yellow" | "green">("yellow");
-  
+
   const handleSaveProgress = async () => {
     try {
       if (selectedGoal && goalProgress) {
@@ -153,213 +151,49 @@ const AddProgressPage: React.FC = () => {
         </TabsList>
         
         <TabsContent value="sleep">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Sleep Tracking</CardTitle>
-                <CardDescription>How well did you sleep?</CardDescription>
-              </div>
-              <StoplightControl
-                value={sleepAdherence}
-                onValueChange={setSleepAdherence}
-                label="Sleep Goal Adherence"
-              />
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="sleepHours">Hours of Sleep</Label>
-                <div className="flex space-x-2">
-                  <Input 
-                    id="sleepHours"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="24"
-                    value={sleepHours}
-                    onChange={(e) => setSleepHours(e.target.value)}
-                  />
-                  <span className="flex items-center">hours</span>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label>Sleep Quality</Label>
-                  <p className="text-sm text-muted-foreground">
-                    How would you rate the quality of your sleep?
-                  </p>
-                </div>
-                <div className="px-2">
-                  <Slider
-                    value={sleepQuality}
-                    max={100}
-                    step={1}
-                    onValueChange={setSleepQuality}
-                  />
-                  <div className="flex justify-between mt-1 text-sm text-muted-foreground">
-                    <span>Poor</span>
-                    <span>{sleepQuality}%</span>
-                    <span>Excellent</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <SleepTab
+            sleepHours={sleepHours}
+            setSleepHours={setSleepHours}
+            sleepQuality={sleepQuality}
+            setSleepQuality={setSleepQuality}
+            sleepAdherence={sleepAdherence}
+            setSleepAdherence={setSleepAdherence}
+          />
         </TabsContent>
         
         <TabsContent value="nutrition">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Nutrition Tracking</CardTitle>
-                <CardDescription>Track your daily nutrition</CardDescription>
-              </div>
-              <StoplightControl
-                value={nutritionAdherence}
-                onValueChange={setNutritionAdherence}
-                label="Nutrition Goal Adherence"
-              />
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="calories">Calories Consumed</Label>
-                <div className="flex space-x-2">
-                  <Input 
-                    id="calories"
-                    type="number"
-                    min="0"
-                    value={calories}
-                    onChange={(e) => setCalories(e.target.value)}
-                  />
-                  <span className="flex items-center">kcal</span>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="protein">Protein Consumed</Label>
-                <div className="flex space-x-2">
-                  <Input 
-                    id="protein"
-                    type="number"
-                    min="0"
-                    value={protein}
-                    onChange={(e) => setProtein(e.target.value)}
-                  />
-                  <span className="flex items-center">grams</span>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="water">Water Intake</Label>
-                <div className="flex space-x-2">
-                  <Input 
-                    id="water"
-                    type="number"
-                    min="0"
-                    value={water}
-                    onChange={(e) => setWater(e.target.value)}
-                  />
-                  <span className="flex items-center">glasses</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <NutritionTab
+            calories={calories}
+            setCalories={setCalories}
+            protein={protein}
+            setProtein={setProtein}
+            water={water}
+            setWater={setWater}
+            nutritionAdherence={nutritionAdherence}
+            setNutritionAdherence={setNutritionAdherence}
+          />
         </TabsContent>
         
         <TabsContent value="exercise">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Exercise Tracking</CardTitle>
-                <CardDescription>Track your physical activity</CardDescription>
-              </div>
-              <StoplightControl
-                value={exerciseAdherence}
-                onValueChange={setExerciseAdherence}
-                label="Exercise Goal Adherence"
-              />
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="exerciseMinutes">Exercise Duration</Label>
-                <div className="flex space-x-2">
-                  <Input 
-                    id="exerciseMinutes"
-                    type="number"
-                    min="0"
-                    value={exerciseMinutes}
-                    onChange={(e) => setExerciseMinutes(e.target.value)}
-                  />
-                  <span className="flex items-center">minutes</span>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="steps">Step Count</Label>
-                <div className="flex space-x-2">
-                  <Input 
-                    id="steps"
-                    type="number"
-                    min="0"
-                    value={steps}
-                    onChange={(e) => setSteps(e.target.value)}
-                  />
-                  <span className="flex items-center">steps</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ExerciseTab
+            exerciseMinutes={exerciseMinutes}
+            setExerciseMinutes={setExerciseMinutes}
+            steps={steps}
+            setSteps={setSteps}
+            exerciseAdherence={exerciseAdherence}
+            setExerciseAdherence={setExerciseAdherence}
+          />
         </TabsContent>
         
         <TabsContent value="goals">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Update Goal Progress</CardTitle>
-                <CardDescription>Track your progress towards your goals</CardDescription>
-              </div>
-              <StoplightControl
-                value={goalsAdherence}
-                onValueChange={setGoalsAdherence}
-                label="Overall Goals Adherence"
-              />
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="goalSelect">Select Goal</Label>
-                <Select value={selectedGoal} onValueChange={setSelectedGoal}>
-                  <SelectTrigger id="goalSelect">
-                    <SelectValue placeholder="Select a goal to update" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {user?.goals.map((goal) => (
-                      <SelectItem key={goal.id} value={goal.id}>
-                        {goal.name} ({goal.targetValue} {goal.unit})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {selectedGoal && (
-                <div className="space-y-2">
-                  <Label htmlFor="goalProgress">Current Progress</Label>
-                  <div className="flex space-x-2">
-                    <Input 
-                      id="goalProgress"
-                      type="number"
-                      min="0"
-                      value={goalProgress}
-                      onChange={(e) => setGoalProgress(e.target.value)}
-                    />
-                    <span className="flex items-center">
-                      {user?.goals.find(g => g.id === selectedGoal)?.unit}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <GoalsTab
+            selectedGoal={selectedGoal}
+            setSelectedGoal={setSelectedGoal}
+            goalProgress={goalProgress}
+            setGoalProgress={setGoalProgress}
+            goalsAdherence={goalsAdherence}
+            setGoalsAdherence={setGoalsAdherence}
+          />
         </TabsContent>
       </Tabs>
       
