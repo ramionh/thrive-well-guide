@@ -8,23 +8,26 @@ type StoplightValue = "red" | "yellow" | "green";
 
 interface StoplightControlProps {
   value?: StoplightValue;
-  onValueChange: (value: StoplightValue) => void;
-  label: string;
+  onValueChange?: (value: StoplightValue) => void;
+  label?: string;
+  readOnly?: boolean;
 }
 
 export const StoplightControl = ({
   value,
   onValueChange,
   label,
+  readOnly = false,
 }: StoplightControlProps) => {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium leading-none">{label}</label>
+      {label && <label className="text-sm font-medium leading-none">{label}</label>}
       <ToggleGroup
         type="single"
         value={value}
-        onValueChange={(value) => value && onValueChange(value as StoplightValue)}
+        onValueChange={(value) => !readOnly && onValueChange && value && onValueChange(value as StoplightValue)}
         className="flex justify-center gap-2"
+        disabled={readOnly}
       >
         <ToggleGroupItem
           value="red"
