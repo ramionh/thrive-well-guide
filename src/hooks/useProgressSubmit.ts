@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/context/UserContext";
@@ -25,59 +26,7 @@ export const useProgressSubmit = () => {
         });
       }
       
-      // Add sleep vitals
-      addVital({
-        name: "Sleep Duration",
-        value: parseFloat(sleepForm.sleepHours),
-        unit: "hours",
-        category: "sleep"
-      });
-      
-      addVital({
-        name: "Sleep Quality",
-        value: sleepForm.sleepQuality[0],
-        unit: "%",
-        category: "sleep"
-      });
-      
-      // Add nutrition vitals
-      addVital({
-        name: "Calories",
-        value: parseInt(nutritionForm.calories),
-        unit: "kcal",
-        category: "nutrition"
-      });
-      
-      addVital({
-        name: "Protein",
-        value: parseInt(nutritionForm.protein),
-        unit: "g",
-        category: "nutrition"
-      });
-      
-      addVital({
-        name: "Water",
-        value: parseInt(nutritionForm.water),
-        unit: "glasses",
-        category: "nutrition"
-      });
-      
-      // Add exercise vitals
-      addVital({
-        name: "Exercise",
-        value: parseInt(exerciseForm.exerciseMinutes),
-        unit: "minutes",
-        category: "exercise"
-      });
-      
-      addVital({
-        name: "Steps",
-        value: parseInt(exerciseForm.steps),
-        unit: "steps",
-        category: "exercise"
-      });
-      
-      // Save to database - updated to include steps column
+      // Save to database - updated to include water and steps columns
       const { error } = await supabase.from("daily_health_tracking").insert([{
         user_id: user?.id,
         sleep_hours: parseFloat(sleepForm.sleepHours),
@@ -87,7 +36,7 @@ export const useProgressSubmit = () => {
         water: parseInt(nutritionForm.water),
         nutrition_adherence: nutritionForm.nutritionAdherence,
         exercise_minutes: parseInt(exerciseForm.exerciseMinutes),
-        steps: parseInt(exerciseForm.steps), // Added steps column
+        steps: parseInt(exerciseForm.steps),
         exercise_adherence: exerciseForm.exerciseAdherence,
         goals_adherence: goalsForm.goalsAdherence,
       }]);

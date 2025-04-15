@@ -27,6 +27,7 @@ export type Database = {
           steps: number | null
           updated_at: string
           user_id: string
+          water: number | null
         }
         Insert: {
           calories?: number | null
@@ -45,6 +46,7 @@ export type Database = {
           steps?: number | null
           updated_at?: string
           user_id: string
+          water?: number | null
         }
         Update: {
           calories?: number | null
@@ -63,6 +65,7 @@ export type Database = {
           steps?: number | null
           updated_at?: string
           user_id?: string
+          water?: number | null
         }
         Relationships: []
       }
