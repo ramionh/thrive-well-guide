@@ -23,7 +23,7 @@ interface HealthFormData {
 const DailyHealthForm = () => {
   const { user } = useUser();
   const { toast } = useToast();
-  const { register, handleSubmit, setValue } = useForm<HealthFormData>({
+  const { register, handleSubmit, setValue, watch } = useForm<HealthFormData>({
     defaultValues: {
       sleep_hours: 7,
       exercise_minutes: 30,
@@ -33,6 +33,11 @@ const DailyHealthForm = () => {
       notes: "",
     },
   });
+
+  // Watch the values to display them in the UI
+  const sleepHours = watch("sleep_hours");
+  const exerciseMinutes = watch("exercise_minutes");
+  const moodValue = watch("mood");
 
   const onSubmit = async (data: HealthFormData) => {
     try {
@@ -75,7 +80,7 @@ const DailyHealthForm = () => {
             onValueChange={([value]) => setValue("sleep_hours", value)}
           />
           <div className="text-sm text-muted-foreground mt-1 text-center">
-            {register("sleep_hours").value} hours
+            {sleepHours} hours
           </div>
         </div>
 
@@ -91,7 +96,7 @@ const DailyHealthForm = () => {
             onValueChange={([value]) => setValue("exercise_minutes", value)}
           />
           <div className="text-sm text-muted-foreground mt-1 text-center">
-            {register("exercise_minutes").value} minutes
+            {exerciseMinutes} minutes
           </div>
         </div>
 
@@ -131,7 +136,7 @@ const DailyHealthForm = () => {
             onValueChange={([value]) => setValue("mood", value)}
           />
           <div className="text-sm text-muted-foreground mt-1 text-center">
-            {register("mood").value}/10
+            {moodValue}/10
           </div>
         </div>
 
