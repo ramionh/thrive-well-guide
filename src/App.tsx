@@ -43,16 +43,9 @@ const App = () => (
         <BrowserRouter>
           <Layout>
             <Routes>
+              <Route path="/" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
-              <Route
-                path="/"
-                element={
-                  <AuthenticatedRoute>
-                    <Dashboard />
-                  </AuthenticatedRoute>
-                }
-              />
               <Route
                 path="/dashboard"
                 element={
