@@ -1,30 +1,25 @@
 
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Camera } from "lucide-react";
+import { LogOut } from "lucide-react";
+import AvatarUploader from "@/components/profile/AvatarUploader";
+import ProfileForm from "@/components/profile/ProfileForm";
+import GoalsList from "@/components/profile/GoalsList";
+import MotivationsList from "@/components/profile/MotivationsList";
 
 const ProfilePage: React.FC = () => {
   const { user, motivationalResponses } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
-  
-  const [name, setName] = useState(user?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
-    // Check authentication status
     if (!user) {
       navigate("/auth");
     }
@@ -41,101 +36,6 @@ const ProfilePage: React.FC = () => {
         description: "Failed to sign out. Please try again.",
         variant: "destructive"
       });
-    }
-  };
-  
-  const handleSaveProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to update your profile",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Get the current user session to ensure we're authenticated
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) {
-        throw new Error("No active session found");
-      }
-      
-      console.log("Current user ID:", user.id);
-      
-      // Upload avatar if selected
-      let avatarUrl = user.avatar_url;
-      
-      if (avatarFile) {
-        const fileExt = avatarFile.name.split('.').pop();
-        const fileName = `avatar.${fileExt}`;
-        const filePath = `${user.id}/${fileName}`;
-        
-        console.log("Uploading to path:", filePath);
-        
-        // First, try to create the folder if it doesn't exist
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, avatarFile, { 
-            cacheControl: '3600', 
-            upsert: true 
-          });
-        
-        if (uploadError) {
-          console.error("Avatar upload error:", uploadError);
-          throw uploadError;
-        }
-        
-        // Get the public URL
-        const { data: urlData } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-        
-        avatarUrl = urlData.publicUrl;
-        
-        console.log("Avatar URL:", avatarUrl);
-      }
-      
-      // Update profile info
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ 
-          avatar_url: avatarUrl,
-          full_name: name,
-          email: email 
-        })
-        .eq('id', user.id);
-      
-      if (updateError) {
-        console.error("Profile update error:", updateError);
-        throw updateError;
-      }
-      
-      toast({
-        title: "Success",
-        description: "Your profile has been updated successfully.",
-      });
-    } catch (error: any) {
-      console.error("Profile update error:", error);
-      toast({
-        title: "Update Error",
-        description: error.message || "Failed to update profile",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setAvatarFile(file);
-      setAvatarPreview(URL.createObjectURL(file));
     }
   };
   
@@ -167,129 +67,36 @@ const ProfilePage: React.FC = () => {
         <TabsContent value="info">
           <Card>
             <CardHeader>
-              <div className="flex flex-col md:flex-row gap-4 items-center relative">
-                <div className="relative">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage 
-                      src={avatarPreview || user.avatar_url || ""} 
-                      alt={user.name || "User avatar"} 
-                    />
-                    <AvatarFallback className="text-2xl bg-thrive-blue text-white">
-                      {user.name ? user.name.split(' ').map(n => n[0]).join('') : "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleAvatarChange}
-                    className="hidden" 
-                    id="avatar-upload" 
-                  />
-                  <label 
-                    htmlFor="avatar-upload" 
-                    className="absolute bottom-0 right-0 bg-thrive-blue text-white rounded-full p-1 cursor-pointer hover:bg-blue-600 transition-colors"
-                  >
-                    <Camera className="h-4 w-4" />
-                  </label>
-                </div>
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <AvatarUploader
+                  userId={user.id}
+                  currentAvatarUrl={user.avatar_url}
+                  userName={user.name}
+                  onAvatarUpdate={(url) => user.avatar_url = url}
+                />
                 <div>
                   <CardTitle>{user.name || "User"}</CardTitle>
                   <CardDescription>{user.email || "No email provided"}</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSaveProfile} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input 
-                    id="name" 
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                  />
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="bg-thrive-blue"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </Button>
-              </form>
-            </CardContent>
+            <ProfileForm
+              userId={user.id}
+              initialName={user.name || ""}
+              initialEmail={user.email || ""}
+              avatarUrl={user.avatar_url}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
           </Card>
         </TabsContent>
         
         <TabsContent value="goals">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Goals</CardTitle>
-              <CardDescription>What you're working towards</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {user.goals && user.goals.length > 0 ? (
-                <div className="space-y-4">
-                  {user.goals.map((goal) => (
-                    <div key={goal.id} className="border rounded-md p-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="font-medium">{goal.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Target: {goal.targetValue} {goal.unit}
-                          </p>
-                        </div>
-                        <div className="text-sm px-2 py-1 rounded-full bg-thrive-blue/10 text-thrive-blue">
-                          {goal.category}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-muted-foreground py-8">
-                  You don't have any goals set yet. Head to the dashboard to add some!
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <GoalsList goals={user.goals || []} />
         </TabsContent>
         
         <TabsContent value="motivations">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Motivations</CardTitle>
-              <CardDescription>Your responses from the motivational interview</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {motivationalResponses && Object.keys(motivationalResponses).length > 0 ? (
-                <div className="space-y-6">
-                  {Object.entries(motivationalResponses).map(([category, response]) => (
-                    <div key={category} className="space-y-2">
-                      <h3 className="font-medium capitalize">{category}</h3>
-                      <p className="text-sm p-4 bg-muted rounded-md">
-                        {String(response)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-muted-foreground py-8">
-                  You haven't completed the motivational interview yet.
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <MotivationsList motivationalResponses={motivationalResponses} />
         </TabsContent>
       </Tabs>
     </div>
