@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +16,7 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import AddProgressPage from "./pages/AddProgressPage";
 import NotFound from "./pages/NotFound";
+import LogoutConfirmation from "./components/auth/LogoutConfirmation";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +46,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
+              <Route path="/logout" element={<LogoutConfirmation />} />
               <Route
                 path="/dashboard"
                 element={

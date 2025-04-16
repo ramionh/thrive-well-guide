@@ -42,9 +42,9 @@ const ProfilePage: React.FC = () => {
         return;
       }
       
-      // Clear local storage and redirect to home
+      // Clear local storage and redirect to logout confirmation
       localStorage.clear();
-      navigate("/");
+      navigate("/logout");
       
       toast({
         title: "Logged Out",
