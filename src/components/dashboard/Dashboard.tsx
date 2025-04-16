@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,9 @@ import HistoryButton from "./HistoryButton";
 const Dashboard: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  
+  // Get the first name or default to "User"
+  const firstName = user?.name?.split(' ')[0] || "User";
   
   if (!user?.onboardingCompleted) {
     return (
@@ -47,14 +49,14 @@ const Dashboard: React.FC = () => {
             </AvatarFallback>
           </Avatar>
           <span className="ml-3 text-lg font-medium text-muted-foreground">
-            {user.name || "User"}
+            {firstName}
           </span>
         </div>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold mb-1">Welcome back, {user.name || "Friend"}</h1>
+          <h1 className="text-3xl font-bold mb-1">Welcome back, {firstName}</h1>
           <p className="text-muted-foreground">Here's an overview of your wellness journey</p>
         </div>
         <div className="flex gap-3 mt-4 md:mt-0">
