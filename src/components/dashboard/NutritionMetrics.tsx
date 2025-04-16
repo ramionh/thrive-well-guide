@@ -1,6 +1,5 @@
 
 import React from "react";
-import { useUser } from "@/context/UserContext";
 import { Progress } from "@/components/ui/progress";
 import { Apple } from "lucide-react";
 
@@ -11,13 +10,13 @@ const NutritionMetrics: React.FC = () => {
   const proteinPercentage = 75;
   const waterPercentage = 60;
   
-  const caloriesPercentage = (caloriesConsumed / caloriesTarget) * 100;
+  const caloriesPercentage = 93; // Hard-coded for now
   
   return (
     <div className="space-y-4">
       <div className="flex items-center">
-        <div className="bg-thrive-orange/10 p-2 rounded-full mr-3">
-          <Apple className="h-5 w-5 text-thrive-orange" />
+        <div className="bg-orange-100 p-2 rounded-full mr-3">
+          <Apple className="h-5 w-5 text-orange-600" />
         </div>
         <div>
           <h3 className="text-xl font-bold">{caloriesConsumed}</h3>
@@ -28,7 +27,7 @@ const NutritionMetrics: React.FC = () => {
       <div className="space-y-1">
         <div className="flex justify-between items-center text-sm">
           <span>Calories</span>
-          <span className="font-medium">{caloriesPercentage.toFixed(0)}%</span>
+          <span className="font-medium">{caloriesPercentage}%</span>
         </div>
         <Progress value={caloriesPercentage} className="h-2" />
         <p className="text-xs text-muted-foreground">Target: {caloriesTarget} calories</p>

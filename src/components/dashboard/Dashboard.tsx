@@ -37,16 +37,16 @@ const Dashboard: React.FC = () => {
   }
   
   return (
-    <div className="container mx-auto animate-fade-in">
+    <div className="container mx-auto p-6 max-w-7xl">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Welcome back, {user.name || "Friend"}</h1>
+          <h1 className="text-3xl font-bold mb-1">Welcome back, {user.name || "Friend"}</h1>
           <p className="text-muted-foreground">Here's an overview of your wellness journey</p>
         </div>
         <div className="flex gap-3 mt-4 md:mt-0">
           <HistoryButton />
           <Button 
-            className="bg-thrive-blue hover:bg-thrive-blue/90"
+            className="bg-blue-500 hover:bg-blue-600 text-white"
             onClick={() => navigate("/add-progress")}
           >
             <PlusCircle className="mr-2 h-4 w-4" />
@@ -56,21 +56,21 @@ const Dashboard: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card className="card-shadow">
+        <Card className="shadow-sm">
           <div className="p-6">
             <h2 className="text-lg font-semibold mb-4">Sleep Quality</h2>
             <SleepMetrics />
           </div>
         </Card>
         
-        <Card className="card-shadow">
+        <Card className="shadow-sm">
           <div className="p-6">
             <h2 className="text-lg font-semibold mb-4">Nutrition</h2>
             <NutritionMetrics />
           </div>
         </Card>
         
-        <Card className="card-shadow">
+        <Card className="shadow-sm">
           <div className="p-6">
             <h2 className="text-lg font-semibold mb-4">Exercise</h2>
             <ExerciseMetrics />
@@ -80,7 +80,7 @@ const Dashboard: React.FC = () => {
       
       <div className="mb-6">
         <Tabs defaultValue="goals">
-          <TabsList>
+          <TabsList className="bg-background">
             <TabsTrigger value="goals">Goals Progress</TabsTrigger>
             <TabsTrigger value="insights">Insights</TabsTrigger>
           </TabsList>

@@ -1,6 +1,5 @@
 
 import React from "react";
-import { useUser } from "@/context/UserContext";
 import { Progress } from "@/components/ui/progress";
 import { Moon } from "lucide-react";
 
@@ -10,13 +9,13 @@ const SleepMetrics: React.FC = () => {
   const sleepQuality = 85;
   const targetSleepHours = 8;
   
-  const sleepPercentage = (averageSleepHours / targetSleepHours) * 100;
+  const sleepPercentage = 90; // Hard-coded for now
   
   return (
     <div className="space-y-4">
       <div className="flex items-center">
-        <div className="bg-thrive-blue/10 p-2 rounded-full mr-3">
-          <Moon className="h-5 w-5 text-thrive-blue" />
+        <div className="bg-blue-100 p-2 rounded-full mr-3">
+          <Moon className="h-5 w-5 text-blue-600" />
         </div>
         <div>
           <h3 className="text-xl font-bold">{averageSleepHours}h</h3>
@@ -27,7 +26,7 @@ const SleepMetrics: React.FC = () => {
       <div className="space-y-1">
         <div className="flex justify-between items-center text-sm">
           <span>Sleep Duration</span>
-          <span className="font-medium">{sleepPercentage.toFixed(0)}%</span>
+          <span className="font-medium">{sleepPercentage}%</span>
         </div>
         <Progress value={sleepPercentage} className="h-2" />
         <p className="text-xs text-muted-foreground">Target: {targetSleepHours} hours</p>
