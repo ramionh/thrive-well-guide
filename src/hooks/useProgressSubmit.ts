@@ -20,6 +20,18 @@ export const useProgressSubmit = () => {
     goalsForm: GoalsFormState
   ) => {
     try {
+      // Check if user is authenticated
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        toast({
+          variant: "destructive",
+          title: "Authentication required",
+          description: "Please sign in to save your progress.",
+        });
+        navigate("/auth");
+        return;
+      }
+
       // Validate that user exists and has a valid UUID
       if (!user || !user.id || typeof user.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id)) {
         throw new Error("User not authenticated or invalid user ID format");
@@ -47,7 +59,22 @@ export const useProgressSubmit = () => {
         date: new Date().toISOString().split('T')[0], // Add current date in YYYY-MM-DD format
       }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Database error:", error);
+        
+        if (error.code === '42501') {
+          // This is a Row Level Security error
+          toast({
+            variant: "destructive",
+            title: "Authentication error",
+            description: "Please sign in again to save your progress.",
+          });
+          navigate("/auth");
+          return;
+        }
+        
+        throw error;
+      }
       
       toast({
         title: "Progress updated",
