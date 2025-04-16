@@ -24,8 +24,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   isLoading,
   setIsLoading,
 }) => {
-  const [name, setName] = useState(initialName);
-  const [email, setEmail] = useState(initialEmail);
+  const [name, setName] = useState(initialName || "");
+  const [email, setEmail] = useState(initialEmail || "");
   const { toast } = useToast();
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -75,7 +75,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           <Input 
             id="name" 
             value={name} 
-            onChange={(e) => setName(e.target.value)} 
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
           />
         </div>
         
@@ -85,7 +86,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             id="email" 
             type="email" 
             value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
           />
         </div>
         
