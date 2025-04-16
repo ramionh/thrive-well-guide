@@ -29,8 +29,13 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
       setAvatarPreview(URL.createObjectURL(file));
 
       try {
+        // Validate userId is a proper UUID before using it
+        if (!userId || typeof userId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
+          throw new Error("Invalid user ID. Please sign in again.");
+        }
+
         const fileExt = file.name.split('.').pop();
-        const fileName = `avatar.${fileExt}`;
+        const fileName = `avatar-${Date.now()}.${fileExt}`;
         const filePath = `${userId}/${fileName}`;
         
         const { error: uploadError } = await supabase.storage
@@ -50,6 +55,10 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
         
         onAvatarUpdate(urlData.publicUrl);
         
+        toast({
+          title: "Success",
+          description: "Avatar uploaded successfully!",
+        });
       } catch (error: any) {
         console.error("Avatar upload error:", error);
         toast({
