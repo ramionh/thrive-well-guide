@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 interface AvatarUploaderProps {
   userId: string;
@@ -42,12 +42,15 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
 
     setIsUploading(true);
     try {
+      // Create a local preview of the image
       setAvatarPreview(URL.createObjectURL(file));
 
+      // Get file extension and create unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `avatar-${Date.now()}.${fileExt}`;
       const filePath = `${userId}/${fileName}`;
       
+      // Upload file to Supabase storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { 
@@ -57,10 +60,12 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
       
       if (uploadError) throw uploadError;
       
+      // Get the public URL for the uploaded file
       const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
       
+      // Update the avatar URL in the parent component
       onAvatarUpdate(urlData.publicUrl);
       
       toast({
