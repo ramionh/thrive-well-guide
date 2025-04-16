@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,36 +13,57 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, Camera } from "lucide-react";
 
 const ProfilePage: React.FC = () => {
-  const { user, motivationalResponses } = useUser();
+  const { user } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const [name, setName] = React.useState(user?.name || "");
-  const [email, setEmail] = React.useState(user?.email || "");
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   
+  useEffect(() => {
+    // Check authentication status
+    if (!user) {
+      navigate("/auth");
+    }
+  }, [user, navigate]);
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
       navigate("/auth");
     } catch (error) {
       console.error("Error signing out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive"
+      });
     }
   };
   
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to update your profile",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       // Upload avatar if selected
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const fileName = `${user?.id}/avatar.${fileExt}`;
+        const filePath = `${user.id}/avatar.${fileExt}`;
         
         const { error: uploadError } = await supabase.storage
           .from('avatars')
-          .upload(fileName, avatarFile, { 
+          .upload(filePath, avatarFile, { 
             cacheControl: '3600', 
             upsert: true 
           });
@@ -51,26 +72,32 @@ const ProfilePage: React.FC = () => {
           throw uploadError;
         }
         
-        const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
         
         // Update profile with avatar URL
-        const { error } = await supabase
+        const { error: updateError } = await supabase
           .from('profiles')
-          .update({ avatar_url: data.publicUrl })
-          .eq('id', user?.id);
+          .update({ 
+            avatar_url: publicUrl,
+            full_name: name,
+            email: email 
+          })
+          .eq('id', user.id);
         
-        if (error) throw error;
+        if (updateError) throw updateError;
       }
       
       toast({
-        title: "Profile updated",
-        description: "Your profile changes have been saved successfully.",
+        title: "Success",
+        description: "Your profile has been updated successfully.",
       });
     } catch (error: any) {
       console.error("Profile update error:", error);
       toast({
         title: "Update Error",
-        description: error.message,
+        description: error.message || "Failed to update profile",
         variant: "destructive"
       });
     }
@@ -85,7 +112,7 @@ const ProfilePage: React.FC = () => {
   };
   
   if (!user) {
-    return <div>Loading...</div>;
+    return null;
   }
   
   return (
