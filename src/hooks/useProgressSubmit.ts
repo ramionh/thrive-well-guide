@@ -34,7 +34,13 @@ export const useProgressSubmit = () => {
 
       // Validate that user exists and has a valid UUID
       if (!user || !user.id || typeof user.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id)) {
-        throw new Error("User not authenticated or invalid user ID format");
+        toast({
+          variant: "destructive",
+          title: "Authentication error",
+          description: "User identification issue. Please sign in again.",
+        });
+        navigate("/auth");
+        return;
       }
 
       if (goalsForm.selectedGoal && goalsForm.goalProgress) {
