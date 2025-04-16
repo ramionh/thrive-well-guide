@@ -17,16 +17,17 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   const [lastName, setLastName] = useState(user?.name?.split(' ')[1] || "");
   const [email, setEmail] = useState(user?.email || "");
   const [dob, setDob] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
+  const [feet, setFeet] = useState("");
+  const [inches, setInches] = useState("");
+  const [weightLbs, setWeightLbs] = useState("");
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!firstName || !lastName || !email || !dob || !height || !weight) {
+    if (!firstName || !lastName || !email || !dob || !feet || !weightLbs) {
       toast({
         title: "Missing information",
-        description: "Please fill in all fields to continue.",
+        description: "Please fill in all required fields to continue.",
         variant: "destructive"
       });
       return;
@@ -53,10 +54,23 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
     }
 
     // Validate height and weight are numbers
-    if (isNaN(Number(height)) || isNaN(Number(weight))) {
+    const heightFeet = Number(feet);
+    const heightInches = Number(inches || 0);
+    const weight = Number(weightLbs);
+
+    if (isNaN(heightFeet) || isNaN(heightInches) || heightFeet < 0 || heightInches < 0 || heightInches >= 12) {
       toast({
-        title: "Invalid measurements",
-        description: "Height and weight must be numbers.",
+        title: "Invalid height",
+        description: "Please enter a valid height.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (isNaN(weight) || weight <= 0) {
+      toast({
+        title: "Invalid weight",
+        description: "Please enter a valid weight in pounds.",
         variant: "destructive"
       });
       return;
@@ -115,28 +129,45 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="height">Height (cm)</Label>
-          <Input 
-            id="height" 
-            type="number" 
-            placeholder="Enter height in cm" 
-            value={height} 
-            onChange={(e) => setHeight(e.target.value)} 
-          />
+      <div className="space-y-2">
+        <Label>Height</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="feet">Feet</Label>
+            <Input 
+              id="feet" 
+              type="number" 
+              min="0"
+              placeholder="ft"
+              value={feet} 
+              onChange={(e) => setFeet(e.target.value)} 
+            />
+          </div>
+          <div>
+            <Label htmlFor="inches">Inches</Label>
+            <Input 
+              id="inches" 
+              type="number" 
+              min="0"
+              max="11"
+              placeholder="in"
+              value={inches} 
+              onChange={(e) => setInches(e.target.value)} 
+            />
+          </div>
         </div>
+      </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="weight">Weight (kg)</Label>
-          <Input 
-            id="weight" 
-            type="number" 
-            placeholder="Enter weight in kg" 
-            value={weight} 
-            onChange={(e) => setWeight(e.target.value)} 
-          />
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="weight">Weight (lbs)</Label>
+        <Input 
+          id="weight" 
+          type="number" 
+          min="0"
+          placeholder="Enter weight in pounds" 
+          value={weightLbs} 
+          onChange={(e) => setWeightLbs(e.target.value)} 
+        />
       </div>
       
       <Button type="submit" className="w-full bg-thrive-blue hover:bg-thrive-blue/90">
