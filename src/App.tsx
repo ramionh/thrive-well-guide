@@ -7,7 +7,6 @@ import { UserProvider } from "@/context/UserContext";
 import { Layout } from "@/components/Layout";
 import { useUser } from "@/context/UserContext";
 
-import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./components/dashboard/Dashboard";
 import OnboardingWizard from "./components/onboarding/OnboardingWizard";
@@ -16,7 +15,7 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import AddProgressPage from "./pages/AddProgressPage";
 import NotFound from "./pages/NotFound";
-import LogoutConfirmation from "./components/auth/LogoutConfirmation";
+import HomePage from "./components/home/HomePage";
 
 const queryClient = new QueryClient();
 
@@ -43,10 +42,9 @@ const App = () => (
         <BrowserRouter>
           <Layout>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
-              <Route path="/logout" element={<LogoutConfirmation />} />
               <Route
                 path="/dashboard"
                 element={

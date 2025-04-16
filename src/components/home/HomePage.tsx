@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BarChart3, Brain, Apple, Battery } from "lucide-react";
 
-const LogoutConfirmation = () => {
+const HomePage = () => {
   const navigate = useNavigate();
 
   return (
@@ -128,4 +127,4 @@ const BenefitCard = ({ icon, title, description }: {
   </div>
 );
 
-export default LogoutConfirmation;
+export default HomePage;
