@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,7 @@ const ProfilePage: React.FC = () => {
   const [email, setEmail] = useState(user?.email || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
     // Check authentication status
@@ -54,12 +56,28 @@ const ProfilePage: React.FC = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
+      // Get the current user session to ensure we're authenticated
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        throw new Error("No active session found");
+      }
+      
+      console.log("Current user ID:", user.id);
+      
       // Upload avatar if selected
+      let avatarUrl = user.avatar_url;
+      
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const filePath = `${user.id}/avatar.${fileExt}`;
+        const fileName = `avatar.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
         
+        console.log("Uploading to path:", filePath);
+        
+        // First, try to create the folder if it doesn't exist
         const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(filePath, avatarFile, { 
@@ -68,24 +86,33 @@ const ProfilePage: React.FC = () => {
           });
         
         if (uploadError) {
+          console.error("Avatar upload error:", uploadError);
           throw uploadError;
         }
         
-        const { data: { publicUrl } } = supabase.storage
+        // Get the public URL
+        const { data: urlData } = supabase.storage
           .from('avatars')
           .getPublicUrl(filePath);
         
-        // Update profile with avatar URL
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ 
-            avatar_url: publicUrl,
-            full_name: name,
-            email: email 
-          })
-          .eq('id', user.id);
+        avatarUrl = urlData.publicUrl;
         
-        if (updateError) throw updateError;
+        console.log("Avatar URL:", avatarUrl);
+      }
+      
+      // Update profile info
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          avatar_url: avatarUrl,
+          full_name: name,
+          email: email 
+        })
+        .eq('id', user.id);
+      
+      if (updateError) {
+        console.error("Profile update error:", updateError);
+        throw updateError;
       }
       
       toast({
@@ -99,6 +126,8 @@ const ProfilePage: React.FC = () => {
         description: error.message || "Failed to update profile",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -143,10 +172,10 @@ const ProfilePage: React.FC = () => {
                   <Avatar className="h-20 w-20">
                     <AvatarImage 
                       src={avatarPreview || user.avatar_url || ""} 
-                      alt={user.name} 
+                      alt={user.name || "User avatar"} 
                     />
                     <AvatarFallback className="text-2xl bg-thrive-blue text-white">
-                      {user.name.split(' ').map(n => n[0]).join('')}
+                      {user.name ? user.name.split(' ').map(n => n[0]).join('') : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <input 
@@ -164,8 +193,8 @@ const ProfilePage: React.FC = () => {
                   </label>
                 </div>
                 <div>
-                  <CardTitle>{user.name}</CardTitle>
-                  <CardDescription>{user.email}</CardDescription>
+                  <CardTitle>{user.name || "User"}</CardTitle>
+                  <CardDescription>{user.email || "No email provided"}</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -190,7 +219,13 @@ const ProfilePage: React.FC = () => {
                   />
                 </div>
                 
-                <Button type="submit" className="bg-thrive-blue">Save Changes</Button>
+                <Button 
+                  type="submit" 
+                  className="bg-thrive-blue"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Saving..." : "Save Changes"}
+                </Button>
               </form>
             </CardContent>
           </Card>
@@ -203,7 +238,7 @@ const ProfilePage: React.FC = () => {
               <CardDescription>What you're working towards</CardDescription>
             </CardHeader>
             <CardContent>
-              {user.goals.length > 0 ? (
+              {user.goals && user.goals.length > 0 ? (
                 <div className="space-y-4">
                   {user.goals.map((goal) => (
                     <div key={goal.id} className="border rounded-md p-4">
@@ -237,9 +272,9 @@ const ProfilePage: React.FC = () => {
               <CardDescription>Your responses from the motivational interview</CardDescription>
             </CardHeader>
             <CardContent>
-              {Object.keys(motivationalResponses || {}).length > 0 ? (
+              {motivationalResponses && Object.keys(motivationalResponses).length > 0 ? (
                 <div className="space-y-6">
-                  {Object.entries(motivationalResponses || {}).map(([category, response]) => (
+                  {Object.entries(motivationalResponses).map(([category, response]) => (
                     <div key={category} className="space-y-2">
                       <h3 className="font-medium capitalize">{category}</h3>
                       <p className="text-sm p-4 bg-muted rounded-md">
