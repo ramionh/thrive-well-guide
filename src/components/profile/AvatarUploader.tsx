@@ -18,55 +18,64 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
   userName,
   onAvatarUpdate,
 }) => {
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
+  const validateUserId = (id: string): boolean => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return typeof id === 'string' && uuidRegex.test(id);
+  };
+
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setAvatarFile(file);
+    if (!e.target.files || !e.target.files[0]) return;
+
+    const file = e.target.files[0];
+    if (!validateUserId(userId)) {
+      toast({
+        title: "Error",
+        description: "Invalid user ID. Please sign in again.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
       setAvatarPreview(URL.createObjectURL(file));
 
-      try {
-        // Validate userId is a proper UUID before using it
-        if (!userId || typeof userId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
-          throw new Error("Invalid user ID. Please sign in again.");
-        }
-
-        const fileExt = file.name.split('.').pop();
-        const fileName = `avatar-${Date.now()}.${fileExt}`;
-        const filePath = `${userId}/${fileName}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, file, { 
-            cacheControl: '3600', 
-            upsert: true 
-          });
-        
-        if (uploadError) {
-          throw uploadError;
-        }
-        
-        const { data: urlData } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-        
-        onAvatarUpdate(urlData.publicUrl);
-        
-        toast({
-          title: "Success",
-          description: "Avatar uploaded successfully!",
+      const fileExt = file.name.split('.').pop();
+      const fileName = `avatar-${Date.now()}.${fileExt}`;
+      const filePath = `${userId}/${fileName}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { 
+          cacheControl: '3600',
+          upsert: true 
         });
-      } catch (error: any) {
-        console.error("Avatar upload error:", error);
-        toast({
-          title: "Upload Error",
-          description: error.message || "Failed to upload avatar",
-          variant: "destructive"
-        });
-      }
+      
+      if (uploadError) throw uploadError;
+      
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+      
+      onAvatarUpdate(urlData.publicUrl);
+      
+      toast({
+        title: "Success",
+        description: "Avatar uploaded successfully!"
+      });
+    } catch (error: any) {
+      console.error("Avatar upload error:", error);
+      toast({
+        title: "Upload Error",
+        description: error.message || "Failed to upload avatar",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -87,10 +96,13 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
         onChange={handleAvatarChange}
         className="hidden" 
         id="avatar-upload" 
+        disabled={isUploading}
       />
       <label 
         htmlFor="avatar-upload" 
-        className="absolute bottom-0 right-0 bg-thrive-blue text-white rounded-full p-1 cursor-pointer hover:bg-blue-600 transition-colors"
+        className={`absolute bottom-0 right-0 bg-thrive-blue text-white rounded-full p-1 cursor-pointer hover:bg-blue-600 transition-colors ${
+          isUploading ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
       >
         <Camera className="h-4 w-4" />
       </label>
