@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, Camera } from "lucide-react";
 
 const ProfilePage: React.FC = () => {
-  const { user } = useUser();
+  const { user, motivationalResponses } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -238,13 +237,13 @@ const ProfilePage: React.FC = () => {
               <CardDescription>Your responses from the motivational interview</CardDescription>
             </CardHeader>
             <CardContent>
-              {Object.keys(motivationalResponses).length > 0 ? (
+              {Object.keys(motivationalResponses || {}).length > 0 ? (
                 <div className="space-y-6">
-                  {Object.entries(motivationalResponses).map(([category, response]) => (
+                  {Object.entries(motivationalResponses || {}).map(([category, response]) => (
                     <div key={category} className="space-y-2">
                       <h3 className="font-medium capitalize">{category}</h3>
                       <p className="text-sm p-4 bg-muted rounded-md">
-                        {response}
+                        {String(response)}
                       </p>
                     </div>
                   ))}
