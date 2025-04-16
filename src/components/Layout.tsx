@@ -4,7 +4,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/compone
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Home, Moon, Settings, Sun, User } from "lucide-react";
+import { BarChart3, Home, Settings, Sun, User } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 
 interface LayoutProps {
@@ -43,16 +43,10 @@ const AppSidebar = () => {
   
   const menuItems = [
     { 
-      icon: Home, 
+      icon: BarChart3,
       label: "Dashboard", 
       path: "/dashboard",
       active: location.pathname === "/dashboard"
-    },
-    { 
-      icon: BarChart3, 
-      label: "Progress", 
-      path: "/progress",
-      active: location.pathname === "/progress"
     },
     { 
       icon: User, 
