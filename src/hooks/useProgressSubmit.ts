@@ -43,6 +43,19 @@ export const useProgressSubmit = () => {
         return;
       }
 
+      // Refresh the access token before making the request
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        console.error("Failed to refresh token:", refreshError);
+        toast({
+          variant: "destructive",
+          title: "Session expired",
+          description: "Your session has expired. Please sign in again.",
+        });
+        navigate("/auth");
+        return;
+      }
+
       if (goalsForm.selectedGoal && goalsForm.goalProgress) {
         updateGoal(goalsForm.selectedGoal, {
           currentValue: parseFloat(goalsForm.goalProgress)
@@ -75,6 +88,9 @@ export const useProgressSubmit = () => {
             title: "Authentication error",
             description: "Please sign in again to save your progress.",
           });
+          
+          // Force sign out since the session might be invalid
+          await supabase.auth.signOut();
           navigate("/auth");
           return;
         }
