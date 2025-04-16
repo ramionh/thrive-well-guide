@@ -27,6 +27,7 @@ export type User = {
   onboardingCompleted: boolean;
   goals: Goal[];
   vitals: Vital[];
+  avatar_url?: string;
 };
 
 type UserContextType = {
