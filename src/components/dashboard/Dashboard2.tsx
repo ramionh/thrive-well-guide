@@ -1,10 +1,10 @@
-
 import React from "react";
 import { useUser } from "@/context/UserContext";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { History, PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import SleepMetrics from "./SleepMetrics";
@@ -21,16 +21,20 @@ const Dashboard: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md text-center p-6">
-          <h2 className="text-2xl font-bold mb-4">Welcome to 40+Ripped</h2>
-          <p className="text-muted-foreground mb-6">
-            Let's get started with a quick onboarding process to personalize your experience.
-          </p>
-          <Button 
-            className="bg-thrive-blue" 
-            onClick={() => navigate("/onboarding")}
-          >
-            Start Onboarding
-          </Button>
+          <CardHeader>
+            <CardTitle>Welcome to ThriveWell</CardTitle>
+            <CardDescription>
+              Let's get started with a quick onboarding process to personalize your experience.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              className="bg-thrive-blue" 
+              onClick={() => navigate("/onboarding")}
+            >
+              Start Onboarding
+            </Button>
+          </CardContent>
         </Card>
       </div>
     );
@@ -57,24 +61,30 @@ const Dashboard: React.FC = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Card className="card-shadow">
-          <div className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Sleep Quality</h2>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Sleep Quality</CardTitle>
+          </CardHeader>
+          <CardContent>
             <SleepMetrics />
-          </div>
+          </CardContent>
         </Card>
         
         <Card className="card-shadow">
-          <div className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Nutrition</h2>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Nutrition</CardTitle>
+          </CardHeader>
+          <CardContent>
             <NutritionMetrics />
-          </div>
+          </CardContent>
         </Card>
         
         <Card className="card-shadow">
-          <div className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Exercise</h2>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Exercise</CardTitle>
+          </CardHeader>
+          <CardContent>
             <ExerciseMetrics />
-          </div>
+          </CardContent>
         </Card>
       </div>
       
