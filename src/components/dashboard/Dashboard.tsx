@@ -4,8 +4,9 @@ import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { History, PlusCircle } from "lucide-react";
+import { History, PlusCircle, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import SleepMetrics from "./SleepMetrics";
 import NutritionMetrics from "./NutritionMetrics";
@@ -38,6 +39,19 @@ const Dashboard: React.FC = () => {
   
   return (
     <div className="container mx-auto p-6 max-w-7xl">
+      <div className="flex items-center mb-6">
+        <div className="flex items-center pointer-events-none">
+          <Avatar className="h-10 w-10">
+            <AvatarFallback className="bg-muted">
+              <UserRound className="h-5 w-5 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+          <span className="ml-3 text-lg font-medium text-muted-foreground">
+            {user.name || "User"}
+          </span>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold mb-1">Welcome back, {user.name || "Friend"}</h1>
