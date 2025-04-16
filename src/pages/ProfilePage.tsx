@@ -28,7 +28,7 @@ const ProfilePage: React.FC = () => {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      navigate("/auth");
+      navigate("/"); // Redirect to the default page after logout
     } catch (error) {
       console.error("Error signing out:", error);
       toast({

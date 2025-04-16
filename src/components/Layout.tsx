@@ -16,6 +16,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Don't show sidebar for certain routes
+  const publicRoutes = ['/', '/auth'];
+  if (!user || publicRoutes.includes(location.pathname)) {
+    return <>{children}</>;
+  }
+  
   // Don't show sidebar during onboarding
   if (!user?.onboardingCompleted && location.pathname !== "/dashboard") {
     return <>{children}</>;
@@ -102,4 +108,3 @@ const AppSidebar = () => {
     </Sidebar>
   );
 };
-
