@@ -1,10 +1,27 @@
+
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
 import { ArrowRight, BarChart3, Brain, Apple, Battery } from "lucide-react";
 
 const HomePage = () => {
+  const { user, isLoading } = useUser();
   const navigate = useNavigate();
+  
+  React.useEffect(() => {
+    if (!isLoading && user?.onboardingCompleted) {
+      navigate("/dashboard");
+    }
+  }, [isLoading, user, navigate]);
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
