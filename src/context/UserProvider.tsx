@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useEffect } from "react";
-import { User, UserContextType } from "@/types/user";
+import { User, UserContextType, Goal, Vital } from "@/types/user";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -63,7 +63,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addGoal = (goal: Omit<Goal, "id" | "createdAt">) => {
     if (user) {
-      const newGoal = {
+      const newGoal: Goal = {
         ...goal,
         id: crypto.randomUUID(),
         createdAt: new Date(),
@@ -91,7 +91,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addVital = (vital: Omit<Vital, "id" | "date">) => {
     if (user) {
-      const newVital = {
+      const newVital: Vital = {
         ...vital,
         id: crypto.randomUUID(),
         date: new Date(),
