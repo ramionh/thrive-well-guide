@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,15 @@ const ProfilePage: React.FC = () => {
   const [email, setEmail] = React.useState(user?.email || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
   
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +116,7 @@ const ProfilePage: React.FC = () => {
                 <div className="relative">
                   <Avatar className="h-20 w-20">
                     <AvatarImage 
-                      src={avatarPreview || user.avatarUrl || ""} 
+                      src={avatarPreview || user.avatar_url || ""} 
                       alt={user.name} 
                     />
                     <AvatarFallback className="text-2xl bg-thrive-blue text-white">
