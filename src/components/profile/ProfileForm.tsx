@@ -33,11 +33,20 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     setIsLoading(true);
 
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
+      // Verify we have an active session before proceeding
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      
       if (!sessionData.session) {
-        throw new Error("No active session found");
+        throw new Error("No active session found. Please log in again.");
       }
       
+      // Make sure the user ID is the authenticated user's ID
+      if (userId !== sessionData.session.user.id) {
+        throw new Error("Authorization error: User ID mismatch");
+      }
+      
+      // Update the profile using the authenticated user's ID
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ 
@@ -45,7 +54,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           full_name: name,
           email: email 
         })
-        .eq('id', userId);
+        .eq('id', sessionData.session.user.id);
       
       if (updateError) {
         throw updateError;
