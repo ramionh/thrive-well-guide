@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/context/UserContext";
@@ -10,10 +10,14 @@ import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useUser();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<'login' | 'register'>(
+    location.state?.defaultTab || 'login'
+  );
 
   useEffect(() => {
     // Only redirect if there's a user AND they have completed onboarding
@@ -32,7 +36,11 @@ const AuthPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="space-y-4">
+          <Tabs 
+            value={activeTab} 
+            onValueChange={(value: 'login' | 'register') => setActiveTab(value)}
+            className="space-y-4"
+          >
             <TabsList className="grid grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register">Register</TabsTrigger>

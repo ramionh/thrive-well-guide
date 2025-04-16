@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,10 @@ import { ArrowRight, BarChart3, Brain, Apple, Battery } from "lucide-react";
 const DefaultPage = () => {
   const navigate = useNavigate();
   
+  const handleStartJourney = () => {
+    navigate('/auth', { state: { defaultTab: 'register' } });
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -88,7 +91,7 @@ const DefaultPage = () => {
           <div className="text-center mt-12">
             <Button
               className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-6 text-lg rounded-full"
-              onClick={() => navigate("/auth")}
+              onClick={handleStartJourney}
             >
               Start Your Journey
               <ArrowRight className="ml-2 h-5 w-5" />
