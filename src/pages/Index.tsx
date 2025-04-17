@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -60,7 +59,7 @@ const Index = () => {
                   className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-6 text-lg rounded-full"
                   onClick={() => navigate("/onboarding")}
                 >
-                  Get Started
+                  Start Your Journey
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
@@ -99,26 +98,6 @@ const Index = () => {
       {/* Why Choose Section */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Why Choose 40+Ripped?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <BenefitCard
-              icon={<BarChart3 className="h-6 w-6 text-blue-500" />}
-              title="Personalized Fitness"
-              description="Tailored workout plans for 40+ individuals"
-            />
-            <BenefitCard
-              icon={<ArrowRight className="h-6 w-6 text-teal-500" />}
-              title="Adaptive Strategies"
-              description="Evolving approach to fitness as you age"
-            />
-            <BenefitCard
-              icon={<Brain className="h-6 w-6 text-orange-500" />}
-              title="Easy Tracking"
-              description="Monitor progress with simple tools"
-            />
-          </div>
           <div className="text-center mt-12">
             <Button
               className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-6 text-lg rounded-full"

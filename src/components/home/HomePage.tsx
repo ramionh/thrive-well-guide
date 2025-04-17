@@ -45,7 +45,7 @@ const HomePage = () => {
                   className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-6 text-lg rounded-full"
                   onClick={() => navigate("/auth")}
                 >
-                  Get Started
+                  Start Your Journey
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
