@@ -41,7 +41,7 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
         description: "Successfully signed in to your account.",
       });
       
-      // Always redirect to dashboard after successful login
+      // Redirect to dashboard after successful login
       navigate('/dashboard');
     } catch (error: any) {
       toast({
@@ -88,4 +88,3 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
 };
 
 export default LoginForm;
-

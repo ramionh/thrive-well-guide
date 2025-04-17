@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,8 +18,8 @@ const AuthPage = () => {
   const [activeTab, setActiveTab] = React.useState<'login' | 'register'>('login');
 
   useEffect(() => {
-    // Only redirect if there's a user AND they have completed onboarding
-    if (user && user.onboardingCompleted) {
+    // Always redirect to dashboard if user is authenticated
+    if (user) {
       navigate('/dashboard');
     }
   }, [user, navigate]);
