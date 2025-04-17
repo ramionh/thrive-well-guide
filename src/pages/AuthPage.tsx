@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,9 +14,7 @@ const AuthPage = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'login' | 'register'>(
-    location.state?.defaultTab || 'login'
-  );
+  const [activeTab, setActiveTab] = React.useState<'login' | 'register'>('login');
 
   useEffect(() => {
     // Only redirect if there's a user AND they have completed onboarding
