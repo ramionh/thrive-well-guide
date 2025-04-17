@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail } from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 interface LoginFormProps {
   email: string;
@@ -19,6 +20,7 @@ interface LoginFormProps {
 const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +33,11 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
 
       if (error) throw error;
       
+      // Extract first name, defaulting to "User" if not available
+      const firstName = user?.name?.split(' ')[0] || 'User';
+      
       toast({
-        title: "Welcome back!",
+        title: `Welcome Back, ${firstName}!`,
         description: "Successfully signed in to your account.",
       });
       
