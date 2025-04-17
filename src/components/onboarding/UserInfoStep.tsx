@@ -82,9 +82,9 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
         lastName,
         email,
         dateOfBirth: dob,
-        heightFeet,
-        heightInches,
-        weightLbs: weight
+        heightFeet: Number(feet),
+        heightInches: Number(inches || 0),
+        weightLbs: Number(weightLbs)
       });
       
       onNext();

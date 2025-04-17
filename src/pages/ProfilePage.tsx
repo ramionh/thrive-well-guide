@@ -140,7 +140,7 @@ const ProfilePage: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="motivations">
-          <MotivationsList motivationalResponses={user.motivationalResponses} />
+          <MotivationsList motivationalResponses={user.motivationalResponses || {}} />
         </TabsContent>
       </Tabs>
     </div>

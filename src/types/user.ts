@@ -26,6 +26,7 @@ export type User = {
   goals: Goal[];
   vitals: Vital[];
   avatar_url?: string;
+  motivationalResponses?: Record<string, string>;
 };
 
 export type UserContextType = {
@@ -33,7 +34,15 @@ export type UserContextType = {
   isLoading: boolean;
   onboardingStep: number;
   setOnboardingStep: (step: number) => void;
-  completeOnboarding: () => void;
+  completeOnboarding: (onboardingData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    dateOfBirth: string;
+    heightFeet: number;
+    heightInches: number;
+    weightLbs: number;
+  }) => Promise<void>;
   addGoal: (goal: Omit<Goal, "id" | "createdAt">) => void;
   updateGoal: (goalId: string, updatedValues: Partial<Goal>) => void;
   addVital: (vital: Omit<Vital, "id" | "date">) => void;
