@@ -17,7 +17,6 @@ interface ProfileFormProps {
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
-  userId,
   initialName,
   initialEmail,
   avatarUrl,
@@ -41,10 +40,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
         throw new Error("No active session found. Please log in again.");
       }
       
-      // Make sure the user ID is the authenticated user's ID
-      if (userId !== sessionData.session.user.id) {
-        throw new Error("Authorization error: User ID mismatch");
-      }
+      // Always use the authenticated user's ID from the current session
+      const userId = sessionData.session.user.id;
       
       // Update the profile using the authenticated user's ID
       const { error: updateError } = await supabase
@@ -54,7 +51,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           full_name: name,
           email: email 
         })
-        .eq('id', sessionData.session.user.id);
+        .eq('id', userId);
       
       if (updateError) {
         throw updateError;

@@ -18,6 +18,7 @@ const ProfilePage: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatar_url || null);
   
   useEffect(() => {
     if (!user) {
@@ -37,6 +38,10 @@ const ProfilePage: React.FC = () => {
         variant: "destructive"
       });
     }
+  };
+  
+  const handleAvatarUpdate = (url: string) => {
+    setAvatarUrl(url);
   };
   
   if (!user) {
@@ -70,9 +75,9 @@ const ProfilePage: React.FC = () => {
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <AvatarUploader
                   userId={user.id}
-                  currentAvatarUrl={user.avatar_url}
+                  currentAvatarUrl={avatarUrl}
                   userName={user.name}
-                  onAvatarUpdate={(url) => user.avatar_url = url}
+                  onAvatarUpdate={handleAvatarUpdate}
                 />
                 <div>
                   <CardTitle>{user.name || "User"}</CardTitle>
@@ -84,7 +89,7 @@ const ProfilePage: React.FC = () => {
               userId={user.id}
               initialName={user.name || ""}
               initialEmail={user.email || ""}
-              avatarUrl={user.avatar_url}
+              avatarUrl={avatarUrl}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
             />
