@@ -14,12 +14,51 @@ import GoalsList from "@/components/profile/GoalsList";
 import MotivationsList from "@/components/profile/MotivationsList";
 
 const ProfilePage: React.FC = () => {
-  const { user, motivationalResponses } = useUser();
+  const { user } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatar_url || null);
-  
+  const [profileData, setProfileData] = useState({
+    firstName: user?.name?.split(' ')[0] || '',
+    lastName: user?.name?.split(' ')[1] || '',
+    email: user?.email || '',
+    dateOfBirth: '',
+    heightFeet: 0,
+    heightInches: 0,
+    weightLbs: 0
+  });
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          if (error) throw error;
+
+          setProfileData({
+            firstName: data.full_name?.split(' ')[0] || '',
+            lastName: data.full_name?.split(' ')[1] || '',
+            email: data.email || '',
+            dateOfBirth: data.date_of_birth || '',
+            heightFeet: data.height_feet || 0,
+            heightInches: data.height_inches || 0,
+            weightLbs: data.weight_lbs || 0
+          });
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      }
+    };
+
+    fetchProfileData();
+  }, [user]);
+
   useEffect(() => {
     if (!user) {
       navigate("/auth");
@@ -86,9 +125,9 @@ const ProfilePage: React.FC = () => {
               </div>
             </CardHeader>
             <ProfileForm
+              profileData={profileData}
+              setProfileData={setProfileData}
               userId={user.id}
-              initialName={user.name || ""}
-              initialEmail={user.email || ""}
               avatarUrl={avatarUrl}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
@@ -101,7 +140,7 @@ const ProfilePage: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="motivations">
-          <MotivationsList motivationalResponses={motivationalResponses} />
+          <MotivationsList motivationalResponses={user.motivationalResponses} />
         </TabsContent>
       </Tabs>
     </div>

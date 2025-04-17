@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,22 +9,37 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface ProfileFormProps {
   userId: string;
-  initialName: string;
-  initialEmail: string;
+  profileData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    dateOfBirth: string;
+    heightFeet: number;
+    heightInches: number;
+    weightLbs: number;
+  };
+  setProfileData: React.Dispatch<React.SetStateAction<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    dateOfBirth: string;
+    heightFeet: number;
+    heightInches: number;
+    weightLbs: number;
+  }>>;
   avatarUrl: string | null;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
-  initialName,
-  initialEmail,
+  profileData,
+  setProfileData,
+  userId,
   avatarUrl,
   isLoading,
-  setIsLoading,
+  setIsLoading
 }) => {
-  const [name, setName] = useState(initialName || "");
-  const [email, setEmail] = useState(initialEmail || "");
   const { toast } = useToast();
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -32,29 +47,22 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     setIsLoading(true);
 
     try {
-      // Verify we have an active session before proceeding
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-      
-      if (!sessionData.session) {
-        throw new Error("No active session found. Please log in again.");
-      }
-      
-      // Always use the authenticated user's ID from the current session
-      const userId = sessionData.session.user.id;
-      
-      // Update the profile using the authenticated user's ID
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from('profiles')
         .update({ 
           avatar_url: avatarUrl,
-          full_name: name,
-          email: email 
+          full_name: `${profileData.firstName} ${profileData.lastName}`,
+          email: profileData.email,
+          date_of_birth: profileData.dateOfBirth,
+          height_feet: profileData.heightFeet,
+          height_inches: profileData.heightInches,
+          weight_lbs: profileData.weightLbs,
+          updated_at: new Date().toISOString()
         })
         .eq('id', userId);
       
-      if (updateError) {
-        throw updateError;
+      if (error) {
+        throw error;
       }
       
       toast({
@@ -76,14 +84,26 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   return (
     <CardContent>
       <form onSubmit={handleSaveProfile} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input 
-            id="name" 
-            value={name} 
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="firstName">First Name</Label>
+            <Input 
+              id="firstName" 
+              value={profileData.firstName} 
+              onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+              placeholder="Enter your first name"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input 
+              id="lastName" 
+              value={profileData.lastName} 
+              onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
+              placeholder="Enter your last name"
+            />
+          </div>
         </div>
         
         <div className="space-y-2">
@@ -91,9 +111,56 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           <Input 
             id="email" 
             type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)}
+            value={profileData.email} 
+            onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
             placeholder="Enter your email"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="dateOfBirth">Date of Birth</Label>
+          <Input 
+            id="dateOfBirth" 
+            type="date" 
+            value={profileData.dateOfBirth} 
+            onChange={(e) => setProfileData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Height</Label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="heightFeet">Feet</Label>
+              <Input 
+                id="heightFeet" 
+                type="number" 
+                value={profileData.heightFeet} 
+                onChange={(e) => setProfileData(prev => ({ ...prev, heightFeet: Number(e.target.value) }))}
+                placeholder="ft"
+              />
+            </div>
+            <div>
+              <Label htmlFor="heightInches">Inches</Label>
+              <Input 
+                id="heightInches" 
+                type="number" 
+                value={profileData.heightInches} 
+                onChange={(e) => setProfileData(prev => ({ ...prev, heightInches: Number(e.target.value) }))}
+                placeholder="in"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="weightLbs">Weight (lbs)</Label>
+          <Input 
+            id="weightLbs" 
+            type="number" 
+            value={profileData.weightLbs} 
+            onChange={(e) => setProfileData(prev => ({ ...prev, weightLbs: Number(e.target.value) }))}
+            placeholder="Enter weight in pounds"
           />
         </div>
         

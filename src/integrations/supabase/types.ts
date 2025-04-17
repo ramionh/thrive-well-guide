@@ -73,26 +73,41 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string | null
+          date_of_birth: string | null
           email: string | null
           full_name: string | null
+          height_feet: number | null
+          height_inches: number | null
           id: string
+          onboarding_completed: boolean | null
           updated_at: string | null
+          weight_lbs: number | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
+          date_of_birth?: string | null
           email?: string | null
           full_name?: string | null
+          height_feet?: number | null
+          height_inches?: number | null
           id: string
+          onboarding_completed?: boolean | null
           updated_at?: string | null
+          weight_lbs?: number | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string | null
+          date_of_birth?: string | null
           email?: string | null
           full_name?: string | null
+          height_feet?: number | null
+          height_inches?: number | null
           id?: string
+          onboarding_completed?: boolean | null
           updated_at?: string | null
+          weight_lbs?: number | null
         }
         Relationships: []
       }

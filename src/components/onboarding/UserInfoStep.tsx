@@ -11,7 +11,7 @@ interface UserInfoStepProps {
 }
 
 const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
-  const { user, isLoading } = useUser();
+  const { user, completeOnboarding } = useUser();
   const { toast } = useToast();
   const [firstName, setFirstName] = useState(user?.name?.split(' ')[0] || "");
   const [lastName, setLastName] = useState(user?.name?.split(' ')[1] || "");
@@ -21,7 +21,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   const [inches, setInches] = useState("");
   const [weightLbs, setWeightLbs] = useState("");
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!firstName || !lastName || !email || !dob || !feet || !weightLbs) {
@@ -76,13 +76,26 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
       return;
     }
     
-    // In a real app, we would update the user in the backend
-    onNext();
+    try {
+      await completeOnboarding({
+        firstName,
+        lastName,
+        email,
+        dateOfBirth: dob,
+        heightFeet,
+        heightInches,
+        weightLbs: weight
+      });
+      
+      onNext();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save your information. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
-  
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

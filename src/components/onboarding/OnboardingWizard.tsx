@@ -11,7 +11,11 @@ import MotivationalInterviewStep from "./MotivationalInterviewStep";
 import SuccessStep from "./SuccessStep";
 
 const OnboardingWizard: React.FC = () => {
-  const { onboardingStep, setOnboardingStep, completeOnboarding } = useUser();
+  const { 
+    onboardingStep, 
+    setOnboardingStep, 
+    user 
+  } = useUser();
   const navigate = useNavigate();
   
   const steps = [
@@ -34,8 +38,9 @@ const OnboardingWizard: React.FC = () => {
       title: "All Set!",
       description: "You're ready to start your fitness journey.",
       component: <SuccessStep onComplete={() => {
-        completeOnboarding();
-        navigate("/dashboard");
+        if (user) {
+          navigate("/dashboard");
+        }
       }} />
     }
   ];
