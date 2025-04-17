@@ -1,21 +1,28 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const GoogleSignInButton = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
       if (error) throw error;
+      
+      toast({
+        title: "Google Login",
+        description: "Successfully signed in with Google.",
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -44,3 +51,4 @@ const GoogleSignInButton = () => {
 };
 
 export default GoogleSignInButton;
+
