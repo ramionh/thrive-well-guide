@@ -67,8 +67,20 @@ const ProfilePage: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
-      navigate("/"); // Redirect to the default page after logout
+      setIsLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // Clear any local storage or state related to the user
+      localStorage.removeItem('supabase.auth.token');
+      
+      // Redirect to the authentication page
+      navigate("/auth");
+      
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
@@ -76,6 +88,8 @@ const ProfilePage: React.FC = () => {
         description: "Failed to sign out. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -94,10 +108,11 @@ const ProfilePage: React.FC = () => {
         <Button 
           variant="destructive" 
           onClick={handleLogout}
+          disabled={isLoading}
           className="flex items-center gap-2"
         >
           <LogOut className="h-4 w-4" />
-          Logout
+          {isLoading ? "Logging out..." : "Logout"}
         </Button>
       </div>
       
