@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,6 +11,7 @@ import AvatarUploader from "@/components/profile/AvatarUploader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import GoalsList from "@/components/profile/GoalsList";
 import MotivationsList from "@/components/profile/MotivationsList";
+import { queryClient } from "@/App";
 
 const ProfilePage: React.FC = () => {
   const { user } = useUser();
@@ -71,11 +71,15 @@ const ProfilePage: React.FC = () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Clear any local storage or state related to the user
-      localStorage.removeItem('supabase.auth.token');
+      // Clear any local storage or cached session data
+      localStorage.clear();
+      sessionStorage.clear();
       
-      // Redirect to the authentication page
-      navigate("/auth");
+      // Clear any query cache if using React Query
+      queryClient.clear();
+      
+      // Redirect to the home page
+      navigate("/");
       
       toast({
         title: "Logged out successfully",
