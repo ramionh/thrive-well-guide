@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,8 +20,6 @@ import AddProgressPage from "./pages/AddProgressPage";
 import NotFound from "./pages/NotFound";
 import HomePage from "./components/home/HomePage";
 import DefaultPage from "./components/default/DefaultPage";
-
-const queryClient = new QueryClient();
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
