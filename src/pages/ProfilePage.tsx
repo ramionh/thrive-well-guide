@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,7 +12,7 @@ import AvatarUploader from "@/components/profile/AvatarUploader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import GoalsList from "@/components/profile/GoalsList";
 import MotivationsList from "@/components/profile/MotivationsList";
-import { queryClient } from "@/App";
+import { queryClient } from "@/lib/queryClient";
 
 const ProfilePage: React.FC = () => {
   const { user } = useUser();

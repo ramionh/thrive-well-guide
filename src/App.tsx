@@ -1,13 +1,13 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { Layout } from "@/components/Layout";
 import { useUser } from "@/context/UserContext";
 import { useEffect } from "react";
+import { queryClient } from "@/lib/queryClient";
 
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./components/dashboard/Dashboard";
@@ -22,19 +22,16 @@ import DefaultPage from "./components/default/DefaultPage";
 
 const queryClient = new QueryClient();
 
-// AuthenticatedRoute component with loading state and redirection
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Only redirect after loading is complete and user is null
     if (!isLoading && !user) {
       navigate("/auth");
     }
   }, [user, isLoading, navigate]);
 
-  // Show loading state while checking auth
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -43,7 +40,6 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // If user exists, render children
   return user ? <>{children}</> : null;
 };
 
