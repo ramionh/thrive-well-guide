@@ -30,9 +30,12 @@ const RegisterForm = ({ email, setEmail, password, setPassword, loading }: Regis
       if (error) throw error;
       
       toast({
-        title: "Account created!",
+        title: "Success!",
         description: "Please check your email to verify your account.",
       });
+
+      // After successful registration, redirect will be handled by AuthPage useEffect
+      
     } catch (error: any) {
       toast({
         title: "Error",

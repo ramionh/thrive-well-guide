@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -20,29 +19,25 @@ interface LoginFormProps {
 const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useUser();
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
       
-      // Extract first name, defaulting to "User" if not available
-      const firstName = user?.name?.split(' ')[0] || 'User';
-      
       toast({
-        title: `Welcome Back, ${firstName}!`,
+        title: "Success!",
         description: "Successfully signed in to your account.",
       });
       
-      // Redirect to dashboard after successful login
-      navigate('/dashboard');
+      // After successful login, redirect will be handled by AuthPage useEffect
+      
     } catch (error: any) {
       toast({
         title: "Error",
