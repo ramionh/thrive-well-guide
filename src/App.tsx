@@ -19,6 +19,7 @@ import AddProgressPage from "./pages/AddProgressPage";
 import NotFound from "./pages/NotFound";
 import HomePage from "./components/home/HomePage";
 import DefaultPage from "./components/default/DefaultPage";
+import GoalsPage from "./pages/GoalsPage";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -41,68 +42,74 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   return user ? <>{children}</> : null;
 };
 
-const App = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<DefaultPage />} />
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/onboarding" element={<OnboardingWizard />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <AuthenticatedRoute>
-                      <Dashboard />
-                    </AuthenticatedRoute>
-                  }
-                />
-                <Route
-                  path="/progress"
-                  element={
-                    <AuthenticatedRoute>
-                      <ProgressPage />
-                    </AuthenticatedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <AuthenticatedRoute>
-                      <ProfilePage />
-                    </AuthenticatedRoute>
-                  }
-                />
-                <Route
-                  path="/settings"
-                  element={
-                    <AuthenticatedRoute>
-                      <SettingsPage />
-                    </AuthenticatedRoute>
-                  }
-                />
-                <Route
-                  path="/add-progress"
-                  element={
-                    <AuthenticatedRoute>
-                      <AddProgressPage />
-                    </AuthenticatedRoute>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </BrowserRouter>
-        </TooltipProvider>
-      </UserProvider>
-    </QueryClientProvider>
-  );
-};
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <UserProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<DefaultPage />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/onboarding" element={<OnboardingWizard />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthenticatedRoute>
+                    <Dashboard />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/progress"
+                element={
+                  <AuthenticatedRoute>
+                    <ProgressPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <AuthenticatedRoute>
+                    <ProfilePage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <AuthenticatedRoute>
+                    <SettingsPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/add-progress"
+                element={
+                  <AuthenticatedRoute>
+                    <AddProgressPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/goals"
+                element={
+                  <AuthenticatedRoute>
+                    <GoalsPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </TooltipProvider>
+    </UserProvider>
+  </QueryClientProvider>
+);
 
 export default App;
