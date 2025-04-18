@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import UserInfoStep from "./UserInfoStep";
 import GoalSettingStep from "./GoalSettingStep";
+import QuestionnaireStep from "./QuestionnaireStep";
 import MotivationalInterviewStep from "./MotivationalInterviewStep";
 import SuccessStep from "./SuccessStep";
 
@@ -30,9 +31,17 @@ const OnboardingWizard: React.FC = () => {
       component: <GoalSettingStep onNext={() => setOnboardingStep(2)} />
     },
     {
+      title: "Your Current Habits",
+      description: "Help us understand your current habits and routines.",
+      component: <QuestionnaireStep 
+        onNext={() => setOnboardingStep(3)}
+        onBack={() => setOnboardingStep(1)}
+      />
+    },
+    {
       title: "Your Motivation",
       description: "Let's understand what drives you to make positive changes after 40.",
-      component: <MotivationalInterviewStep onNext={() => setOnboardingStep(3)} />
+      component: <MotivationalInterviewStep onNext={() => setOnboardingStep(4)} />
     },
     {
       title: "All Set!",
@@ -62,11 +71,11 @@ const OnboardingWizard: React.FC = () => {
       <Card className="w-full max-w-lg shadow-lg animate-fade-in">
         <CardHeader>
           <CardTitle className="text-2xl text-thrive-blue">40+Ripped Onboarding</CardTitle>
-          <CardDescription>{currentStep.description}</CardDescription>
-          <Progress value={progress} className="h-2 mt-2" />
+          <CardDescription>{steps[onboardingStep].description}</CardDescription>
+          <Progress value={((onboardingStep + 1) / steps.length) * 100} className="h-2 mt-2" />
         </CardHeader>
         <CardContent>
-          {currentStep.component}
+          {steps[onboardingStep].component}
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
