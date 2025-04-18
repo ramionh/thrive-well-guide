@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import HomePage from "./components/home/HomePage";
 import DefaultPage from "./components/default/DefaultPage";
 import GoalsPage from "./pages/GoalsPage";
+import HabitsPage from "./pages/HabitsPage";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -100,6 +101,14 @@ const App = () => (
                 element={
                   <AuthenticatedRoute>
                     <GoalsPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/habits"
+                element={
+                  <AuthenticatedRoute>
+                    <HabitsPage />
                   </AuthenticatedRoute>
                 }
               />
