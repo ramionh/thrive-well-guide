@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -42,66 +41,68 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   return user ? <>{children}</> : null;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <UserProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<DefaultPage />} />
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/onboarding" element={<OnboardingWizard />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <AuthenticatedRoute>
-                    <Dashboard />
-                  </AuthenticatedRoute>
-                }
-              />
-              <Route
-                path="/progress"
-                element={
-                  <AuthenticatedRoute>
-                    <ProgressPage />
-                  </AuthenticatedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <AuthenticatedRoute>
-                    <ProfilePage />
-                  </AuthenticatedRoute>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <AuthenticatedRoute>
-                    <SettingsPage />
-                  </AuthenticatedRoute>
-                }
-              />
-              <Route
-                path="/add-progress"
-                element={
-                  <AuthenticatedRoute>
-                    <AddProgressPage />
-                  </AuthenticatedRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-      </TooltipProvider>
-    </UserProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<DefaultPage />} />
+                <Route path="/home" element={<HomePage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/onboarding" element={<OnboardingWizard />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <AuthenticatedRoute>
+                      <Dashboard />
+                    </AuthenticatedRoute>
+                  }
+                />
+                <Route
+                  path="/progress"
+                  element={
+                    <AuthenticatedRoute>
+                      <ProgressPage />
+                    </AuthenticatedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <AuthenticatedRoute>
+                      <ProfilePage />
+                    </AuthenticatedRoute>
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <AuthenticatedRoute>
+                      <SettingsPage />
+                    </AuthenticatedRoute>
+                  }
+                />
+                <Route
+                  path="/add-progress"
+                  element={
+                    <AuthenticatedRoute>
+                      <AddProgressPage />
+                    </AuthenticatedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
+        </TooltipProvider>
+      </UserProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
