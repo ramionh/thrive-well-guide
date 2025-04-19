@@ -17,7 +17,7 @@ const BodyTypeImageUploader: React.FC<BodyTypeImageUploaderProps> = ({ bodyTypes
     try {
       // Create a filename with capitalized first letter
       const capitalizedName = bodyType.name.charAt(0).toUpperCase() + bodyType.name.slice(1).toLowerCase();
-      const fileName = `${capitalizedName.replace(/\s+/g, '-')}.jpg`;
+      const fileName = `${capitalizedName.replace(/\s+/g, '-')}.png`;
       
       setUploading(bodyType.id);
       const { error } = await supabase.storage

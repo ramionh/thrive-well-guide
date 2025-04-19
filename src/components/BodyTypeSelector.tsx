@@ -57,7 +57,7 @@ const BodyTypeSelector: React.FC = () => {
         const imageName = capitalizedName.replace(/\s+/g, '-');
         const { data } = supabase.storage
           .from('body-types')
-          .getPublicUrl(`${imageName}.jpg`);
+          .getPublicUrl(`${imageName}.png`);
           
         imageMap[bodyType.id] = data.publicUrl;
         console.log(`Image URL for ${bodyType.name}: ${data.publicUrl}`);
