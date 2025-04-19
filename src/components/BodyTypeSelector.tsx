@@ -6,7 +6,7 @@ import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BodyType, UserBodyType } from "@/types/bodyType";
-import { Check, Image } from "lucide-react";
+import { Check } from "lucide-react";
 
 const BodyTypeSelector: React.FC = () => {
   const [bodyTypes, setBodyTypes] = useState<BodyType[]>([]);
@@ -18,9 +18,13 @@ const BodyTypeSelector: React.FC = () => {
   }, []);
 
   const fetchBodyTypes = async () => {
+    // Using type assertion to handle the custom table
     const { data, error } = await supabase
       .from('body_types')
-      .select('*');
+      .select('*') as unknown as { 
+        data: BodyType[] | null; 
+        error: Error | null 
+      };
 
     if (error) {
       toast.error('Failed to fetch body types');
@@ -40,6 +44,7 @@ const BodyTypeSelector: React.FC = () => {
       return;
     }
 
+    // Using type assertion to handle the custom table
     const { data, error } = await supabase
       .from('user_body_types')
       .insert({
@@ -47,8 +52,10 @@ const BodyTypeSelector: React.FC = () => {
         body_type_id: selectedBodyType,
         selected_date: new Date().toISOString().split('T')[0]
       })
-      .select()
-      .single();
+      .select() as unknown as {
+        data: UserBodyType[] | null;
+        error: Error | null
+      };
 
     if (error) {
       toast.error('Failed to save body type');
