@@ -39,7 +39,6 @@ const BodyTypeSelector: React.FC = () => {
         toast.error('Failed to fetch body types');
         console.error(error);
       } else if (data) {
-        // We can now set the data directly since image_url is optional
         setBodyTypes(data as BodyType[]);
       }
     } catch (error) {
@@ -53,10 +52,16 @@ const BodyTypeSelector: React.FC = () => {
     
     for (const bodyType of bodyTypes) {
       try {
-        const { data } = supabase.storage.from('body-types').getPublicUrl(`${bodyType.name.toLowerCase()}.jpg`);
+        // Use a consistent naming convention - lowercase with no spaces
+        const imageName = bodyType.name.toLowerCase().replace(/\s+/g, '-');
+        const { data } = supabase.storage
+          .from('body-types')
+          .getPublicUrl(`${imageName}.jpg`);
+          
         imageMap[bodyType.id] = data.publicUrl;
+        console.log(`Image URL for ${bodyType.name}: ${data.publicUrl}`);
       } catch (error) {
-        console.error(`Error fetching image for ${bodyType.name}:`, error);
+        console.error(`Error getting URL for ${bodyType.name}:`, error);
       }
     }
     
@@ -152,11 +157,14 @@ const BodyTypeSelector: React.FC = () => {
                       </div>
                     )}
                     <div className="w-full aspect-square overflow-hidden rounded-lg">
-                      {/* Use the pre-loaded image URL from state */}
                       <img 
                         src={bodyTypeImages[bodyType.id] || '/placeholder.svg'} 
                         alt={bodyType.name} 
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Set fallback image on error
+                          (e.target as HTMLImageElement).src = '/placeholder.svg';
+                        }}
                       />
                     </div>
                     <div className="text-center mt-2 w-full">
