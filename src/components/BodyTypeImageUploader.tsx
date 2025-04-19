@@ -4,19 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { BodyType } from "@/types/bodyType";
+import { Upload, Image } from "lucide-react";
 
 interface BodyTypeImageUploaderProps {
   bodyTypes: BodyType[];
 }
 
 const BodyTypeImageUploader: React.FC<BodyTypeImageUploaderProps> = ({ bodyTypes }) => {
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
 
   const handleImageUpload = async (bodyType: BodyType, file: File) => {
     try {
       // Create a consistent filename based on body type name
       const fileName = `${bodyType.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
       
+      setUploading(bodyType.id);
       const { error } = await supabase.storage
         .from('body-types')
         .upload(fileName, file, {
@@ -30,6 +32,8 @@ const BodyTypeImageUploader: React.FC<BodyTypeImageUploaderProps> = ({ bodyTypes
     } catch (error: any) {
       console.error(`Error uploading image for ${bodyType.name}:`, error);
       toast.error(`Failed to upload image for ${bodyType.name}`);
+    } finally {
+      setUploading(null);
     }
   };
 
@@ -51,13 +55,21 @@ const BodyTypeImageUploader: React.FC<BodyTypeImageUploaderProps> = ({ bodyTypes
       <h2 className="text-xl font-bold">Upload Body Type Images</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {bodyTypes.map((bodyType) => (
-          <div key={bodyType.id} className="border p-4 rounded-lg">
-            <h3 className="mb-2">{bodyType.name}</h3>
+          <div 
+            key={bodyType.id} 
+            className="border p-4 rounded-lg flex flex-col items-center space-y-4"
+          >
+            <h3 className="text-lg font-semibold">{bodyType.name}</h3>
+            <div className="w-full aspect-square border rounded flex items-center justify-center">
+              <Image className="h-12 w-12 text-gray-400" />
+            </div>
             <Button 
               onClick={() => triggerFileUpload(bodyType)}
-              disabled={uploading}
+              disabled={uploading === bodyType.id}
+              className="w-full"
             >
-              Upload Image
+              {uploading === bodyType.id ? 'Uploading...' : 'Upload Image'}
+              <Upload className="ml-2 h-4 w-4" />
             </Button>
           </div>
         ))}
