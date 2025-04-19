@@ -52,8 +52,9 @@ const BodyTypeSelector: React.FC = () => {
     
     for (const bodyType of bodyTypes) {
       try {
-        // Use a consistent naming convention - lowercase with no spaces
-        const imageName = bodyType.name.toLowerCase().replace(/\s+/g, '-');
+        // Use consistent naming with capitalized first letter
+        const capitalizedName = bodyType.name.charAt(0).toUpperCase() + bodyType.name.slice(1).toLowerCase();
+        const imageName = capitalizedName.replace(/\s+/g, '-');
         const { data } = supabase.storage
           .from('body-types')
           .getPublicUrl(`${imageName}.jpg`);
@@ -195,3 +196,4 @@ const BodyTypeSelector: React.FC = () => {
 };
 
 export default BodyTypeSelector;
+
