@@ -11,6 +11,7 @@ import { Check } from "lucide-react";
 const BodyTypeSelector: React.FC = () => {
   const [bodyTypes, setBodyTypes] = useState<BodyType[]>([]);
   const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
+  const [bodyTypeImages, setBodyTypeImages] = useState<Record<string, string>>({});
   const { user } = useUser();
 
   useEffect(() => {
@@ -19,6 +20,13 @@ const BodyTypeSelector: React.FC = () => {
       fetchUserBodyType();
     }
   }, [user]);
+
+  // Load images for all body types after they are fetched
+  useEffect(() => {
+    if (bodyTypes.length > 0) {
+      loadBodyTypeImages();
+    }
+  }, [bodyTypes]);
 
   const fetchBodyTypes = async () => {
     try {
@@ -31,9 +39,8 @@ const BodyTypeSelector: React.FC = () => {
         toast.error('Failed to fetch body types');
         console.error(error);
       } else if (data) {
-        // Remove image_url from body types since we'll use Supabase storage
-        const bodyTypesWithoutUrls = data.map(({ image_url, ...rest }) => rest);
-        setBodyTypes(bodyTypesWithoutUrls as BodyType[]);
+        // We can now set the data directly since image_url is optional
+        setBodyTypes(data as BodyType[]);
       }
     } catch (error) {
       console.error('Error fetching body types:', error);
@@ -41,14 +48,19 @@ const BodyTypeSelector: React.FC = () => {
     }
   };
 
-  const fetchBodyTypeImage = async (name: string) => {
-    try {
-      const { data } = supabase.storage.from('body-types').getPublicUrl(`${name.toLowerCase()}.jpg`);
-      return data.publicUrl;
-    } catch (error) {
-      console.error(`Error fetching image for ${name}:`, error);
-      return null;
+  const loadBodyTypeImages = async () => {
+    const imageMap: Record<string, string> = {};
+    
+    for (const bodyType of bodyTypes) {
+      try {
+        const { data } = supabase.storage.from('body-types').getPublicUrl(`${bodyType.name.toLowerCase()}.jpg`);
+        imageMap[bodyType.id] = data.publicUrl;
+      } catch (error) {
+        console.error(`Error fetching image for ${bodyType.name}:`, error);
+      }
     }
+    
+    setBodyTypeImages(imageMap);
   };
 
   const fetchUserBodyType = async () => {
@@ -140,9 +152,9 @@ const BodyTypeSelector: React.FC = () => {
                       </div>
                     )}
                     <div className="w-full aspect-square overflow-hidden rounded-lg">
-                      {/* Dynamic image loading from Supabase storage */}
+                      {/* Use the pre-loaded image URL from state */}
                       <img 
-                        src={await fetchBodyTypeImage(bodyType.name)} 
+                        src={bodyTypeImages[bodyType.id] || '/placeholder.svg'} 
                         alt={bodyType.name} 
                         className="w-full h-full object-cover"
                       />

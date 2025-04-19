@@ -4,7 +4,7 @@ export type BodyType = {
   name: string;
   bodyfat_range: string;
   population_percentage: string;
-  image_url: string;
+  image_url?: string; // Make this optional since we're getting it from storage now
 };
 
 export type UserBodyType = {
