@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      body_types: {
+        Row: {
+          bodyfat_range: string
+          created_at: string
+          id: string
+          image_url: string
+          name: string
+          population_percentage: string
+        }
+        Insert: {
+          bodyfat_range: string
+          created_at?: string
+          id?: string
+          image_url: string
+          name: string
+          population_percentage: string
+        }
+        Update: {
+          bodyfat_range?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          name?: string
+          population_percentage?: string
+        }
+        Relationships: []
+      }
       daily_health_tracking: {
         Row: {
           calories: number | null
@@ -140,6 +167,38 @@ export type Database = {
           weight_lbs?: number | null
         }
         Relationships: []
+      }
+      user_body_types: {
+        Row: {
+          body_type_id: string
+          created_at: string
+          id: string
+          selected_date: string
+          user_id: string
+        }
+        Insert: {
+          body_type_id: string
+          created_at?: string
+          id?: string
+          selected_date: string
+          user_id: string
+        }
+        Update: {
+          body_type_id?: string
+          created_at?: string
+          id?: string
+          selected_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_body_types_body_type_id_fkey"
+            columns: ["body_type_id"]
+            isOneToOne: false
+            referencedRelation: "body_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_habits: {
         Row: {
