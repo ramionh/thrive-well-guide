@@ -69,6 +69,36 @@ export type Database = {
         }
         Relationships: []
       }
+      habits: {
+        Row: {
+          category: Database["public"]["Enums"]["habit_category"]
+          category_description: string
+          created_at: string
+          description: string
+          habit_number: number
+          id: string
+          name: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["habit_category"]
+          category_description: string
+          created_at?: string
+          description: string
+          habit_number: number
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["habit_category"]
+          category_description?: string
+          created_at?: string
+          description?: string
+          habit_number?: number
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -119,7 +149,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      habit_category:
+        | "SLEEP"
+        | "CALORIE_INTAKE"
+        | "PROTEIN_INTAKE"
+        | "ADAPTIVE_TRAINING"
+        | "LIFESTYLE_GUARDRAILS"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -234,6 +269,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      habit_category: [
+        "SLEEP",
+        "CALORIE_INTAKE",
+        "PROTEIN_INTAKE",
+        "ADAPTIVE_TRAINING",
+        "LIFESTYLE_GUARDRAILS",
+      ],
+    },
   },
 } as const

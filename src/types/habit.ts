@@ -1,11 +1,10 @@
 
 export type Habit = {
   id: string;
+  category: 'SLEEP' | 'CALORIE_INTAKE' | 'PROTEIN_INTAKE' | 'ADAPTIVE_TRAINING' | 'LIFESTYLE_GUARDRAILS';
+  category_description: string;
+  habit_number: number;
   name: string;
   description: string;
-  frequency: "daily" | "weekly" | "monthly";
-  type: "exercise" | "nutrition" | "sleep" | "other";
-  isActive: boolean;
-  createdAt: Date;
-  userId: string;
+  created_at: Date;
 };
