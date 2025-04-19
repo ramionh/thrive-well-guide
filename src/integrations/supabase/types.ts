@@ -141,6 +141,44 @@ export type Database = {
         }
         Relationships: []
       }
+      user_habits: {
+        Row: {
+          adherence: string
+          created_at: string
+          habit_id: string
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          adherence: string
+          created_at?: string
+          habit_id: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          adherence?: string
+          created_at?: string
+          habit_id?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_habits_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
