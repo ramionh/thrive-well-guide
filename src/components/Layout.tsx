@@ -1,9 +1,10 @@
+
 import React from "react";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, LineChart, Settings, Sun, User, Target, ListChecks } from "lucide-react";
+import { BarChart3, LineChart, Settings, Sun, User, Target, ListChecks, Battery } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 
 interface LayoutProps {
@@ -70,6 +71,12 @@ const AppSidebar = () => {
       active: location.pathname === "/progress"
     },
     { 
+      icon: Battery, // Using Battery icon for Body Type
+      label: "Body Type", 
+      path: "/body-type",
+      active: location.pathname === "/body-type"
+    },
+    { 
       icon: User, 
       label: "Profile", 
       path: "/profile",
@@ -117,3 +124,5 @@ const AppSidebar = () => {
     </Sidebar>
   );
 };
+
+export default Layout;

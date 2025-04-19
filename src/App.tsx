@@ -21,6 +21,7 @@ import HomePage from "./components/home/HomePage";
 import DefaultPage from "./components/default/DefaultPage";
 import GoalsPage from "./pages/GoalsPage";
 import HabitsPage from "./pages/HabitsPage";
+import BodyTypeSelector from "./components/BodyTypeSelector";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -109,6 +110,14 @@ const App = () => (
                 element={
                   <AuthenticatedRoute>
                     <HabitsPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/body-type"
+                element={
+                  <AuthenticatedRoute>
+                    <BodyTypeSelector />
                   </AuthenticatedRoute>
                 }
               />
