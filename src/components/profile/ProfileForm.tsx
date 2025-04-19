@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,6 +18,7 @@ interface ProfileFormProps {
     heightFeet: number;
     heightInches: number;
     weightLbs: number;
+    gender: string;
   };
   setProfileData: React.Dispatch<React.SetStateAction<{
     firstName: string;
@@ -26,6 +28,7 @@ interface ProfileFormProps {
     heightFeet: number;
     heightInches: number;
     weightLbs: number;
+    gender: string;
   }>>;
   avatarUrl: string | null;
   isLoading: boolean;
@@ -54,6 +57,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           full_name: `${profileData.firstName} ${profileData.lastName}`,
           email: profileData.email,
           date_of_birth: profileData.dateOfBirth,
+          gender: profileData.gender,
           height_feet: profileData.heightFeet,
           height_inches: profileData.heightInches,
           weight_lbs: profileData.weightLbs,
@@ -115,6 +119,28 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
             placeholder="Enter your email"
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Gender</Label>
+          <RadioGroup 
+            value={profileData.gender} 
+            onValueChange={(value) => setProfileData(prev => ({ ...prev, gender: value }))} 
+            className="flex space-x-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="male" id="male" />
+              <Label htmlFor="male">Male</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="female" id="female" />
+              <Label htmlFor="female">Female</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="other" id="other" />
+              <Label htmlFor="other">Other</Label>
+            </div>
+          </RadioGroup>
         </div>
 
         <div className="space-y-2">

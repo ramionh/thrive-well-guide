@@ -4,6 +4,7 @@ import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 
 interface UserInfoStepProps {
@@ -16,6 +17,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   const [firstName, setFirstName] = useState(user?.name?.split(' ')[0] || "");
   const [lastName, setLastName] = useState(user?.name?.split(' ')[1] || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [gender, setGender] = useState<string>("");
   const [dob, setDob] = useState("");
   const [feet, setFeet] = useState("");
   const [inches, setInches] = useState("");
@@ -24,7 +26,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!firstName || !lastName || !email || !dob || !feet || !weightLbs) {
+    if (!firstName || !lastName || !email || !dob || !feet || !weightLbs || !gender) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields to continue.",
@@ -42,7 +44,6 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
       return;
     }
 
-    // Validate date of birth
     const dobDate = new Date(dob);
     if (isNaN(dobDate.getTime())) {
       toast({
@@ -53,7 +54,6 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
       return;
     }
 
-    // Validate height and weight are numbers
     const heightFeet = Number(feet);
     const heightInches = Number(inches || 0);
     const weight = Number(weightLbs);
@@ -82,6 +82,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
         lastName,
         email,
         dateOfBirth: dob,
+        gender,
         heightFeet: Number(feet),
         heightInches: Number(inches || 0),
         weightLbs: Number(weightLbs)
@@ -130,6 +131,28 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Gender</Label>
+        <RadioGroup 
+          value={gender} 
+          onValueChange={setGender} 
+          className="flex space-x-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="male" id="male" />
+            <Label htmlFor="male">Male</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="female" id="female" />
+            <Label htmlFor="female">Female</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="other" id="other" />
+            <Label htmlFor="other">Other</Label>
+          </div>
+        </RadioGroup>
       </div>
 
       <div className="space-y-2">

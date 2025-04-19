@@ -26,7 +26,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          // Fetch additional profile data from Supabase
           const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('*')
@@ -44,7 +43,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
               onboardingCompleted: profileData.onboarding_completed || false,
               goals: [], // TODO: Implement goal fetching
               vitals: [], // TODO: Implement vitals fetching
-              avatar_url: profileData.avatar_url
+              avatar_url: profileData.avatar_url,
+              gender: profileData.gender
             });
           }
         }
@@ -63,19 +63,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     lastName: string;
     email: string;
     dateOfBirth: string;
+    gender: string;
     heightFeet: number;
     heightInches: number;
     weightLbs: number;
   }) => {
     if (user) {
       try {
-        // Update profiles table with onboarding information
         const { error } = await supabase
           .from('profiles')
           .update({
             full_name: `${onboardingData.firstName} ${onboardingData.lastName}`,
             email: onboardingData.email,
             date_of_birth: onboardingData.dateOfBirth,
+            gender: onboardingData.gender,
             height_feet: onboardingData.heightFeet,
             height_inches: onboardingData.heightInches,
             weight_lbs: onboardingData.weightLbs,
@@ -86,12 +87,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (error) throw error;
 
-        // Update local user state
         setUser({
           ...user,
           name: `${onboardingData.firstName} ${onboardingData.lastName}`,
           email: onboardingData.email,
-          onboardingCompleted: true
+          onboardingCompleted: true,
+          gender: onboardingData.gender
         });
       } catch (error) {
         console.error("Error completing onboarding:", error);

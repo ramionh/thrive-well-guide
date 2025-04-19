@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -25,6 +24,7 @@ const ProfilePage: React.FC = () => {
     lastName: user?.name?.split(' ')[1] || '',
     email: user?.email || '',
     dateOfBirth: '',
+    gender: user?.gender || '',
     heightFeet: 0,
     heightInches: 0,
     weightLbs: 0
@@ -47,6 +47,7 @@ const ProfilePage: React.FC = () => {
             lastName: data.full_name?.split(' ')[1] || '',
             email: data.email || '',
             dateOfBirth: data.date_of_birth || '',
+            gender: data.gender || '',
             heightFeet: data.height_feet || 0,
             heightInches: data.height_inches || 0,
             weightLbs: data.weight_lbs || 0

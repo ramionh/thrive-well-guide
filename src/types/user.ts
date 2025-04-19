@@ -1,4 +1,3 @@
-
 export type Goal = {
   id: string;
   name: string;
@@ -27,6 +26,7 @@ export type User = {
   vitals: Vital[];
   avatar_url?: string;
   motivationalResponses?: Record<string, string>;
+  gender?: string;
 };
 
 export type UserContextType = {
@@ -39,6 +39,7 @@ export type UserContextType = {
     lastName: string;
     email: string;
     dateOfBirth: string;
+    gender: string;
     heightFeet: number;
     heightInches: number;
     weightLbs: number;
