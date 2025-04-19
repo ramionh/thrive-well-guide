@@ -19,19 +19,17 @@ const BodyTypeSelector: React.FC = () => {
 
   const fetchBodyTypes = async () => {
     try {
-      // Use "from" with any type assertion to handle the custom table
-      const { data, error } = await supabase
-        .from('body_types')
-        .select('*') as unknown as { 
-          data: BodyType[] | null; 
-          error: Error | null 
-        };
+      // Use a more specific type assertion that bypasses type checking for the table name
+      const { data, error } = await (supabase
+        .from('body_types' as any)
+        .select('*') as any);
 
       if (error) {
         toast.error('Failed to fetch body types');
         console.error(error);
       } else if (data) {
-        setBodyTypes(data);
+        // Ensure data matches the BodyType interface when setting state
+        setBodyTypes(data as BodyType[]);
       }
     } catch (error) {
       console.error('Error fetching body types:', error);
@@ -50,18 +48,15 @@ const BodyTypeSelector: React.FC = () => {
     }
 
     try {
-      // Use "from" with any type assertion to handle the custom table
-      const { data, error } = await supabase
-        .from('user_body_types')
+      // Use a more specific type assertion that bypasses type checking for the table name
+      const { data, error } = await (supabase
+        .from('user_body_types' as any)
         .insert({
           user_id: user.id,
           body_type_id: selectedBodyType,
           selected_date: new Date().toISOString().split('T')[0]
         })
-        .select() as unknown as {
-          data: UserBodyType[] | null;
-          error: Error | null
-        };
+        .select() as any);
 
       if (error) {
         toast.error('Failed to save body type');
