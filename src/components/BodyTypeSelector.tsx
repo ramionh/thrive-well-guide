@@ -18,19 +18,24 @@ const BodyTypeSelector: React.FC = () => {
   }, []);
 
   const fetchBodyTypes = async () => {
-    // Using type assertion to handle the custom table
-    const { data, error } = await supabase
-      .from('body_types')
-      .select('*') as unknown as { 
-        data: BodyType[] | null; 
-        error: Error | null 
-      };
+    try {
+      // Use "from" with any type assertion to handle the custom table
+      const { data, error } = await supabase
+        .from('body_types')
+        .select('*') as unknown as { 
+          data: BodyType[] | null; 
+          error: Error | null 
+        };
 
-    if (error) {
-      toast.error('Failed to fetch body types');
-      console.error(error);
-    } else {
-      setBodyTypes(data || []);
+      if (error) {
+        toast.error('Failed to fetch body types');
+        console.error(error);
+      } else if (data) {
+        setBodyTypes(data);
+      }
+    } catch (error) {
+      console.error('Error fetching body types:', error);
+      toast.error('An unexpected error occurred');
     }
   };
 
@@ -44,24 +49,29 @@ const BodyTypeSelector: React.FC = () => {
       return;
     }
 
-    // Using type assertion to handle the custom table
-    const { data, error } = await supabase
-      .from('user_body_types')
-      .insert({
-        user_id: user.id,
-        body_type_id: selectedBodyType,
-        selected_date: new Date().toISOString().split('T')[0]
-      })
-      .select() as unknown as {
-        data: UserBodyType[] | null;
-        error: Error | null
-      };
+    try {
+      // Use "from" with any type assertion to handle the custom table
+      const { data, error } = await supabase
+        .from('user_body_types')
+        .insert({
+          user_id: user.id,
+          body_type_id: selectedBodyType,
+          selected_date: new Date().toISOString().split('T')[0]
+        })
+        .select() as unknown as {
+          data: UserBodyType[] | null;
+          error: Error | null
+        };
 
-    if (error) {
-      toast.error('Failed to save body type');
-      console.error(error);
-    } else {
-      toast.success('Body type saved successfully');
+      if (error) {
+        toast.error('Failed to save body type');
+        console.error(error);
+      } else {
+        toast.success('Body type saved successfully');
+      }
+    } catch (error) {
+      console.error('Error saving body type:', error);
+      toast.error('An unexpected error occurred');
     }
   };
 
@@ -81,7 +91,7 @@ const BodyTypeSelector: React.FC = () => {
                   : 'hover:border-primary'}`}
               onClick={() => handleBodyTypeSelect(bodyType.id)}
             >
-              <div className="flex flex-col items-center space-y-2">
+              <div className="flex flex-col items-center space-y-2 relative">
                 {selectedBodyType === bodyType.id && (
                   <Check className="absolute top-2 right-2 text-primary" />
                 )}
