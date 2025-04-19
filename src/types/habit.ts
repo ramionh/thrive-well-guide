@@ -6,5 +6,5 @@ export type Habit = {
   habit_number: number;
   name: string;
   description: string;
-  created_at: Date;
+  created_at: string;
 };

@@ -18,9 +18,8 @@ const HabitsList = ({ habits, onEdit, onDelete }: HabitsListProps) => {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Frequency</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Number</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -28,9 +27,8 @@ const HabitsList = ({ habits, onEdit, onDelete }: HabitsListProps) => {
           {habits.map((habit) => (
             <TableRow key={habit.id}>
               <TableCell>{habit.name}</TableCell>
-              <TableCell className="capitalize">{habit.type}</TableCell>
-              <TableCell className="capitalize">{habit.frequency}</TableCell>
-              <TableCell>{habit.isActive ? "Active" : "Inactive"}</TableCell>
+              <TableCell className="capitalize">{habit.category}</TableCell>
+              <TableCell>{habit.habit_number}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button
                   variant="ghost"
