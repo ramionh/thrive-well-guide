@@ -48,7 +48,7 @@ const BodyTypeSelector: React.FC = () => {
     }
   };
 
-  const loadBodyTypeImages = async () => {
+  const loadBodyTypeImages = () => {
     const imageMap: Record<string, string> = {};
     
     for (const bodyType of bodyTypes) {
