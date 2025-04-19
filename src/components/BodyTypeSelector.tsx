@@ -31,11 +31,23 @@ const BodyTypeSelector: React.FC = () => {
         toast.error('Failed to fetch body types');
         console.error(error);
       } else if (data) {
-        setBodyTypes(data);
+        // Remove image_url from body types since we'll use Supabase storage
+        const bodyTypesWithoutUrls = data.map(({ image_url, ...rest }) => rest);
+        setBodyTypes(bodyTypesWithoutUrls as BodyType[]);
       }
     } catch (error) {
       console.error('Error fetching body types:', error);
       toast.error('An unexpected error occurred');
+    }
+  };
+
+  const fetchBodyTypeImage = async (name: string) => {
+    try {
+      const { data } = supabase.storage.from('body-types').getPublicUrl(`${name.toLowerCase()}.jpg`);
+      return data.publicUrl;
+    } catch (error) {
+      console.error(`Error fetching image for ${name}:`, error);
+      return null;
     }
   };
 
@@ -128,8 +140,9 @@ const BodyTypeSelector: React.FC = () => {
                       </div>
                     )}
                     <div className="w-full aspect-square overflow-hidden rounded-lg">
+                      {/* Dynamic image loading from Supabase storage */}
                       <img 
-                        src={bodyType.image_url} 
+                        src={await fetchBodyTypeImage(bodyType.name)} 
                         alt={bodyType.name} 
                         className="w-full h-full object-cover"
                       />
