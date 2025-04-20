@@ -36,8 +36,10 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
         description: "Successfully signed in to your account.",
       });
       
-      // Redirect to dashboard after successful login
-      navigate('/dashboard');
+      // Add a 1-second delay before redirecting
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
       
     } catch (error: any) {
       toast({

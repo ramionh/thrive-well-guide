@@ -24,8 +24,10 @@ const GoogleSignInButton = () => {
         description: "Successfully signed in with Google.",
       });
 
-      // Redirect to dashboard after successful login
-      navigate('/dashboard');
+      // Add a 1-second delay before redirecting
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
       
     } catch (error: any) {
       toast({
