@@ -78,8 +78,9 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
       } else {
         console.warn('No goal was created automatically. The database trigger might not be working.');
         
-        // Attempt to manually create a goal if the trigger failed
-        const { error: manualGoalError } = await supabase.rpc('manually_create_body_type_goal', {
+        // Use a type assertion to bypass TypeScript's strict typing for RPC
+        // This is needed because the function is defined in SQL and not in the TypeScript types
+        const { error: manualGoalError } = await (supabase.rpc as any)('manually_create_body_type_goal', {
           user_id_param: user.id,
           body_type_id_param: selectedBodyType,
           selected_date_param: startDate
