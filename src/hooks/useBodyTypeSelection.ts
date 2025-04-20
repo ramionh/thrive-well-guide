@@ -47,7 +47,12 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
 
       if (bodyTypeError) {
         console.error('Error saving body type:', bodyTypeError);
-        toast.error('Failed to save body type. Please try again.');
+        
+        if (bodyTypeError.code === '42501') {
+          toast.error('Permission denied. Make sure you are logged in and have the necessary permissions.');
+        } else {
+          toast.error('Failed to save body type. Please try again.');
+        }
         return;
       }
 
