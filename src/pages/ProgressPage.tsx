@@ -1,13 +1,12 @@
-
 import React from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Dumbbell, Moon, Apple } from "lucide-react";
+import BodyMeasurementsChart from "@/components/progress/BodyMeasurementsChart";
 
 const ProgressPage: React.FC = () => {
-  // In a real app, this would be fetched from an API
   const sleepData = [
     { day: "Mon", hours: 6.5 },
     { day: "Tue", hours: 7.2 },
@@ -42,8 +41,12 @@ const ProgressPage: React.FC = () => {
     <div className="container mx-auto animate-fade-in">
       <h1 className="text-3xl font-bold mb-6">Your Progress</h1>
       
-      <Tabs defaultValue="sleep">
+      <Tabs defaultValue="measurements">
         <TabsList className="mb-6">
+          <TabsTrigger value="measurements" className="flex items-center gap-2">
+            <ChartLine className="h-4 w-4" />
+            Measurements
+          </TabsTrigger>
           <TabsTrigger value="sleep" className="flex items-center gap-2">
             <Moon className="h-4 w-4" />
             Sleep
@@ -57,6 +60,10 @@ const ProgressPage: React.FC = () => {
             Exercise
           </TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="measurements">
+          <BodyMeasurementsChart />
+        </TabsContent>
         
         <TabsContent value="sleep" className="space-y-6">
           <Card>
