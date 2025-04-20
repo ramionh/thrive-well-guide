@@ -33,27 +33,8 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
 
     try {
       const startDate = new Date().toISOString().split('T')[0];
-      const targetDate = new Date(Date.now() + 100 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       
-      const { data: nextBodyType } = await supabase
-        .rpc('get_next_better_body_type', { current_body_type_id: selectedBodyType });
-
-      const { error: goalError } = await supabase
-        .from('goals')
-        .insert({
-          user_id: user.id,
-          current_body_type_id: selectedBodyType,
-          goal_body_type_id: nextBodyType || selectedBodyType,
-          started_date: startDate,
-          target_date: targetDate
-        });
-
-      if (goalError) {
-        console.error('Error creating goal:', goalError);
-        toast.error('Failed to create goal. Please try again.');
-        return;
-      }
-
+      // First save the user body type
       const { error: bodyTypeError } = await supabase
         .from('user_body_types')
         .insert({
@@ -70,7 +51,11 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
         return;
       }
 
-      toast.success('Body type and goal saved successfully');
+      // Instead of manually creating the goal, let database trigger handle it
+      // The database has a trigger called create_goal_on_body_type_selection
+      // that will automatically create a goal when a user_body_type is inserted
+
+      toast.success('Body type saved successfully');
       fetchUserBodyType();
 
     } catch (error) {
