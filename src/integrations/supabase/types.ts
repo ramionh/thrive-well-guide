@@ -222,24 +222,30 @@ export type Database = {
       user_body_types: {
         Row: {
           body_type_id: string
+          bodyfat_percentage: number | null
           created_at: string
           id: string
           selected_date: string
           user_id: string
+          weight_lbs: number | null
         }
         Insert: {
           body_type_id: string
+          bodyfat_percentage?: number | null
           created_at?: string
           id?: string
           selected_date: string
           user_id: string
+          weight_lbs?: number | null
         }
         Update: {
           body_type_id?: string
+          bodyfat_percentage?: number | null
           created_at?: string
           id?: string
           selected_date?: string
           user_id?: string
+          weight_lbs?: number | null
         }
         Relationships: [
           {
@@ -294,7 +300,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_next_better_body_type: {
+        Args: { current_body_type_id: string }
+        Returns: string
+      }
     }
     Enums: {
       habit_category:

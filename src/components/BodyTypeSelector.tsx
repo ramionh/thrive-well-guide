@@ -1,17 +1,20 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { BodyType, UserBodyType } from "@/types/bodyType";
+import { BodyType } from "@/types/bodyType";
 import { Check } from "lucide-react";
 
 const BodyTypeSelector: React.FC = () => {
   const [bodyTypes, setBodyTypes] = useState<BodyType[]>([]);
   const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
   const [bodyTypeImages, setBodyTypeImages] = useState<Record<string, string>>({});
+  const [weight, setWeight] = useState<number | ''>('');
+  const [bodyfat, setBodyfat] = useState<number | ''>('');
   const { user } = useUser();
 
   useEffect(() => {
@@ -21,7 +24,6 @@ const BodyTypeSelector: React.FC = () => {
     }
   }, [user]);
 
-  // Load images for all body types after they are fetched
   useEffect(() => {
     if (bodyTypes.length > 0) {
       loadBodyTypeImages();
@@ -52,7 +54,6 @@ const BodyTypeSelector: React.FC = () => {
     
     for (const bodyType of bodyTypes) {
       try {
-        // Use consistent naming with capitalized first letter
         const capitalizedName = bodyType.name.charAt(0).toUpperCase() + bodyType.name.slice(1).toLowerCase();
         const imageName = capitalizedName.replace(/\s+/g, '-');
         const { data } = supabase.storage
@@ -100,13 +101,20 @@ const BodyTypeSelector: React.FC = () => {
       return;
     }
 
+    if (!weight) {
+      toast.error('Please enter your weight');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('user_body_types')
         .insert({
           user_id: user.id,
           body_type_id: selectedBodyType,
-          selected_date: new Date().toISOString().split('T')[0]
+          selected_date: new Date().toISOString().split('T')[0],
+          weight_lbs: weight,
+          bodyfat_percentage: bodyfat || null
         });
 
       if (error) {
@@ -121,7 +129,6 @@ const BodyTypeSelector: React.FC = () => {
     }
   };
 
-  // Function to map bodyTypes into rows
   const getBodyTypeRows = () => {
     const rows = [];
     const itemsPerRow = 3;
@@ -163,7 +170,6 @@ const BodyTypeSelector: React.FC = () => {
                         alt={bodyType.name} 
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          // Set fallback image on error
                           (e.target as HTMLImageElement).src = '/placeholder.svg';
                         }}
                       />
@@ -182,18 +188,50 @@ const BodyTypeSelector: React.FC = () => {
               ))}
             </div>
           ))}
+          
+          {selectedBodyType && (
+            <div className="mt-8 space-y-4 max-w-md mx-auto">
+              <div className="space-y-2">
+                <Label htmlFor="weight">Current Weight (lbs) *</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : '')}
+                  placeholder="Enter your weight in pounds"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="bodyfat">
+                  Estimated Body Fat % (optional)
+                </Label>
+                <Input
+                  id="bodyfat"
+                  type="number"
+                  value={bodyfat}
+                  onChange={(e) => setBodyfat(e.target.value ? Number(e.target.value) : '')}
+                  placeholder="Enter your estimated body fat percentage"
+                  min="1"
+                  max="100"
+                  step="0.1"
+                />
+              </div>
+            </div>
+          )}
+          
+          <Button 
+            onClick={handleSaveBodyType} 
+            className="mt-8 w-full bg-blue-500 hover:bg-blue-600 text-white"
+            disabled={!selectedBodyType || !weight}
+          >
+            Save Body Type
+          </Button>
         </div>
-        <Button 
-          onClick={handleSaveBodyType} 
-          className="mt-8 w-full bg-blue-500 hover:bg-blue-600 text-white"
-          disabled={!selectedBodyType}
-        >
-          Save Body Type
-        </Button>
       </CardContent>
     </Card>
   );
 };
 
 export default BodyTypeSelector;
-
