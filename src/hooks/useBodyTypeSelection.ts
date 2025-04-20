@@ -36,7 +36,7 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
       
       console.log('Saving body type for user:', user.id);
       
-      // First save the user body type
+      // Save user body type
       const { data: insertedData, error: bodyTypeError } = await supabase
         .from('user_body_types')
         .insert({
@@ -63,37 +63,6 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
 
       console.log('Body type saved successfully:', insertedData);
       
-      // Try to directly check if the goal was created
-      const { data: goalsData, error: goalsError } = await supabase
-        .from('goals')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-        
-      if (goalsError) {
-        console.error('Error checking for goal creation:', goalsError);
-      } else if (goalsData && goalsData.length > 0) {
-        console.log('Goal created automatically:', goalsData[0]);
-      } else {
-        console.warn('No goal was created automatically. The database trigger might not be working.');
-        
-        // Use a type assertion to bypass TypeScript's strict typing for RPC
-        // This is needed because the function is defined in SQL and not in the TypeScript types
-        const { error: manualGoalError } = await (supabase.rpc as any)('manually_create_body_type_goal', {
-          user_id_param: user.id,
-          body_type_id_param: selectedBodyType,
-          selected_date_param: startDate
-        });
-        
-        if (manualGoalError) {
-          console.error('Error manually creating goal:', manualGoalError);
-          toast.error('Could not create a goal automatically. Please try again later.');
-        } else {
-          console.log('Goal created manually as fallback');
-        }
-      }
-
       toast.success('Body type saved successfully');
       fetchUserBodyType();
 
