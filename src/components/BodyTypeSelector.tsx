@@ -1,28 +1,19 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { useBodyTypes } from "@/hooks/useBodyTypes";
-import BodyTypeCard from "./body-type/BodyTypeCard";
-import MeasurementsForm from "./body-type/MeasurementsForm";
 import ErrorBoundary from "./ui/error-boundary";
 import LoadingState from "./body-type/LoadingState";
+import MeasurementsForm from "./body-type/MeasurementsForm";
+import BodyTypeGrid from "./body-type/BodyTypeGrid";
+import { useBodyTypeSelection } from "@/hooks/useBodyTypeSelection";
 
 const BodyTypeSelector: React.FC = () => {
-  const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
-  const [weight, setWeight] = useState<number | ''>('');
-  const [bodyfat, setBodyfat] = useState<number | ''>('');
-  const [isSaving, setIsSaving] = useState(false);
   const { user } = useUser();
   const { bodyTypes, bodyTypeImages, isLoading, error } = useBodyTypes();
-
-  useEffect(() => {
-    if (user) {
-      fetchUserBodyType();
-    }
-  }, [user]);
 
   const fetchUserBodyType = async () => {
     if (!user) return;
@@ -45,90 +36,23 @@ const BodyTypeSelector: React.FC = () => {
     }
   };
 
-  const handleBodyTypeSelect = (bodyTypeId: string) => {
-    setSelectedBodyType(bodyTypeId);
-  };
+  const {
+    selectedBodyType,
+    setSelectedBodyType,
+    weight,
+    setWeight,
+    bodyfat,
+    setBodyfat,
+    isSaving,
+    handleBodyTypeSelect,
+    handleSaveBodyType
+  } = useBodyTypeSelection(user, fetchUserBodyType);
 
-  const handleSaveBodyType = async () => {
-    if (!selectedBodyType || !user) {
-      toast.error('Please select a body type');
-      return;
-    }
-
-    if (!weight || weight < 50 || weight > 1000) {
-      toast.error('Please enter a valid weight between 50 and 1000 lbs');
-      return;
-    }
-
-    if (bodyfat !== '' && (bodyfat < 1 || bodyfat > 100)) {
-      toast.error('Body fat percentage must be between 1% and 100%');
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      // First create the goal
-      const startDate = new Date().toISOString().split('T')[0];
-      const targetDate = new Date(Date.now() + 100 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      
-      const { data: nextBodyType } = await supabase
-        .rpc('get_next_better_body_type', { current_body_type_id: selectedBodyType });
-
-      const { error: goalError } = await supabase
-        .from('goals')
-        .insert({
-          user_id: user.id,
-          current_body_type_id: selectedBodyType,
-          goal_body_type_id: nextBodyType || selectedBodyType,
-          started_date: startDate,
-          target_date: targetDate
-        });
-
-      if (goalError) {
-        console.error('Error creating goal:', goalError);
-        toast.error('Failed to create goal. Please try again.');
-        return;
-      }
-
-      // Then save the body type selection
-      const { error: bodyTypeError } = await supabase
-        .from('user_body_types')
-        .insert({
-          user_id: user.id,
-          body_type_id: selectedBodyType,
-          selected_date: startDate,
-          weight_lbs: weight,
-          bodyfat_percentage: bodyfat || null
-        });
-
-      if (bodyTypeError) {
-        console.error('Error saving body type:', bodyTypeError);
-        toast.error('Failed to save body type. Please try again.');
-        return;
-      }
-
-      toast.success('Body type and goal saved successfully');
+  useEffect(() => {
+    if (user) {
       fetchUserBodyType();
-
-    } catch (error) {
-      console.error('Error in save operation:', error);
-      toast.error('An unexpected error occurred');
-    } finally {
-      setIsSaving(false);
     }
-  };
-
-  const getBodyTypeRows = () => {
-    const rows = [];
-    const itemsPerRow = 3;
-    
-    for (let i = 0; i < bodyTypes.length; i += itemsPerRow) {
-      rows.push(bodyTypes.slice(i, i + itemsPerRow));
-    }
-    
-    return rows;
-  };
+  }, [user]);
 
   if (error) {
     return (
@@ -157,19 +81,12 @@ const BodyTypeSelector: React.FC = () => {
               <LoadingState />
             ) : (
               <>
-                {getBodyTypeRows().map((row, rowIndex) => (
-                  <div key={`row-${rowIndex}`} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {row.map((bodyType) => (
-                      <BodyTypeCard
-                        key={bodyType.id}
-                        bodyType={bodyType}
-                        imageUrl={bodyTypeImages[bodyType.id]}
-                        isSelected={selectedBodyType === bodyType.id}
-                        onSelect={handleBodyTypeSelect}
-                      />
-                    ))}
-                  </div>
-                ))}
+                <BodyTypeGrid
+                  bodyTypes={bodyTypes}
+                  bodyTypeImages={bodyTypeImages}
+                  selectedBodyType={selectedBodyType}
+                  onSelect={handleBodyTypeSelect}
+                />
                 
                 {selectedBodyType && (
                   <MeasurementsForm
