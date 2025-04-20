@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Goal } from "@/types/user";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 
 interface GoalsListProps {
   goals: Goal[];
@@ -18,22 +18,26 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals }) => {
       <CardContent>
         {goals && goals.length > 0 ? (
           <div className="space-y-4">
-            {goals.map((goal) => (
-              <div key={goal.id} className="border rounded-md p-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-medium">Body Transformation Goal</h3>
-                    <span className="text-sm text-muted-foreground">
-                      {Math.ceil((new Date(goal.targetDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days remaining
-                    </span>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <p>Started: {format(new Date(goal.startedDate), 'PPP')}</p>
-                    <p>Target: {format(new Date(goal.targetDate), 'PPP')}</p>
+            {goals.map((goal) => {
+              const daysRemaining = differenceInDays(new Date(goal.targetDate), new Date());
+              
+              return (
+                <div key={goal.id} className="border rounded-md p-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-medium">Body Transformation Goal</h3>
+                      <span className="text-sm text-muted-foreground">
+                        {daysRemaining > 0 ? `${daysRemaining} days remaining` : 'Goal completed'}
+                      </span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p>Started: {format(new Date(goal.startedDate), 'PPP')}</p>
+                      <p>Target: {format(new Date(goal.targetDate), 'PPP')}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <p className="text-center text-muted-foreground py-8">

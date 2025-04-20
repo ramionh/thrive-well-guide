@@ -9,7 +9,7 @@ import { NutritionFormState } from "./useNutritionForm";
 import { GoalsFormState } from "./useGoalsForm";
 
 export const useProgressSubmit = () => {
-  const { user, updateGoal, addVital } = useUser();
+  const { user } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -54,12 +54,6 @@ export const useProgressSubmit = () => {
         });
         navigate("/auth");
         return;
-      }
-
-      if (goalsForm.selectedGoal && goalsForm.goalProgress) {
-        updateGoal(goalsForm.selectedGoal, {
-          currentValue: parseFloat(goalsForm.goalProgress)
-        });
       }
       
       // Save to database with proper date field

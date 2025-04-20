@@ -44,13 +44,28 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
               console.error("Error fetching goals:", goalsError);
             }
 
+            const transformedGoals: Goal[] = Array.isArray(goalsData) ? goalsData.map(goal => ({
+              id: goal.id,
+              userId: goal.user_id,
+              goalBodyTypeId: goal.goal_body_type_id,
+              currentBodyTypeId: goal.current_body_type_id,
+              startedDate: new Date(goal.started_date),
+              targetDate: new Date(goal.target_date),
+              createdAt: new Date(goal.created_at || Date.now()),
+              name: `Body Transformation Goal`,
+              currentValue: 0,
+              targetValue: 100,
+              unit: "%",
+              category: "other"
+            })) : [];
+
             setUser({
               id: session.user.id,
               name: profileData.full_name || '',
               email: session.user.email || '',
               onboardingCompleted: profileData.onboarding_completed || false,
-              goals: goalsData || [],
-              vitals: [], // TODO: Implement vitals fetching
+              goals: transformedGoals,
+              vitals: [],
               avatar_url: profileData.avatar_url,
               gender: profileData.gender
             });
@@ -109,6 +124,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const addGoal = (goal: Omit<Goal, "id" | "createdAt">) => {
+    console.log("Goals are now assigned by the system, this operation is not supported");
+  };
+
+  const updateGoal = (goalId: string, updatedValues: Partial<Goal>) => {
+    console.log("Goals are now managed by the system, this operation is not supported");
+  };
+
   const addVital = (vital: Omit<Vital, "id" | "date">) => {
     if (user) {
       const newVital: Vital = {
@@ -152,6 +175,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         onboardingStep,
         setOnboardingStep,
         completeOnboarding,
+        addGoal,
+        updateGoal,
         addVital,
         updateVital,
         saveMotivationalResponse,

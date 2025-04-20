@@ -1,3 +1,4 @@
+
 export type Goal = {
   id: string;
   userId: string;
@@ -6,6 +7,12 @@ export type Goal = {
   startedDate: Date;
   targetDate: Date;
   createdAt: Date;
+  // These fields are for UI compatibility with existing components
+  name?: string; 
+  currentValue?: number;
+  targetValue?: number;
+  unit?: string;
+  category?: "sleep" | "nutrition" | "exercise" | "other";
 };
 
 export type Vital = {

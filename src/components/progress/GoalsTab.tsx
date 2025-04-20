@@ -1,11 +1,11 @@
 
 import React from "react";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProgressTabLayout from "./ProgressTabLayout";
 import { useUser } from "@/context/UserContext";
 import { useGoalsForm, GoalsFormState } from "@/hooks/useGoalsForm";
+import { format, differenceInDays } from "date-fns";
 
 interface GoalsTabProps {
   initialValues?: Partial<GoalsFormState>;
@@ -34,8 +34,8 @@ const GoalsTab: React.FC<GoalsTabProps> = ({
 
   return (
     <ProgressTabLayout
-      title="Update Goal Progress"
-      description="Track your progress towards your goals"
+      title="Track Goal Progress"
+      description="Track your progress towards your transformation goals"
       adherenceValue={goalsAdherence}
       onAdherenceChange={setGoalsAdherence}
       adherenceLabel="Overall Goals Adherence"
@@ -44,32 +44,28 @@ const GoalsTab: React.FC<GoalsTabProps> = ({
         <Label htmlFor="goalSelect">Select Goal</Label>
         <Select value={selectedGoal} onValueChange={setSelectedGoal}>
           <SelectTrigger id="goalSelect">
-            <SelectValue placeholder="Select a goal to update" />
+            <SelectValue placeholder="Select a goal to view" />
           </SelectTrigger>
           <SelectContent>
-            {user?.goals.map((goal) => (
-              <SelectItem key={goal.id} value={goal.id}>
-                {goal.name} ({goal.targetValue} {goal.unit})
-              </SelectItem>
-            ))}
+            {user?.goals.map((goal) => {
+              const daysRemaining = differenceInDays(new Date(goal.targetDate), new Date());
+              return (
+                <SelectItem key={goal.id} value={goal.id}>
+                  Body Transformation ({daysRemaining} days remaining)
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
       
       {selectedGoal && (
-        <div className="space-y-2">
-          <Label htmlFor="goalProgress">Current Progress</Label>
-          <div className="flex space-x-2">
-            <Input 
-              id="goalProgress"
-              type="number"
-              min="0"
-              value={goalProgress}
-              onChange={(e) => setGoalProgress(e.target.value)}
-            />
-            <span className="flex items-center">
-              {user?.goals.find(g => g.id === selectedGoal)?.unit}
-            </span>
+        <div className="space-y-2 mt-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+            <p className="text-sm text-blue-700">
+              Your transformation progress is automatically tracked based on your check-ins.
+              Continue recording your daily progress to see your transformation journey.
+            </p>
           </div>
         </div>
       )}

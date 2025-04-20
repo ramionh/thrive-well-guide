@@ -1,7 +1,6 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { useUser } from "@/context/UserContext";
-import { Goal } from "@/types/user";
 import { Button } from "@/components/ui/button";
 import { 
   Card, 
@@ -10,13 +9,6 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { 
   Table, 
   TableBody, 
@@ -25,115 +17,107 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import GoalForm from "@/components/goals/GoalForm";
+import { Progress } from "@/components/ui/progress";
+import { Info } from "lucide-react";
+import { format, differenceInDays } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const GoalsPage = () => {
-  const { user, addGoal, updateGoal } = useUser();
-  const { toast } = useToast();
-  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const handleSubmit = (data: Omit<Goal, "id" | "createdAt">) => {
-    if (editingGoal) {
-      updateGoal(editingGoal.id, data);
-      toast({
-        title: "Goal Updated",
-        description: "Your goal has been successfully updated.",
-      });
-    } else {
-      addGoal(data);
-      toast({
-        title: "Goal Created",
-        description: "Your new goal has been created successfully.",
-      });
-    }
-    setIsDialogOpen(false);
-    setEditingGoal(null);
-  };
-
-  const handleEdit = (goal: Goal) => {
-    setEditingGoal(goal);
-    setIsDialogOpen(true);
-  };
-
-  const handleDelete = (goalId: string) => {
-    const updatedGoals = user?.goals.filter(g => g.id !== goalId) || [];
-    // TODO: Implement delete goal functionality in UserContext
-    toast({
-      title: "Goal Deleted",
-      description: "Your goal has been successfully deleted.",
-    });
-  };
+  const { user } = useUser();
+  const navigate = useNavigate();
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Goals</h1>
-          <p className="text-muted-foreground">Manage your fitness and wellness goals</p>
+          <p className="text-muted-foreground">Track your body transformation journey</p>
         </div>
         
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setEditingGoal(null)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add New Goal
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingGoal ? "Edit Goal" : "Create New Goal"}</DialogTitle>
-            </DialogHeader>
-            <GoalForm goal={editingGoal || undefined} onSubmit={handleSubmit} />
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={() => navigate("/body-type")}
+        >
+          Body Type Selection
+        </Button>
       </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>About Transformation Goals</CardTitle>
+          <CardDescription>Goals are automatically created based on your body type selection</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+            <div className="flex">
+              <Info className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm text-blue-700">
+                  Your transformation goals are assigned by the system when you select your current and goal body types.
+                  Each goal represents a 100-day journey to transform your body. Progress is tracked automatically based
+                  on your check-ins and activity.
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Your Goals</CardTitle>
-          <CardDescription>Track and manage your goals here</CardDescription>
+          <CardTitle>Your Transformation Goals</CardTitle>
+          <CardDescription>Track your body transformation progress</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Goal</TableHead>
+                <TableHead>Started</TableHead>
+                <TableHead>Target</TableHead>
                 <TableHead>Progress</TableHead>
-                <TableHead>Unit</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Days Remaining</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {user?.goals.map((goal) => (
-                <TableRow key={goal.id}>
-                  <TableCell>{goal.name}</TableCell>
-                  <TableCell className="capitalize">{goal.category}</TableCell>
-                  <TableCell>
-                    {goal.currentValue} / {goal.targetValue}
-                  </TableCell>
-                  <TableCell>{goal.unit}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(goal)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(goal.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+              {user?.goals && user.goals.length > 0 ? (
+                user.goals.map((goal) => {
+                  const totalDays = differenceInDays(new Date(goal.targetDate), new Date(goal.startedDate));
+                  const daysPassed = differenceInDays(new Date(), new Date(goal.startedDate));
+                  const progressPercent = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100));
+                  const daysRemaining = differenceInDays(new Date(goal.targetDate), new Date());
+                  
+                  return (
+                    <TableRow key={goal.id}>
+                      <TableCell>Body Transformation</TableCell>
+                      <TableCell>{format(new Date(goal.startedDate), 'PP')}</TableCell>
+                      <TableCell>{format(new Date(goal.targetDate), 'PP')}</TableCell>
+                      <TableCell>
+                        <div className="w-full max-w-xs">
+                          <Progress value={progressPercent} className="h-2" />
+                          <span className="text-xs text-muted-foreground mt-1 inline-block">
+                            {Math.round(progressPercent)}% complete
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{daysRemaining > 0 ? `${daysRemaining} days` : 'Completed'}</TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-6">
+                    You don't have any active transformation goals yet.
+                    <div className="mt-2">
+                      <Button 
+                        size="sm" 
+                        onClick={() => navigate("/body-type")}
+                      >
+                        Set Body Type Goals
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>
