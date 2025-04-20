@@ -7,31 +7,41 @@ import { BodyType } from "@/types/bodyType";
 export const useBodyTypes = () => {
   const [bodyTypes, setBodyTypes] = useState<BodyType[]>([]);
   const [bodyTypeImages, setBodyTypeImages] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchBodyTypes = async () => {
     try {
-      const { data, error } = await supabase
+      setIsLoading(true);
+      setError(null);
+      
+      const { data, error: fetchError } = await supabase
         .from('body_types')
         .select('*')
         .order('bodyfat_range', { ascending: true });
 
-      if (error) {
-        toast.error('Failed to fetch body types');
-        console.error(error);
-      } else if (data) {
+      if (fetchError) {
+        throw new Error('Failed to fetch body types');
+      }
+
+      if (data) {
         setBodyTypes(data as BodyType[]);
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
+      setError(error);
+      toast.error('Failed to load body types');
       console.error('Error fetching body types:', error);
-      toast.error('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const loadBodyTypeImages = () => {
-    const imageMap: Record<string, string> = {};
-    
-    for (const bodyType of bodyTypes) {
-      try {
+    try {
+      const imageMap: Record<string, string> = {};
+      
+      for (const bodyType of bodyTypes) {
         const capitalizedName = bodyType.name.charAt(0).toUpperCase() + bodyType.name.slice(1).toLowerCase();
         const imageName = capitalizedName.replace(/\s+/g, '-');
         const { data } = supabase.storage
@@ -39,12 +49,13 @@ export const useBodyTypes = () => {
           .getPublicUrl(`${imageName}.png`);
           
         imageMap[bodyType.id] = data.publicUrl;
-      } catch (error) {
-        console.error(`Error getting URL for ${bodyType.name}:`, error);
       }
+      
+      setBodyTypeImages(imageMap);
+    } catch (error) {
+      console.error('Error loading body type images:', error);
+      toast.error('Failed to load body type images');
     }
-    
-    setBodyTypeImages(imageMap);
   };
 
   useEffect(() => {
@@ -57,5 +68,6 @@ export const useBodyTypes = () => {
     }
   }, [bodyTypes]);
 
-  return { bodyTypes, bodyTypeImages };
+  return { bodyTypes, bodyTypeImages, isLoading, error };
 };
+

@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks/useUser";
@@ -8,13 +7,15 @@ import { toast } from "sonner";
 import { useBodyTypes } from "@/hooks/useBodyTypes";
 import BodyTypeCard from "./body-type/BodyTypeCard";
 import MeasurementsForm from "./body-type/MeasurementsForm";
+import ErrorBoundary from "./ui/error-boundary";
+import LoadingState from "./body-type/LoadingState";
 
 const BodyTypeSelector: React.FC = () => {
   const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
   const [weight, setWeight] = useState<number | ''>('');
   const [bodyfat, setBodyfat] = useState<number | ''>('');
   const { user } = useUser();
-  const { bodyTypes, bodyTypeImages } = useBodyTypes();
+  const { bodyTypes, bodyTypeImages, isLoading, error } = useBodyTypes();
 
   useEffect(() => {
     if (user) {
@@ -92,46 +93,69 @@ const BodyTypeSelector: React.FC = () => {
     return rows;
   };
 
+  if (error) {
+    return (
+      <Card className="max-w-6xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Error Loading Body Types</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-destructive">
+            {error.message}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="max-w-6xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center">Select Your Body Type</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {getBodyTypeRows().map((row, rowIndex) => (
-            <div key={`row-${rowIndex}`} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {row.map((bodyType) => (
-                <BodyTypeCard
-                  key={bodyType.id}
-                  bodyType={bodyType}
-                  imageUrl={bodyTypeImages[bodyType.id]}
-                  isSelected={selectedBodyType === bodyType.id}
-                  onSelect={handleBodyTypeSelect}
-                />
-              ))}
-            </div>
-          ))}
-          
-          {selectedBodyType && (
-            <MeasurementsForm
-              weight={weight}
-              setWeight={setWeight}
-              bodyfat={bodyfat}
-              setBodyfat={setBodyfat}
-            />
-          )}
-          
-          <Button 
-            onClick={handleSaveBodyType} 
-            className="mt-8 w-full bg-blue-500 hover:bg-blue-600 text-white"
-            disabled={!selectedBodyType || !weight}
-          >
-            Save Body Type
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <ErrorBoundary>
+      <Card className="max-w-6xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Select Your Body Type</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {isLoading ? (
+              <LoadingState />
+            ) : (
+              <>
+                {getBodyTypeRows().map((row, rowIndex) => (
+                  <div key={`row-${rowIndex}`} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {row.map((bodyType) => (
+                      <BodyTypeCard
+                        key={bodyType.id}
+                        bodyType={bodyType}
+                        imageUrl={bodyTypeImages[bodyType.id]}
+                        isSelected={selectedBodyType === bodyType.id}
+                        onSelect={handleBodyTypeSelect}
+                      />
+                    ))}
+                  </div>
+                ))}
+                
+                {selectedBodyType && (
+                  <MeasurementsForm
+                    weight={weight}
+                    setWeight={setWeight}
+                    bodyfat={bodyfat}
+                    setBodyfat={setBodyfat}
+                  />
+                )}
+                
+                <Button 
+                  onClick={handleSaveBodyType} 
+                  className="mt-8 w-full bg-blue-500 hover:bg-blue-600 text-white"
+                  disabled={!selectedBodyType || !weight || isLoading}
+                >
+                  Save Body Type
+                </Button>
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </ErrorBoundary>
   );
 };
 
