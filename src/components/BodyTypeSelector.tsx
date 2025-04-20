@@ -1,74 +1,26 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { BodyType } from "@/types/bodyType";
-import { Check } from "lucide-react";
+import { useBodyTypes } from "@/hooks/useBodyTypes";
+import BodyTypeCard from "./body-type/BodyTypeCard";
+import MeasurementsForm from "./body-type/MeasurementsForm";
 
 const BodyTypeSelector: React.FC = () => {
-  const [bodyTypes, setBodyTypes] = useState<BodyType[]>([]);
   const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
-  const [bodyTypeImages, setBodyTypeImages] = useState<Record<string, string>>({});
   const [weight, setWeight] = useState<number | ''>('');
   const [bodyfat, setBodyfat] = useState<number | ''>('');
   const { user } = useUser();
+  const { bodyTypes, bodyTypeImages } = useBodyTypes();
 
   useEffect(() => {
-    fetchBodyTypes();
     if (user) {
       fetchUserBodyType();
     }
   }, [user]);
-
-  useEffect(() => {
-    if (bodyTypes.length > 0) {
-      loadBodyTypeImages();
-    }
-  }, [bodyTypes]);
-
-  const fetchBodyTypes = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('body_types')
-        .select('*')
-        .order('bodyfat_range', { ascending: true });
-
-      if (error) {
-        toast.error('Failed to fetch body types');
-        console.error(error);
-      } else if (data) {
-        setBodyTypes(data as BodyType[]);
-      }
-    } catch (error) {
-      console.error('Error fetching body types:', error);
-      toast.error('An unexpected error occurred');
-    }
-  };
-
-  const loadBodyTypeImages = () => {
-    const imageMap: Record<string, string> = {};
-    
-    for (const bodyType of bodyTypes) {
-      try {
-        const capitalizedName = bodyType.name.charAt(0).toUpperCase() + bodyType.name.slice(1).toLowerCase();
-        const imageName = capitalizedName.replace(/\s+/g, '-');
-        const { data } = supabase.storage
-          .from('body-types')
-          .getPublicUrl(`${imageName}.png`);
-          
-        imageMap[bodyType.id] = data.publicUrl;
-        console.log(`Image URL for ${bodyType.name}: ${data.publicUrl}`);
-      } catch (error) {
-        console.error(`Error getting URL for ${bodyType.name}:`, error);
-      }
-    }
-    
-    setBodyTypeImages(imageMap);
-  };
 
   const fetchUserBodyType = async () => {
     if (!user) return;
@@ -150,75 +102,24 @@ const BodyTypeSelector: React.FC = () => {
           {getBodyTypeRows().map((row, rowIndex) => (
             <div key={`row-${rowIndex}`} className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {row.map((bodyType) => (
-                <div 
-                  key={bodyType.id} 
-                  className={`border rounded-lg p-4 cursor-pointer transition-all 
-                    ${selectedBodyType === bodyType.id 
-                      ? 'border-primary ring-2 ring-primary shadow-md' 
-                      : 'hover:border-primary hover:shadow-sm'}`}
-                  onClick={() => handleBodyTypeSelect(bodyType.id)}
-                >
-                  <div className="flex flex-col items-center space-y-3 relative">
-                    {selectedBodyType === bodyType.id && (
-                      <div className="absolute top-2 right-2 bg-primary rounded-full p-1 z-10">
-                        <Check className="h-4 w-4 text-white" />
-                      </div>
-                    )}
-                    <div className="w-full aspect-square overflow-hidden rounded-lg">
-                      <img 
-                        src={bodyTypeImages[bodyType.id] || '/placeholder.svg'} 
-                        alt={bodyType.name} 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder.svg';
-                        }}
-                      />
-                    </div>
-                    <div className="text-center mt-2 w-full">
-                      <h3 className="font-semibold text-lg">{bodyType.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Body Fat: {bodyType.bodyfat_range}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Population: {bodyType.population_percentage}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <BodyTypeCard
+                  key={bodyType.id}
+                  bodyType={bodyType}
+                  imageUrl={bodyTypeImages[bodyType.id]}
+                  isSelected={selectedBodyType === bodyType.id}
+                  onSelect={handleBodyTypeSelect}
+                />
               ))}
             </div>
           ))}
           
           {selectedBodyType && (
-            <div className="mt-8 space-y-4 max-w-md mx-auto">
-              <div className="space-y-2">
-                <Label htmlFor="weight">Current Weight (lbs) *</Label>
-                <Input
-                  id="weight"
-                  type="number"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : '')}
-                  placeholder="Enter your weight in pounds"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="bodyfat">
-                  Estimated Body Fat % (optional)
-                </Label>
-                <Input
-                  id="bodyfat"
-                  type="number"
-                  value={bodyfat}
-                  onChange={(e) => setBodyfat(e.target.value ? Number(e.target.value) : '')}
-                  placeholder="Enter your estimated body fat percentage"
-                  min="1"
-                  max="100"
-                  step="0.1"
-                />
-              </div>
-            </div>
+            <MeasurementsForm
+              weight={weight}
+              setWeight={setWeight}
+              bodyfat={bodyfat}
+              setBodyfat={setBodyfat}
+            />
           )}
           
           <Button 
