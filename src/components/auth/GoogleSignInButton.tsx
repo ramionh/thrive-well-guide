@@ -23,6 +23,10 @@ const GoogleSignInButton = () => {
         title: "Google Login",
         description: "Successfully signed in with Google.",
       });
+
+      // Redirect to dashboard after successful login
+      navigate('/dashboard');
+      
     } catch (error: any) {
       toast({
         title: "Error",

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail } from "lucide-react";
-import { useUser } from "@/context/UserContext";
 
 interface LoginFormProps {
   email: string;
@@ -24,7 +24,7 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
     e.preventDefault();
     
     try {
-      const { error, data } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -36,7 +36,8 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
         description: "Successfully signed in to your account.",
       });
       
-      // After successful login, redirect will be handled by AuthPage useEffect
+      // Redirect to dashboard after successful login
+      navigate('/dashboard');
       
     } catch (error: any) {
       toast({
