@@ -3,15 +3,16 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Goal } from "@/types/user";
 import { format, differenceInDays } from "date-fns";
-import CreateGoalDialog from "@/components/goals/CreateGoalDialog";
-import { useUser } from "@/context/UserContext";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface GoalsListProps {
   goals: Goal[];
 }
 
 const GoalsList: React.FC<GoalsListProps> = ({ goals }) => {
-  const { user } = useUser();
+  const navigate = useNavigate();
   
   // Function to refresh goals after creating a new one
   const handleGoalCreated = () => {
@@ -28,12 +29,13 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals }) => {
           <CardTitle>Your Goals</CardTitle>
           <CardDescription>Track your body transformation journey</CardDescription>
         </div>
-        {user && currentBodyTypeId && (
-          <CreateGoalDialog
-            userId={user.id}
-            currentBodyTypeId={currentBodyTypeId}
-            onGoalCreated={handleGoalCreated}
-          />
+        {currentBodyTypeId && (
+          <Button 
+            onClick={() => navigate("/body-type")}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Set Transformation Goals
+          </Button>
         )}
       </CardHeader>
       <CardContent>
