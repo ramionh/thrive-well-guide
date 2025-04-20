@@ -52,33 +52,7 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
         return;
       }
 
-      // Get the goal body type ID using our new function
-      const { data: goalBodyTypeId, error: functionError } = await supabase
-        .rpc('get_next_better_body_type', { current_body_type_id: selectedBodyType });
-
-      if (functionError) {
-        console.error('Error getting next body type:', functionError);
-        toast.error('Failed to set goal: ' + functionError.message);
-        return;
-      }
-
-      // Create the goal
-      const { error: goalError } = await supabase
-        .from('goals')
-        .insert({
-          user_id: user.id,
-          current_body_type_id: selectedBodyType,
-          goal_body_type_id: goalBodyTypeId,
-          started_date: startDate,
-        });
-
-      if (goalError) {
-        console.error('Error creating goal:', goalError);
-        toast.error('Failed to create goal: ' + goalError.message);
-        return;
-      }
-
-      toast.success('Body type and goal saved successfully!');
+      toast.success('Body type saved successfully!');
       fetchUserBodyType(); // Refresh the data after saving
     } catch (error: any) {
       console.error('Error in save operation:', error);
@@ -100,3 +74,4 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
     handleSaveBodyType
   };
 };
+
