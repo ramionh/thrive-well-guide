@@ -1,10 +1,10 @@
 export type Goal = {
   id: string;
-  name: string;
-  targetValue: number;
-  currentValue: number;
-  unit: string;
-  category: "sleep" | "nutrition" | "exercise" | "other";
+  userId: string;
+  goalBodyTypeId: string;
+  currentBodyTypeId: string;
+  startedDate: Date;
+  targetDate: Date;
   createdAt: Date;
 };
 

@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect } from "react";
 import { User, UserContextType, Goal, Vital } from "@/types/user";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,12 +35,21 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error("Error fetching profile:", profileError);
             setUser(null);
           } else {
+            const { data: goalsData, error: goalsError } = await supabase
+              .from('goals')
+              .select('*')
+              .eq('user_id', session.user.id);
+
+            if (goalsError) {
+              console.error("Error fetching goals:", goalsError);
+            }
+
             setUser({
               id: session.user.id,
               name: profileData.full_name || '',
               email: session.user.email || '',
               onboardingCompleted: profileData.onboarding_completed || false,
-              goals: [], // TODO: Implement goal fetching
+              goals: goalsData || [],
               vitals: [], // TODO: Implement vitals fetching
               avatar_url: profileData.avatar_url,
               gender: profileData.gender
@@ -101,34 +109,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const addGoal = (goal: Omit<Goal, "id" | "createdAt">) => {
-    if (user) {
-      const newGoal: Goal = {
-        ...goal,
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-      };
-      
-      setUser({
-        ...user,
-        goals: [...user.goals, newGoal],
-      });
-    }
-  };
-
-  const updateGoal = (goalId: string, updatedValues: Partial<Goal>) => {
-    if (user) {
-      const updatedGoals = user.goals.map((goal) => 
-        goal.id === goalId ? { ...goal, ...updatedValues } : goal
-      );
-      
-      setUser({
-        ...user,
-        goals: updatedGoals,
-      });
-    }
-  };
-
   const addVital = (vital: Omit<Vital, "id" | "date">) => {
     if (user) {
       const newVital: Vital = {
@@ -172,8 +152,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         onboardingStep,
         setOnboardingStep,
         completeOnboarding,
-        addGoal,
-        updateGoal,
         addVital,
         updateVital,
         saveMotivationalResponse,

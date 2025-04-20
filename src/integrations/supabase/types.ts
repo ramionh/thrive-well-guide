@@ -96,6 +96,54 @@ export type Database = {
         }
         Relationships: []
       }
+      goals: {
+        Row: {
+          created_at: string | null
+          current_body_type_id: string
+          goal_body_type_id: string
+          id: string
+          started_date: string
+          target_date: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_body_type_id: string
+          goal_body_type_id: string
+          id?: string
+          started_date?: string
+          target_date?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_body_type_id?: string
+          goal_body_type_id?: string
+          id?: string
+          started_date?: string
+          target_date?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_current_body_type_id_fkey"
+            columns: ["current_body_type_id"]
+            isOneToOne: false
+            referencedRelation: "body_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_goal_body_type_id_fkey"
+            columns: ["goal_body_type_id"]
+            isOneToOne: false
+            referencedRelation: "body_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habits: {
         Row: {
           category: Database["public"]["Enums"]["habit_category"]
