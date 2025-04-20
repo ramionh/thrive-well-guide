@@ -1,9 +1,10 @@
+
 import React from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Dumbbell, Moon, Apple } from "lucide-react";
+import { Dumbbell, Moon, Apple, LineChart as LineChartIcon } from "lucide-react";
 import BodyMeasurementsChart from "@/components/progress/BodyMeasurementsChart";
 
 const ProgressPage: React.FC = () => {
@@ -44,7 +45,7 @@ const ProgressPage: React.FC = () => {
       <Tabs defaultValue="measurements">
         <TabsList className="mb-6">
           <TabsTrigger value="measurements" className="flex items-center gap-2">
-            <ChartLine className="h-4 w-4" />
+            <LineChartIcon className="h-4 w-4" />
             Measurements
           </TabsTrigger>
           <TabsTrigger value="sleep" className="flex items-center gap-2">
