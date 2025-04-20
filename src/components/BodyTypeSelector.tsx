@@ -55,8 +55,13 @@ const BodyTypeSelector: React.FC = () => {
       return;
     }
 
-    if (!weight) {
-      toast.error('Please enter your weight');
+    if (!weight || weight < 50 || weight > 1000) {
+      toast.error('Please enter a valid weight between 50 and 1000 lbs');
+      return;
+    }
+
+    if (bodyfat !== '' && (bodyfat < 1 || bodyfat > 100)) {
+      toast.error('Body fat percentage must be between 1% and 100%');
       return;
     }
 
