@@ -3,17 +3,38 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Goal } from "@/types/user";
 import { format, differenceInDays } from "date-fns";
+import CreateGoalDialog from "@/components/goals/CreateGoalDialog";
+import { useUser } from "@/context/UserContext";
 
 interface GoalsListProps {
   goals: Goal[];
 }
 
 const GoalsList: React.FC<GoalsListProps> = ({ goals }) => {
+  const { user } = useUser();
+  
+  // Function to refresh goals after creating a new one
+  const handleGoalCreated = () => {
+    // Since goals are managed by the UserContext, it will update automatically
+    // when the database changes
+  };
+
+  const currentBodyTypeId = goals.length > 0 ? goals[0].currentBodyTypeId : null;
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Your Goals</CardTitle>
-        <CardDescription>Track your body transformation journey</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Your Goals</CardTitle>
+          <CardDescription>Track your body transformation journey</CardDescription>
+        </div>
+        {user && currentBodyTypeId && (
+          <CreateGoalDialog
+            userId={user.id}
+            currentBodyTypeId={currentBodyTypeId}
+            onGoalCreated={handleGoalCreated}
+          />
+        )}
       </CardHeader>
       <CardContent>
         {goals && goals.length > 0 ? (
