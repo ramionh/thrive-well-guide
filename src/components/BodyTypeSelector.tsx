@@ -66,6 +66,7 @@ const BodyTypeSelector: React.FC = () => {
     }
 
     try {
+      // Save to user_body_types table - this will trigger a database function to create the goal
       const { error } = await supabase
         .from('user_body_types')
         .insert({
@@ -77,8 +78,8 @@ const BodyTypeSelector: React.FC = () => {
         });
 
       if (error) {
-        toast.error('Failed to save body type');
-        console.error(error);
+        console.error('Error detail:', error);
+        toast.error(`Failed to save body type: ${error.message}`);
       } else {
         toast.success('Body type and measurements saved successfully');
       }
