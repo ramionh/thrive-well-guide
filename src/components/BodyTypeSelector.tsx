@@ -19,11 +19,12 @@ const BodyTypeSelector: React.FC = () => {
     if (!user) return;
     
     try {
+      // Updated to order by created_at instead of selected_date to get the most recent record
       const { data: latestData, error: fetchError } = await supabase
         .from('user_body_types')
         .select('*')
         .eq('user_id', user.id)
-        .order('selected_date', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1);
 
       if (fetchError) {
@@ -32,9 +33,12 @@ const BodyTypeSelector: React.FC = () => {
       }
 
       if (latestData && latestData.length > 0) {
+        console.log('Latest body type data:', latestData[0]);
         setSelectedBodyType(latestData[0].body_type_id);
         setWeight(latestData[0].weight_lbs);
         setBodyfat(latestData[0].bodyfat_percentage || '');
+      } else {
+        console.log('No body type data found for user');
       }
     } catch (error) {
       console.error('Error fetching user body type:', error);
