@@ -34,8 +34,10 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
     try {
       const startDate = new Date().toISOString().split('T')[0];
       
+      console.log('Saving body type for user:', user.id);
+      
       // First save the user body type
-      const { error: bodyTypeError } = await supabase
+      const { data: insertedData, error: bodyTypeError } = await supabase
         .from('user_body_types')
         .insert({
           user_id: user.id,
@@ -43,22 +45,53 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
           selected_date: startDate,
           weight_lbs: weight,
           bodyfat_percentage: bodyfat || null
-        });
+        })
+        .select();
 
       if (bodyTypeError) {
         console.error('Error saving body type:', bodyTypeError);
         
         if (bodyTypeError.code === '42501') {
           toast.error('Permission denied. Make sure you are logged in and have the necessary permissions.');
+        } else if (bodyTypeError.code === '23505') {
+          toast.error('You have already selected this body type today.');
         } else {
-          toast.error('Failed to save body type. Please try again.');
+          toast.error(`Failed to save body type: ${bodyTypeError.message}`);
         }
         return;
       }
 
-      // Instead of manually creating the goal, let database trigger handle it
-      // The database has a trigger called create_goal_on_body_type_selection
-      // that will automatically create a goal when a user_body_type is inserted
+      console.log('Body type saved successfully:', insertedData);
+      
+      // Try to directly check if the goal was created
+      const { data: goalsData, error: goalsError } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+        
+      if (goalsError) {
+        console.error('Error checking for goal creation:', goalsError);
+      } else if (goalsData && goalsData.length > 0) {
+        console.log('Goal created automatically:', goalsData[0]);
+      } else {
+        console.warn('No goal was created automatically. The database trigger might not be working.');
+        
+        // Attempt to manually create a goal if the trigger failed
+        const { error: manualGoalError } = await supabase.rpc('manually_create_body_type_goal', {
+          user_id_param: user.id,
+          body_type_id_param: selectedBodyType,
+          selected_date_param: startDate
+        });
+        
+        if (manualGoalError) {
+          console.error('Error manually creating goal:', manualGoalError);
+          toast.error('Could not create a goal automatically. Please try again later.');
+        } else {
+          console.log('Goal created manually as fallback');
+        }
+      }
 
       toast.success('Body type saved successfully');
       fetchUserBodyType();
