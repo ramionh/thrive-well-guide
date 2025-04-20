@@ -34,10 +34,8 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
     try {
       const startDate = new Date().toISOString().split('T')[0];
       
-      console.log('Saving body type for user:', user.id);
-      
       // Save user body type
-      const { data: insertedData, error: bodyTypeError } = await supabase
+      const { error: bodyTypeError } = await supabase
         .from('user_body_types')
         .insert({
           user_id: user.id,
@@ -50,23 +48,13 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
 
       if (bodyTypeError) {
         console.error('Error saving body type:', bodyTypeError);
-        
-        if (bodyTypeError.code === '42501') {
-          toast.error('Permission denied. Make sure you are logged in and have the necessary permissions.');
-        } else if (bodyTypeError.code === '23505') {
-          toast.error('You have already selected this body type today.');
-        } else {
-          toast.error(`Failed to save body type: ${bodyTypeError.message}`);
-        }
+        toast.error('Failed to save body type: ' + bodyTypeError.message);
         return;
       }
 
-      console.log('Body type saved successfully:', insertedData);
-      
-      toast.success('Body type saved successfully');
-      fetchUserBodyType();
-
-    } catch (error) {
+      toast.success('Body type saved successfully!');
+      fetchUserBodyType(); // Refresh the data after saving
+    } catch (error: any) {
       console.error('Error in save operation:', error);
       toast.error('An unexpected error occurred');
     } finally {

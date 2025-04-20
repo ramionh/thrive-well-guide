@@ -10,26 +10,31 @@ import LoadingState from "./body-type/LoadingState";
 import MeasurementsForm from "./body-type/MeasurementsForm";
 import BodyTypeGrid from "./body-type/BodyTypeGrid";
 import { useBodyTypeSelection } from "@/hooks/useBodyTypeSelection";
+import { toast } from "sonner";
 
 const BodyTypeSelector: React.FC = () => {
   const { user } = useUser();
   const { bodyTypes, bodyTypeImages, isLoading, error } = useBodyTypes();
-
   const fetchUserBodyType = async () => {
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      const { data: latestData, error: fetchError } = await supabase
         .from('user_body_types')
         .select('*')
         .eq('user_id', user.id)
         .order('selected_date', { ascending: false })
         .limit(1);
 
-      if (error) {
-        console.error('Error fetching user body type:', error);
-      } else if (data && data.length > 0) {
-        setSelectedBodyType(data[0].body_type_id);
+      if (fetchError) {
+        console.error('Error fetching user body type:', fetchError);
+        return;
+      }
+
+      if (latestData && latestData.length > 0) {
+        setSelectedBodyType(latestData[0].body_type_id);
+        setWeight(latestData[0].weight_lbs);
+        setBodyfat(latestData[0].bodyfat_percentage || '');
       }
     } catch (error) {
       console.error('Error fetching user body type:', error);
@@ -49,9 +54,7 @@ const BodyTypeSelector: React.FC = () => {
   } = useBodyTypeSelection(user, fetchUserBodyType);
 
   useEffect(() => {
-    if (user) {
-      fetchUserBodyType();
-    }
+    fetchUserBodyType();
   }, [user]);
 
   if (error) {
