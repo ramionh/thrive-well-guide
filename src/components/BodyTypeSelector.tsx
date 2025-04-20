@@ -121,7 +121,7 @@ const BodyTypeSelector: React.FC = () => {
         toast.error('Failed to save body type');
         console.error(error);
       } else {
-        toast.success('Body type saved successfully');
+        toast.success('Body type and measurements saved successfully');
       }
     } catch (error) {
       console.error('Error saving body type:', error);
