@@ -229,19 +229,19 @@ const FocusedHabitsSelector = () => {
                   </Card>
                 ))}
               </div>
+
+              <Button 
+                onClick={() => completionMutation.mutate()}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6"
+              >
+                Complete This Step
+              </Button>
             </Card>
           </CarouselItem>
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-
-      <Button 
-        onClick={() => completionMutation.mutate()}
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6"
-      >
-        Complete This Step
-      </Button>
     </div>
   );
 };
