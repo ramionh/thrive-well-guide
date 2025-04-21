@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Ambivalence from "./Ambivalence";
 import FocusedHabitsSelector from "./FocusedHabitsSelector";
 import MotivationSplash from "./MotivationSplash";
@@ -45,17 +44,6 @@ const Motivation = () => {
           <CardContent className="p-6">
             <h2 className="text-2xl font-bold mb-6">{currentStep?.title}</h2>
             {currentStep?.component}
-            
-            {currentStepId === 1 && (
-              <div className="mt-6">
-                <Button 
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
-                  onClick={() => markStepComplete(1)}
-                >
-                  Complete This Step
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>

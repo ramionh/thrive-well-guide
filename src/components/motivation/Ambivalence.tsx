@@ -1,5 +1,6 @@
 
 import React from "react";
+import ProConList from "./ProConList";
 
 interface AmbivalenceProps {
   onComplete?: () => void;
@@ -51,6 +52,11 @@ const Ambivalence: React.FC<AmbivalenceProps> = ({ onComplete }) => {
           don't have to address all the following topics, as we have plenty of
           time to narrow things down later. Pick one or two core habits to focus on.
         </p>
+      </div>
+
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold mb-4">Pros & Cons Exercise</h3>
+        <ProConList />
       </div>
     </div>
   );
