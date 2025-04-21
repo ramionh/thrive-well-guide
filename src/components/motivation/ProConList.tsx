@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle } from "lucide-react";
 import GoalDisplay from "./pros-cons/GoalDisplay";
 import ItemList from "./pros-cons/ItemList";
 import Reflection from "./pros-cons/Reflection";
@@ -17,7 +15,6 @@ const ProConList = () => {
   const [newPro, setNewPro] = useState("");
   const [newCon, setNewCon] = useState("");
   const [loading, setLoading] = useState(true);
-  const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -126,23 +123,6 @@ const ProConList = () => {
     }
   };
 
-  const handleMarkComplete = () => {
-    if (pros.length === 0) {
-      toast({
-        title: "Cannot complete",
-        description: "Please add at least one pro to continue",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setCompleted(true);
-    toast({
-      title: "Step completed",
-      description: "You've completed the Ambivalence step!",
-    });
-  };
-
   return (
     <div className="space-y-6">
       <GoalDisplay />
@@ -169,22 +149,6 @@ const ProConList = () => {
       </div>
       
       <Reflection />
-      
-      <div className="flex justify-end mt-6">
-        <Button 
-          onClick={handleMarkComplete}
-          className="bg-purple-600 hover:bg-purple-700"
-          disabled={completed || pros.length === 0}
-        >
-          {completed ? (
-            <>
-              <CheckCircle className="mr-2 h-4 w-4" /> Completed
-            </>
-          ) : (
-            "Mark as Complete"
-          )}
-        </Button>
-      </div>
     </div>
   );
 };
