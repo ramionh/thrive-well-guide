@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import AmbivalenceCarousel from "./ambivalence/AmbivalenceCarousel";
 import ProConList from "./ProConList";
@@ -14,6 +14,29 @@ interface AmbivalenceProps {
 const Ambivalence: React.FC<AmbivalenceProps> = ({ onComplete }) => {
   const { user } = useUser();
   const { toast } = useToast();
+  const [isStepCompleted, setIsStepCompleted] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkStepCompletion = async () => {
+      const { data, error } = await supabase
+        .from('motivation_steps_progress')
+        .select('completed')
+        .eq('user_id', user.id)
+        .eq('step_number', 1)
+        .single();
+
+      if (error) {
+        console.error('Error checking step completion:', error);
+        return;
+      }
+
+      setIsStepCompleted(data?.completed || false);
+    };
+
+    checkStepCompletion();
+  }, [user]);
 
   const handleComplete = async () => {
     if (!user) return;
@@ -35,6 +58,8 @@ const Ambivalence: React.FC<AmbivalenceProps> = ({ onComplete }) => {
         title: "Step completed",
         description: "Moving on to the next step"
       });
+
+      setIsStepCompleted(true);
 
       if (onComplete) {
         onComplete();
@@ -62,8 +87,9 @@ const Ambivalence: React.FC<AmbivalenceProps> = ({ onComplete }) => {
         <Button 
           onClick={handleComplete}
           className="bg-purple-600 hover:bg-purple-700 text-white"
+          disabled={isStepCompleted}
         >
-          Complete This Step
+          {isStepCompleted ? "Completed" : "Complete This Step"}
         </Button>
       </div>
     </div>
