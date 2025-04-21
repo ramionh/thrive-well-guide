@@ -14,7 +14,7 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
 
       // First, insert the attitude assessment
       const { error: attitudeError } = await supabase
-        .from('motivation_attitude' as any)  // Using 'as any' to bypass type checking for now
+        .from('motivation_attitude')
         .insert({
           user_id: user.id,
           attitude_rating: data.attitude_rating,

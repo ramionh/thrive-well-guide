@@ -227,6 +227,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_attitude: {
+        Row: {
+          attitude_rating: string
+          created_at: string
+          explanation: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attitude_rating: string
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attitude_rating?: string
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_pros_cons: {
         Row: {
           created_at: string
