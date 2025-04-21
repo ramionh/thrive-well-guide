@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
@@ -17,13 +17,12 @@ type Step = {
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [currentStepId, setCurrentStepId] = useState(1);
-
-  const steps: Step[] = [
+  const [steps, setSteps] = useState<Step[]>([
     {
       id: 1,
       title: "Ambivalence",
       description: "Understanding mixed feelings about change",
-      component: <Ambivalence />,
+      component: <Ambivalence onComplete={() => markStepComplete(1)} />,
       completed: false,
     },
     {
@@ -34,7 +33,7 @@ const Motivation = () => {
       completed: false,
     },
     // Additional steps will be added here in the future
-  ];
+  ]);
 
   const currentStep = steps.find((step) => step.id === currentStepId);
 
@@ -52,16 +51,33 @@ const Motivation = () => {
 
   const markStepComplete = (stepId: number) => {
     // Update the completed status of the step
-    const stepIndex = steps.findIndex((step) => step.id === stepId);
-    if (stepIndex !== -1) {
-      steps[stepIndex].completed = true;
-      
-      // Move to the next step if available
-      if (stepId < steps.length) {
-        setCurrentStepId(stepId + 1);
-      }
+    setSteps(prevSteps => 
+      prevSteps.map(step => 
+        step.id === stepId 
+          ? { ...step, completed: true } 
+          : step
+      )
+    );
+    
+    // Move to the next step if available
+    const nextStepId = stepId + 1;
+    if (steps.some(step => step.id === nextStepId)) {
+      setCurrentStepId(nextStepId);
     }
   };
+
+  // Simulate completion of step 1 if coming from another page directly to step 2
+  useEffect(() => {
+    if (currentStepId === 2 && !steps[0].completed) {
+      setSteps(prevSteps => 
+        prevSteps.map(step => 
+          step.id === 1 
+            ? { ...step, completed: true } 
+            : step
+        )
+      );
+    }
+  }, [currentStepId, steps]);
 
   if (showSplash) {
     return (
@@ -171,6 +187,18 @@ const Motivation = () => {
             <h2 className="text-2xl font-bold mb-6">{currentStep?.title}</h2>
             {/* Render the current step component */}
             {currentStep?.component}
+            
+            {/* Add a "Complete" button for the Ambivalence step */}
+            {currentStepId === 1 && (
+              <div className="mt-6">
+                <Button 
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  onClick={() => markStepComplete(1)}
+                >
+                  Complete This Step
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
