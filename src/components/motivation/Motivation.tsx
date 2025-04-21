@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
 import FocusedHabitsSelector from "./FocusedHabitsSelector";
+import InternalObstacles from "./InternalObstacles";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
@@ -23,6 +24,13 @@ const Motivation = () => {
       title: "Focus Habits",
       description: "Select your key transformation habits",
       component: <FocusedHabitsSelector />,
+      completed: false,
+    },
+    {
+      id: 3,
+      title: "Internal Obstacles",
+      description: "Identify your internal barriers",
+      component: <InternalObstacles onComplete={() => markStepComplete(3)} />,
       completed: false,
     },
   ]);
