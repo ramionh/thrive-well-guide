@@ -30,15 +30,25 @@ const InternalObstacles = ({ onComplete }: InternalObstaclesProps) => {
     queryKey: ['current-goal', user?.id],
     queryFn: async () => {
       if (!user) return null;
+      
+      // Use explicit column names to avoid ambiguity with multiple foreign keys to the same table
       const { data, error } = await supabase
         .from('goals')
-        .select('*, current_body_type:current_body_type_id(name), goal_body_type:goal_body_type_id(name)')
+        .select(`
+          *,
+          current_body_type:current_body_type_id(id, name),
+          goal_body_type:goal_body_type_id(id, name)
+        `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching goal:', error);
+        return null;
+      }
+      
       return data;
     },
     enabled: !!user

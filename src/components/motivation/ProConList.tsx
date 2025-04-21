@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +8,11 @@ import ItemList from "./pros-cons/ItemList";
 import Reflection from "./pros-cons/Reflection";
 import type { ProCon } from "./pros-cons/types";
 
-const ProConList = () => {
+interface ProConListProps {
+  onComplete?: () => void;
+}
+
+const ProConList = ({ onComplete }: ProConListProps) => {
   const { user } = useUser();
   const { toast } = useToast();
   const [pros, setPros] = useState<ProCon[]>([]);
@@ -148,7 +153,7 @@ const ProConList = () => {
         />
       </div>
       
-      <Reflection />
+      <Reflection onComplete={onComplete} />
     </div>
   );
 };
