@@ -23,7 +23,7 @@ const Motivation = () => {
       id: 2,
       title: "Focus Habits",
       description: "Select your key transformation habits",
-      component: <FocusedHabitsSelector />,
+      component: <FocusedHabitsSelector onComplete={() => markStepComplete(2)} />,
       completed: false,
     },
     {

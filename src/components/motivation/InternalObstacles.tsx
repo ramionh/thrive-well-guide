@@ -52,13 +52,18 @@ const InternalObstacles = ({ onComplete }: { onComplete?: () => void }) => {
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user,
-    onSuccess: (data) => {
-      if (data.length > 0) {
-        setExcuses(data.map(e => e.excuse));
-      }
-    }
+    enabled: !!user
   });
+
+  // Use the useEffect hook to update the excuses state when savedExcuses is loaded
+  React.useEffect(() => {
+    if (savedExcuses && savedExcuses.length > 0) {
+      const excusesList = savedExcuses.map(e => e.excuse);
+      // Fill the remaining slots with empty strings if fewer than 5 excuses
+      const filledExcuses = [...excusesList, ...Array(5 - excusesList.length).fill('')].slice(0, 5);
+      setExcuses(filledExcuses);
+    }
+  }, [savedExcuses]);
 
   const saveExcuseMutation = useMutation({
     mutationFn: async () => {
@@ -157,7 +162,7 @@ const InternalObstacles = ({ onComplete }: { onComplete?: () => void }) => {
               {goal && (
                 <div className="mb-6 p-4 bg-purple-50 rounded-lg">
                   <p className="font-semibold">Your Goal:</p>
-                  <p>Transform from {goal.current_body_type?.name} to {goal.goal_body_type?.name}</p>
+                  <p>Transform from {goal.current_body_type?.name || 'Current'} to {goal.goal_body_type?.name || 'Goal'}</p>
                 </div>
               )}
 
