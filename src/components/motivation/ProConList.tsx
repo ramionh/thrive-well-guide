@@ -38,9 +38,10 @@ const ProConList = () => {
     if (!user) return;
     
     try {
+      // Fix the query by specifically selecting the columns we need
       const { data, error } = await supabase
         .from('goals')
-        .select('body_types(name)')
+        .select('goal_body_type_id, body_types!body_types(name)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -48,10 +49,10 @@ const ProConList = () => {
       
       if (error) throw error;
       
-      // Safely access the name property
-      const bodyTypeName = data?.body_types?.name;
-      if (bodyTypeName) {
-        setGoal(`Become ${bodyTypeName}`);
+      // Access the name property correctly
+      // The body_types property now contains an object with a name property
+      if (data && data.body_types) {
+        setGoal(`Become ${data.body_types.name}`);
       }
     } catch (err) {
       console.error("Error fetching goal:", err);
