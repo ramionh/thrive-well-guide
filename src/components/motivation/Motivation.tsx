@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import Ambivalence from "./Ambivalence";
+import FocusedHabitsSelector from "./FocusedHabitsSelector";
 
 type Step = {
   id: number;
@@ -23,6 +24,13 @@ const Motivation = () => {
       title: "Ambivalence",
       description: "Understanding mixed feelings about change",
       component: <Ambivalence />,
+      completed: false,
+    },
+    {
+      id: 2,
+      title: "Focus Habits",
+      description: "Select your key transformation habits",
+      component: <FocusedHabitsSelector />,
       completed: false,
     },
     // Additional steps will be added here in the future

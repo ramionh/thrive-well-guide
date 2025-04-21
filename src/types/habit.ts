@@ -7,4 +7,12 @@ export type Habit = {
   name: string;
   description: string;
   created_at: string;
+  is_focused?: boolean; // Add this to track if habit is currently focused
+};
+
+export type FocusedHabit = {
+  id: string;
+  user_id: string;
+  habit_id: string;
+  created_at: string;
 };

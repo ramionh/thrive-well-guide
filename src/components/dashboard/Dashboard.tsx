@@ -1,26 +1,45 @@
-
 import React from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { History, PlusCircle, UserRound } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Habit } from "@/types/habit";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { UserRound, PlusCircle } from "lucide-react";
 
 import SleepMetrics from "./SleepMetrics";
 import NutritionMetrics from "./NutritionMetrics";
 import ExerciseMetrics from "./ExerciseMetrics";
 import GoalProgress from "./GoalProgress";
 import HistoryButton from "./HistoryButton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Dashboard: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
-  
+
   // Get the first name or default to "User"
   const firstName = user?.name?.split(' ')[0] || "User";
-  
+
+  // Fetch focused habits with their details
+  const { data: focusedHabits } = useQuery({
+    queryKey: ['focused-habits', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('focused_habits')
+        .select('habit_id(id, name, description, category)')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      return data?.map(item => item.habit_id) || [];
+    },
+    enabled: !!user
+  });
+
   if (!user?.onboardingCompleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -29,8 +48,8 @@ const Dashboard: React.FC = () => {
           <p className="text-muted-foreground mb-6">
             Let's get started with a quick onboarding process to personalize your experience.
           </p>
-          <Button 
-            className="bg-thrive-blue" 
+          <Button
+            className="bg-thrive-blue"
             onClick={() => navigate("/onboarding")}
           >
             Start Onboarding
@@ -39,7 +58,7 @@ const Dashboard: React.FC = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="flex items-center mb-6">
@@ -62,7 +81,7 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex gap-3 mt-4 md:mt-0">
           <HistoryButton />
-          <Button 
+          <Button
             className="bg-blue-500 hover:bg-blue-600 text-white"
             onClick={() => navigate("/add-progress")}
           >
@@ -71,7 +90,7 @@ const Dashboard: React.FC = () => {
           </Button>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Card className="shadow-sm">
           <div className="p-6">
@@ -79,14 +98,14 @@ const Dashboard: React.FC = () => {
             <SleepMetrics />
           </div>
         </Card>
-        
+
         <Card className="shadow-sm">
           <div className="p-6">
             <h2 className="text-lg font-semibold mb-4">Nutrition</h2>
             <NutritionMetrics />
           </div>
         </Card>
-        
+
         <Card className="shadow-sm">
           <div className="p-6">
             <h2 className="text-lg font-semibold mb-4">Exercise</h2>
@@ -94,7 +113,7 @@ const Dashboard: React.FC = () => {
           </div>
         </Card>
       </div>
-      
+
       <div className="mb-6">
         <Tabs defaultValue="goals">
           <TabsList className="bg-background">
@@ -113,6 +132,27 @@ const Dashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Add Focused Habits Section */}
+      {focusedHabits && focusedHabits.length > 0 && (
+        <div className="mb-6">
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle>Your Focused Habits</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {focusedHabits.map((habit: any) => (
+                  <div key={habit.id} className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold">{habit.name}</h3>
+                    <p className="text-sm text-gray-600">{habit.description}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
