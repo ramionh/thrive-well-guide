@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import ProConList from "./ProConList";
 
@@ -108,13 +107,12 @@ const Ambivalence = () => {
 
   return (
     <div className="space-y-6">
-      <Carousel
+      <Carousel 
         className="w-full"
         opts={{
           align: "center",
           startIndex: currentSlide,
         }}
-        onSlideChange={setCurrentSlide}
       >
         <CarouselContent>
           {AmbivalenceSlides.map((slide, index) => (

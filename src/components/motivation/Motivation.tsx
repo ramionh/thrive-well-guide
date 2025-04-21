@@ -88,7 +88,7 @@ const Motivation = () => {
               any action will make you more likely to achieve it
             </p>
             
-            <p className="mb-6">
+            <p className="mb-4">
               Trying to figure out how you're going to achieve a goal before
               you've fully committed to it often leads to a plan you won't stick with, steps
               that don't work the way you want them to, and general frustration and

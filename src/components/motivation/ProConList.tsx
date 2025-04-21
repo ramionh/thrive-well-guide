@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +25,6 @@ const ProConList = () => {
   const [newCon, setNewCon] = useState("");
   const [goal, setGoal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [savingGoal, setSavingGoal] = useState(false);
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
@@ -39,21 +37,24 @@ const ProConList = () => {
   const fetchUserGoal = async () => {
     if (!user) return;
     
-    const { data, error } = await supabase
-      .from('goals')
-      .select('id, body_types(name)')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .select('body_types(name)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
       
-    if (error) {
-      console.error("Error fetching goal:", error);
-      return;
-    }
-    
-    if (data?.body_types?.name) {
-      setGoal(`Become ${data.body_types.name}`);
+      if (error) throw error;
+      
+      // Safely access the name property
+      const bodyTypeName = data?.body_types?.name;
+      if (bodyTypeName) {
+        setGoal(`Become ${bodyTypeName}`);
+      }
+    } catch (err) {
+      console.error("Error fetching goal:", err);
     }
   };
 
@@ -61,27 +62,27 @@ const ProConList = () => {
     if (!user) return;
     
     setLoading(true);
-    const { data, error } = await supabase
-      .from('motivation_pros_cons')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from('motivation_pros_cons')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
       
-    setLoading(false);
-    
-    if (error) {
-      console.error("Error fetching pros and cons:", error);
+      if (error) throw error;
+      
+      const typedData = data as ProCon[];
+      setPros(typedData.filter(item => item.type === 'pro'));
+      setCons(typedData.filter(item => item.type === 'con'));
+    } catch (err) {
+      console.error("Error fetching pros and cons:", err);
       toast({
         title: "Error",
         description: "Failed to load your pros and cons list",
         variant: "destructive",
       });
-      return;
-    }
-    
-    if (data) {
-      setPros(data.filter(item => item.type === 'pro'));
-      setCons(data.filter(item => item.type === 'con'));
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -91,33 +92,27 @@ const ProConList = () => {
     const text = type === 'pro' ? newPro : newCon;
     if (!text.trim()) return;
     
-    const { data, error } = await supabase
-      .from('motivation_pros_cons')
-      .insert([
-        {
-          user_id: user.id,
-          text: text.trim(),
-          type
-        }
-      ])
-      .select();
+    try {
+      const { data, error } = await supabase
+        .from('motivation_pros_cons')
+        .insert([
+          {
+            user_id: user.id,
+            text: text.trim(),
+            type
+          }
+        ])
+        .select();
       
-    if (error) {
-      console.error(`Error adding ${type}:`, error);
-      toast({
-        title: "Error",
-        description: `Failed to add your ${type}`,
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (data) {
+      if (error) throw error;
+      
+      const newItem = data[0] as ProCon;
+      
       if (type === 'pro') {
-        setPros([...pros, data[0]]);
+        setPros([...pros, newItem]);
         setNewPro("");
       } else {
-        setCons([...cons, data[0]]);
+        setCons([...cons, newItem]);
         setNewCon("");
       }
       
@@ -125,35 +120,43 @@ const ProConList = () => {
         title: "Success",
         description: `Added to your ${type === 'pro' ? 'pros' : 'cons'} list`,
       });
+    } catch (err) {
+      console.error(`Error adding ${type}:`, err);
+      toast({
+        title: "Error",
+        description: `Failed to add your ${type}`,
+        variant: "destructive",
+      });
     }
   };
   
   const deleteItem = async (id: string, type: 'pro' | 'con') => {
-    const { error } = await supabase
-      .from('motivation_pros_cons')
-      .delete()
-      .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('motivation_pros_cons')
+        .delete()
+        .eq('id', id);
       
-    if (error) {
-      console.error(`Error deleting ${type}:`, error);
+      if (error) throw error;
+      
+      if (type === 'pro') {
+        setPros(pros.filter(p => p.id !== id));
+      } else {
+        setCons(cons.filter(c => c.id !== id));
+      }
+      
+      toast({
+        title: "Success",
+        description: `Removed from your ${type === 'pro' ? 'pros' : 'cons'} list`,
+      });
+    } catch (err) {
+      console.error(`Error deleting ${type}:`, err);
       toast({
         title: "Error",
         description: `Failed to delete from your ${type === 'pro' ? 'pros' : 'cons'} list`,
         variant: "destructive",
       });
-      return;
     }
-    
-    if (type === 'pro') {
-      setPros(pros.filter(p => p.id !== id));
-    } else {
-      setCons(cons.filter(c => c.id !== id));
-    }
-    
-    toast({
-      title: "Success",
-      description: `Removed from your ${type === 'pro' ? 'pros' : 'cons'} list`,
-    });
   };
   
   const handleMarkComplete = () => {
