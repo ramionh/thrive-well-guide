@@ -4,7 +4,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/compone
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, LineChart, Settings, Sun, User, Target, ListChecks, Battery } from "lucide-react";
+import { BarChart3, LineChart, Settings, Sun, User, Target, ListChecks, Battery, Star } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 
 interface LayoutProps {
@@ -63,6 +63,12 @@ const AppSidebar = () => {
       label: "Habits", 
       path: "/habits",
       active: location.pathname === "/habits"
+    },
+    { 
+      icon: Star,
+      label: "Motivation", 
+      path: "/motivation",
+      active: location.pathname === "/motivation"
     },
     { 
       icon: LineChart,

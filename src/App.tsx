@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +23,7 @@ import DefaultPage from "./components/default/DefaultPage";
 import GoalsPage from "./pages/GoalsPage";
 import HabitsPage from "./pages/HabitsPage";
 import BodyTypeSelector from "./components/BodyTypeSelector";
+import MotivationPage from "./pages/MotivationPage";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -118,6 +120,14 @@ const App = () => (
                 element={
                   <AuthenticatedRoute>
                     <BodyTypeSelector />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/motivation"
+                element={
+                  <AuthenticatedRoute>
+                    <MotivationPage />
                   </AuthenticatedRoute>
                 }
               />
