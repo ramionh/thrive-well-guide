@@ -19,7 +19,6 @@ const FocusedHabitsSelector = () => {
   const { user } = useUser();
   const { toast } = useToast();
 
-  // Fetch available habits
   const { data: allHabits, isLoading } = useQuery({
     queryKey: ['habits'],
     queryFn: async () => {
@@ -30,14 +29,12 @@ const FocusedHabitsSelector = () => {
       
       if (error) throw error;
       
-      // Randomly select 8 habits
       const habits = data as Habit[];
       const shuffled = [...habits].sort(() => 0.5 - Math.random());
       return shuffled.slice(0, 8);
     }
   });
 
-  // Fetch current focused habits
   const { data: focusedHabits, refetch: refetchFocusedHabits } = useQuery({
     queryKey: ['focused-habits', user?.id],
     queryFn: async () => {
@@ -54,7 +51,6 @@ const FocusedHabitsSelector = () => {
     enabled: !!user
   });
 
-  // Add completion mutation
   const completionMutation = useMutation({
     mutationFn: async () => {
       if (!user) return;
@@ -86,16 +82,13 @@ const FocusedHabitsSelector = () => {
     }
   });
 
-  // Mutation to add/remove focused habits
   const focusHabitMutation = useMutation({
     mutationFn: async (habitId: string) => {
       if (!user) return;
 
-      // Check if habit is already focused
       const isCurrentlyFocused = focusedHabits?.includes(habitId);
 
       if (isCurrentlyFocused) {
-        // Remove focused habit
         const { error } = await supabase
           .from('focused_habits')
           .delete()
@@ -104,7 +97,6 @@ const FocusedHabitsSelector = () => {
         
         if (error) throw error;
       } else {
-        // Check if already have 2 focused habits
         if (focusedHabits && focusedHabits.length >= 2) {
           toast({
             title: "Limit Reached",
@@ -114,7 +106,6 @@ const FocusedHabitsSelector = () => {
           return;
         }
 
-        // Add focused habit
         const { error } = await supabase
           .from('focused_habits')
           .insert({
@@ -125,7 +116,6 @@ const FocusedHabitsSelector = () => {
         if (error) throw error;
       }
 
-      // Refetch focused habits
       refetchFocusedHabits();
     },
     onSuccess: () => {
@@ -148,35 +138,24 @@ const FocusedHabitsSelector = () => {
     <div className="space-y-8">
       <Carousel className="w-full">
         <CarouselContent>
-          {/* Introduction Screen */}
           <CarouselItem>
             <Card className="p-6 bg-purple-50 border-purple-200">
               <h2 className="text-2xl font-bold text-purple-800 mb-4">Focusing</h2>
               <div className="prose max-w-none">
-                <p className="mb-4">
+                <p className="mb-4 text-purple-900">
                   Now that you're thinking about your goal and potential obstacles, you may
                   have noticed that some (or maybe all) of those hindrances are your own
                   thoughts and actions. The greatest barrier to change is often that we can't
                   seem to get out of our own way.
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 text-purple-900">
                   People suffering from weight-related health issues know their eating habits and inactivity contribute
-                  to the problem, but many of us still find it difficult to change. Here are some
-                  important questions to consider:
+                  to the problem, but many of us still find it difficult to change.
                 </p>
-                <p className="font-semibold text-purple-700">
+                <p className="mb-6 font-semibold text-purple-700">
                   How big is the gap or disparity between your current actions and your
                   ultimate goal?
                 </p>
-              </div>
-            </Card>
-          </CarouselItem>
-
-          {/* Emotions Screen */}
-          <CarouselItem>
-            <Card className="p-6 bg-purple-50 border-purple-200">
-              <h2 className="text-2xl font-bold text-purple-800 mb-4">Understanding Emotions</h2>
-              <div className="prose max-w-none">
                 <p className="mb-4 text-purple-900">
                   You may be feeling a bit overwhelmed or even hopeless. These negative
                   emotions do not inspire change. If simply being miserable led to successful
@@ -190,7 +169,6 @@ const FocusedHabitsSelector = () => {
             </Card>
           </CarouselItem>
 
-          {/* Habit Selection Screen */}
           <CarouselItem>
             <Card className="p-6">
               <h2 className="text-2xl font-bold mb-4">What are my concerns?</h2>
