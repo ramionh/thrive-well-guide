@@ -3,11 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Carousel,
   CarouselContent,
@@ -15,6 +11,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Card } from '@/components/ui/card';
+import ObstaclesForm from './internal-obstacles/ObstaclesForm';
 
 interface InternalObstaclesProps {
   onComplete?: () => void;
@@ -36,8 +34,8 @@ const InternalObstacles = ({ onComplete }: InternalObstaclesProps) => {
         .from('goals')
         .select(`
           *,
-          current_body_type:current_body_type_id(id, name),
-          goal_body_type:goal_body_type_id(id, name)
+          current_body_type:body_types!current_body_type_id(id, name),
+          goal_body_type:body_types!goal_body_type_id(id, name)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
@@ -175,43 +173,13 @@ const InternalObstacles = ({ onComplete }: InternalObstaclesProps) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Let's take a look at the negative messages relating to your goal.</h2>
-              
-              {goal && (
-                <div className="mb-6 p-4 bg-purple-50 rounded-lg">
-                  <p className="font-semibold">Your Goal:</p>
-                  <p>Transform from {goal.current_body_type?.name || 'Current'} to {goal.goal_body_type?.name || 'Goal'}</p>
-                </div>
-              )}
-
-              <p className="mb-6 text-lg">
-                As you look at your goal, think of up to five reasons, rationalizations, 
-                or excuses for not taking action and write them below.
-              </p>
-
-              <div className="space-y-4">
-                {excuses.map((excuse, index) => (
-                  <div key={index} className="space-y-2">
-                    <Label htmlFor={`excuse-${index}`}>Excuse {index + 1}</Label>
-                    <Input
-                      id={`excuse-${index}`}
-                      value={excuse}
-                      onChange={(e) => handleExcuseChange(index, e.target.value)}
-                      placeholder={`Enter excuse ${index + 1}`}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <Button 
-                onClick={() => saveExcuseMutation.mutate()}
-                className="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white"
-                disabled={isStepCompleted}
-              >
-                {isStepCompleted ? "Completed" : "Complete This Step"}
-              </Button>
-            </Card>
+            <ObstaclesForm
+              goal={goal}
+              excuses={excuses}
+              isStepCompleted={isStepCompleted}
+              onExcuseChange={handleExcuseChange}
+              onSave={() => saveExcuseMutation.mutate()}
+            />
           </CarouselItem>
         </CarouselContent>
         <CarouselPrevious />
