@@ -54,6 +54,38 @@ const FocusedHabitsSelector = () => {
     enabled: !!user
   });
 
+  // Add completion mutation
+  const completionMutation = useMutation({
+    mutationFn: async () => {
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('motivation_steps_progress')
+        .upsert({
+          user_id: user.id,
+          step_number: 2,
+          step_name: 'Focus Habits',
+          completed: true,
+          completed_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Step completed",
+        description: "Your progress has been saved"
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to save progress",
+        variant: "destructive"
+      });
+    }
+  });
+
   // Mutation to add/remove focused habits
   const focusHabitMutation = useMutation({
     mutationFn: async (habitId: string) => {
@@ -118,9 +150,9 @@ const FocusedHabitsSelector = () => {
         <CarouselContent>
           {/* Introduction Screen */}
           <CarouselItem>
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Focusing</h2>
-              <div className="prose">
+            <Card className="p-6 bg-purple-50 border-purple-200">
+              <h2 className="text-2xl font-bold text-purple-800 mb-4">Focusing</h2>
+              <div className="prose max-w-none">
                 <p className="mb-4">
                   Now that you're thinking about your goal and potential obstacles, you may
                   have noticed that some (or maybe all) of those hindrances are your own
@@ -132,7 +164,7 @@ const FocusedHabitsSelector = () => {
                   to the problem, but many of us still find it difficult to change. Here are some
                   important questions to consider:
                 </p>
-                <p className="font-semibold">
+                <p className="font-semibold text-purple-700">
                   How big is the gap or disparity between your current actions and your
                   ultimate goal?
                 </p>
@@ -142,16 +174,16 @@ const FocusedHabitsSelector = () => {
 
           {/* Emotions Screen */}
           <CarouselItem>
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Understanding Emotions</h2>
-              <div className="prose">
-                <p className="mb-4">
+            <Card className="p-6 bg-purple-50 border-purple-200">
+              <h2 className="text-2xl font-bold text-purple-800 mb-4">Understanding Emotions</h2>
+              <div className="prose max-w-none">
+                <p className="mb-4 text-purple-900">
                   You may be feeling a bit overwhelmed or even hopeless. These negative
                   emotions do not inspire change. If simply being miserable led to successful
                   change, nobody would need a book about motivation. But being
                   uncomfortable is a step in the right direction.
                 </p>
-                <p>
+                <p className="text-purple-900">
                   Dwelling on what we're doing wrong, however, won't get us to the finish line.
                 </p>
               </div>
@@ -203,6 +235,13 @@ const FocusedHabitsSelector = () => {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
+
+      <Button 
+        onClick={() => completionMutation.mutate()}
+        className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6"
+      >
+        Complete This Step
+      </Button>
     </div>
   );
 };
