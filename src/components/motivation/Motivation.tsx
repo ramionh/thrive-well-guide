@@ -1,8 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 import Ambivalence from "./Ambivalence";
 import FocusedHabitsSelector from "./FocusedHabitsSelector";
 
@@ -15,6 +17,8 @@ type Step = {
 };
 
 const Motivation = () => {
+  const { user } = useUser();
+  const { toast } = useToast();
   const [showSplash, setShowSplash] = useState(true);
   const [currentStepId, setCurrentStepId] = useState(1);
   const [steps, setSteps] = useState<Step[]>([
@@ -32,8 +36,35 @@ const Motivation = () => {
       component: <FocusedHabitsSelector />,
       completed: false,
     },
-    // Additional steps will be added here in the future
   ]);
+
+  // Fetch step progress from database on component mount
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchStepProgress = async () => {
+      const { data, error } = await supabase
+        .from('motivation_steps_progress')
+        .select('step_number, completed')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error fetching step progress:', error);
+        return;
+      }
+
+      if (data) {
+        setSteps(prevSteps => 
+          prevSteps.map(step => ({
+            ...step,
+            completed: data.some(p => p.step_number === step.id && p.completed)
+          }))
+        );
+      }
+    };
+
+    fetchStepProgress();
+  }, [user]);
 
   const currentStep = steps.find((step) => step.id === currentStepId);
 
@@ -49,35 +80,51 @@ const Motivation = () => {
     }
   };
 
-  const markStepComplete = (stepId: number) => {
-    // Update the completed status of the step
-    setSteps(prevSteps => 
-      prevSteps.map(step => 
-        step.id === stepId 
-          ? { ...step, completed: true } 
-          : step
-      )
-    );
-    
-    // Move to the next step if available
-    const nextStepId = stepId + 1;
-    if (steps.some(step => step.id === nextStepId)) {
-      setCurrentStepId(nextStepId);
-    }
-  };
+  const markStepComplete = async (stepId: number) => {
+    if (!user) return;
 
-  // Simulate completion of step 1 if coming from another page directly to step 2
-  useEffect(() => {
-    if (currentStepId === 2 && !steps[0].completed) {
+    try {
+      // Update or insert step progress in database
+      const { error } = await supabase
+        .from('motivation_steps_progress')
+        .upsert({
+          user_id: user.id,
+          step_number: stepId,
+          step_name: steps.find(s => s.id === stepId)?.title || '',
+          completed: true,
+          completed_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      // Update local state
       setSteps(prevSteps => 
         prevSteps.map(step => 
-          step.id === 1 
+          step.id === stepId 
             ? { ...step, completed: true } 
             : step
         )
       );
+      
+      // Move to the next step if available
+      const nextStepId = stepId + 1;
+      if (steps.some(step => step.id === nextStepId)) {
+        setCurrentStepId(nextStepId);
+      }
+
+      toast({
+        title: "Step completed",
+        description: "Your progress has been saved"
+      });
+    } catch (error) {
+      console.error('Error saving step progress:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save progress",
+        variant: "destructive"
+      });
     }
-  }, [currentStepId, steps]);
+  };
 
   if (showSplash) {
     return (
