@@ -19,12 +19,13 @@ const GoalDisplay = () => {
     queryFn: async (): Promise<GoalInfo | null> => {
       if (!user) return null;
 
+      // Updated query with explicit joins to resolve the ambiguity
       const { data, error } = await supabase
         .from('goals')
         .select(`
-          current_body_type:current_body_type_id(name),
-          goal_body_type:goal_body_type_id(name),
-          target_date
+          target_date,
+          current_body_type:body_types!current_body_type_id(name),
+          goal_body_type:body_types!goal_body_type_id(name)
         `)
         .eq('user_id', user.id)
         .single();
