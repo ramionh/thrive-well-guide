@@ -12,18 +12,18 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
     mutationFn: async (data: { attitude_rating: string; explanation: string }) => {
       if (!user) return;
 
-      // First, insert the attitude assessment
+      // First, upsert the attitude assessment
       const { error: attitudeError } = await supabase
         .from('motivation_attitude')
-        .insert({
+        .upsert({
           user_id: user.id,
           attitude_rating: data.attitude_rating,
           explanation: data.explanation,
-        });
+        }, { onConflict: 'user_id' });
 
       if (attitudeError) throw attitudeError;
 
-      // Then, mark the step as completed
+      // Then, upsert the step progress
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
         .upsert(
