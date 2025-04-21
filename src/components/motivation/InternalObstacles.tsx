@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
@@ -16,7 +16,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-const InternalObstacles = ({ onComplete }: { onComplete?: () => void }) => {
+interface InternalObstaclesProps {
+  onComplete?: () => void;
+}
+
+const InternalObstacles = ({ onComplete }: InternalObstaclesProps) => {
   const { user } = useUser();
   const { toast } = useToast();
   const [excuses, setExcuses] = useState<string[]>(Array(5).fill(''));
@@ -56,7 +60,7 @@ const InternalObstacles = ({ onComplete }: { onComplete?: () => void }) => {
   });
 
   // Use the useEffect hook to update the excuses state when savedExcuses is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (savedExcuses && savedExcuses.length > 0) {
       const excusesList = savedExcuses.map(e => e.excuse);
       // Fill the remaining slots with empty strings if fewer than 5 excuses
@@ -89,15 +93,19 @@ const InternalObstacles = ({ onComplete }: { onComplete?: () => void }) => {
 
       if (error) throw error;
 
+      // Use upsert instead of insert for step progress to handle existing records
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
-        .upsert({
-          user_id: user.id,
-          step_number: 3,
-          step_name: 'Internal Obstacles',
-          completed: true,
-          completed_at: new Date().toISOString()
-        });
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 3,
+            step_name: 'Internal Obstacles',
+            completed: true,
+            completed_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id,step_number' }
+        );
 
       if (progressError) throw progressError;
     },
@@ -112,6 +120,7 @@ const InternalObstacles = ({ onComplete }: { onComplete?: () => void }) => {
       }
     },
     onError: (error) => {
+      console.error('Error saving progress:', error);
       toast({
         title: "Error",
         description: "Failed to save your progress",

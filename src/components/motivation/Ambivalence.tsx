@@ -1,47 +1,25 @@
 
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import AmbivalenceCarousel from "./ambivalence/AmbivalenceCarousel";
-import ProConList from "./ProConList";
-import { useUser } from "@/hooks/useUser";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import React from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useUser } from '@/context/UserContext';
+import { useToast } from '@/hooks/use-toast';
+import ProConList from './ProConList';
+import AmbivalenceCarousel from './ambivalence/AmbivalenceCarousel';
 
 interface AmbivalenceProps {
   onComplete?: () => void;
 }
 
-const Ambivalence: React.FC<AmbivalenceProps> = ({ onComplete }) => {
+const Ambivalence = ({ onComplete }: AmbivalenceProps) => {
   const { user } = useUser();
   const { toast } = useToast();
-  const [isStepCompleted, setIsStepCompleted] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
+  const markStepCompleted = useMutation({
+    mutationFn: async () => {
+      if (!user) return;
 
-    const checkStepCompletion = async () => {
-      const { data, error } = await supabase
-        .from('motivation_steps_progress')
-        .select('completed')
-        .eq('user_id', user.id)
-        .eq('step_number', 1)
-        .single();
-
-      if (error) {
-        console.error('Error checking step completion:', error);
-        return;
-      }
-
-      setIsStepCompleted(data?.completed || false);
-    };
-
-    checkStepCompletion();
-  }, [user]);
-
-  const handleComplete = async () => {
-    if (!user) return;
-
-    try {
+      // Use upsert instead of insert to handle existing records
       const { error } = await supabase
         .from('motivation_steps_progress')
         .upsert({
@@ -50,48 +28,35 @@ const Ambivalence: React.FC<AmbivalenceProps> = ({ onComplete }) => {
           step_name: 'Ambivalence',
           completed: true,
           completed_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,step_number'
         });
 
       if (error) throw error;
-
+    },
+    onSuccess: () => {
       toast({
         title: "Step completed",
-        description: "Moving on to the next step"
+        description: "Your progress has been saved",
       });
-
-      setIsStepCompleted(true);
-
       if (onComplete) {
         onComplete();
       }
-    } catch (error) {
-      console.error('Error marking step as complete:', error);
+    },
+    onError: (error) => {
+      console.error('Error saving step progress:', error);
       toast({
         title: "Error",
-        description: "Failed to save progress",
+        description: "Failed to save your progress",
         variant: "destructive"
       });
     }
-  };
+  });
 
   return (
     <div className="space-y-8">
       <AmbivalenceCarousel />
-      
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4">Pros & Cons Exercise</h3>
-        <ProConList />
-      </div>
-
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleComplete}
-          className="bg-purple-600 hover:bg-purple-700 text-white"
-          disabled={isStepCompleted}
-        >
-          {isStepCompleted ? "Completed" : "Complete This Step"}
-        </Button>
-      </div>
+      <ProConList onComplete={() => markStepCompleted.mutate()} />
     </div>
   );
 };

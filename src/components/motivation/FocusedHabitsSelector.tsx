@@ -77,6 +77,7 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
     mutationFn: async () => {
       if (!user) return;
 
+      // Use upsert instead of insert to handle existing records
       const { error } = await supabase
         .from('motivation_steps_progress')
         .upsert({
@@ -85,6 +86,8 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
           step_name: 'Focus Habits',
           completed: true,
           completed_at: new Date().toISOString()
+        }, { 
+          onConflict: 'user_id,step_number' 
         });
 
       if (error) throw error;
@@ -99,6 +102,7 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
       }
     },
     onError: (error) => {
+      console.error('Error completing step:', error);
       toast({
         title: "Error",
         description: "Failed to save progress",
