@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle } from "lucide-react";
+import GoalDisplay from "./pros-cons/GoalDisplay";
 import ItemList from "./pros-cons/ItemList";
 import Reflection from "./pros-cons/Reflection";
 import type { ProCon } from "./pros-cons/types";
@@ -144,6 +145,7 @@ const ProConList = () => {
 
   return (
     <div className="space-y-6">
+      <GoalDisplay />
       <div className="grid md:grid-cols-2 gap-6">
         <ItemList
           type="pro"
