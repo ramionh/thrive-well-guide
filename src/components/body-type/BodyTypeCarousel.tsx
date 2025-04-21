@@ -1,6 +1,6 @@
 
-import React, { useEffect, useState } from "react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import React, { useEffect, useRef, useState } from "react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { useBodyTypes } from "@/hooks/useBodyTypes";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,8 +26,10 @@ const BodyTypeCarousel: React.FC = () => {
   const { user } = useUser();
   const [currentBodyTypeId, setCurrentBodyTypeId] = useState<string | null>(null);
   const [goalBodyTypeId, setGoalBodyTypeId] = useState<string | null>(null);
+  const [defaultIndex, setDefaultIndex] = useState<number>(0);
+  const carouselApiRef = useRef<CarouselApi | null>(null);
 
-  // Fetch latest user body type
+  // Fetch latest user body type and find current/goal indices
   useEffect(() => {
     const fetchLatestBodyType = async () => {
       if (!user) return;
@@ -47,6 +49,12 @@ const BodyTypeCarousel: React.FC = () => {
           const currIdx = BODYTYPE_SCALE.findIndex(
             (name) => name.toLowerCase() === currType.name.toLowerCase()
           );
+          // Set defaultIndex to the current type's index in bodyTypes order
+          const defaultBodyTypeIdx = bodyTypes.findIndex(
+            (bt) => bt.id === currType.id
+          );
+          if (defaultBodyTypeIdx >= 0) setDefaultIndex(defaultBodyTypeIdx);
+
           if (currIdx > 0) {
             const goalName = BODYTYPE_SCALE[currIdx - 1];
             const goalType = bodyTypes.find(
@@ -59,6 +67,7 @@ const BodyTypeCarousel: React.FC = () => {
           }
         } else {
           setGoalBodyTypeId(null);
+          setDefaultIndex(0);
         }
       }
     };
@@ -66,6 +75,13 @@ const BodyTypeCarousel: React.FC = () => {
       fetchLatestBodyType();
     }
   }, [user, bodyTypes]);
+
+  // Go to current bodytype slide when currentBodyTypeId or defaultIndex change
+  useEffect(() => {
+    if (carouselApiRef.current && bodyTypes.length > 0 && defaultIndex !== undefined) {
+      carouselApiRef.current.scrollTo(defaultIndex, false);
+    }
+  }, [defaultIndex, bodyTypes.length]);
 
   if (isLoading) {
     return <div className="py-8 text-center text-muted-foreground">Loading body types...</div>;
@@ -79,15 +95,18 @@ const BodyTypeCarousel: React.FC = () => {
 
   return (
     <div className="mb-8 max-w-3xl mx-auto">
-      <Carousel opts={{ align: "center" }}>
+      <Carousel
+        opts={{ align: "center" }}
+        setApi={(api) => (carouselApiRef.current = api)}
+      >
         <CarouselContent>
           {bodyTypes.map((bodyType) => {
             // Determine status for highlight
             const isCurrent = bodyType.id === currentBodyTypeId;
             const isGoal = bodyType.id === goalBodyTypeId;
             let highlightClass = "bg-white border";
-            if (isCurrent) highlightClass = "border-2" + " border-yellow-200 bg-[#FEF7CD]";
-            else if (isGoal) highlightClass = "border-2" + " border-green-200 bg-[#F2FCE2]";
+            if (isCurrent) highlightClass = "border-2 border-yellow-200 bg-[#FEF7CD]";
+            else if (isGoal) highlightClass = "border-2 border-green-200 bg-[#F2FCE2]";
             return (
               <CarouselItem key={bodyType.id} className="flex justify-center">
                 <div
@@ -97,12 +116,16 @@ const BodyTypeCarousel: React.FC = () => {
                 >
                   {(isCurrent || isGoal) && (
                     <div
-                      className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10
-                      px-3 py-0.5 rounded-full text-xs font-semibold shadow
+                      className={`absolute left-1/2 -translate-x-1/2 z-10
+                      px-3 py-1 rounded-full text-xs font-semibold shadow
                       ${isCurrent ? "bg-yellow-400 text-black border border-yellow-600" : ""}
                       ${isGoal ? "bg-green-500 text-white border border-green-700" : ""}
                       `}
-                      style={{ minWidth: 54, textAlign: "center" }}
+                      style={{
+                        top: 16,
+                        minWidth: 54,
+                        textAlign: "center"
+                      }}
                     >
                       {isCurrent ? "Current" : isGoal ? "Goal" : ""}
                     </div>
