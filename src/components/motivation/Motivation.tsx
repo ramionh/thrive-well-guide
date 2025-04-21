@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
@@ -41,6 +40,13 @@ const Motivation = () => {
       component: <Attitude onComplete={() => markStepComplete(4)} />,
       completed: false,
     },
+    {
+      id: 5,
+      title: "Behaviors",
+      description: "Identify behaviors that may hold you back",
+      component: <Behaviors onComplete={() => markStepComplete(5)} />,
+      completed: false,
+    }
   ]);
 
   if (showSplash) {

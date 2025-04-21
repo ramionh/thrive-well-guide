@@ -254,6 +254,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_behaviors: {
+        Row: {
+          behavior: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          behavior: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          behavior?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_pros_cons: {
         Row: {
           created_at: string
