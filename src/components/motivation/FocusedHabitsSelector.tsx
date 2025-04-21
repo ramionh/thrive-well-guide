@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
 import { Habit } from '@/types/habit';
@@ -18,10 +18,21 @@ import {
 const FocusedHabitsSelector = () => {
   const { user } = useUser();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: allHabits, isLoading } = useQuery({
     queryKey: ['habits'],
     queryFn: async () => {
+      // First fetch focused habits
+      const { data: focusedData, error: focusedError } = await supabase
+        .from('focused_habits')
+        .select('habit_id')
+        .eq('user_id', user?.id);
+      
+      if (focusedError) throw focusedError;
+      const focusedIds = focusedData?.map(item => item.habit_id) || [];
+      
+      // Then fetch all habits
       const { data, error } = await supabase
         .from('habits')
         .select('*')
@@ -30,8 +41,14 @@ const FocusedHabitsSelector = () => {
       if (error) throw error;
       
       const habits = data as Habit[];
-      const shuffled = [...habits].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, 8);
+      
+      // Make sure focused habits are included in the selection
+      const focusedHabits = habits.filter(h => focusedIds.includes(h.id));
+      const otherHabits = habits.filter(h => !focusedIds.includes(h.id));
+      const shuffledOthers = otherHabits.sort(() => 0.5 - Math.random());
+      
+      // Combine focused habits with random selection of others, up to 8 total
+      return [...focusedHabits, ...shuffledOthers].slice(0, 8);
     }
   });
 
@@ -116,7 +133,9 @@ const FocusedHabitsSelector = () => {
         if (error) throw error;
       }
 
-      refetchFocusedHabits();
+      await refetchFocusedHabits();
+      // Invalidate the allHabits query to refresh the list with new focused habits
+      await queryClient.invalidateQueries({ queryKey: ['habits'] });
     },
     onSuccess: () => {
       toast({
@@ -193,7 +212,7 @@ const FocusedHabitsSelector = () => {
                         ? 'border-2 border-green-500 bg-green-50' 
                         : 'hover:bg-gray-100'
                       }`}
-                    onClick={() => focusHabitMutation.mutate(habit.id)}
+                    onClick={() => handleHabitSelect(habit.id)}
                   >
                     <div className="flex items-center justify-between">
                       <div>
