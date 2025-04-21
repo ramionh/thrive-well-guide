@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
-import FocusedHabitsSelector from "./FocusedHabitsSelector";
+import FocusedHabitsSelector from "./focused-habits/FocusedHabitsSelector";
 import InternalObstacles from "./InternalObstacles";
 import Attitude from "./Attitude";
 import MotivationSplash from "./MotivationSplash";

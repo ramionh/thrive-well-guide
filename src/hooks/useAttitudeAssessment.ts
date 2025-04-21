@@ -14,7 +14,7 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
 
       // First, insert the attitude assessment
       const { error: attitudeError } = await supabase
-        .from('motivation_attitude')
+        .from('motivation_attitude')  // Use the exact table name from migration
         .insert({
           user_id: user.id,
           attitude_rating: data.attitude_rating,
