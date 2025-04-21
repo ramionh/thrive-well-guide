@@ -1,10 +1,71 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useBodyTypes } from "@/hooks/useBodyTypes";
+import { useUser } from "@/context/UserContext";
+import { supabase } from "@/integrations/supabase/client";
+
+type BodyType = {
+  id: string;
+  name: string;
+  bodyfat_range: string;
+  population_percentage: string;
+};
+
+const BODYTYPE_SCALE = [
+  "Ripped",
+  "Elite",
+  "Fit",
+  "Average",
+  "Overweight",
+  "Obese",
+];
 
 const BodyTypeCarousel: React.FC = () => {
   const { bodyTypes, bodyTypeImages, isLoading, error } = useBodyTypes();
+  const { user } = useUser();
+  const [currentBodyTypeId, setCurrentBodyTypeId] = useState<string | null>(null);
+  const [goalBodyTypeId, setGoalBodyTypeId] = useState<string | null>(null);
+
+  // Fetch latest user body type
+  useEffect(() => {
+    const fetchLatestBodyType = async () => {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from("user_body_types")
+        .select("body_type_id")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!error && data && data.body_type_id) {
+        setCurrentBodyTypeId(data.body_type_id);
+
+        // Find this type's name and index
+        const currType = bodyTypes.find((bt) => bt.id === data.body_type_id);
+        if (currType) {
+          const currIdx = BODYTYPE_SCALE.findIndex(
+            (name) => name.toLowerCase() === currType.name.toLowerCase()
+          );
+          if (currIdx > 0) {
+            const goalName = BODYTYPE_SCALE[currIdx - 1];
+            const goalType = bodyTypes.find(
+              (bt) => bt.name.toLowerCase() === goalName.toLowerCase()
+            );
+            if (goalType) setGoalBodyTypeId(goalType.id);
+            else setGoalBodyTypeId(null);
+          } else {
+            setGoalBodyTypeId(null);
+          }
+        } else {
+          setGoalBodyTypeId(null);
+        }
+      }
+    };
+    if (user && bodyTypes.length > 0) {
+      fetchLatestBodyType();
+    }
+  }, [user, bodyTypes]);
 
   if (isLoading) {
     return <div className="py-8 text-center text-muted-foreground">Loading body types...</div>;
@@ -20,31 +81,55 @@ const BodyTypeCarousel: React.FC = () => {
     <div className="mb-8 max-w-3xl mx-auto">
       <Carousel opts={{ align: "center" }}>
         <CarouselContent>
-          {bodyTypes.map((bodyType) => (
-            <CarouselItem key={bodyType.id} className="flex justify-center">
-              <div className="flex flex-col items-center w-48 p-4 rounded-xl bg-white shadow border hover:shadow-lg transition-shadow duration-150 animate-fade-in">
-                <div className="w-32 h-32 rounded-lg overflow-hidden mb-2 bg-soft-gray border">
-                  <img
-                    src={bodyTypeImages[bodyType.id] || "/placeholder.svg"}
-                    alt={bodyType.name}
-                    className="w-full h-full object-cover"
-                    onError={e => {
-                      (e.target as HTMLImageElement).src = "/placeholder.svg";
-                    }}
-                  />
-                </div>
-                <div className="text-center w-full">
-                  <div className="font-bold text-lg mb-1">{bodyType.name}</div>
-                  <div className="text-sm text-muted-foreground mb-1">
-                    Body Fat: {bodyType.bodyfat_range}
+          {bodyTypes.map((bodyType) => {
+            // Determine status for highlight
+            const isCurrent = bodyType.id === currentBodyTypeId;
+            const isGoal = bodyType.id === goalBodyTypeId;
+            let highlightClass = "bg-white border";
+            if (isCurrent) highlightClass = "border-2" + " border-yellow-200 bg-[#FEF7CD]";
+            else if (isGoal) highlightClass = "border-2" + " border-green-200 bg-[#F2FCE2]";
+            return (
+              <CarouselItem key={bodyType.id} className="flex justify-center">
+                <div
+                  className={`relative flex flex-col items-center w-48 p-4 rounded-xl shadow transition-shadow duration-150 animate-fade-in
+                  ${highlightClass}
+                  `}
+                >
+                  {(isCurrent || isGoal) && (
+                    <div
+                      className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10
+                      px-3 py-0.5 rounded-full text-xs font-semibold shadow
+                      ${isCurrent ? "bg-yellow-400 text-black border border-yellow-600" : ""}
+                      ${isGoal ? "bg-green-500 text-white border border-green-700" : ""}
+                      `}
+                      style={{ minWidth: 54, textAlign: "center" }}
+                    >
+                      {isCurrent ? "Current" : isGoal ? "Goal" : ""}
+                    </div>
+                  )}
+                  <div className="w-32 h-32 rounded-lg overflow-hidden mb-2 bg-soft-gray border">
+                    <img
+                      src={bodyTypeImages[bodyType.id] || "/placeholder.svg"}
+                      alt={bodyType.name}
+                      className="w-full h-full object-cover"
+                      onError={e => {
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                      }}
+                    />
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Population: {bodyType.population_percentage}
+                  <div className="text-center w-full">
+                    <div className="font-bold text-lg mb-1">{bodyType.name}</div>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      Body Fat: {bodyType.bodyfat_range}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Population: {bodyType.population_percentage}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
+              </CarouselItem>
+            );
+          })}
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
