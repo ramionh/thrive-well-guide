@@ -72,15 +72,21 @@ const Attitude: React.FC<AttitudeProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Understanding Your Attitude</h2>
+          <Card className="p-6 border-2 border-purple-300">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Understanding Your Attitude</h2>
             <div className="prose mb-6">
-              <p>
+              <p className="text-purple-900/80 leading-relaxed">
                 Attitude can be one of the biggest internal obstacles to changing a
                 behavior. A negative attitude ("I don't want to do this" or "This is a
                 waste of time") can shape all your actions, fuel fears and
                 apprehensions, and undermine your ability to actually reach your goal.
               </p>
+              <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <p className="text-purple-700 italic">
+                  "Your attitude determines your direction. Take a moment to reflect on how
+                  you truly feel about making this change."
+                </p>
+              </div>
             </div>
           </Card>
         </CarouselItem>
