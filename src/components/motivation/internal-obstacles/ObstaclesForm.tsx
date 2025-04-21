@@ -5,8 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+interface Goal {
+  current_body_type?: { name: string };
+  goal_body_type?: { name: string };
+}
+
 interface ObstaclesFormProps {
-  goal: any;
+  goal: Goal | null;
   excuses: string[];
   isStepCompleted: boolean;
   onExcuseChange: (index: number, value: string) => void;
