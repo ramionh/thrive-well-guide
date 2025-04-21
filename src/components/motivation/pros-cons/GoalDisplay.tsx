@@ -22,8 +22,8 @@ const GoalDisplay = () => {
       const { data, error } = await supabase
         .from('goals')
         .select(`
-          current_body_type:current_body_type_id(body_types!current_body_type_id(name)),
-          goal_body_type:goal_body_type_id(body_types!goal_body_type_id(name)),
+          current_body_type_id(id, name),
+          goal_body_type_id(id, name),
           target_date
         `)
         .eq('user_id', user.id)
@@ -36,13 +36,15 @@ const GoalDisplay = () => {
         return null;
       }
 
+      if (!data) return null;
+
       // Transform the data to match the GoalInfo interface
       return {
         current_body_type: { 
-          name: data.current_body_type.name 
+          name: data.current_body_type_id.name 
         },
         goal_body_type: { 
-          name: data.goal_body_type.name 
+          name: data.goal_body_type_id.name 
         },
         target_date: data.target_date
       };
