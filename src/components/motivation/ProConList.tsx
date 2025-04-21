@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
@@ -16,38 +17,14 @@ const ProConList = () => {
   const [cons, setCons] = useState<ProCon[]>([]);
   const [newPro, setNewPro] = useState("");
   const [newCon, setNewCon] = useState("");
-  const [goal, setGoal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     if (user) {
-      fetchUserGoal();
       fetchProsCons();
     }
   }, [user]);
-
-  const fetchUserGoal = async () => {
-    if (!user) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('goals')
-        .select('goal_body_type_id, body_types!body_types(name)')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-      
-      if (error) throw error;
-      
-      if (data && data.body_types) {
-        setGoal(`Become ${data.body_types.name}`);
-      }
-    } catch (err) {
-      console.error("Error fetching goal:", err);
-    }
-  };
 
   const fetchProsCons = async () => {
     if (!user) return;
@@ -169,7 +146,7 @@ const ProConList = () => {
 
   return (
     <div className="space-y-6">
-      <GoalDisplay goal={goal} />
+      <GoalDisplay />
       
       <div className="grid md:grid-cols-2 gap-6">
         <ItemList

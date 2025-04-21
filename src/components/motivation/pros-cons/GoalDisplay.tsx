@@ -22,8 +22,8 @@ const GoalDisplay = () => {
       const { data, error } = await supabase
         .from('goals')
         .select(`
-          current_body_type:current_body_type_id(name),
-          goal_body_type:goal_body_type_id(name),
+          current_body_type:current_body_type_id(body_types!current_body_type_id(name)),
+          goal_body_type:goal_body_type_id(body_types!goal_body_type_id(name)),
           target_date
         `)
         .eq('user_id', user.id)
@@ -36,7 +36,16 @@ const GoalDisplay = () => {
         return null;
       }
 
-      return data;
+      // Transform the data to match the GoalInfo interface
+      return {
+        current_body_type: { 
+          name: data.current_body_type.name 
+        },
+        goal_body_type: { 
+          name: data.goal_body_type.name 
+        },
+        target_date: data.target_date
+      };
     },
     enabled: !!user
   });
@@ -63,11 +72,11 @@ const GoalDisplay = () => {
       <div className="space-y-2">
         <div className="flex justify-between">
           <span className="text-gray-600">Current Body Type:</span>
-          <span className="font-medium text-gray-800">{goalInfo.current_body_type?.name}</span>
+          <span className="font-medium text-gray-800">{goalInfo.current_body_type.name}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Goal Body Type:</span>
-          <span className="font-medium text-gray-800">{goalInfo.goal_body_type?.name}</span>
+          <span className="font-medium text-gray-800">{goalInfo.goal_body_type.name}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Target Date:</span>
