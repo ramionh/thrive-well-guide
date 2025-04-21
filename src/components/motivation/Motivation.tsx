@@ -1,9 +1,11 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
 import FocusedHabitsSelector from "./focused-habits/FocusedHabitsSelector";
 import InternalObstacles from "./InternalObstacles";
 import Attitude from "./Attitude";
+import Behaviors from "./Behaviors";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
