@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
 import FocusedHabitsSelector from "./FocusedHabitsSelector";
 import InternalObstacles from "./InternalObstacles";
+import Attitude from "./Attitude";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
@@ -31,6 +32,13 @@ const Motivation = () => {
       title: "Internal Obstacles",
       description: "Identify your internal barriers",
       component: <InternalObstacles onComplete={() => markStepComplete(3)} />,
+      completed: false,
+    },
+    {
+      id: 4,
+      title: "Attitude Check",
+      description: "Assess your attitude towards your goal",
+      component: <Attitude onComplete={() => markStepComplete(4)} />,
       completed: false,
     },
   ]);
