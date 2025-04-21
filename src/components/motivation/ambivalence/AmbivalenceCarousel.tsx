@@ -7,6 +7,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
 
 const AmbivalenceCarousel = () => {
   const screens = [
@@ -77,17 +78,21 @@ const AmbivalenceCarousel = () => {
   ];
 
   return (
-    <Carousel className="w-full max-w-4xl mx-auto">
-      <CarouselContent>
-        {screens.map((screen) => (
-          <CarouselItem key={screen.id} className="p-4">
-            {screen.content}
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious className="ml-4" />
-      <CarouselNext className="mr-4" />
-    </Carousel>
+    <Card className="bg-purple-50 border-purple-200">
+      <CardContent className="p-6">
+        <Carousel className="w-full max-w-4xl mx-auto">
+          <CarouselContent>
+            {screens.map((screen) => (
+              <CarouselItem key={screen.id} className="p-4">
+                {screen.content}
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="ml-4" />
+          <CarouselNext className="mr-4" />
+        </Carousel>
+      </CardContent>
+    </Card>
   );
 };
 
