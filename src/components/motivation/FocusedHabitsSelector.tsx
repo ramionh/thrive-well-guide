@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle } from 'lucide-react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const FocusedHabitsSelector = () => {
   const { user } = useUser();
@@ -107,33 +113,96 @@ const FocusedHabitsSelector = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <p className="text-muted-foreground mb-4">
-        Select up to 2 habits to focus on from the randomly selected options below:
-      </p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {allHabits?.map((habit) => (
-          <Card 
-            key={habit.id} 
-            className={`p-4 cursor-pointer transition-all 
-              ${focusedHabits?.includes(habit.id) 
-                ? 'border-2 border-green-500 bg-green-50' 
-                : 'hover:bg-gray-100'
-              }`}
-            onClick={() => focusHabitMutation.mutate(habit.id)}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{habit.name}</h3>
-                <p className="text-sm text-gray-500">{habit.description}</p>
+    <div className="space-y-8">
+      <Carousel className="w-full">
+        <CarouselContent>
+          {/* Introduction Screen */}
+          <CarouselItem>
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Focusing</h2>
+              <div className="prose">
+                <p className="mb-4">
+                  Now that you're thinking about your goal and potential obstacles, you may
+                  have noticed that some (or maybe all) of those hindrances are your own
+                  thoughts and actions. The greatest barrier to change is often that we can't
+                  seem to get out of our own way.
+                </p>
+                <p className="mb-4">
+                  People suffering from weight-related health issues know their eating habits and inactivity contribute
+                  to the problem, but many of us still find it difficult to change. Here are some
+                  important questions to consider:
+                </p>
+                <p className="font-semibold">
+                  How big is the gap or disparity between your current actions and your
+                  ultimate goal?
+                </p>
               </div>
-              {focusedHabits?.includes(habit.id) && (
-                <CheckCircle className="text-green-500" />
-              )}
-            </div>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          </CarouselItem>
+
+          {/* Emotions Screen */}
+          <CarouselItem>
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Understanding Emotions</h2>
+              <div className="prose">
+                <p className="mb-4">
+                  You may be feeling a bit overwhelmed or even hopeless. These negative
+                  emotions do not inspire change. If simply being miserable led to successful
+                  change, nobody would need a book about motivation. But being
+                  uncomfortable is a step in the right direction.
+                </p>
+                <p>
+                  Dwelling on what we're doing wrong, however, won't get us to the finish line.
+                </p>
+              </div>
+            </Card>
+          </CarouselItem>
+
+          {/* Habit Selection Screen */}
+          <CarouselItem>
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">What are my concerns?</h2>
+              <div className="prose mb-6">
+                <p className="mb-4">
+                  You might have a general idea that you need to change one aspect of
+                  your fitness but are unsure what the change should be. You
+                  don't have to address all the following topics, as we have plenty of
+                  time to narrow things down later.
+                </p>
+                <p className="font-semibold mb-6">
+                  Pick one or two core habits to focus on:
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {allHabits?.map((habit) => (
+                  <Card 
+                    key={habit.id} 
+                    className={`p-4 cursor-pointer transition-all 
+                      ${focusedHabits?.includes(habit.id) 
+                        ? 'border-2 border-green-500 bg-green-50' 
+                        : 'hover:bg-gray-100'
+                      }`}
+                    onClick={() => focusHabitMutation.mutate(habit.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold">{habit.name}</h3>
+                        <p className="text-sm text-gray-500">{habit.description}</p>
+                      </div>
+                      {focusedHabits?.includes(habit.id) && (
+                        <CheckCircle className="text-green-500" />
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </Card>
+          </CarouselItem>
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </div>
   );
 };
