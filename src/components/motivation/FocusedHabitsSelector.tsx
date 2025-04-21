@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +16,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-const FocusedHabitsSelector = () => {
+interface FocusedHabitsSelectorProps {
+  onComplete?: () => void;
+}
+
+const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
   const { user } = useUser();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -89,6 +94,9 @@ const FocusedHabitsSelector = () => {
         title: "Step completed",
         description: "Your progress has been saved"
       });
+      if (onComplete) {
+        onComplete();
+      }
     },
     onError: (error) => {
       toast({
