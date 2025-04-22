@@ -326,6 +326,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_identifying_ambivalence: {
+        Row: {
+          ambivalence_statement: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ambivalence_statement: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ambivalence_statement?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_knowledge: {
         Row: {
           created_at: string

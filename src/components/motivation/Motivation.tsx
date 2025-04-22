@@ -11,6 +11,7 @@ import CulturalObstacles from "./CulturalObstacles";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import EnvironmentalStressors from "./EnvironmentalStressors";
+import IdentifyingAmbivalence from "./IdentifyingAmbivalence";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 
 const Motivation = () => {
@@ -78,6 +79,13 @@ const Motivation = () => {
       title: "Environmental Stressors",
       description: "Identify environmental barriers",
       component: <EnvironmentalStressors onComplete={() => markStepComplete(9)} />,
+      completed: false,
+    },
+    {
+      id: 10,
+      title: "Identifying Ambivalence",
+      description: "Explore your mixed feelings about change",
+      component: <IdentifyingAmbivalence onComplete={() => markStepComplete(10)} />,
       completed: false,
     }
   ]);
