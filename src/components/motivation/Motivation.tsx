@@ -8,6 +8,7 @@ import Attitude from "./Attitude";
 import Behaviors from "./Behaviors";
 import Knowledge from "./Knowledge";
 import SocialNetwork from "./SocialNetwork";
+import CulturalObstacles from "./CulturalObstacles";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
@@ -63,6 +64,13 @@ const Motivation = () => {
       title: "Social Network",
       description: "Evaluate your support system",
       component: <SocialNetwork onComplete={() => markStepComplete(7)} />,
+      completed: false,
+    },
+    {
+      id: 8,
+      title: "Cultural Obstacles",
+      description: "Identify cultural barriers to change",
+      component: <CulturalObstacles onComplete={() => markStepComplete(8)} />,
       completed: false,
     }
   ]);
