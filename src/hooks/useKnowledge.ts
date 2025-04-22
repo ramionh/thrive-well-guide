@@ -35,6 +35,7 @@ export const useKnowledge = (onComplete?: () => void) => {
       if (error) throw error;
 
       // Mark step 6 as completed in motivation steps progress
+      // Use upsert with onConflict to properly handle existing records
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
         .upsert(
