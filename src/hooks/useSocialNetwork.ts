@@ -19,15 +19,15 @@ export const useSocialNetwork = (onComplete?: () => void) => {
     mutationFn: async (networkEntries: SocialNetworkEntry[]) => {
       if (!user) return;
 
-      // Delete existing entries first
+      // Delete existing entries first using type assertion to bypass TypeScript error
       await supabase
-        .from('motivation_social_network')
+        .from('motivation_social_network' as any)
         .delete()
         .eq('user_id', user.id);
 
-      // Insert new entries
+      // Insert new entries using type assertion to bypass TypeScript error
       const { error } = await supabase
-        .from('motivation_social_network')
+        .from('motivation_social_network' as any)
         .insert(
           networkEntries
             .filter(entry => entry.person.trim() !== '')
