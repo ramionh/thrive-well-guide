@@ -302,6 +302,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_environmental_stressors: {
+        Row: {
+          created_at: string
+          id: string
+          stressor: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          stressor: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          stressor?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_knowledge: {
         Row: {
           created_at: string

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
@@ -11,6 +10,7 @@ import SocialNetwork from "./SocialNetwork";
 import CulturalObstacles from "./CulturalObstacles";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
+import EnvironmentalStressors from "./EnvironmentalStressors";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 
 const Motivation = () => {
@@ -71,6 +71,13 @@ const Motivation = () => {
       title: "Cultural Obstacles",
       description: "Identify cultural barriers to change",
       component: <CulturalObstacles onComplete={() => markStepComplete(8)} />,
+      completed: false,
+    },
+    {
+      id: 9,
+      title: "Environmental Stressors",
+      description: "Identify environmental barriers",
+      component: <EnvironmentalStressors onComplete={() => markStepComplete(9)} />,
       completed: false,
     }
   ]);
