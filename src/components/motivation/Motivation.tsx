@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
@@ -6,6 +7,7 @@ import InternalObstacles from "./InternalObstacles";
 import Attitude from "./Attitude";
 import Behaviors from "./Behaviors";
 import Knowledge from "./Knowledge";
+import SocialNetwork from "./SocialNetwork";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
@@ -54,6 +56,13 @@ const Motivation = () => {
       title: "Knowledge Gaps",
       description: "Identify areas of uncertainty",
       component: <Knowledge onComplete={() => markStepComplete(6)} />,
+      completed: false,
+    },
+    {
+      id: 7,
+      title: "Social Network",
+      description: "Evaluate your support system",
+      component: <SocialNetwork onComplete={() => markStepComplete(7)} />,
       completed: false,
     }
   ]);
