@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
@@ -6,6 +5,7 @@ import FocusedHabitsSelector from "./focused-habits/FocusedHabitsSelector";
 import InternalObstacles from "./InternalObstacles";
 import Attitude from "./Attitude";
 import Behaviors from "./Behaviors";
+import Knowledge from "./Knowledge";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
@@ -47,6 +47,13 @@ const Motivation = () => {
       title: "Behaviors",
       description: "Identify behaviors that may hold you back",
       component: <Behaviors onComplete={() => markStepComplete(5)} />,
+      completed: false,
+    },
+    {
+      id: 6,
+      title: "Knowledge Gaps",
+      description: "Identify areas of uncertainty",
+      component: <Knowledge onComplete={() => markStepComplete(6)} />,
       completed: false,
     }
   ]);
