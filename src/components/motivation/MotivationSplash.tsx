@@ -53,7 +53,7 @@ const MotivationSplash: React.FC<MotivationSplashProps> = ({ onContinue }) => {
               className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6"
               onClick={onContinue}
             >
-              Begin Your Motivation Journey
+              Continue Your Motivation Journey
             </Button>
           </div>
         </div>
