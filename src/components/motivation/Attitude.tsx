@@ -7,7 +7,7 @@ import {
   CarouselNext, 
   CarouselPrevious 
 } from "@/components/ui/carousel";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -72,10 +72,10 @@ const Attitude: React.FC<AttitudeProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 border-2 border-purple-300">
-            <h2 className="text-2xl font-bold mb-4 text-purple-800">Understanding Your Attitude</h2>
-            <div className="prose mb-6">
-              <p className="text-purple-900/80 leading-relaxed">
+          <Card className="bg-white shadow-lg border-2 border-purple-300 p-6">
+            <div className="prose max-w-none">
+              <h2 className="text-2xl font-bold mb-4 text-purple-800">Understanding Your Attitude</h2>
+              <p className="text-purple-900/80 leading-relaxed mb-4">
                 Attitude can be one of the biggest internal obstacles to changing a
                 behavior. A negative attitude ("I don't want to do this" or "This is a
                 waste of time") can shape all your actions, fuel fears and
