@@ -80,7 +80,7 @@ const Attitude: React.FC<AttitudeProps> = ({ onComplete }) => {
             </div>
             
             <RadioGroup 
-              value={selectedAttitude || ''} 
+              value={selectedAttitude || undefined} 
               onValueChange={setSelectedAttitude}
               className="space-y-3 mb-6"
             >
