@@ -62,7 +62,7 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
       <Carousel className="w-full">
         <CarouselContent>
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20 glass-card">
+            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
               <h3 className="text-lg font-semibold mb-4 text-purple-800">Understanding Your Values</h3>
               <p className="mb-4 text-foreground/80">
                 Your values help guide your decisions and actions. Identifying and
@@ -74,20 +74,20 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20 glass-card">
+            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
               <h3 className="text-lg font-semibold mb-4 text-purple-800">Select Your Core Values</h3>
               <p className="mb-4 text-foreground/80">
                 Circle those values that are most important to you. You decide how to define 
                 the meaning of each value.
               </p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {VALUES_LIST.map(value => (
                   <button
                     key={value}
                     onClick={() => handleValueToggle(value)}
-                    className={`p-2 rounded-lg text-sm text-center transition-colors 
+                    className={`p-2 rounded-lg text-sm text-center transition-all duration-200 hover:scale-105 
                       ${selectedValues.includes(value) 
-                        ? 'bg-purple-500 text-white' 
+                        ? 'bg-purple-600 text-white shadow-lg transform scale-105' 
                         : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}`}
                   >
                     {value}
@@ -98,7 +98,7 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20 glass-card">
+            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
               <h3 className="text-lg font-semibold mb-4 text-purple-800">Describe Your Values</h3>
               <p className="mb-4 text-foreground/80">
                 From the values you selected, describe what each means to you.
@@ -118,7 +118,7 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
               </div>
               <Button 
                 onClick={handleComplete}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white"
                 disabled={selectedValues.length === 0 || 
                   selectedValues.some(value => !valueDescriptions[value])}
               >
