@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   Carousel, 
   CarouselContent, 
@@ -12,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAttitudeAssessment } from "@/hooks/useAttitudeAssessment";
-import { supabase } from "@/integrations/supabase/client";
-import { useUser } from "@/context/UserContext";
 
 const ATTITUDE_OPTIONS = [
   { value: 'VERY_NEGATIVE', label: 'Very Negative', description: 'I absolutely do not want to work on this goal at all.' },
@@ -30,34 +28,13 @@ interface AttitudeProps {
 }
 
 const Attitude: React.FC<AttitudeProps> = ({ onComplete }) => {
-  const [explanation, setExplanation] = useState('');
-  const { saveAttitudeMutation } = useAttitudeAssessment(onComplete);
-  const [selectedAttitude, setSelectedAttitude] = useState<string | null>(null);
-  const { user } = useUser();
-
-  useEffect(() => {
-    const fetchSavedAttitude = async () => {
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('motivation_attitude')
-        .select('attitude_rating, explanation')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error fetching attitude:', error);
-        return;
-      }
-
-      if (data) {
-        setSelectedAttitude(data.attitude_rating);
-        setExplanation(data.explanation || '');
-      }
-    };
-
-    fetchSavedAttitude();
-  }, [user]);
+  const { 
+    selectedAttitude, 
+    setSelectedAttitude, 
+    explanation, 
+    setExplanation, 
+    saveAttitudeMutation 
+  } = useAttitudeAssessment(onComplete);
 
   const handleSave = () => {
     if (selectedAttitude) {

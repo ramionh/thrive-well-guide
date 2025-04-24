@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
@@ -7,6 +8,33 @@ import { useToast } from '@/hooks/use-toast';
 export const useAttitudeAssessment = (onComplete?: () => void) => {
   const { user } = useUser();
   const { toast } = useToast();
+  const [selectedAttitude, setSelectedAttitude] = useState<string | null>(null);
+  const [explanation, setExplanation] = useState<string>('');
+
+  // Add effect to fetch saved attitude data when component loads
+  useEffect(() => {
+    const fetchSavedAttitude = async () => {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('motivation_attitude')
+        .select('attitude_rating, explanation')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching attitude data:', error);
+        return;
+      }
+      
+      if (data) {
+        setSelectedAttitude(data.attitude_rating);
+        setExplanation(data.explanation || '');
+      }
+    };
+    
+    fetchSavedAttitude();
+  }, [user]);
 
   const saveAttitudeMutation = useMutation({
     mutationFn: async (data: { attitude_rating: string; explanation: string }) => {
@@ -70,6 +98,10 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
   });
 
   return {
+    selectedAttitude,
+    setSelectedAttitude,
+    explanation,
+    setExplanation,
     saveAttitudeMutation
   };
 };

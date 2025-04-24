@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
@@ -9,6 +9,34 @@ export const useKnowledge = (onComplete?: () => void) => {
   const { user } = useUser();
   const { toast } = useToast();
   const [knowledgeQuestions, setKnowledgeQuestions] = useState<string[]>(Array(5).fill(''));
+  
+  // Add effect to fetch saved questions when component loads
+  useEffect(() => {
+    const fetchSavedQuestions = async () => {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('motivation_knowledge')
+        .select('question')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+      
+      if (error) {
+        console.error('Error fetching knowledge questions:', error);
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        // Fill the questions array with existing data
+        const savedQuestions = data.map(item => item.question);
+        // Make sure we always have 5 slots (add empty strings if needed)
+        const updatedQuestions = [...savedQuestions, ...Array(5 - savedQuestions.length).fill('')].slice(0, 5);
+        setKnowledgeQuestions(updatedQuestions);
+      }
+    };
+    
+    fetchSavedQuestions();
+  }, [user]);
 
   const saveKnowledgeMutation = useMutation({
     mutationFn: async (questions: string[]) => {
