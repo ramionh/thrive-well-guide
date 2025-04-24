@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,6 +22,39 @@ export const useExceptionsToRule = (onComplete?: () => void) => {
     where_what: '',
     thoughts_feelings: ''
   });
+
+  // Fetch previous exceptions
+  const { data: savedException } = useQuery({
+    queryKey: ['exceptions-to-rule', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('motivation_exceptions_to_rule')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user
+  });
+
+  // Update form when saved exception is loaded
+  useEffect(() => {
+    if (savedException) {
+      setFormData({
+        behavior: savedException.behavior || '',
+        who: savedException.who || '',
+        when_context: savedException.when_context || '',
+        where_what: savedException.where_what || '',
+        thoughts_feelings: savedException.thoughts_feelings || ''
+      });
+    }
+  }, [savedException]);
 
   // Fetch internal obstacles
   const { data: internalObstacles } = useQuery({
