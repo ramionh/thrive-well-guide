@@ -308,6 +308,39 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_clarifying_values: {
+        Row: {
+          created_at: string
+          goal_value_alignment: string | null
+          id: string
+          reasons_alignment: string | null
+          selected_value_1: string
+          selected_value_2: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal_value_alignment?: string | null
+          id?: string
+          reasons_alignment?: string | null
+          selected_value_1: string
+          selected_value_2: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal_value_alignment?: string | null
+          id?: string
+          reasons_alignment?: string | null
+          selected_value_1?: string
+          selected_value_2?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_cultural_obstacles: {
         Row: {
           created_at: string

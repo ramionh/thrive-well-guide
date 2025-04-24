@@ -40,6 +40,24 @@ const Dashboard: React.FC = () => {
     enabled: !!user
   });
 
+  // Add this query for core values
+  const { data: coreValues } = useQuery({
+    queryKey: ['core-values', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('motivation_clarifying_values')
+        .select('selected_value_1, selected_value_2')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user
+  });
+
   if (!user?.onboardingCompleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -133,7 +151,22 @@ const Dashboard: React.FC = () => {
         </Tabs>
       </div>
 
-      {/* Add Focused Habits Section */}
+      {coreValues && (
+        <Card className="shadow-sm mb-6">
+          <div className="p-6">
+            <h2 className="text-lg font-semibold mb-4">Core Values</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-purple-50 p-4 rounded-lg text-center">
+                <span className="text-purple-800">{coreValues.selected_value_1}</span>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg text-center">
+                <span className="text-purple-800">{coreValues.selected_value_2}</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {focusedHabits && focusedHabits.length > 0 && (
         <div className="mb-6">
           <Card className="shadow-sm">

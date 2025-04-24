@@ -17,6 +17,7 @@ import AddressingAmbivalence from "./AddressingAmbivalence";
 import ExternalObstacles from "./ExternalObstacles";
 import ThinkingAssertively from "./ThinkingAssertively";
 import ExploringValues from "./ExploringValues";
+import ClarifyingValues from "./ClarifyingValues";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -118,6 +119,13 @@ const Motivation = () => {
       title: "Exploring Values",
       description: "Identify and prioritize your core values",
       component: <ExploringValues onComplete={() => markStepComplete(14)} />,
+      completed: false,
+    },
+    {
+      id: 15,
+      title: "Clarifying Values",
+      description: "Define and align your core values",
+      component: <ClarifyingValues onComplete={() => markStepComplete(15)} />,
       completed: false,
     }
   ]);
