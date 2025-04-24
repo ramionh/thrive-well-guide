@@ -389,6 +389,42 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_exceptions_to_rule: {
+        Row: {
+          behavior: string
+          created_at: string
+          id: string
+          thoughts_feelings: string
+          updated_at: string
+          user_id: string
+          when_context: string
+          where_what: string
+          who: string
+        }
+        Insert: {
+          behavior: string
+          created_at?: string
+          id?: string
+          thoughts_feelings: string
+          updated_at?: string
+          user_id: string
+          when_context: string
+          where_what: string
+          who: string
+        }
+        Update: {
+          behavior?: string
+          created_at?: string
+          id?: string
+          thoughts_feelings?: string
+          updated_at?: string
+          user_id?: string
+          when_context?: string
+          where_what?: string
+          who?: string
+        }
+        Relationships: []
+      }
       motivation_exploring_values: {
         Row: {
           created_at: string

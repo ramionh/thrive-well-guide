@@ -18,6 +18,7 @@ import ExternalObstacles from "./ExternalObstacles";
 import ThinkingAssertively from "./ThinkingAssertively";
 import ExploringValues from "./ExploringValues";
 import ClarifyingValues from "./ClarifyingValues";
+import ExceptionsToRule from "./ExceptionsToRule";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -126,6 +127,13 @@ const Motivation = () => {
       title: "Clarifying Values",
       description: "Define and align your core values",
       component: <ClarifyingValues onComplete={() => markStepComplete(15)} />,
+      completed: false,
+    },
+    {
+      id: 16,
+      title: "Exceptions to the Rule",
+      description: "Document your success in overcoming obstacles",
+      component: <ExceptionsToRule onComplete={() => markStepComplete(16)} />,
       completed: false,
     }
   ]);
