@@ -49,7 +49,7 @@ export const useExploringValues = (onComplete?: () => void) => {
             // Check if value_descriptions is an array of {value, description} objects
             if (Array.isArray(data.value_descriptions)) {
               data.value_descriptions.forEach((item: { value: string; description: string }) => {
-                descriptionsObj[item.value] = item.description;
+                descriptionsObj[item.value] = String(item.description);
               });
             } 
             // Check if it's already an object with value keys
@@ -60,12 +60,16 @@ export const useExploringValues = (onComplete?: () => void) => {
                 Object.keys(data.value_descriptions).forEach(key => {
                   const value = data.value_descriptions[key];
                   if (value && typeof value === 'object' && 'value' in value && 'description' in value) {
-                    descriptionsObj[value.value] = value.description;
+                    descriptionsObj[value.value] = String(value.description);
                   }
                 });
               } else {
                 // It's already in the format we want: {VALUE: "description"}
-                descriptionsObj = data.value_descriptions;
+                // But we need to ensure all values are strings
+                Object.keys(data.value_descriptions).forEach(key => {
+                  const description = data.value_descriptions[key];
+                  descriptionsObj[key] = String(description);
+                });
               }
             }
             
