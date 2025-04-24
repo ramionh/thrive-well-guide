@@ -20,7 +20,9 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
         .from('motivation_attitude')
         .select('attitude_rating, explanation')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .order('created_at', { ascending: false })  // Get the most recent entry
+        .limit(1)  // Only get one record
+        .maybeSingle();  // Use maybeSingle to prevent errors if no record exists
       
       if (error) {
         console.error('Error fetching attitude data:', error);
@@ -28,6 +30,7 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
       }
       
       if (data) {
+        console.log('Fetched attitude data:', data);
         setSelectedAttitude(data.attitude_rating);
         setExplanation(data.explanation || '');
       }
