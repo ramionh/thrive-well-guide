@@ -48,8 +48,12 @@ export const useClarifyingValues = (onComplete?: () => void) => {
       if (data?.selected_values) {
         const parsedValues = Array.isArray(data.selected_values) 
           ? data.selected_values 
-          : JSON.parse(data.selected_values);
-        return parsedValues;
+          : JSON.parse(typeof data.selected_values === 'string' 
+              ? data.selected_values 
+              : JSON.stringify(data.selected_values));
+        
+        // Ensure all values are strings
+        return parsedValues.map(value => String(value));
       }
       
       return [];
@@ -72,10 +76,10 @@ export const useClarifyingValues = (onComplete?: () => void) => {
       if (error) throw error;
       
       if (data) {
-        setSelectedValue1(data.selected_value_1);
-        setSelectedValue2(data.selected_value_2);
-        setReasonsAlignment(data.reasons_alignment || '');
-        setGoalValueAlignment(data.goal_value_alignment || '');
+        setSelectedValue1(String(data.selected_value_1 || ''));
+        setSelectedValue2(String(data.selected_value_2 || ''));
+        setReasonsAlignment(String(data.reasons_alignment || ''));
+        setGoalValueAlignment(String(data.goal_value_alignment || ''));
       }
       
       return data;
