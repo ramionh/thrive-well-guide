@@ -60,20 +60,40 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
     if (!user) return;
 
     try {
-      // Use upsert instead of insert to handle existing records
-      const { error } = await supabase
+      // First check if a progress record already exists
+      const { data: existingProgress } = await supabase
         .from('motivation_steps_progress')
-        .upsert({
-          user_id: user.id,
-          step_number: stepId,
-          step_name: steps.find(s => s.id === stepId)?.title || '',
-          completed: true,
-          completed_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id,step_number'
-        });
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('step_number', stepId)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existingProgress) {
+        // Update existing record
+        const { error: updateError } = await supabase
+          .from('motivation_steps_progress')
+          .update({
+            completed: true,
+            completed_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id)
+          .eq('step_number', stepId);
+
+        if (updateError) throw updateError;
+      } else {
+        // Insert new record
+        const { error: insertError } = await supabase
+          .from('motivation_steps_progress')
+          .insert({
+            user_id: user.id,
+            step_number: stepId,
+            step_name: steps.find(s => s.id === stepId)?.title || '',
+            completed: true,
+            completed_at: new Date().toISOString()
+          });
+
+        if (insertError) throw insertError;
+      }
 
       setSteps(prevSteps => 
         prevSteps.map(step => 
