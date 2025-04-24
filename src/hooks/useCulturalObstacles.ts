@@ -81,39 +81,21 @@ export const useCulturalObstacles = (onComplete?: () => void) => {
 
       if (error) throw error;
 
-      // Check if step already exists in progress
-      const { data: existingProgress } = await supabase
+      // Use upsert with explicit onConflict for step progress
+      const { error: progressError } = await supabase
         .from('motivation_steps_progress')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('step_number', 8)
-        .maybeSingle();
-
-      // If step exists, update it; otherwise, insert it
-      if (existingProgress) {
-        const { error: updateError } = await supabase
-          .from('motivation_steps_progress')
-          .update({
-            completed: true,
-            completed_at: new Date().toISOString()
-          })
-          .eq('id', existingProgress.id);
-
-        if (updateError) throw updateError;
-      } else {
-        // Insert new progress entry
-        const { error: insertError } = await supabase
-          .from('motivation_steps_progress')
-          .insert({
+        .upsert(
+          {
             user_id: user.id,
             step_number: 8,
             step_name: 'Cultural Obstacles',
             completed: true,
             completed_at: new Date().toISOString()
-          });
+          },
+          { onConflict: 'user_id,step_number' }
+        );
 
-        if (insertError) throw insertError;
-      }
+      if (progressError) throw progressError;
     },
     onSuccess: () => {
       toast({

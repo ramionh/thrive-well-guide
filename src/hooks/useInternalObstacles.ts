@@ -56,6 +56,7 @@ export const useInternalObstacles = (onComplete?: () => void) => {
 
       if (error) throw error;
 
+      // Use upsert with explicit onConflict
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
         .upsert(

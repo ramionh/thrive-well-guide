@@ -23,7 +23,7 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
 
       if (attitudeError) throw attitudeError;
 
-      // Then, upsert the step progress
+      // Then, upsert the step progress with explicit onConflict
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
         .upsert(

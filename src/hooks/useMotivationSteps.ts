@@ -60,6 +60,7 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
     if (!user) return;
 
     try {
+      // Use upsert instead of insert to handle existing records
       const { error } = await supabase
         .from('motivation_steps_progress')
         .upsert({
@@ -68,6 +69,8 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
           step_name: steps.find(s => s.id === stepId)?.title || '',
           completed: true,
           completed_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,step_number'
         });
 
       if (error) throw error;

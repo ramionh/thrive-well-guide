@@ -19,7 +19,7 @@ const Ambivalence = ({ onComplete }: AmbivalenceProps) => {
     mutationFn: async () => {
       if (!user) return;
 
-      // Use upsert instead of insert to handle existing records
+      // Use upsert with onConflict to properly handle existing records
       const { error } = await supabase
         .from('motivation_steps_progress')
         .upsert({

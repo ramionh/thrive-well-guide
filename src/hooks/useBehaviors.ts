@@ -56,6 +56,7 @@ export const useBehaviors = (onComplete?: () => void) => {
 
       if (error) throw error;
 
+      // Use upsert with explicit onConflict for step progress
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
         .upsert(
