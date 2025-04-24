@@ -527,6 +527,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_thinking_assertively: {
+        Row: {
+          boundary_needs: string
+          boundary_request: string
+          created_at: string
+          id: string
+          thought_challenge: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          boundary_needs: string
+          boundary_request: string
+          created_at?: string
+          id?: string
+          thought_challenge: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          boundary_needs?: string
+          boundary_request?: string
+          created_at?: string
+          id?: string
+          thought_challenge?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

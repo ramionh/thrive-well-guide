@@ -15,6 +15,7 @@ import IdentifyingAmbivalence from "./IdentifyingAmbivalence";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 import AddressingAmbivalence from "./AddressingAmbivalence";
 import ExternalObstacles from "./ExternalObstacles";
+import ThinkingAssertively from "./ThinkingAssertively";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -102,6 +103,13 @@ const Motivation = () => {
       title: "External Obstacles",
       description: "Identify and solve external barriers to your goal",
       component: <ExternalObstacles onComplete={() => markStepComplete(12)} />,
+      completed: false,
+    },
+    {
+      id: 13,
+      title: "Thinking Assertively",
+      description: "Develop assertiveness skills",
+      component: <ThinkingAssertively onComplete={() => markStepComplete(13)} />,
       completed: false,
     }
   ]);
