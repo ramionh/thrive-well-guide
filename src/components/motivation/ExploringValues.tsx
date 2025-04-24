@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useExploringValues } from '@/hooks/useExploringValues';
+import { Loader2 } from 'lucide-react';
 
 interface ExploringValuesProps {
   onComplete: () => void;
@@ -24,7 +25,8 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
     setSelectedValues,
     valueDescriptions,
     setValueDescriptions,
-    saveExploringValuesMutation
+    saveExploringValuesMutation,
+    isLoading
   } = useExploringValues(onComplete);
 
   const handleValueToggle = (value: string) => {
@@ -45,6 +47,15 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
   const handleComplete = () => {
     saveExploringValuesMutation.mutate();
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-12">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+        <span className="ml-2 text-purple-800">Loading your values...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

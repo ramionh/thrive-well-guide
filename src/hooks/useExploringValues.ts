@@ -1,6 +1,6 @@
 
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,39 @@ export const useExploringValues = (onComplete?: () => void) => {
   const [valueDescriptions, setValueDescriptions] = useState<{
     [key: string]: string
   }>({});
+  
+  // Add a query to fetch existing values
+  const { isLoading } = useQuery({
+    queryKey: ['exploring-values', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('motivation_exploring_values')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      
+      if (data) {
+        // Set the selected values
+        setSelectedValues(data.selected_values as string[]);
+        
+        // Transform the value_descriptions array into the expected object format
+        if (Array.isArray(data.value_descriptions)) {
+          const descriptionsObj: { [key: string]: string } = {};
+          data.value_descriptions.forEach((item: { value: string; description: string }) => {
+            descriptionsObj[item.value] = item.description;
+          });
+          setValueDescriptions(descriptionsObj);
+        }
+      }
+      
+      return data;
+    },
+    enabled: !!user
+  });
 
   const saveExploringValuesMutation = useMutation({
     mutationFn: async () => {
@@ -19,7 +52,7 @@ export const useExploringValues = (onComplete?: () => void) => {
 
       const { error: insertError } = await supabase
         .from('motivation_exploring_values')
-        .insert({
+        .upsert({
           user_id: user.id,
           selected_values: selectedValues,
           value_descriptions: Object.entries(valueDescriptions).map(
@@ -68,6 +101,7 @@ export const useExploringValues = (onComplete?: () => void) => {
     setSelectedValues,
     valueDescriptions,
     setValueDescriptions,
-    saveExploringValuesMutation
+    saveExploringValuesMutation,
+    isLoading
   };
 };
