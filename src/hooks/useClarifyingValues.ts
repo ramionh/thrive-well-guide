@@ -41,8 +41,8 @@ export const useClarifyingValues = (onComplete?: () => void) => {
         .from('motivation_exploring_values')
         .select('selected_values')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false })  // Get the latest entry first
-        .limit(1)  // Only get the latest entry
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
       
       if (error) {
@@ -51,20 +51,11 @@ export const useClarifyingValues = (onComplete?: () => void) => {
       }
       
       if (data?.selected_values) {
-        console.log("Raw selected values data:", data.selected_values);
-        
         try {
-          // Parse the selected values if needed
           const parsedValues = Array.isArray(data.selected_values) 
             ? data.selected_values 
-            : JSON.parse(typeof data.selected_values === 'string' 
-                ? data.selected_values 
-                : JSON.stringify(data.selected_values));
-          
-          // Ensure all values are strings
-          const stringValues = parsedValues.map(value => String(value));
-          console.log("Parsed values:", stringValues);
-          return stringValues;
+            : JSON.parse(data.selected_values as string);
+          return parsedValues.map(String);
         } catch (e) {
           console.error("Error parsing selected values:", e);
           return [];
@@ -86,21 +77,25 @@ export const useClarifyingValues = (onComplete?: () => void) => {
         .from('motivation_clarifying_values')
         .select('*')
         .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
       
       if (error) throw error;
-      
-      if (data) {
-        setSelectedValue1(String(data.selected_value_1 || ''));
-        setSelectedValue2(String(data.selected_value_2 || ''));
-        setReasonsAlignment(String(data.reasons_alignment || ''));
-        setGoalValueAlignment(String(data.goal_value_alignment || ''));
-      }
-      
       return data;
     },
     enabled: !!user
   });
+
+  // Update form values when existing values are fetched
+  useEffect(() => {
+    if (existingValues) {
+      setSelectedValue1(String(existingValues.selected_value_1 || ''));
+      setSelectedValue2(String(existingValues.selected_value_2 || ''));
+      setReasonsAlignment(String(existingValues.reasons_alignment || ''));
+      setGoalValueAlignment(String(existingValues.goal_value_alignment || ''));
+    }
+  }, [existingValues]);
 
   const saveClarifyingValuesMutation = useMutation({
     mutationFn: async () => {
@@ -108,7 +103,7 @@ export const useClarifyingValues = (onComplete?: () => void) => {
 
       const { error: upsertError } = await supabase
         .from('motivation_clarifying_values')
-        .upsert({
+        .insert({
           user_id: user.id,
           selected_value_1: selectedValue1,
           selected_value_2: selectedValue2,
