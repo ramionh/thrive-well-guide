@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,19 +22,18 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
     goalValueAlignment,
     setGoalValueAlignment,
     saveClarifyingValuesMutation,
-    exploringValues,
-    pros
+    exploringValues = [],
+    pros = []
   } = useClarifyingValues(onComplete);
 
-  if (!exploringValues || !pros) {
-    return (
-      <div className="flex justify-center items-center p-12">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-        <span className="ml-2 text-purple-800">Loading your values...</span>
-      </div>
-    );
-  }
+  // Use effect to log data and debug
+  useEffect(() => {
+    console.log("Exploring Values in component:", exploringValues);
+    console.log("Pros in component:", pros);
+  }, [exploringValues, pros]);
 
+  const isLoading = false; // Remove loading state to prevent getting stuck
+  
   const handleComplete = () => {
     saveClarifyingValuesMutation.mutate();
   };
@@ -58,7 +57,7 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
                     className="w-full p-2 border rounded-md bg-white"
                   >
                     <option value="">Select a value</option>
-                    {exploringValues.map((value: string) => (
+                    {Array.isArray(exploringValues) && exploringValues.map((value: string) => (
                       <option key={value} value={value}>{value}</option>
                     ))}
                   </select>
@@ -71,7 +70,7 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
                     className="w-full p-2 border rounded-md bg-white"
                   >
                     <option value="">Select a value</option>
-                    {exploringValues.map((value: string) => (
+                    {Array.isArray(exploringValues) && exploringValues.map((value: string) => (
                       <option key={value} value={value}>{value}</option>
                     ))}
                   </select>
@@ -87,7 +86,7 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
                 <div>
                   <h4 className="font-medium mb-2">Your Top Reasons for Change:</h4>
                   <ul className="list-disc pl-5 mb-4">
-                    {pros?.map((pro: { text: string }) => (
+                    {Array.isArray(pros) && pros.map((pro: { text: string }) => (
                       <li key={pro.text} className="mb-1">{pro.text}</li>
                     ))}
                   </ul>

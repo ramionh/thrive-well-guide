@@ -35,25 +35,40 @@ export const useClarifyingValues = (onComplete?: () => void) => {
   const { data: exploringValues } = useQuery({
     queryKey: ['exploring-values', user?.id],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user) return [];
       
       const { data, error } = await supabase
         .from('motivation_exploring_values')
         .select('selected_values')
         .eq('user_id', user.id)
+        .order('created_at', { ascending: false })  // Get the latest entry first
+        .limit(1)  // Only get the latest entry
         .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching exploring values:", error);
+        return [];
+      }
       
       if (data?.selected_values) {
-        const parsedValues = Array.isArray(data.selected_values) 
-          ? data.selected_values 
-          : JSON.parse(typeof data.selected_values === 'string' 
-              ? data.selected_values 
-              : JSON.stringify(data.selected_values));
+        console.log("Raw selected values data:", data.selected_values);
         
-        // Ensure all values are strings
-        return parsedValues.map(value => String(value));
+        try {
+          // Parse the selected values if needed
+          const parsedValues = Array.isArray(data.selected_values) 
+            ? data.selected_values 
+            : JSON.parse(typeof data.selected_values === 'string' 
+                ? data.selected_values 
+                : JSON.stringify(data.selected_values));
+          
+          // Ensure all values are strings
+          const stringValues = parsedValues.map(value => String(value));
+          console.log("Parsed values:", stringValues);
+          return stringValues;
+        } catch (e) {
+          console.error("Error parsing selected values:", e);
+          return [];
+        }
       }
       
       return [];
