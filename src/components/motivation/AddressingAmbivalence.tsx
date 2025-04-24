@@ -50,19 +50,6 @@ const AddressingAmbivalence: React.FC<AddressingAmbivalenceProps> = ({ onComplet
 
         <CarouselItem>
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Managing Fitness Emotions</h2>
-            <div className="prose mb-6">
-              <p>
-                Learning how to manage those emotions in a helpful, healthy way is a key component of achieving 
-                your fitness goals. There is no simple shortcut to better physical conditioning, but you can use 
-                these proven strategies to better manage your negative emotions about exercise.
-              </p>
-            </div>
-          </Card>
-        </CarouselItem>
-
-        <CarouselItem>
-          <Card className="p-6">
             <h2 className="text-2xl font-bold mb-4">Positive Experiences</h2>
             <div className="prose mb-6">
               <p>
@@ -175,3 +162,4 @@ const AddressingAmbivalence: React.FC<AddressingAmbivalenceProps> = ({ onComplet
 };
 
 export default AddressingAmbivalence;
+
