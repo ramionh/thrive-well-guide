@@ -19,16 +19,16 @@ const HabitSelectionPanel = ({
   onComplete,
 }: HabitSelectionPanelProps) => {
   return (
-    <Card className="p-6">
-      <h2 className="text-2xl font-bold mb-4">What are my concerns?</h2>
+    <Card className="p-6 border-purple-100">
+      <h2 className="text-2xl font-bold mb-4 text-purple-800">What are my concerns?</h2>
       <div className="prose mb-6">
-        <p className="mb-4">
+        <p className="mb-4 text-purple-600">
           You might have a general idea that you need to change one aspect of
           your fitness but are unsure what the change should be. You
           don't have to address all the following topics, as we have plenty of
           time to narrow things down later.
         </p>
-        <p className="font-semibold mb-6">
+        <p className="font-semibold mb-6 text-purple-700">
           Pick one or two core habits to focus on:
         </p>
       </div>

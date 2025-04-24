@@ -23,12 +23,12 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
 }) => {
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
-      <Card className="bg-white shadow-md border border-gray-200">
+      <Card className="bg-white shadow-md border border-purple-100">
         <CardContent className="p-4">
-          <h3 className="text-lg font-semibold mb-4">Your Progress</h3>
+          <h3 className="text-lg font-semibold mb-4 text-purple-800">Your Progress</h3>
           <Accordion type="single" collapsible defaultValue="starting-point">
             <AccordionItem value="starting-point">
-              <AccordionTrigger className="text-left">Starting Point</AccordionTrigger>
+              <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">Starting Point</AccordionTrigger>
               <AccordionContent>
                 <ul className="space-y-3">
                   {steps.map((step) => {
@@ -42,7 +42,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                           disabled={isDisabled}
                           className={`flex items-center p-3 w-full rounded-lg transition-colors text-left
                             ${isActive ? 'bg-purple-100 text-purple-800 font-medium' : ''}
-                            ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}
+                            ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-50'}
                           `}
                         >
                           <div className="mr-3 flex-shrink-0">
@@ -50,15 +50,15 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                               <CheckCircle className="h-5 w-5 text-green-500" />
                             ) : (
                               <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs
-                                ${isActive ? 'bg-purple-500 text-white' : 'bg-gray-300 text-gray-700'}
+                                ${isActive ? 'bg-purple-600 text-white' : 'bg-gray-300 text-gray-700'}
                               `}>
                                 {step.id}
                               </div>
                             )}
                           </div>
                           <div>
-                            <div className="font-medium">{step.title}</div>
-                            <div className="text-sm text-gray-500">{step.description}</div>
+                            <div className="font-medium text-purple-900">{step.title}</div>
+                            <div className="text-sm text-purple-600">{step.description}</div>
                           </div>
                         </button>
                       </li>
@@ -69,18 +69,18 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
             </AccordionItem>
 
             <AccordionItem value="charting-path">
-              <AccordionTrigger className="text-left">Charting Your Path</AccordionTrigger>
+              <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">Charting Your Path</AccordionTrigger>
               <AccordionContent>
-                <p className="text-gray-500 italic text-sm p-4">
+                <p className="text-purple-600 italic text-sm p-4">
                   Complete the starting point steps to unlock this section
                 </p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="active-change">
-              <AccordionTrigger className="text-left">Active Change</AccordionTrigger>
+              <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">Active Change</AccordionTrigger>
               <AccordionContent>
-                <p className="text-gray-500 italic text-sm p-4">
+                <p className="text-purple-600 italic text-sm p-4">
                   Complete the previous sections to unlock this section
                 </p>
               </AccordionContent>

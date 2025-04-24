@@ -32,38 +32,38 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
           <Card className="p-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-purple-800">
                   Think of one fairly big change you have already made. It doesn't have to be a recent change or the biggest change. It might be the change that was hardest to achieve.
                 </label>
                 <Textarea
                   value={formData.big_change}
                   onChange={(e) => setFormData(prev => ({ ...prev, big_change: e.target.value }))}
                   placeholder="Write your response here..."
-                  className="min-h-[100px]"
+                  className="min-h-[100px] border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-purple-800">
                   What was going on in your life at the time?
                 </label>
                 <Textarea
                   value={formData.life_context}
                   onChange={(e) => setFormData(prev => ({ ...prev, life_context: e.target.value }))}
                   placeholder="Describe the context..."
-                  className="min-h-[100px]"
+                  className="min-h-[100px] border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-purple-800">
                   Did you achieve the change all at once or did you take small steps?
                 </label>
                 <Textarea
                   value={formData.change_approach}
                   onChange={(e) => setFormData(prev => ({ ...prev, change_approach: e.target.value }))}
                   placeholder="Describe your approach..."
-                  className="min-h-[100px]"
+                  className="min-h-[100px] border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
             </div>
@@ -74,26 +74,26 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
           <Card className="p-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-purple-800">
                   What were some of the steps?
                 </label>
                 <Textarea
                   value={formData.change_steps}
                   onChange={(e) => setFormData(prev => ({ ...prev, change_steps: e.target.value }))}
                   placeholder="List the steps..."
-                  className="min-h-[100px]"
+                  className="min-h-[100px] border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-purple-800">
                   How do you feel about the change today?
                 </label>
                 <Textarea
                   value={formData.current_feelings}
                   onChange={(e) => setFormData(prev => ({ ...prev, current_feelings: e.target.value }))}
                   placeholder="Share your feelings..."
-                  className="min-h-[100px]"
+                  className="min-h-[100px] border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
             </div>
@@ -104,14 +104,14 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
           <Card className="p-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-purple-800">
                   How can this past success help you achieve your new goal or goals?
                 </label>
                 <Textarea
                   value={formData.help_achieve_goals}
                   onChange={(e) => setFormData(prev => ({ ...prev, help_achieve_goals: e.target.value }))}
                   placeholder="Share your thoughts..."
-                  className="min-h-[200px]"
+                  className="min-h-[200px] border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
@@ -126,8 +126,8 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600 hover:bg-purple-100" />
+      <CarouselNext className="text-purple-600 hover:bg-purple-100" />
     </Carousel>
   );
 };
