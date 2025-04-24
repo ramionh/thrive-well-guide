@@ -28,16 +28,51 @@ export const useExploringValues = (onComplete?: () => void) => {
       if (error) throw error;
       
       if (data) {
-        // Set the selected values
-        setSelectedValues(data.selected_values as string[]);
+        // Parse the selected values from JSON if needed
+        if (data.selected_values) {
+          // Handle whether it's already an array or needs to be parsed
+          const parsedValues = Array.isArray(data.selected_values) 
+            ? data.selected_values 
+            : JSON.parse(typeof data.selected_values === 'string' 
+                ? data.selected_values 
+                : JSON.stringify(data.selected_values));
+          
+          setSelectedValues(parsedValues);
+        }
         
-        // Transform the value_descriptions array into the expected object format
-        if (Array.isArray(data.value_descriptions)) {
-          const descriptionsObj: { [key: string]: string } = {};
-          data.value_descriptions.forEach((item: { value: string; description: string }) => {
-            descriptionsObj[item.value] = item.description;
-          });
-          setValueDescriptions(descriptionsObj);
+        // Parse the value descriptions from JSON if needed
+        if (data.value_descriptions) {
+          // Handle different possible formats of the data
+          try {
+            let descriptionsObj: { [key: string]: string } = {};
+            
+            // Check if value_descriptions is an array of {value, description} objects
+            if (Array.isArray(data.value_descriptions)) {
+              data.value_descriptions.forEach((item: { value: string; description: string }) => {
+                descriptionsObj[item.value] = item.description;
+              });
+            } 
+            // Check if it's already an object with value keys
+            else if (typeof data.value_descriptions === 'object' && data.value_descriptions !== null) {
+              // If it's in {value: description} format
+              if (Object.keys(data.value_descriptions).some(key => key.startsWith('value'))) {
+                // Convert from {"value":"VALUE","description":"DESC"} format
+                Object.keys(data.value_descriptions).forEach(key => {
+                  const value = data.value_descriptions[key];
+                  if (value && typeof value === 'object' && 'value' in value && 'description' in value) {
+                    descriptionsObj[value.value] = value.description;
+                  }
+                });
+              } else {
+                // It's already in the format we want: {VALUE: "description"}
+                descriptionsObj = data.value_descriptions;
+              }
+            }
+            
+            setValueDescriptions(descriptionsObj);
+          } catch (e) {
+            console.error('Error parsing value descriptions:', e);
+          }
         }
       }
       
