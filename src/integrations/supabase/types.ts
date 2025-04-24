@@ -356,6 +356,45 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_external_obstacles: {
+        Row: {
+          created_at: string
+          id: string
+          obstacle: string
+          solution_1: string | null
+          solution_1_attitude: string | null
+          solution_2: string | null
+          solution_2_attitude: string | null
+          solutions: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          obstacle: string
+          solution_1?: string | null
+          solution_1_attitude?: string | null
+          solution_2?: string | null
+          solution_2_attitude?: string | null
+          solutions: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          obstacle?: string
+          solution_1?: string | null
+          solution_1_attitude?: string | null
+          solution_2?: string | null
+          solution_2_attitude?: string | null
+          solutions?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_identifying_ambivalence: {
         Row: {
           ambivalence_statement: string

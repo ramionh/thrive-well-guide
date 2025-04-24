@@ -14,6 +14,7 @@ import EnvironmentalStressors from "./EnvironmentalStressors";
 import IdentifyingAmbivalence from "./IdentifyingAmbivalence";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 import AddressingAmbivalence from "./AddressingAmbivalence";
+import ExternalObstacles from "./ExternalObstacles";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -94,6 +95,13 @@ const Motivation = () => {
       title: "Addressing Ambivalence",
       description: "Develop strategies for managing emotions",
       component: <AddressingAmbivalence onComplete={() => markStepComplete(11)} />,
+      completed: false,
+    },
+    {
+      id: 12,
+      title: "External Obstacles",
+      description: "Identify and solve external barriers to your goal",
+      component: <ExternalObstacles onComplete={() => markStepComplete(12)} />,
       completed: false,
     }
   ]);
