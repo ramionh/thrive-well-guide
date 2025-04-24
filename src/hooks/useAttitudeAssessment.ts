@@ -12,18 +12,29 @@ export const useAttitudeAssessment = (onComplete?: () => void) => {
     mutationFn: async (data: { attitude_rating: string; explanation: string }) => {
       if (!user) return;
 
-      // First, upsert the attitude assessment
-      const { error: attitudeError } = await supabase
+      // Delete any existing attitude records for this user before inserting a new one
+      const { error: deleteError } = await supabase
         .from('motivation_attitude')
-        .upsert({
+        .delete()
+        .eq('user_id', user.id);
+
+      if (deleteError) {
+        console.error('Error deleting existing attitude record:', deleteError);
+        throw deleteError;
+      }
+
+      // Insert the new attitude record
+      const { error: insertError } = await supabase
+        .from('motivation_attitude')
+        .insert({
           user_id: user.id,
           attitude_rating: data.attitude_rating,
           explanation: data.explanation,
-        }, { onConflict: 'user_id' });
+        });
 
-      if (attitudeError) throw attitudeError;
+      if (insertError) throw insertError;
 
-      // Then, upsert the step progress with explicit onConflict
+      // Update motivation steps progress
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
         .upsert(
