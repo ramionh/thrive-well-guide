@@ -4,6 +4,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
 import { useToast } from '@/hooks/use-toast';
+import { Json } from '@/integrations/supabase/types';
+
+// Define proper types for our value descriptions
+interface ValueDescription {
+  value: string;
+  description: string;
+}
 
 export const useExploringValues = (onComplete?: () => void) => {
   const { user } = useUser();
@@ -37,36 +44,44 @@ export const useExploringValues = (onComplete?: () => void) => {
       if (data) {
         try {
           // Handle selected values
-          let parsedSelectedValues: string[] = [];
-          
           if (data.selected_values) {
-            // Parse selected_values if it's a string, otherwise use the value directly
-            parsedSelectedValues = Array.isArray(data.selected_values)
-              ? data.selected_values.map(String)
-              : typeof data.selected_values === 'string'
-                ? JSON.parse(data.selected_values)
-                : [];
+            let parsedSelectedValues: string[] = [];
+            
+            // Handle different types of selected_values data
+            if (Array.isArray(data.selected_values)) {
+              parsedSelectedValues = data.selected_values.map(String);
+            } else if (typeof data.selected_values === 'string') {
+              try {
+                parsedSelectedValues = JSON.parse(data.selected_values);
+              } catch (e) {
+                console.error("Failed to parse selected_values as JSON string:", e);
+              }
+            }
+            
+            console.log("Parsed selected values:", parsedSelectedValues);
+            setSelectedValues(parsedSelectedValues);
           }
           
-          console.log("Parsed selected values:", parsedSelectedValues);
-          setSelectedValues(parsedSelectedValues);
-          
           // Handle value descriptions
-          let parsedDescriptions: { [key: string]: string } = {};
-          
           if (data.value_descriptions) {
-            const descriptionsData = data.value_descriptions;
+            let parsedDescriptions: { [key: string]: string } = {};
             
-            // If descriptionsData is an array of {value, description} objects
-            if (Array.isArray(descriptionsData)) {
-              descriptionsData.forEach((item: { value: string; description: string }) => {
-                parsedDescriptions[item.value] = String(item.description);
+            // If it's an array of {value, description} objects
+            if (Array.isArray(data.value_descriptions)) {
+              data.value_descriptions.forEach((item: any) => {
+                if (item && typeof item === 'object' && 'value' in item && 'description' in item) {
+                  parsedDescriptions[item.value] = String(item.description);
+                }
               });
             } 
-            // If it's already an object with value keys
-            else if (typeof descriptionsData === 'object' && descriptionsData !== null) {
-              Object.keys(descriptionsData).forEach(key => {
-                const value = descriptionsData[key];
+            // If it's an object with value keys
+            else if (typeof data.value_descriptions === 'object' && data.value_descriptions !== null) {
+              // Cast to any to handle the unknown structure
+              const descriptionsObj = data.value_descriptions as any;
+              
+              // Try to extract values from the object
+              Object.keys(descriptionsObj).forEach(key => {
+                const value = descriptionsObj[key];
                 if (value && typeof value === 'object' && 'value' in value && 'description' in value) {
                   parsedDescriptions[value.value] = String(value.description);
                 } else if (typeof key === 'string' && typeof value === 'string') {
@@ -74,10 +89,10 @@ export const useExploringValues = (onComplete?: () => void) => {
                 }
               });
             }
+            
+            console.log("Parsed value descriptions:", parsedDescriptions);
+            setValueDescriptions(parsedDescriptions);
           }
-          
-          console.log("Parsed value descriptions:", parsedDescriptions);
-          setValueDescriptions(parsedDescriptions);
         } catch (e) {
           console.error("Error parsing exploring values data:", e);
         }
