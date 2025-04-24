@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,6 +29,11 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
     isLoading
   } = useExploringValues(onComplete);
 
+  useEffect(() => {
+    console.log("Selected values in component:", selectedValues);
+    console.log("Value descriptions in component:", valueDescriptions);
+  }, [selectedValues, valueDescriptions]);
+
   const handleValueToggle = (value: string) => {
     setSelectedValues(prev => 
       prev.includes(value) 
@@ -48,11 +53,12 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
     saveExploringValuesMutation.mutate();
   };
 
+  // Use a temporary loading indicator, but don't get stuck in loading state
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center p-12">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-        <span className="ml-2 text-purple-800">Loading your values...</span>
+      <div className="flex justify-center items-center p-4">
+        <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+        <span className="ml-2">Loading values...</span>
       </div>
     );
   }

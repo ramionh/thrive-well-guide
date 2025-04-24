@@ -13,8 +13,8 @@ export const useExploringValues = (onComplete?: () => void) => {
     [key: string]: string
   }>({});
   
-  // Add a query to fetch existing values
-  const { isLoading } = useQuery({
+  // Add a query to fetch existing values - always get the most recent entry
+  const { data, isLoading } = useQuery({
     queryKey: ['exploring-values', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -23,60 +23,63 @@ export const useExploringValues = (onComplete?: () => void) => {
         .from('motivation_exploring_values')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .order('created_at', { ascending: false }) // Get the most recent entry first
+        .limit(1) // Only get one record
+        .maybeSingle(); // Use maybeSingle to prevent errors if no record exists
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching exploring values:", error);
+        return null;
+      }
+      
+      console.log("Raw exploring values data:", data);
       
       if (data) {
-        // Parse the selected values from JSON if needed
-        if (data.selected_values) {
-          // Handle whether it's already an array or needs to be parsed
-          const parsedValues = Array.isArray(data.selected_values) 
-            ? data.selected_values 
-            : JSON.parse(typeof data.selected_values === 'string' 
-                ? data.selected_values 
-                : JSON.stringify(data.selected_values));
+        try {
+          // Handle selected values
+          let parsedSelectedValues: string[] = [];
           
-          setSelectedValues(parsedValues);
-        }
-        
-        // Parse the value descriptions from JSON if needed
-        if (data.value_descriptions) {
-          // Handle different possible formats of the data
-          try {
-            let descriptionsObj: { [key: string]: string } = {};
+          if (data.selected_values) {
+            // Parse selected_values if it's a string, otherwise use the value directly
+            parsedSelectedValues = Array.isArray(data.selected_values)
+              ? data.selected_values.map(String)
+              : typeof data.selected_values === 'string'
+                ? JSON.parse(data.selected_values)
+                : [];
+          }
+          
+          console.log("Parsed selected values:", parsedSelectedValues);
+          setSelectedValues(parsedSelectedValues);
+          
+          // Handle value descriptions
+          let parsedDescriptions: { [key: string]: string } = {};
+          
+          if (data.value_descriptions) {
+            const descriptionsData = data.value_descriptions;
             
-            // Check if value_descriptions is an array of {value, description} objects
-            if (Array.isArray(data.value_descriptions)) {
-              data.value_descriptions.forEach((item: { value: string; description: string }) => {
-                descriptionsObj[item.value] = String(item.description);
+            // If descriptionsData is an array of {value, description} objects
+            if (Array.isArray(descriptionsData)) {
+              descriptionsData.forEach((item: { value: string; description: string }) => {
+                parsedDescriptions[item.value] = String(item.description);
               });
             } 
-            // Check if it's already an object with value keys
-            else if (typeof data.value_descriptions === 'object' && data.value_descriptions !== null) {
-              // If it's in {value: description} format
-              if (Object.keys(data.value_descriptions).some(key => key.startsWith('value'))) {
-                // Convert from {"value":"VALUE","description":"DESC"} format
-                Object.keys(data.value_descriptions).forEach(key => {
-                  const value = data.value_descriptions[key];
-                  if (value && typeof value === 'object' && 'value' in value && 'description' in value) {
-                    descriptionsObj[value.value] = String(value.description);
-                  }
-                });
-              } else {
-                // It's already in the format we want: {VALUE: "description"}
-                // But we need to ensure all values are strings
-                Object.keys(data.value_descriptions).forEach(key => {
-                  const description = data.value_descriptions[key];
-                  descriptionsObj[key] = String(description);
-                });
-              }
+            // If it's already an object with value keys
+            else if (typeof descriptionsData === 'object' && descriptionsData !== null) {
+              Object.keys(descriptionsData).forEach(key => {
+                const value = descriptionsData[key];
+                if (value && typeof value === 'object' && 'value' in value && 'description' in value) {
+                  parsedDescriptions[value.value] = String(value.description);
+                } else if (typeof key === 'string' && typeof value === 'string') {
+                  parsedDescriptions[key] = value;
+                }
+              });
             }
-            
-            setValueDescriptions(descriptionsObj);
-          } catch (e) {
-            console.error('Error parsing value descriptions:', e);
           }
+          
+          console.log("Parsed value descriptions:", parsedDescriptions);
+          setValueDescriptions(parsedDescriptions);
+        } catch (e) {
+          console.error("Error parsing exploring values data:", e);
         }
       }
       
