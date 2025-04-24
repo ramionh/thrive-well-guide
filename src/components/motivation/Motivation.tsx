@@ -19,6 +19,7 @@ import ThinkingAssertively from "./ThinkingAssertively";
 import ExploringValues from "./ExploringValues";
 import ClarifyingValues from "./ClarifyingValues";
 import ExceptionsToRule from "./ExceptionsToRule";
+import PastSuccess from "./PastSuccess";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -134,6 +135,13 @@ const Motivation = () => {
       title: "Exceptions to the Rule",
       description: "Document your success in overcoming obstacles",
       component: <ExceptionsToRule onComplete={() => markStepComplete(16)} />,
+      completed: false,
+    },
+    {
+      id: 17,
+      title: "Past Success",
+      description: "Reflect on past achievements to build confidence",
+      component: <PastSuccess onComplete={() => markStepComplete(17)} />,
       completed: false,
     }
   ]);

@@ -539,6 +539,45 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_past_success: {
+        Row: {
+          big_change: string
+          change_approach: string
+          change_steps: string
+          created_at: string
+          current_feelings: string
+          help_achieve_goals: string
+          id: string
+          life_context: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          big_change: string
+          change_approach: string
+          change_steps: string
+          created_at?: string
+          current_feelings: string
+          help_achieve_goals: string
+          id?: string
+          life_context: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          big_change?: string
+          change_approach?: string
+          change_steps?: string
+          created_at?: string
+          current_feelings?: string
+          help_achieve_goals?: string
+          id?: string
+          life_context?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_pros_cons: {
         Row: {
           created_at: string
