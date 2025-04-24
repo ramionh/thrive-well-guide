@@ -227,6 +227,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_addressing_ambivalence: {
+        Row: {
+          coping_strategies: string[] | null
+          created_at: string
+          id: string
+          mastery_pursuits: string[] | null
+          positive_experiences: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coping_strategies?: string[] | null
+          created_at?: string
+          id?: string
+          mastery_pursuits?: string[] | null
+          positive_experiences?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coping_strategies?: string[] | null
+          created_at?: string
+          id?: string
+          mastery_pursuits?: string[] | null
+          positive_experiences?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_attitude: {
         Row: {
           attitude_rating: string

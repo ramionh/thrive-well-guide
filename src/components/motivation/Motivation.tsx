@@ -13,6 +13,7 @@ import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import EnvironmentalStressors from "./EnvironmentalStressors";
 import IdentifyingAmbivalence from "./IdentifyingAmbivalence";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
+import AddressingAmbivalence from "./AddressingAmbivalence";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -86,6 +87,13 @@ const Motivation = () => {
       title: "Identifying Ambivalence",
       description: "Explore your mixed feelings about change",
       component: <IdentifyingAmbivalence onComplete={() => markStepComplete(10)} />,
+      completed: false,
+    },
+    {
+      id: 11,
+      title: "Addressing Ambivalence",
+      description: "Develop strategies for managing emotions",
+      component: <AddressingAmbivalence onComplete={() => markStepComplete(11)} />,
       completed: false,
     }
   ]);
