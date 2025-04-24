@@ -356,6 +356,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_exploring_values: {
+        Row: {
+          created_at: string
+          id: string
+          selected_values: Json
+          updated_at: string
+          user_id: string
+          value_descriptions: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          selected_values?: Json
+          updated_at?: string
+          user_id: string
+          value_descriptions?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          selected_values?: Json
+          updated_at?: string
+          user_id?: string
+          value_descriptions?: Json
+        }
+        Relationships: []
+      }
       motivation_external_obstacles: {
         Row: {
           created_at: string

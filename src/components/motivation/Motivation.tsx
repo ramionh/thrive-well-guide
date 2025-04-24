@@ -16,6 +16,7 @@ import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 import AddressingAmbivalence from "./AddressingAmbivalence";
 import ExternalObstacles from "./ExternalObstacles";
 import ThinkingAssertively from "./ThinkingAssertively";
+import ExploringValues from "./ExploringValues";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -110,6 +111,13 @@ const Motivation = () => {
       title: "Thinking Assertively",
       description: "Develop assertiveness skills",
       component: <ThinkingAssertively onComplete={() => markStepComplete(13)} />,
+      completed: false,
+    },
+    {
+      id: 14,
+      title: "Exploring Values",
+      description: "Identify and prioritize your core values",
+      component: <ExploringValues onComplete={() => markStepComplete(14)} />,
       completed: false,
     }
   ]);
