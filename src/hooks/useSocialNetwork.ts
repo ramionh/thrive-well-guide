@@ -19,15 +19,15 @@ export const useSocialNetwork = (onComplete?: () => void) => {
     mutationFn: async (networkEntries: SocialNetworkEntry[]) => {
       if (!user) return;
 
-      // Delete existing entries first using type assertion to bypass TypeScript error
+      // Delete existing entries first
       await supabase
-        .from('motivation_social_network' as any)
+        .from('motivation_social_network')
         .delete()
         .eq('user_id', user.id);
 
-      // Insert new entries using type assertion to bypass TypeScript error
+      // Insert new entries
       const { error } = await supabase
-        .from('motivation_social_network' as any)
+        .from('motivation_social_network')
         .insert(
           networkEntries
             .filter(entry => entry.person.trim() !== '')
@@ -41,6 +41,7 @@ export const useSocialNetwork = (onComplete?: () => void) => {
       if (error) throw error;
 
       // Mark step 7 as completed in motivation steps progress
+      // Use upsert with onConflict to properly handle existing records
       const { error: progressError } = await supabase
         .from('motivation_steps_progress')
         .upsert(
