@@ -36,10 +36,9 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
         description: "Successfully signed in to your account.",
       });
       
-      // Add a 1-second delay before redirecting
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1000);
+      // Direct navigation without delay for better user experience
+      // The AuthPage component will handle the redirection logic
+      console.log("Login successful, redirecting...");
       
     } catch (error: any) {
       toast({

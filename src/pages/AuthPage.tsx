@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,25 +7,40 @@ import { useUser } from "@/context/UserContext";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
+import { supabase } from "@/integrations/supabase/client";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useUser();
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'login' | 'register'>('login');
+  const { user, isLoading } = useUser();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
 
+  // Enhanced redirection logic
   useEffect(() => {
-    // Redirect to dashboard if user is authenticated
-    if (user && user.onboardingCompleted) {
-      navigate('/dashboard');
-    } else if (user && !user.onboardingCompleted) {
-      navigate('/onboarding');
+    // Check if user is authenticated
+    if (user) {
+      console.log("User authenticated, redirecting:", user);
+      if (user.onboardingCompleted) {
+        navigate('/dashboard');
+      } else {
+        navigate('/onboarding');
+      }
     }
   }, [user, navigate]);
 
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  // If user is not authenticated, show the auth page
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-md">
