@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/context/UserContext";
@@ -8,74 +8,96 @@ import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, isLoading } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
-  const [authCheckComplete, setAuthCheckComplete] = useState(false);
 
-  // Handle session check only once on component mount
   useEffect(() => {
-    console.log("AuthPage - Initial check for session");
+    console.log("AuthPage - Component mounted");
     
-    // Initial session check - only done once
-    const checkInitialSession = async () => {
+    // Check if the user is already authenticated
+    const checkAuth = async () => {
       try {
-        const { data } = await supabase.auth.getSession();
-        console.log("AuthPage - Initial session check:", data.session?.user?.id ? "Session exists" : "No session");
+        const { data, error } = await supabase.auth.getSession();
         
-        if (data.session?.user) {
-          console.log("AuthPage - Session found, will navigate soon");
-          // We'll let the user context handle the navigation based on onboarding status
+        if (error) {
+          console.error("AuthPage - Error checking session:", error);
+          return;
         }
         
-        // Mark auth check as complete regardless of result
-        setAuthCheckComplete(true);
+        if (data.session) {
+          console.log("AuthPage - Session exists");
+          
+          // Check if user has completed onboarding
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('onboarding_completed')
+            .eq('id', data.session.user.id)
+            .single();
+          
+          if (profileError) {
+            console.error("AuthPage - Error fetching profile:", profileError);
+            return;
+          }
+          
+          if (profileData.onboarding_completed) {
+            console.log("AuthPage - Redirecting to dashboard");
+            navigate('/dashboard');
+          } else {
+            console.log("AuthPage - Redirecting to onboarding");
+            navigate('/onboarding');
+          }
+        } else {
+          console.log("AuthPage - No session found, staying on auth page");
+        }
       } catch (error) {
-        console.error("Error checking session:", error);
-        setAuthCheckComplete(true);
+        console.error("AuthPage - Error in checkAuth:", error);
       }
     };
     
-    checkInitialSession();
-  }, []);
-
-  // Handle redirection based on user context
-  useEffect(() => {
-    // Only proceed if we've completed the initial auth check
-    if (!authCheckComplete) return;
-
-    if (!isLoading) {
-      console.log("AuthPage - User context loaded, user:", user?.id);
+    checkAuth();
+    
+    // Listen for auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("AuthPage - Auth state changed:", event);
       
-      if (user) {
-        console.log("AuthPage - User found in context. Onboarding completed:", user.onboardingCompleted);
-        if (user.onboardingCompleted) {
-          console.log("AuthPage - Redirecting to dashboard");
-          navigate('/dashboard');
-        } else {
-          console.log("AuthPage - Redirecting to onboarding");
-          navigate('/onboarding');
-        }
-      } else {
-        console.log("AuthPage - No user in context, staying on auth page");
+      if (event === 'SIGNED_IN' && session) {
+        console.log("AuthPage - User signed in via listener");
+        
+        // We'll let the checkAuth function handle the redirection
+        checkAuth();
       }
-    }
-  }, [user, isLoading, navigate, authCheckComplete]);
+    });
+    
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   // Show loading state while checking authentication
-  if (isLoading || !authCheckComplete) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-          <p>{isLoading ? "Loading user data..." : "Checking authentication..."}</p>
+          <p>Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If there's an authenticated user in context, they should have been redirected already
+  if (user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent mx-auto mb-4"></div>
+          <p>Redirecting...</p>
         </div>
       </div>
     );

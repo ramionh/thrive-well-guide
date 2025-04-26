@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
@@ -23,16 +22,23 @@ const Dashboard: React.FC = () => {
   // Make sure we have a user or redirect back to auth
   useEffect(() => {
     const checkAuth = async () => {
+      console.log("Dashboard - Checking authentication");
       const { data } = await supabase.auth.getSession();
+      
       if (!data.session) {
-        console.log("No session found, redirecting to auth");
+        console.log("Dashboard - No session found, redirecting to auth");
         navigate('/auth');
         return;
       }
       
       if (!isLoading && !user) {
-        console.log("User not loaded but session exists, waiting...");
+        console.log("Dashboard - Session exists but no user in context, waiting...");
         // Wait for user to load
+      }
+      
+      if (user && !user.onboardingCompleted) {
+        console.log("Dashboard - User has not completed onboarding, redirecting");
+        navigate('/onboarding');
       }
     };
     
@@ -87,6 +93,12 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    console.log("Dashboard - No user found, redirecting to auth page");
+    navigate('/auth');
+    return null;
   }
 
   if (!user?.onboardingCompleted) {

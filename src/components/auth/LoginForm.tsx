@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
   email: string;
@@ -18,6 +19,7 @@ interface LoginFormProps {
 const LoginForm = ({ email, setEmail, password, setPassword, loading: parentLoading }: LoginFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,14 +34,32 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading: parentLoad
 
       if (error) throw error;
       
-      console.log("LoginForm - Sign in successful");
+      console.log("LoginForm - Sign in successful", data);
       toast({
         title: "Success!",
         description: "Successfully signed in to your account.",
       });
       
-      // We don't navigate here - the auth state change will be detected
-      // by the AuthPage component which will handle the navigation
+      // Check if user has completed onboarding
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', data.user?.id)
+        .single();
+      
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
+      } else {
+        console.log("Profile data:", profileData);
+        // Directly navigate based on onboarding status
+        if (profileData?.onboarding_completed) {
+          console.log("Navigating to dashboard");
+          navigate('/dashboard');
+        } else {
+          console.log("Navigating to onboarding");
+          navigate('/onboarding');
+        }
+      }
     } catch (error: any) {
       console.error("LoginForm - Sign in error:", error.message);
       toast({
