@@ -12,6 +12,7 @@ import NutritionMetrics from "./NutritionMetrics";
 import ExerciseMetrics from "./ExerciseMetrics";
 import GoalProgress from "./GoalProgress";
 import HistoryButton from "./HistoryButton";
+import MotivationProgress from "./MotivationProgress";
 
 const Dashboard: React.FC = () => {
   const { user } = useUser();
@@ -59,7 +60,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <Card className="card-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Sleep Quality</CardTitle>
@@ -86,6 +87,8 @@ const Dashboard: React.FC = () => {
             <ExerciseMetrics />
           </CardContent>
         </Card>
+
+        <MotivationProgress />
       </div>
       
       <div className="mb-6">
