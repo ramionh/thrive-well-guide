@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import Motivation from "@/components/motivation/Motivation";
@@ -25,17 +25,20 @@ const MotivationPage = () => {
       if (error) throw error;
       return data || [];
     },
-    onSuccess: (data) => {
-      if (data.length === 0) {
-        toast({
-          title: "No Goals Found",
-          description: "Please set your fitness goals before starting your motivation journey.",
-          variant: "destructive"
-        });
-        navigate('/goals');
-      }
-    }
+    enabled: !!user
   });
+
+  // Handle redirection if no goals are found
+  useEffect(() => {
+    if (!isLoading && goals && goals.length === 0) {
+      toast({
+        title: "No Goals Found",
+        description: "Please set your fitness goals before starting your motivation journey.",
+        variant: "destructive"
+      });
+      navigate('/goals');
+    }
+  }, [goals, isLoading, navigate, toast]);
 
   if (isLoading) {
     return (
