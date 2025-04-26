@@ -14,6 +14,7 @@ import InsightsTabs from "./InsightsTabs";
 import CoreValues from "./CoreValues";
 import FocusedHabits from "./FocusedHabits";
 import HistoryButton from "./HistoryButton";
+import MotivationProgress from "./MotivationProgress";
 
 const Dashboard: React.FC = () => {
   const { user, isLoading } = useAuthCheck();
@@ -113,7 +114,11 @@ const Dashboard: React.FC = () => {
         </Button>
       </div>
 
-      <MetricsOverview />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <MetricsOverview />
+        <MotivationProgress />
+      </div>
+      
       <InsightsTabs />
       {coreValues && <CoreValues values={coreValues} />}
       <FocusedHabits habits={focusedHabits || []} />
