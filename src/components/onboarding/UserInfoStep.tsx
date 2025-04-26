@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,10 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    toast({
+      title: "Saving your information",
+      description: "Please wait while we set up your profile...",
+    });
     
     if (!firstName || !lastName || !email || !dob || !feet || !weightLbs || !gender) {
       toast({
@@ -86,6 +89,11 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
         heightFeet: Number(feet),
         heightInches: Number(inches || 0),
         weightLbs: Number(weightLbs)
+      });
+      
+      toast({
+        title: "Profile saved",
+        description: "Moving to the next step...",
       });
       
       onNext();
