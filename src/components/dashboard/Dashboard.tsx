@@ -114,9 +114,13 @@ const Dashboard: React.FC = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <MetricsOverview />
-        <MotivationProgress />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+        <div className="lg:col-span-3">
+          <MetricsOverview />
+        </div>
+        <div className="lg:col-span-1">
+          <MotivationProgress />
+        </div>
       </div>
       
       <InsightsTabs />
