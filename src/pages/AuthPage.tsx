@@ -18,17 +18,48 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
 
+  // Set up auth state listener to catch real-time auth changes
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.id);
+        if (session?.user) {
+          // This will fetch fresh user data when authentication changes
+          console.log("Session detected, user should be redirected soon");
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
   // Enhanced redirection logic
   useEffect(() => {
-    // Check if user is authenticated
-    if (user) {
-      console.log("User authenticated, redirecting:", user);
-      if (user.onboardingCompleted) {
-        navigate('/dashboard');
-      } else {
-        navigate('/onboarding');
+    const checkUser = async () => {
+      try {
+        // Get current session directly
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user && !user) {
+          console.log("Session exists but user context not updated yet");
+        }
+        
+        if (user) {
+          console.log("User authenticated in context, redirecting:", user);
+          if (user.onboardingCompleted) {
+            navigate('/dashboard');
+          } else {
+            navigate('/onboarding');
+          }
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
       }
-    }
+    };
+
+    checkUser();
   }, [user, navigate]);
 
   // Show loading state while checking authentication

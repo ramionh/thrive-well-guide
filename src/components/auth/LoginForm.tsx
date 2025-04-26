@@ -24,7 +24,7 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
     e.preventDefault();
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -36,9 +36,10 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
         description: "Successfully signed in to your account.",
       });
       
-      // Direct navigation without delay for better user experience
-      // The AuthPage component will handle the redirection logic
-      console.log("Login successful, redirecting...");
+      // Explicitly navigate after successful login
+      // This helps ensure the navigation happens
+      console.log("Login successful, redirecting to dashboard");
+      navigate('/dashboard');
       
     } catch (error: any) {
       toast({
