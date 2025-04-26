@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card"; // Added this import for Card component
+import { Card } from "@/components/ui/card";
 
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import WelcomeHeader from "./WelcomeHeader";
@@ -18,6 +18,8 @@ import HistoryButton from "./HistoryButton";
 const Dashboard: React.FC = () => {
   const { user, isLoading } = useAuthCheck();
   const navigate = useNavigate();
+
+  console.log("Dashboard rendering - User:", user?.id, "isLoading:", isLoading);
 
   // Get the first name or default to "User"
   const firstName = user?.name?.split(' ')[0] || "User";
@@ -58,7 +60,7 @@ const Dashboard: React.FC = () => {
   });
 
   // Show loading state if we're still loading user data
-  if (isLoading || (!user && supabase.auth.getSession())) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -69,7 +71,15 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!user?.onboardingCompleted) {
+  // If no user or user hasn't completed onboarding
+  if (!user) {
+    console.log("Dashboard - No user found after loading, redirecting to auth");
+    navigate('/auth');
+    return null;
+  }
+
+  if (!user.onboardingCompleted) {
+    console.log("Dashboard - User has not completed onboarding, showing onboarding card");
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md text-center p-6">

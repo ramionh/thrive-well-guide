@@ -22,9 +22,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const loadUser = async () => {
       try {
+        console.log("UserProvider - Loading user data");
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
+          console.log("UserProvider - Session found, fetching profile data");
           const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('*')
@@ -34,51 +36,77 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (profileError) {
             console.error("Error fetching profile:", profileError);
             setUser(null);
-          } else {
-            const { data: goalsData, error: goalsError } = await supabase
-              .from('goals')
-              .select('*')
-              .eq('user_id', session.user.id);
-
-            if (goalsError) {
-              console.error("Error fetching goals:", goalsError);
-            }
-
-            const transformedGoals: Goal[] = Array.isArray(goalsData) ? goalsData.map(goal => ({
-              id: goal.id,
-              userId: goal.user_id,
-              goalBodyTypeId: goal.goal_body_type_id,
-              currentBodyTypeId: goal.current_body_type_id,
-              startedDate: new Date(goal.started_date),
-              targetDate: new Date(goal.target_date),
-              createdAt: new Date(goal.created_at || Date.now()),
-              name: `Body Transformation Goal`,
-              currentValue: 0,
-              targetValue: 100,
-              unit: "%",
-              category: "other"
-            })) : [];
-
-            setUser({
-              id: session.user.id,
-              name: profileData.full_name || '',
-              email: session.user.email || '',
-              onboardingCompleted: profileData.onboarding_completed || false,
-              goals: transformedGoals,
-              vitals: [],
-              avatar_url: profileData.avatar_url,
-              gender: profileData.gender
-            });
+            setIsLoading(false);
+            return;
           }
+          
+          console.log("UserProvider - Profile loaded:", profileData);
+          
+          const { data: goalsData, error: goalsError } = await supabase
+            .from('goals')
+            .select('*')
+            .eq('user_id', session.user.id);
+
+          if (goalsError) {
+            console.error("Error fetching goals:", goalsError);
+          }
+
+          const transformedGoals: Goal[] = Array.isArray(goalsData) ? goalsData.map(goal => ({
+            id: goal.id,
+            userId: goal.user_id,
+            goalBodyTypeId: goal.goal_body_type_id,
+            currentBodyTypeId: goal.current_body_type_id,
+            startedDate: new Date(goal.started_date),
+            targetDate: new Date(goal.target_date),
+            createdAt: new Date(goal.created_at || Date.now()),
+            name: `Body Transformation Goal`,
+            currentValue: 0,
+            targetValue: 100,
+            unit: "%",
+            category: "other"
+          })) : [];
+
+          setUser({
+            id: session.user.id,
+            name: profileData.full_name || '',
+            email: session.user.email || '',
+            onboardingCompleted: profileData.onboarding_completed || false,
+            goals: transformedGoals,
+            vitals: [],
+            avatar_url: profileData.avatar_url,
+            gender: profileData.gender
+          });
+          
+          console.log("UserProvider - User data set with onboarding status:", profileData.onboarding_completed);
+        } else {
+          console.log("UserProvider - No session found");
+          setUser(null);
         }
       } catch (error) {
         console.error("Error loading user data:", error);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadUser();
+
+    // Listen to auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("UserProvider - Auth state changed:", event);
+      
+      if (event === 'SIGNED_IN' && session) {
+        loadUser();
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const completeOnboarding = async (onboardingData: {
