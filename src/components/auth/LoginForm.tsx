@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,14 +15,16 @@ interface LoginFormProps {
   loading: boolean;
 }
 
-const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFormProps) => {
+const LoginForm = ({ email, setEmail, password, setPassword, loading: parentLoading }: LoginFormProps) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
     try {
+      console.log("LoginForm - Attempting sign in with email/password");
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -31,22 +32,23 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
 
       if (error) throw error;
       
+      console.log("LoginForm - Sign in successful");
       toast({
         title: "Success!",
         description: "Successfully signed in to your account.",
       });
       
-      // After successful login, just show success message
-      // Don't navigate here - let the AuthPage component handle navigation
-      // based on the auth state change
-      console.log("Login successful, waiting for auth state change to trigger redirect");
-      
+      // We don't navigate here - the auth state change will be detected
+      // by the AuthPage component which will handle the navigation
     } catch (error: any) {
+      console.error("LoginForm - Sign in error:", error.message);
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,10 +78,10 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
       <Button 
         type="submit" 
         className="w-full bg-thrive-blue"
-        disabled={loading}
+        disabled={loading || parentLoading}
       >
         <Mail className="mr-2 h-4 w-4" />
-        Sign In with Email
+        {loading ? "Signing in..." : "Sign In with Email"}
       </Button>
     </form>
   );

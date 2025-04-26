@@ -8,88 +8,74 @@ import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isLoading } = useUser(); // Removed setUser as it doesn't exist in UserContextType
+  const { user, isLoading } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
-  const [localSession, setLocalSession] = useState<boolean | null>(null);
+  const [authCheckComplete, setAuthCheckComplete] = useState(false);
 
-  // Set up auth state listener to catch real-time auth changes
+  // Handle session check only once on component mount
   useEffect(() => {
-    console.log("Setting up auth listener");
+    console.log("AuthPage - Initial check for session");
     
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("Auth state changed:", event, session?.user?.id);
-        
-        if (session?.user) {
-          console.log("Session detected in listener, user should be redirected soon");
-          setLocalSession(true);
-          
-          // Force navigation after successful authentication
-          if (event === 'SIGNED_IN') {
-            console.log("Sign-in detected, redirecting to dashboard");
-            navigate('/dashboard');
-          }
-        } else {
-          setLocalSession(false);
-        }
-      }
-    );
-
-    // Initial session check
+    // Initial session check - only done once
     const checkInitialSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      console.log("Initial session check:", data.session?.user?.id ? "Session exists" : "No session");
-      if (data.session?.user) {
-        setLocalSession(true);
-        navigate('/dashboard');
-      } else {
-        setLocalSession(false);
+      try {
+        const { data } = await supabase.auth.getSession();
+        console.log("AuthPage - Initial session check:", data.session?.user?.id ? "Session exists" : "No session");
+        
+        if (data.session?.user) {
+          console.log("AuthPage - Session found, will navigate soon");
+          // We'll let the user context handle the navigation based on onboarding status
+        }
+        
+        // Mark auth check as complete regardless of result
+        setAuthCheckComplete(true);
+      } catch (error) {
+        console.error("Error checking session:", error);
+        setAuthCheckComplete(true);
       }
     };
     
     checkInitialSession();
+  }, []);
 
-    return () => {
-      console.log("Cleaning up auth listener");
-      authListener.subscription.unsubscribe();
-    };
-  }, [navigate]);
-
-  // React to user context changes
+  // Handle redirection based on user context
   useEffect(() => {
-    if (user) {
-      console.log("User context updated, user:", user.id);
-      if (user.onboardingCompleted) {
-        navigate('/dashboard');
+    // Only proceed if we've completed the initial auth check
+    if (!authCheckComplete) return;
+
+    if (!isLoading) {
+      console.log("AuthPage - User context loaded, user:", user?.id);
+      
+      if (user) {
+        console.log("AuthPage - User found in context. Onboarding completed:", user.onboardingCompleted);
+        if (user.onboardingCompleted) {
+          console.log("AuthPage - Redirecting to dashboard");
+          navigate('/dashboard');
+        } else {
+          console.log("AuthPage - Redirecting to onboarding");
+          navigate('/onboarding');
+        }
       } else {
-        navigate('/onboarding');
+        console.log("AuthPage - No user in context, staying on auth page");
       }
     }
-  }, [user, navigate]);
+  }, [user, isLoading, navigate, authCheckComplete]);
 
   // Show loading state while checking authentication
-  if (isLoading || localSession === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  // If user is already authenticated, don't show auth page
-  if (localSession === true && !user) {
+  if (isLoading || !authCheckComplete) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-          <p>Session detected. Loading user data...</p>
+          <p>{isLoading ? "Loading user data..." : "Checking authentication..."}</p>
         </div>
       </div>
     );
