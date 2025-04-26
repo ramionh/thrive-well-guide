@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 import SleepMetrics from "./SleepMetrics";
 import NutritionMetrics from "./NutritionMetrics";
@@ -13,11 +15,29 @@ import ExerciseMetrics from "./ExerciseMetrics";
 import GoalProgress from "./GoalProgress";
 import HistoryButton from "./HistoryButton";
 import MotivationProgress from "./MotivationProgress";
+import CoreValues from "./CoreValues";
 
 const Dashboard: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
-  
+
+  const { data: coreValues } = useQuery({
+    queryKey: ['core-values', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('motivation_clarifying_values')
+        .select('selected_value_1, selected_value_2')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user
+  });
+
   if (!user?.onboardingCompleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -90,6 +110,8 @@ const Dashboard: React.FC = () => {
 
         <MotivationProgress />
       </div>
+      
+      {coreValues && <CoreValues values={coreValues} />}
       
       <div className="mb-6">
         <Tabs defaultValue="goals">
