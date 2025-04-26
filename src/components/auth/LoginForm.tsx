@@ -36,10 +36,10 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading }: LoginFor
         description: "Successfully signed in to your account.",
       });
       
-      // Explicitly navigate after successful login
-      // This helps ensure the navigation happens
-      console.log("Login successful, redirecting to dashboard");
-      navigate('/dashboard');
+      // After successful login, just show success message
+      // Don't navigate here - let the AuthPage component handle navigation
+      // based on the auth state change
+      console.log("Login successful, waiting for auth state change to trigger redirect");
       
     } catch (error: any) {
       toast({

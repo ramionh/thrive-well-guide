@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,8 +17,27 @@ import HistoryButton from "./HistoryButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Dashboard: React.FC = () => {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
   const navigate = useNavigate();
+
+  // Make sure we have a user or redirect back to auth
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        console.log("No session found, redirecting to auth");
+        navigate('/auth');
+        return;
+      }
+      
+      if (!isLoading && !user) {
+        console.log("User not loaded but session exists, waiting...");
+        // Wait for user to load
+      }
+    };
+    
+    checkAuth();
+  }, [user, isLoading, navigate]);
 
   // Get the first name or default to "User"
   const firstName = user?.name?.split(' ')[0] || "User";
@@ -57,6 +76,18 @@ const Dashboard: React.FC = () => {
     },
     enabled: !!user
   });
+
+  // Show loading state if we're still loading user data
+  if (isLoading || (!user && supabase.auth.getSession())) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent mx-auto mb-4"></div>
+          <p className="text-lg">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user?.onboardingCompleted) {
     return (

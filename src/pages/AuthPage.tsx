@@ -12,61 +12,85 @@ import { supabase } from "@/integrations/supabase/client";
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isLoading } = useUser();
+  const { user, isLoading, setUser } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [localSession, setLocalSession] = useState<boolean | null>(null);
 
   // Set up auth state listener to catch real-time auth changes
   useEffect(() => {
+    console.log("Setting up auth listener");
+    
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log("Auth state changed:", event, session?.user?.id);
+        
         if (session?.user) {
-          // This will fetch fresh user data when authentication changes
-          console.log("Session detected, user should be redirected soon");
+          console.log("Session detected in listener, user should be redirected soon");
+          setLocalSession(true);
+          
+          // Force navigation after successful authentication
+          if (event === 'SIGNED_IN') {
+            console.log("Sign-in detected, redirecting to dashboard");
+            navigate('/dashboard');
+          }
+        } else {
+          setLocalSession(false);
         }
       }
     );
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-
-  // Enhanced redirection logic
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        // Get current session directly
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session?.user && !user) {
-          console.log("Session exists but user context not updated yet");
-        }
-        
-        if (user) {
-          console.log("User authenticated in context, redirecting:", user);
-          if (user.onboardingCompleted) {
-            navigate('/dashboard');
-          } else {
-            navigate('/onboarding');
-          }
-        }
-      } catch (error) {
-        console.error("Error checking authentication:", error);
+    // Initial session check
+    const checkInitialSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      console.log("Initial session check:", data.session?.user?.id ? "Session exists" : "No session");
+      if (data.session?.user) {
+        setLocalSession(true);
+        navigate('/dashboard');
+      } else {
+        setLocalSession(false);
       }
     };
+    
+    checkInitialSession();
 
-    checkUser();
+    return () => {
+      console.log("Cleaning up auth listener");
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  // React to user context changes
+  useEffect(() => {
+    if (user) {
+      console.log("User context updated, user:", user.id);
+      if (user.onboardingCompleted) {
+        navigate('/dashboard');
+      } else {
+        navigate('/onboarding');
+      }
+    }
   }, [user, navigate]);
 
   // Show loading state while checking authentication
-  if (isLoading) {
+  if (isLoading || localSession === null) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
         <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  // If user is already authenticated, don't show auth page
+  if (localSession === true && !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent mx-auto mb-4"></div>
+          <p>Session detected. Loading user data...</p>
+        </div>
       </div>
     );
   }
