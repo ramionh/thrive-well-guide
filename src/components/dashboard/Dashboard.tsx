@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card"; // Added this import for Card component
 
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import WelcomeHeader from "./WelcomeHeader";
