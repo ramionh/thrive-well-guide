@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
+import { useBodyTypes } from "@/hooks/useBodyTypes";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UserInfoStepProps {
   onNext: () => void;
@@ -21,6 +23,8 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   const [feet, setFeet] = useState("");
   const [inches, setInches] = useState("");
   const [weightLbs, setWeightLbs] = useState("");
+  const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
+  const { bodyTypes, bodyTypeImages, isLoading: isLoadingBodyTypes } = useBodyTypes();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +33,10 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
       description: "Please wait while we set up your profile...",
     });
     
-    if (!firstName || !lastName || !email || !dob || !feet || !weightLbs || !gender) {
+    if (!firstName || !lastName || !email || !dob || !feet || !weightLbs || !gender || !selectedBodyType) {
       toast({
         title: "Missing information",
-        description: "Please fill in all required fields to continue.",
+        description: "Please fill in all required fields including your body type to continue.",
         variant: "destructive"
       });
       return;
@@ -80,6 +84,17 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
     }
     
     try {
+      const { error: bodyTypeError } = await supabase
+        .from('user_body_types')
+        .insert({
+          user_id: user?.id,
+          body_type_id: selectedBodyType,
+          selected_date: new Date().toISOString().split('T')[0],
+          weight_lbs: Number(weightLbs)
+        });
+
+      if (bodyTypeError) throw bodyTypeError;
+
       await completeOnboarding({
         firstName,
         lastName,
@@ -212,6 +227,43 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
           value={weightLbs} 
           onChange={(e) => setWeightLbs(e.target.value)} 
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Current Body Type</Label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {isLoadingBodyTypes ? (
+            <div>Loading body types...</div>
+          ) : (
+            bodyTypes.map((bodyType) => (
+              <div
+                key={bodyType.id}
+                className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                  selectedBodyType === bodyType.id
+                    ? 'border-primary ring-2 ring-primary'
+                    : 'hover:border-primary'
+                }`}
+                onClick={() => setSelectedBodyType(bodyType.id)}
+              >
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="w-32 h-32 rounded-lg overflow-hidden">
+                    <img
+                      src={bodyTypeImages[bodyType.id] || '/placeholder.svg'}
+                      alt={bodyType.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="font-semibold">{bodyType.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Body Fat: {bodyType.bodyfat_range}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
       
       <Button type="submit" className="w-full bg-thrive-blue hover:bg-thrive-blue/90">
