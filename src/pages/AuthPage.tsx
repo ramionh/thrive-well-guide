@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isLoading, setUser } = useUser();
+  const { user, isLoading } = useUser(); // Removed setUser as it doesn't exist in UserContextType
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
