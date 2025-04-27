@@ -22,7 +22,8 @@ import ClarifyingValues from "./ClarifyingValues";
 import ExceptionsToRule from "./ExceptionsToRule";
 import PastSuccess from "./PastSuccess";
 import HowImportantIsIt from "./HowImportantIsIt";
-import WhatWouldChangeLookLike from "./WhatWouldChangeLookLike";
+import WhatWouldChangeLookLike";
+import UnderstandingValues from "./UnderstandingValues";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -166,6 +167,13 @@ const Motivation = () => {
       title: "What Would Change Look Like?",
       description: "Visualizing your fitness transformation",
       component: <WhatWouldChangeLookLike onComplete={() => markStepComplete(20)} />,
+      completed: false,
+    },
+    {
+      id: 21,
+      title: "Understanding Values",
+      description: "Explore and understand your core values",
+      component: <UnderstandingValues onComplete={() => markStepComplete(21)} />,
       completed: false,
     }
   ]);

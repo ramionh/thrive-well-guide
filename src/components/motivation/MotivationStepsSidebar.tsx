@@ -76,7 +76,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
               <AccordionContent>
                 {steps.slice(0, 17).some(step => step.completed) ? (
                   <ul className="space-y-3">
-                    {steps.slice(17, 20).map((step) => {
+                    {steps.slice(17, 21).map((step) => {
                       const isActive = step.id === currentStepId;
                       const isDisabled = !steps[step.id - 2]?.completed;
                       
