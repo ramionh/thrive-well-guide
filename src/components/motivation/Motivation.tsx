@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Ambivalence from "./Ambivalence";
@@ -22,7 +23,7 @@ import ClarifyingValues from "./ClarifyingValues";
 import ExceptionsToRule from "./ExceptionsToRule";
 import PastSuccess from "./PastSuccess";
 import HowImportantIsIt from "./HowImportantIsIt";
-import WhatWouldChangeLookLike";
+import WhatWouldChangeLookLike from "./WhatWouldChangeLookLike";
 import UnderstandingValues from "./UnderstandingValues";
 
 const Motivation = () => {
