@@ -27,10 +27,10 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 border-2 border-purple-300">
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Cultural Obstacles</h2>
             <div className="prose mb-6">
-              <p className="text-purple-900/80 leading-relaxed">
+              <p className="text-purple-700 leading-relaxed">
                 Social and cultural obstacles are rooted in the social and cultural groups we belong to. 
                 These groups help us define who we are and where we belong, and help us understand the 
                 unwritten rules of life through norms, or shared rules and expectations. Change that is 
@@ -38,7 +38,7 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
                 change that runs counter can be challenging.
               </p>
               
-              <p className="text-purple-900/80 leading-relaxed mt-4">
+              <p className="text-purple-600 leading-relaxed mt-4">
                 For example, consider Ryan, who started eating fast food daily when he was 14. At 25, 
                 Ryan was diagnosed with high cholesterol and needed to adopt a healthier diet and exercise 
                 routine. Over the past nine years, Ryan has spent Friday and Saturday nights eating pizza 
@@ -52,10 +52,10 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Identify Cultural Obstacles</h2>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Identify Cultural Obstacles</h2>
             <div className="prose mb-6">
-              <p>
+              <p className="text-purple-700">
                 What social or cultural groups or norms would make it challenging 
                 for you to reach your goal? Think of as many as you can.
               </p>
@@ -68,7 +68,7 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
                   value={entry.obstacle}
                   onChange={(e) => handleEntryChange(index, e.target.value)}
                   placeholder={`Cultural obstacle ${index + 1}`}
-                  className="w-full"
+                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
 
@@ -83,8 +83,8 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600" />
+      <CarouselNext className="text-purple-600" />
     </Carousel>
   );
 };

@@ -27,27 +27,27 @@ const Knowledge: React.FC<KnowledgeProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 border-2 border-purple-300">
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Knowledge Roadblocks</h2>
             <div className="prose mb-6">
-              <p className="text-purple-900/80 leading-relaxed">
+              <p className="text-purple-700 leading-relaxed">
                 A final internal roadblock is not knowing which actions or behaviors will bring you closer to your goal. Simply put, you cannot be successful if you don't have the facts. Sometimes people fail to adopt a new behavior simply because they don't have the necessary knowledge or information to be successful. For example:
               </p>
               
-              <div className="space-y-4 mt-6 bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <p className="text-purple-900/80">→ I don't know how to create a balanced workout routine.</p>
-                <p className="text-purple-900/80">→ I don't understand all the steps needed to properly track my nutrition and caloric intake.</p>
-                <p className="text-purple-900/80">→ I don't know how much progress I could make with weight training compared with focusing on cardio exercise.</p>
+              <div className="space-y-4 mt-6 bg-purple-100/50 p-4 rounded-lg border border-purple-200">
+                <p className="text-purple-700">→ I don't know how to create a balanced workout routine.</p>
+                <p className="text-purple-700">→ I don't understand all the steps needed to properly track my nutrition and caloric intake.</p>
+                <p className="text-purple-700">→ I don't know how much progress I could make with weight training compared with focusing on cardio exercise.</p>
               </div>
             </div>
           </Card>
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Your Knowledge Gaps</h2>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Your Knowledge Gaps</h2>
             <div className="prose mb-6">
-              <p>
+              <p className="text-purple-700">
                 What are some questions you have about your goal, or in what
                 areas do you lack information that might keep you from being
                 successful?
@@ -61,7 +61,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ onComplete }) => {
                   value={question}
                   onChange={(e) => handleQuestionsChange(index, e.target.value)}
                   placeholder={`Question ${index + 1}`}
-                  className="min-h-[80px]"
+                  className="min-h-[80px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
 
@@ -76,8 +76,8 @@ const Knowledge: React.FC<KnowledgeProps> = ({ onComplete }) => {
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600" />
+      <CarouselNext className="text-purple-600" />
     </Carousel>
   );
 };

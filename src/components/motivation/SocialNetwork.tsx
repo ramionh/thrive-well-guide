@@ -27,17 +27,17 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 border-2 border-purple-300">
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Social Support Network</h2>
             <div className="prose mb-6">
-              <p className="text-purple-900/80 leading-relaxed">
+              <p className="text-purple-700 leading-relaxed">
                 Research shows that social support is an essential element of reaching
                 your fitness goals. Poor social support can derail someone's ability to change
                 even if they are ready, willing, and able to change, so it's important to
                 get a handle on your personal social network.
               </p>
               
-              <p className="text-purple-900/80 leading-relaxed mt-4">
+              <p className="text-purple-600 leading-relaxed mt-4">
                 Your social network is defined as the people you frequently
                 encounter and socialize with at home, social gatherings, work, or
                 school. Your network may include a spouse or partner, close family
@@ -49,13 +49,13 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Your Social Network</h2>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Your Social Network</h2>
             <div className="prose mb-6">
-              <p>
+              <p className="text-purple-700">
                 List the people and groups who make up your social network and rate them from 1 to 5.
               </p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-purple-600 mt-2">
                 On a scale of 1 to 5, rate how supportive each person or group is to
                 your goal. A score of 1 indicates they are unsupportive and may even
                 impede your fitness goal. A score of 5 indicates they would do anything
@@ -70,7 +70,7 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
                     value={entry.person}
                     onChange={(e) => handleEntryChange(index, 'person', e.target.value)}
                     placeholder={`Person or group ${index + 1}`}
-                    className="flex-1"
+                    className="flex-1 bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   />
                   <Input
                     type="number"
@@ -79,7 +79,7 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
                     value={entry.rating || ''}
                     onChange={(e) => handleEntryChange(index, 'rating', parseInt(e.target.value) || 0)}
                     placeholder="Rating"
-                    className="w-24"
+                    className="w-24 bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   />
                 </div>
               ))}
@@ -95,8 +95,8 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600" />
+      <CarouselNext className="text-purple-600" />
     </Carousel>
   );
 };

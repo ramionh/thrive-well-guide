@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Carousel, 
@@ -27,10 +26,10 @@ const EnvironmentalStressors: React.FC<EnvironmentalStressorsProps> = ({ onCompl
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 border-2 border-purple-300">
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Environmental Stressors</h2>
             <div className="prose mb-6">
-              <p className="text-purple-900/80 leading-relaxed">
+              <p className="text-purple-700 leading-relaxed">
                 Factors in your current living situation can become obstacles to achieving your fitness goals. 
                 Daily stresses, much like a lack of social support, can wear you down. Environmental stressors 
                 include demanding work schedules that leave little time for exercise, living in a neighborhood 
@@ -43,10 +42,10 @@ const EnvironmentalStressors: React.FC<EnvironmentalStressorsProps> = ({ onCompl
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Identify Environmental Stressors</h2>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Identify Environmental Stressors</h2>
             <div className="prose mb-6">
-              <p>
+              <p className="text-purple-700">
                 What environmental stressors could interfere with your efforts to achieve your fitness goals? 
                 Think of as many as you can.
               </p>
@@ -59,7 +58,7 @@ const EnvironmentalStressors: React.FC<EnvironmentalStressorsProps> = ({ onCompl
                   value={entry.stressor}
                   onChange={(e) => handleEntryChange(index, e.target.value)}
                   placeholder={`Environmental stressor ${index + 1}`}
-                  className="w-full"
+                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
 
@@ -74,8 +73,8 @@ const EnvironmentalStressors: React.FC<EnvironmentalStressorsProps> = ({ onCompl
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600" />
+      <CarouselNext className="text-purple-600" />
     </Carousel>
   );
 };
