@@ -20,9 +20,9 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
       <Carousel className="w-full max-w-4xl mx-auto">
         <CarouselContent>
           <CarouselItem>
-            <Card>
+            <Card className="bg-soft-purple border-purple-200 shadow-md">
               <CardContent className="p-6">
-                <div className="prose max-w-none">
+                <div className="prose max-w-none text-purple-900">
                   <p className="mb-4">
                     You can feel a little ambivalence and still take action, but a lot of
                     ambivalence can keep you from acting. In order to prioritize and focus your
@@ -32,7 +32,7 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
                     new skills and strategies to build hope and confidence.
                   </p>
                   
-                  <p className="mb-4 italic">
+                  <p className="mb-4 italic text-purple-700">
                     Jack recognizes the importance and urgency he should feel about
                     improving his health. Becoming healthier will help him avoid or minimize
                     the effects of medical conditions such as high blood pressure, saving him
@@ -42,7 +42,7 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
                     and tiring schedule.
                   </p>
                   
-                  <p className="mb-4 italic">
+                  <p className="mb-4 italic text-purple-700">
                     When Jack was in his 20s, he was physically active. He had fewer
                     obligations, of course, but what really made a difference was that he built
                     gym time into his schedule. He left home early three to four mornings a
@@ -58,10 +58,10 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card>
+            <Card className="bg-soft-purple border-purple-200 shadow-md">
               <CardContent className="p-6">
-                <div className="prose max-w-none">
-                  <h2 className="text-2xl font-bold mb-6">
+                <div className="prose max-w-none text-purple-900">
+                  <h2 className="text-2xl font-bold mb-6 text-thrive-purple">
                     IMPORTANT DECISIONS ARE THE HARDEST TO MAKE
                   </h2>
                   
@@ -77,7 +77,7 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
                 <div className="mt-8 flex justify-end">
                   <Button 
                     onClick={onComplete}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-thrive-purple hover:bg-thrive-purple/90 text-white"
                   >
                     Complete This Step
                   </Button>
@@ -86,8 +86,8 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
             </Card>
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious className="left-2" />
-        <CarouselNext className="right-2" />
+        <CarouselPrevious className="left-2 text-thrive-purple" />
+        <CarouselNext className="right-2 text-thrive-purple" />
       </Carousel>
     </div>
   );
