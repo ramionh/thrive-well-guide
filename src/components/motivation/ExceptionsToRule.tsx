@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -33,15 +32,15 @@ const ExceptionsToRule: React.FC<ExceptionsToRuleProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-500/10 border-purple-500/20">
-            <h3 className="text-lg font-semibold mb-4 text-purple-800">Exceptions to the Rule</h3>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h3 className="text-2xl font-bold mb-4 text-purple-800">Exceptions to the Rule</h3>
             <p className="text-foreground/80 mb-4">
               Think of a time you successfully faced one of the obstacles you identified:
             </p>
             
             {internalObstacles && internalObstacles.length > 0 && (
               <div className="mb-4">
-                <h4 className="font-medium mb-2">Internal Obstacles:</h4>
+                <h4 className="font-medium mb-2 text-purple-800">Internal Obstacles:</h4>
                 <ul className="list-disc pl-6">
                   {internalObstacles.map((obstacle, index) => (
                     <li key={index} className="text-foreground/70">{obstacle.excuse}</li>
@@ -52,7 +51,7 @@ const ExceptionsToRule: React.FC<ExceptionsToRuleProps> = ({ onComplete }) => {
             
             {externalObstacles && externalObstacles.length > 0 && (
               <div className="mb-4">
-                <h4 className="font-medium mb-2">External Obstacles:</h4>
+                <h4 className="font-medium mb-2 text-purple-800">External Obstacles:</h4>
                 <ul className="list-disc pl-6">
                   {externalObstacles.map((obstacle, index) => (
                     <li key={index} className="text-foreground/70">{obstacle.obstacle}</li>
@@ -64,8 +63,8 @@ const ExceptionsToRule: React.FC<ExceptionsToRuleProps> = ({ onComplete }) => {
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Document Your Success</h3>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h3 className="text-2xl font-bold mb-4 text-purple-800">Document Your Success</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">What did you do?</label>
@@ -128,8 +127,8 @@ const ExceptionsToRule: React.FC<ExceptionsToRuleProps> = ({ onComplete }) => {
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600" />
+      <CarouselNext className="text-purple-600" />
     </Carousel>
   );
 };

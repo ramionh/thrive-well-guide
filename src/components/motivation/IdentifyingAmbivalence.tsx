@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Carousel, 
@@ -42,10 +41,10 @@ const IdentifyingAmbivalence: React.FC<IdentifyingAmbivalenceProps> = ({ onCompl
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Write Your Ambivalent Statements</h2>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Write Your Ambivalent Statements</h2>
             <div className="prose mb-6">
-              <p>
+              <p className="text-purple-700">
                 Write your own ambivalent sentences here. Start the sentence with "I want to" 
                 and the change you're thinking about making, then add "but" and the obstacle 
                 that makes you feel ambivalent. Use an obstacle you've identified in one of the 
@@ -64,7 +63,7 @@ const IdentifyingAmbivalence: React.FC<IdentifyingAmbivalenceProps> = ({ onCompl
                   value={entry.ambivalence_statement}
                   onChange={(e) => handleEntryChange(index, e.target.value)}
                   placeholder={`Ambivalence statement ${index + 1}`}
-                  className="w-full"
+                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
 
@@ -79,8 +78,8 @@ const IdentifyingAmbivalence: React.FC<IdentifyingAmbivalenceProps> = ({ onCompl
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600" />
+      <CarouselNext className="text-purple-600" />
     </Carousel>
   );
 };

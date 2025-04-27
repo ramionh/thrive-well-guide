@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -53,7 +52,6 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
     saveExploringValuesMutation.mutate();
   };
 
-  // Use a temporary loading indicator, but don't get stuck in loading state
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-4">
@@ -68,9 +66,9 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
       <Carousel className="w-full">
         <CarouselContent>
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
-              <h3 className="text-lg font-semibold mb-4 text-purple-800">Understanding Your Values</h3>
-              <p className="mb-4 text-foreground/80">
+            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+              <h3 className="text-2xl font-bold mb-4 text-purple-800">Understanding Your Values</h3>
+              <p className="text-purple-700">
                 Your values help guide your decisions and actions. Identifying and
                 prioritizing your values will help you understand why your goal is
                 important to you. Values can include honesty, family, charity, integrity,
@@ -80,8 +78,8 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
-              <h3 className="text-lg font-semibold mb-4 text-purple-800">Select Your Core Values</h3>
+            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+              <h3 className="text-2xl font-bold mb-4 text-purple-800">Select Your Core Values</h3>
               <p className="mb-4 text-foreground/80">
                 Circle those values that are most important to you. You decide how to define 
                 the meaning of each value.
@@ -104,20 +102,20 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
-              <h3 className="text-lg font-semibold mb-4 text-purple-800">Describe Your Values</h3>
+            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+              <h3 className="text-2xl font-bold mb-4 text-purple-800">Describe Your Values</h3>
               <p className="mb-4 text-foreground/80">
                 From the values you selected, describe what each means to you.
               </p>
               <div className="space-y-4">
                 {selectedValues.map(value => (
-                  <div key={value} className="mb-4">
+                  <div key={value}>
                     <label className="block text-purple-800 font-medium mb-2">{value}</label>
                     <Textarea
                       value={valueDescriptions[value] || ''}
                       onChange={(e) => handleValueDescriptionChange(value, e.target.value)}
                       placeholder={`What does ${value} mean to you? Describe its importance...`}
-                      className="min-h-[100px] bg-white/10 backdrop-blur-sm border-purple-500/20"
+                      className="min-h-[100px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                     />
                   </div>
                 ))}
@@ -133,8 +131,8 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
             </Card>
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious className="text-purple-600 hover:bg-purple-100" />
-        <CarouselNext className="text-purple-600 hover:bg-purple-100" />
+        <CarouselPrevious className="text-purple-600" />
+        <CarouselNext className="text-purple-600" />
       </Carousel>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Carousel, 
@@ -54,7 +53,7 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 border-2 border-purple-300">
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">External Obstacles</h2>
             <div className="prose mb-6">
               <p className="text-purple-900/80 leading-relaxed">
@@ -70,14 +69,14 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
               value={obstacle}
               onChange={(e) => setObstacle(e.target.value)}
               placeholder="Describe your external obstacle"
-              className="w-full"
+              className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
             />
           </Card>
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Brainstorm Solutions</h2>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Brainstorm Solutions</h2>
             <div className="prose mb-6">
               <p>
                 Now brainstorm potential solutions. Search for ideas on the internet 
@@ -96,7 +95,7 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
                   value={solutions[index] || ''}
                   onChange={(e) => handleSolutionChange(index, e.target.value)}
                   placeholder={`Possible solution ${index + 1}`}
-                  className="w-full"
+                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
             </div>
@@ -104,8 +103,8 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Solution Analysis</h2>
+          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <h2 className="text-2xl font-bold mb-4 text-purple-800">Solution Analysis</h2>
             <div className="prose mb-6">
               <p>
                 Cross out the solution that feels least appealing or least likely to work. 
@@ -172,8 +171,8 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
           </Card>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="text-purple-600" />
+      <CarouselNext className="text-purple-600" />
     </Carousel>
   );
 };

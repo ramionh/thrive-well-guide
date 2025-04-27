@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,14 +25,13 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
     pros = []
   } = useClarifyingValues(onComplete);
 
-  // Use effect to log data and debug
   useEffect(() => {
     console.log("Exploring Values in component:", exploringValues);
     console.log("Pros in component:", pros);
   }, [exploringValues, pros]);
 
-  const isLoading = false; // Remove loading state to prevent getting stuck
-  
+  const isLoading = false;
+
   const handleComplete = () => {
     saveClarifyingValuesMutation.mutate();
   };
@@ -43,18 +41,18 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
       <Carousel className="w-full">
         <CarouselContent>
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
-              <h3 className="text-lg font-semibold mb-4 text-purple-800">Select Your Core Values</h3>
+            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+              <h3 className="text-2xl font-bold mb-4 text-purple-800">Select Your Core Values</h3>
               <p className="mb-4 text-foreground/80">
                 Take a look at your value list from 'Exploring Values'. Choose your top two values.
               </p>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Value 1</label>
+                  <label className="block text-purple-800 text-sm font-medium mb-2">Value 1</label>
                   <select 
                     value={selectedValue1}
                     onChange={(e) => setSelectedValue1(e.target.value)}
-                    className="w-full p-2 border rounded-md bg-white"
+                    className="w-full p-2 border rounded-md bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   >
                     <option value="">Select a value</option>
                     {Array.isArray(exploringValues) && exploringValues.map((value: string) => (
@@ -63,11 +61,11 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Value 2</label>
+                  <label className="block text-purple-800 text-sm font-medium mb-2">Value 2</label>
                   <select 
                     value={selectedValue2}
                     onChange={(e) => setSelectedValue2(e.target.value)}
-                    className="w-full p-2 border rounded-md bg-white"
+                    className="w-full p-2 border rounded-md bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   >
                     <option value="">Select a value</option>
                     {Array.isArray(exploringValues) && exploringValues.map((value: string) => (
@@ -80,8 +78,8 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6 bg-purple-500/10 border-purple-500/20">
-              <h3 className="text-lg font-semibold mb-4 text-purple-800">Align Your Values</h3>
+            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+              <h3 className="text-2xl font-bold mb-4 text-purple-800">Align Your Values</h3>
               <div className="space-y-6">
                 <div>
                   <h4 className="font-medium mb-2">Your Top Reasons for Change:</h4>
@@ -127,8 +125,8 @@ const ClarifyingValues: React.FC<ClarifyingValuesProps> = ({ onComplete }) => {
             </Card>
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious className="text-purple-600 hover:bg-purple-100" />
-        <CarouselNext className="text-purple-600 hover:bg-purple-100" />
+        <CarouselPrevious className="text-purple-600" />
+        <CarouselNext className="text-purple-600" />
       </Carousel>
     </div>
   );
