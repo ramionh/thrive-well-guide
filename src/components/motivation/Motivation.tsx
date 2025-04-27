@@ -16,6 +16,7 @@ import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 import AddressingAmbivalence from "./AddressingAmbivalence";
 import ExternalObstacles from "./ExternalObstacles";
 import ThinkingAssertively from "./ThinkingAssertively";
+import ExploringChange from "./ExploringChange";
 import ExploringValues from "./ExploringValues";
 import ClarifyingValues from "./ClarifyingValues";
 import ExceptionsToRule from "./ExceptionsToRule";
@@ -142,6 +143,13 @@ const Motivation = () => {
       title: "Past Success",
       description: "Reflect on past achievements to build confidence",
       component: <PastSuccess onComplete={() => markStepComplete(17)} />,
+      completed: false,
+    },
+    {
+      id: 18,
+      title: "Exploring Change",
+      description: "Understanding the elements of motivation",
+      component: <ExploringChange onComplete={() => markStepComplete(18)} />,
       completed: false,
     }
   ]);
