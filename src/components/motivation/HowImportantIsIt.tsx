@@ -66,7 +66,7 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
                   </h2>
                   
                   <p className="mb-4">
-                    If change were easy, no one would need this book (or any other self-help book). There is comfort in continuing the same behavior, and when you are in the moment, what feels good now is the easy choice. It meets a need, whether it's security, comfort, pleasure, or avoidance. When I'm at the gym trying to decide which exercise to do, doing a comfortable 20-minute walk doesn't feel as good now as skipping the cardio altogether. When I'm tired, getting up early to go for a run doesn't feel as good now as sleeping in. When I'm overwhelmed after work, scrolling fitness influencers on my phone feels good now instead of actually working out.
+                    If change were easy, no one would need this program (or any other fitness program). There is comfort in continuing the same behavior, and when you are in the moment, what feels good now is the easy choice. It meets a need, whether it's security, comfort, pleasure, or avoidance. When I'm at the gym trying to decide which exercise to do, doing a comfortable 20-minute walk doesn't feel as good now as skipping the cardio altogether. When I'm tired, getting up early to go for a run doesn't feel as good now as sleeping in. When I'm overwhelmed after work, scrolling fitness influencers on my phone feels good now instead of actually working out.
                   </p>
                   
                   <p className="mb-4">
@@ -94,3 +94,4 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
 };
 
 export default HowImportantIsIt;
+
