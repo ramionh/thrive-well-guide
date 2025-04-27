@@ -21,6 +21,7 @@ import ExploringValues from "./ExploringValues";
 import ClarifyingValues from "./ClarifyingValues";
 import ExceptionsToRule from "./ExceptionsToRule";
 import PastSuccess from "./PastSuccess";
+import HowImportantIsIt from "./HowImportantIsIt";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -150,6 +151,13 @@ const Motivation = () => {
       title: "Exploring Change",
       description: "Understanding the elements of motivation",
       component: <ExploringChange onComplete={() => markStepComplete(18)} />,
+      completed: false,
+    },
+    {
+      id: 19,
+      title: "How Important Is It?",
+      description: "Understanding the importance of change",
+      component: <HowImportantIsIt onComplete={() => markStepComplete(19)} />,
       completed: false,
     }
   ]);
