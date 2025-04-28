@@ -38,16 +38,17 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
   });
 
   useEffect(() => {
-    fetchData().then((data) => {
-      if (data && typeof data === 'object' && !('error' in data)) {
-        // Ensure data is not null before type casting
-        if (data) {
-          // Safely access stressors from the data
-          const dataObj = data as ManagingStressData;
-          
-          if (dataObj?.stressors && Array.isArray(dataObj.stressors)) {
+    fetchData().then((response) => {
+      // First check if response exists and isn't an error
+      if (response && typeof response === 'object' && !('error' in response)) {
+        // Type assertion with null check
+        const data = response as ManagingStressData | null;
+        
+        // Now check if data is not null and has expected properties
+        if (data && data.stressors) {
+          if (Array.isArray(data.stressors)) {
             // Ensure we have 5 stressors, filling with empty strings if needed
-            const savedStressors = [...dataObj.stressors];
+            const savedStressors = [...data.stressors];
             while (savedStressors.length < 5) {
               savedStressors.push("");
             }
@@ -55,8 +56,8 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
           }
           
           // Safely access impact from the data
-          if (dataObj?.impact) {
-            setImpact(dataObj.impact);
+          if (data.impact) {
+            setImpact(data.impact);
           }
         }
       }
