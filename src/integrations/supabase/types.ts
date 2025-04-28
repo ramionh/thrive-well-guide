@@ -1850,6 +1850,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_where_are_you_now: {
+        Row: {
+          created_at: string
+          id: string
+          progress_summary: string | null
+          readiness_rating: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          progress_summary?: string | null
+          readiness_rating?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          progress_summary?: string | null
+          readiness_rating?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
