@@ -48,12 +48,40 @@ const CreatingConfidenceScale: React.FC<CreatingConfidenceScaleProps> = ({ onCom
         if (error) throw error;
         
         if (data?.confidence_scale) {
-          // Parse the confidence_scale data properly if needed
-          const parsedScale = Array.isArray(data.confidence_scale) 
-            ? data.confidence_scale as ConfidenceScaleEntry[]
-            : JSON.parse(data.confidence_scale as string) as ConfidenceScaleEntry[];
+          // Properly map the JSON data to our ConfidenceScaleEntry[] type
+          let parsedData;
           
-          setScale(parsedScale);
+          if (typeof data.confidence_scale === 'string') {
+            // If it's a string, parse it first
+            parsedData = JSON.parse(data.confidence_scale);
+          } else {
+            // If it's already an object (like an array), use it directly
+            parsedData = data.confidence_scale;
+          }
+          
+          // Make sure it's properly mapped to our type
+          const typedScale = (Array.isArray(parsedData) ? parsedData : [])
+            .map((entry: any) => ({
+              number: entry.number || 0,
+              descriptor: entry.descriptor || "",
+              definition: entry.definition || ""
+            })) as ConfidenceScaleEntry[];
+          
+          // If we have data but not all 10 entries, ensure we have all numbers 1-10
+          if (typedScale.length > 0 && typedScale.length < 10) {
+            // Create a full scale array
+            const fullScale = Array.from({ length: 10 }, (_, i) => {
+              const existingEntry = typedScale.find(entry => entry.number === (i + 1));
+              return existingEntry || {
+                number: i + 1,
+                descriptor: "",
+                definition: ""
+              };
+            });
+            setScale(fullScale);
+          } else if (typedScale.length > 0) {
+            setScale(typedScale);
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -80,7 +108,7 @@ const CreatingConfidenceScale: React.FC<CreatingConfidenceScaleProps> = ({ onCom
         .from("motivation_confidence_scale")
         .insert({
           user_id: user.id,
-          confidence_scale: scale as any // Cast to any to bypass TypeScript's type checking
+          confidence_scale: JSON.stringify(scale) // Convert to JSON string to avoid type issues
         });
 
       if (error) throw error;
