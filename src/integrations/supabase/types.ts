@@ -761,6 +761,48 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_financial_resources: {
+        Row: {
+          build_resources: string | null
+          created_at: string
+          financial_feelings: string | null
+          flexible_schedule: string | null
+          id: string
+          income: string | null
+          job_satisfaction: string | null
+          job_stability: string | null
+          updated_at: string
+          user_id: string
+          workplace_benefits: string | null
+        }
+        Insert: {
+          build_resources?: string | null
+          created_at?: string
+          financial_feelings?: string | null
+          flexible_schedule?: string | null
+          id?: string
+          income?: string | null
+          job_satisfaction?: string | null
+          job_stability?: string | null
+          updated_at?: string
+          user_id: string
+          workplace_benefits?: string | null
+        }
+        Update: {
+          build_resources?: string | null
+          created_at?: string
+          financial_feelings?: string | null
+          flexible_schedule?: string | null
+          id?: string
+          income?: string | null
+          job_satisfaction?: string | null
+          job_stability?: string | null
+          updated_at?: string
+          user_id?: string
+          workplace_benefits?: string | null
+        }
+        Relationships: []
+      }
       motivation_finding_hope: {
         Row: {
           change_hope: string | null
