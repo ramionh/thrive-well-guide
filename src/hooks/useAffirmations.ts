@@ -45,9 +45,11 @@ export const useAffirmations = (onComplete?: () => void) => {
         throw error;
       }
       
-      if (data?.affirmations && Array.isArray(data.affirmations)) {
+      if (data?.affirmations) {
+        // Cast the Json type to our AffirmationItem array with type assertion
+        const savedAffirmations = data.affirmations as unknown as AffirmationItem[];
+        
         // Ensure we have at least 5 rows for the form
-        const savedAffirmations = data.affirmations as AffirmationItem[];
         if (savedAffirmations.length < 5) {
           const additionalRows = Array(5 - savedAffirmations.length).fill({ criticism: "", positive: "" });
           setAffirmations([...savedAffirmations, ...additionalRows]);
@@ -90,7 +92,7 @@ export const useAffirmations = (onComplete?: () => void) => {
         .from("motivation_affirmations")
         .upsert({
           user_id: user.id,
-          affirmations: filteredAffirmations,
+          affirmations: filteredAffirmations as unknown as JSON,
           updated_at: new Date().toISOString()
         });
       
