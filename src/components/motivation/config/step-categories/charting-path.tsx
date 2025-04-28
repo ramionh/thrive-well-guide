@@ -30,6 +30,7 @@ import CopingMechanisms from "../../CopingMechanisms";
 import Mindfulness from "../../Mindfulness";
 import GrowthMindset from "../../GrowthMindset";
 import Affirmations from "../../Affirmations";
+import SocialCulturalResources from "../../SocialCulturalResources";
 
 import type { StepConfig } from "../../types/motivation";
 
@@ -225,5 +226,11 @@ export const chartingPathSteps: StepConfig[] = [
     title: "Affirmations",
     description: "Create positive self-affirmations",
     component: (onComplete) => <Affirmations onComplete={onComplete} />
+  },
+  {
+    id: 50,
+    title: "Social and Cultural Resources",
+    description: "Leverage your cultural background for motivation",
+    component: (onComplete) => <SocialCulturalResources onComplete={onComplete} />
   }
 ];

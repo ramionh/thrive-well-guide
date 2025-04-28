@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
@@ -23,8 +22,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
 }) => {
   // Define step ranges for each section
   const startingPointSteps = steps.slice(0, 17);
-  const chartingPathSteps = steps.slice(17, 50); // Updated to include step 49
-  const activeChangeSteps = steps.slice(50); // Added to include step 50 and beyond
+  const chartingPathSteps = steps.slice(17, 51); // Updated to include step 50
+  const activeChangeSteps = steps.slice(51); // Updated to start from step 51
   
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
