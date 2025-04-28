@@ -1352,6 +1352,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_prioritizing_change: {
+        Row: {
+          created_at: string
+          id: string
+          new_activities: string | null
+          prioritized_activities: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          new_activities?: string | null
+          prioritized_activities?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          new_activities?: string | null
+          prioritized_activities?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_pros_cons: {
         Row: {
           created_at: string

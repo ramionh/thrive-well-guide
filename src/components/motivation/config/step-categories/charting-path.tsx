@@ -1,4 +1,5 @@
 
+
 import { exploringSteps } from './charting-path/exploring-steps';
 import { confidenceSteps } from './charting-path/confidence-steps';
 import { strengthSteps } from './charting-path/strength-steps';
@@ -21,3 +22,4 @@ export const chartingPathSteps: StepConfig[] = [
   ...partialChangeFeelingsSteps,
   ...prioritiesSteps,
 ];
+
