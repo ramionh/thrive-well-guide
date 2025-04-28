@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -43,11 +42,9 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
         if (error) throw error;
         
         if (data) {
-          // Parse the steps data safely
           let parsedSteps: Step[] = [];
           
           if (data.steps) {
-            // If data.steps is a string, attempt to parse it
             if (typeof data.steps === 'string') {
               try {
                 parsedSteps = JSON.parse(data.steps);
@@ -55,10 +52,8 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
                 console.error("Error parsing steps JSON:", e);
               }
             } 
-            // If data.steps is already an array (parsed JSON)
             else if (Array.isArray(data.steps)) {
               parsedSteps = data.steps.map(step => {
-                // Use type assertion to handle Json type
                 const jsonStep = step as unknown as { text?: string; rating?: number };
                 return {
                   text: typeof jsonStep.text === 'string' ? jsonStep.text : '',
@@ -68,12 +63,10 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
             }
           }
           
-          // If we have valid steps data, use it
           if (parsedSteps.length > 0) {
             setSteps(parsedSteps);
           }
           
-          // Set selected step if it exists
           if (data.selected_step) {
             setSelectedStep(typeof data.selected_step === 'string' ? data.selected_step : '');
           }
@@ -112,7 +105,7 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
         .from("motivation_step_assessments")
         .insert({
           user_id: user.id,
-          steps: JSON.stringify(steps), // Stringify the steps array to ensure it's stored as JSON
+          steps: JSON.stringify(steps),
           selected_step: selectedStep
         });
 
@@ -150,8 +143,7 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
             <div>
               <h2 className="text-xl font-semibold text-purple-800 mb-4">Assessing the Importance of My Steps Forward</h2>
               <p className="text-gray-600 mb-6">
-                At the end of part 2, you identified five steps you could take to move forward in reaching your goal. 
-                For this exercise, rewrite those five steps and rate each one using your importance scale.
+                Think of five steps you can take to help you achieve your fitness goals. For each step, state it clearly and assign a rating on your importance scale (1 = low importance, 10 = high importance).
               </p>
             </div>
 
@@ -162,7 +154,7 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
                     <Input
                       value={step.text}
                       onChange={(e) => handleStepChange(index, 'text', e.target.value)}
-                      placeholder={`Step ${index + 1}`}
+                      placeholder={index === 0 ? "Example: Establish a 3-day strength-training routine" : `Step ${index + 1}`}
                       required
                     />
                   </div>
