@@ -521,6 +521,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_goal_scores: {
+        Row: {
+          created_at: string
+          descriptor: string
+          explanation: string
+          id: string
+          score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descriptor: string
+          explanation: string
+          id?: string
+          score: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descriptor?: string
+          explanation?: string
+          id?: string
+          score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_identifying_ambivalence: {
         Row: {
           ambivalence_statement: string
