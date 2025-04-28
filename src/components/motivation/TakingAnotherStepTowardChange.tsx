@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -68,8 +67,8 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
         .insert({
           user_id: user.id,
           new_score: parseInt(newScore),
-          new_descriptor,
-          new_explanation
+          new_descriptor: newDescriptor,
+          new_explanation: newExplanation
         });
 
       if (error) throw error;
