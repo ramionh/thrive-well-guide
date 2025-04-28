@@ -1,5 +1,6 @@
 
 import React from 'react';
+import ResourceDevelopment from "../../ResourceDevelopment";
 import FinancialResources from "../../FinancialResources";
 import SocialSupport from "../../SocialSupport";
 import FamilyStrengths from "../../FamilyStrengths";
@@ -11,20 +12,7 @@ export const activeChangeSteps: StepConfig[] = [
     id: 56,
     title: "Resource Development",
     description: "Develop and enhance your resources for achieving fitness goals",
-    component: (onComplete) => (
-      <div className="p-4">
-        <p className="text-lg text-gray-700">
-          This is a placeholder for the Resource Development component. 
-          This component will be implemented in a future update.
-        </p>
-        <button 
-          onClick={onComplete}
-          className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-        >
-          Complete Step
-        </button>
-      </div>
-    )
+    component: (onComplete) => <ResourceDevelopment onComplete={onComplete} />
   },
   {
     id: 57,

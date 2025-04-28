@@ -1286,6 +1286,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_resource_development: {
+        Row: {
+          created_at: string
+          helpful_resources: string | null
+          id: string
+          resource_development: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          helpful_resources?: string | null
+          id?: string
+          resource_development?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          helpful_resources?: string | null
+          id?: string
+          resource_development?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_revisit_values: {
         Row: {
           created_at: string
