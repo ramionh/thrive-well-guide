@@ -1184,6 +1184,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_values_conflict: {
+        Row: {
+          created_at: string
+          feelings_after: string | null
+          id: string
+          potential_conflicts: string | null
+          priority_values: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feelings_after?: string | null
+          id?: string
+          potential_conflicts?: string | null
+          priority_values?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feelings_after?: string | null
+          id?: string
+          potential_conflicts?: string | null
+          priority_values?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

@@ -37,6 +37,7 @@ import ConfidenceTalk from "../ConfidenceTalk";
 import PastSuccessesAreas from "../PastSuccessesAreas";
 import FindingHope from "../FindingHope";
 import RevisitValues from "../RevisitValues";
+import ValuesConflict from "../ValuesConflict";
 
 export const motivationSteps = [
   {
@@ -266,5 +267,11 @@ export const motivationSteps = [
     title: "Revisit Values",
     description: "Reassess your prioritized values",
     component: (onComplete?: () => void) => <RevisitValues onComplete={onComplete} />,
+  },
+  {
+    id: 39,
+    title: "Values Conflict",
+    description: "Explore values prioritization conflicts",
+    component: (onComplete?: () => void) => <ValuesConflict onComplete={onComplete} />,
   }
 ];
