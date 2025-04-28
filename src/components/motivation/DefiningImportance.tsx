@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentGoal } from "@/hooks/useCurrentGoal";
 
 const IMPORTANCE_DESCRIPTORS = [
   "GREAT", "VALUE", "VITAL", "URGENT", "CRUCIAL", "SERIOUS",
@@ -24,10 +25,28 @@ interface DefiningImportanceProps {
 const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) => {
   const { user } = useUser();
   const { toast } = useToast();
-  const [goalText, setGoalText] = useState("");
+  const { data: goalData, isLoading } = useCurrentGoal();
   const [selectedDescriptors, setSelectedDescriptors] = useState<string[]>([]);
   const [reflection, setReflection] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <div className="animate-spin h-8 w-8 border-4 border-purple-600 rounded-full border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (!goalData) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-purple-600">Please set up your fitness goal first.</p>
+      </div>
+    );
+  }
+
+  const goalText = `Transform from ${goalData.current_body_type.name} to ${goalData.goal_body_type.name}`;
 
   const handleDescriptorToggle = (values: string[]) => {
     if (values.length <= 5) {
@@ -92,15 +111,11 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
 
             <div className="space-y-2">
               <label htmlFor="goal" className="text-sm font-medium text-gray-700">
-                Write your goal from part 2
+                Your transformation goal
               </label>
-              <Input
-                id="goal"
-                value={goalText}
-                onChange={(e) => setGoalText(e.target.value)}
-                placeholder="e.g. Commit to an exercise schedule"
-                className="w-full"
-              />
+              <div className="p-3 bg-purple-50 border border-purple-200 rounded-md text-purple-700">
+                {goalText}
+              </div>
             </div>
 
             <div className="space-y-2 mt-6">
