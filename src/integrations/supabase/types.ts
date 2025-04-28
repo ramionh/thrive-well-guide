@@ -713,6 +713,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_step_toward_change: {
+        Row: {
+          created_at: string
+          id: string
+          new_descriptor: string
+          new_explanation: string
+          new_score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          new_descriptor: string
+          new_explanation: string
+          new_score: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          new_descriptor?: string
+          new_explanation?: string
+          new_score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_steps_progress: {
         Row: {
           completed: boolean | null
