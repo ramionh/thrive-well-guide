@@ -3,6 +3,7 @@ import React from 'react';
 import FinancialResources from "../../FinancialResources";
 import SocialSupport from "../../SocialSupport";
 import FamilyStrengths from "../../FamilyStrengths";
+import TimeManagement from "../../TimeManagement";
 import type { StepConfig } from "../../types/motivation";
 
 export const activeChangeSteps: StepConfig[] = [
@@ -24,4 +25,11 @@ export const activeChangeSteps: StepConfig[] = [
     description: "Identify family strengths that can help you achieve your goals",
     component: (onComplete) => <FamilyStrengths onComplete={onComplete} />
   },
+  {
+    id: 53,
+    title: "Time Management and Personal Structure",
+    description: "Find time in your schedule for fitness activities",
+    component: (onComplete) => <TimeManagement onComplete={onComplete} />
+  },
 ];
+

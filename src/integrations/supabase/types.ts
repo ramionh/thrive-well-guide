@@ -1565,6 +1565,39 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_time_management: {
+        Row: {
+          created_at: string
+          current_schedule: string | null
+          id: string
+          impact: string | null
+          quick_activities: string | null
+          time_slots: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_schedule?: string | null
+          id?: string
+          impact?: string | null
+          quick_activities?: string | null
+          time_slots?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_schedule?: string | null
+          id?: string
+          impact?: string | null
+          quick_activities?: string | null
+          time_slots?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_values_conflict: {
         Row: {
           created_at: string
