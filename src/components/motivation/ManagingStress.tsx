@@ -45,7 +45,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
         const data = response as unknown as ManagingStressData;
         
         // Now check if data has expected properties
-        if (data.stressors) {
+        if (data && typeof data === 'object' && 'stressors' in data) {
           if (Array.isArray(data.stressors)) {
             // Ensure we have 5 stressors, filling with empty strings if needed
             const savedStressors = [...data.stressors];
@@ -56,7 +56,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
           }
           
           // Safely access impact from the data
-          if (data.impact) {
+          if ('impact' in data && data.impact) {
             setImpact(data.impact);
           }
         }

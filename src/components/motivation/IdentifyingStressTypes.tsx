@@ -86,11 +86,11 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
             .map(s => typeof s === 'string' ? s.trim() : String(s).trim())
             .filter(s => s !== "");
           
-          // Check if we have existing data - with additional null check for result
+          // Check if we have existing data with complete null checks
           if (result && 
+              result !== null && 
               typeof result === 'object' && 
               !('error' in result) && 
-              result !== null && 
               'stress_types' in result && 
               Array.isArray(result.stress_types)) {
             // If we have existing data, use it
