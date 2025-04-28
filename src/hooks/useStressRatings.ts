@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -40,8 +41,9 @@ export const useStressRatings = ({ onComplete }: UseStressRatingsOptions = {}) =
         
         // If we found existing ratings, use them
         if (ratingsData && ratingsData.stress_ratings) {
-          // Cast to our expected type
-          setStressRatings(ratingsData.stress_ratings as StressRating[]);
+          // First cast to unknown, then to our expected type
+          const existingRatings = ratingsData.stress_ratings as unknown as StressRating[];
+          setStressRatings(existingRatings);
           setIsLoading(false);
           return;
         }
@@ -136,7 +138,8 @@ export const useStressRatings = ({ onComplete }: UseStressRatingsOptions = {}) =
         .from("motivation_stress_ratings")
         .insert({
           user_id: user.id,
-          stress_ratings: stressRatings
+          // Cast our StressRating[] to a type that Supabase accepts
+          stress_ratings: stressRatings as unknown as any
         });
 
       if (error) throw error;
