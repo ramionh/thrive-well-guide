@@ -92,7 +92,7 @@ export const useAffirmations = (onComplete?: () => void) => {
         .from("motivation_affirmations")
         .upsert({
           user_id: user.id,
-          affirmations: filteredAffirmations as unknown as JSON,
+          affirmations: filteredAffirmations as unknown as Json,
           updated_at: new Date().toISOString()
         });
       
