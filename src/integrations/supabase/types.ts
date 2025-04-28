@@ -308,6 +308,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_ceiling_floor: {
+        Row: {
+          best_outcome: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          worst_outcome: string
+        }
+        Insert: {
+          best_outcome: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          worst_outcome: string
+        }
+        Update: {
+          best_outcome?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          worst_outcome?: string
+        }
+        Relationships: []
+      }
       motivation_clarifying_values: {
         Row: {
           created_at: string
@@ -360,6 +387,33 @@ export type Database = {
           created_at?: string
           id?: string
           obstacle?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      motivation_defining_confidence: {
+        Row: {
+          created_at: string
+          id: string
+          reflection: string
+          selected_words: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reflection: string
+          selected_words: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reflection?: string
+          selected_words?: string[]
           updated_at?: string
           user_id?: string
         }

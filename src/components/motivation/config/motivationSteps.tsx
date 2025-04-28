@@ -25,6 +25,8 @@ import ImportanceScale from "../ImportanceScale";
 import GivingGoalScore from "../GivingGoalScore";
 import TakingAnotherStepTowardChange from "../TakingAnotherStepTowardChange";
 import AssessingImportanceStepsForward from "../AssessingImportanceStepsForward";
+import SettingCeilingFloor from "../SettingCeilingFloor";
+import DefiningConfidence from "../DefiningConfidence";
 
 export const motivationSteps: StepConfig[] = [
   {
@@ -182,5 +184,17 @@ export const motivationSteps: StepConfig[] = [
     title: "Assessing the Importance of My Steps Forward",
     description: "Rate and choose your next steps forward",
     component: (onComplete) => <AssessingImportanceStepsForward onComplete={onComplete} />
+  },
+  {
+    id: 27,
+    title: "Setting Your Ceiling and Floor",
+    description: "Define best and worst possible outcomes",
+    component: (onComplete) => <SettingCeilingFloor onComplete={onComplete} />
+  },
+  {
+    id: 28,
+    title: "Defining Confidence",
+    description: "Explore what confidence means to you",
+    component: (onComplete) => <DefiningConfidence onComplete={onComplete} />
   }
 ];
