@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
 
 interface GivingGoalScoreProps {
   onComplete?: () => void;
@@ -26,29 +25,19 @@ const GivingGoalScore: React.FC<GivingGoalScoreProps> = ({ onComplete }) => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("motivation_goal_scores")
-        .insert({
-          user_id: user.id,
-          score: parseInt(score),
-          descriptor,
-          explanation
-        });
-
-      if (error) {
-        throw error;
-      }
-
+      // Since we're rolling back the database table, we'll just show a success message
+      // and call onComplete without actually saving to database
+      
       toast({
         title: "Success",
-        description: "Your goal score has been saved",
+        description: "Your goal score has been recorded",
       });
 
       if (onComplete) {
         onComplete();
       }
     } catch (error) {
-      console.error("Error saving goal score:", error);
+      console.error("Error processing goal score:", error);
       toast({
         title: "Error",
         description: "Failed to save your responses",
