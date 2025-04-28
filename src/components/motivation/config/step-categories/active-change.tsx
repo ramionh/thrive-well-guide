@@ -9,12 +9,6 @@ import type { StepConfig } from "../../types/motivation";
 
 export const activeChangeSteps: StepConfig[] = [
   {
-    id: 56,
-    title: "Resource Development",
-    description: "Develop and enhance your resources for achieving fitness goals",
-    component: (onComplete) => <ResourceDevelopment onComplete={onComplete} />
-  },
-  {
     id: 57,
     title: "Financial and Economic Resources",
     description: "Identify financial resources that can support your fitness goals",
