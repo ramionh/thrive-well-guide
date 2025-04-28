@@ -1,3 +1,4 @@
+
 import React from 'react';
 import FindingInspiration from '../FindingInspiration';
 import Ambivalence from "../Ambivalence";
@@ -39,6 +40,7 @@ import RevisitValues from "../RevisitValues";
 import ValuesConflict from "../ValuesConflict";
 import YouHaveWhatItTakes from "../YouHaveWhatItTakes";
 import TheySeeTourStrengths from "../TheySeeTourStrengths";
+import BuildOnYourStrengths from "../BuildOnYourStrengths";
 
 export const motivationSteps = [
   {
@@ -286,5 +288,11 @@ export const motivationSteps = [
     title: "They See Your Strengths",
     description: "Collect feedback on your strengths from others",
     component: (onComplete?: () => void) => <TheySeeTourStrengths onComplete={onComplete} />,
+  },
+  {
+    id: 42,
+    title: "Build on Your Strengths",
+    description: "Apply your strengths to achieve your goals",
+    component: (onComplete?: () => void) => <BuildOnYourStrengths onComplete={onComplete} />,
   }
 ];
