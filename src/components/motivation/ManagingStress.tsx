@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,14 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
     fetchData().then((response) => {
       if (!response) return;
       
-      const data = response as ManagingStressData;
+      // Check if response is an error object
+      if ('error' in response) {
+        console.error("Error fetching stress data:", response);
+        return;
+      }
+      
+      // Now we can safely cast to our expected type
+      const data = response as unknown as ManagingStressData;
         
       if (Array.isArray(data.stressors)) {
         const savedStressors = [...data.stressors];
