@@ -1,8 +1,14 @@
 
 import React from 'react';
+import FinancialResources from "../../FinancialResources";
 import type { StepConfig } from "../../types/motivation";
 
-// Active change steps will be added in future implementations
 export const activeChangeSteps: StepConfig[] = [
-  // Step 50: Financial and Economic Resources will be added here
+  {
+    id: 50,
+    title: "Financial and Economic Resources",
+    description: "Identify financial resources that can support your fitness goals",
+    component: (onComplete) => <FinancialResources onComplete={onComplete} />
+  },
+  // Step 51: Social Support and Social Competence will be added here
 ];
