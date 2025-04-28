@@ -43,8 +43,16 @@ const ImportanceScale: React.FC<ImportanceScaleProps> = ({ onComplete }) => {
 
         if (error) throw error;
 
-        if (data) {
-          setRatings(data.ratings);
+        if (data && data.ratings) {
+          // Parse the JSON data if it's stored as a string
+          const parsedRatings = typeof data.ratings === 'string' 
+            ? JSON.parse(data.ratings) 
+            : data.ratings;
+            
+          // Ensure the parsed data matches our Rating[] structure
+          if (Array.isArray(parsedRatings)) {
+            setRatings(parsedRatings as Rating[]);
+          }
         }
       } catch (error) {
         console.error("Error fetching saved ratings:", error);
@@ -78,10 +86,13 @@ const ImportanceScale: React.FC<ImportanceScaleProps> = ({ onComplete }) => {
         .eq('user_id', user.id)
         .single();
 
+      // Convert our ratings to a format compatible with Supabase's Json type
+      const ratingsForDB = JSON.parse(JSON.stringify(ratings));
+
       if (existingData) {
         const { error } = await supabase
           .from('motivation_importance_scale')
-          .update({ ratings })
+          .update({ ratings: ratingsForDB })
           .eq('user_id', user.id);
 
         if (error) throw error;
@@ -90,7 +101,7 @@ const ImportanceScale: React.FC<ImportanceScaleProps> = ({ onComplete }) => {
           .from('motivation_importance_scale')
           .insert({
             user_id: user.id,
-            ratings
+            ratings: ratingsForDB
           });
 
         if (error) throw error;
