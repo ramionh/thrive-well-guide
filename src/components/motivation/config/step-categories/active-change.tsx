@@ -1,34 +1,21 @@
-
-import React from 'react';
-import FinancialResources from "../../FinancialResources";
-import SocialSupport from "../../SocialSupport";
-import FamilyStrengths from "../../FamilyStrengths";
-import TimeManagement from "../../TimeManagement";
+// Creating active change steps starting from step 61 
+// (since the charting path now includes steps up to step 60)
 import type { StepConfig } from "../../types/motivation";
 
 export const activeChangeSteps: StepConfig[] = [
   {
-    id: 60, // Updated to start from 60
-    title: "Financial and Economic Resources",
-    description: "Identify financial resources that can support your fitness goals",
-    component: (onComplete) => <FinancialResources onComplete={onComplete} />
+    id: 61,
+    title: "Prioritizing the Change",
+    description: "Making your fitness goals a priority",
+    component: (onComplete) => <div className="p-4 bg-gray-100 rounded-md">
+      <p>Content for the Prioritizing Change step will be added soon.</p>
+      <button 
+        className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+        onClick={onComplete}
+      >
+        Complete Step
+      </button>
+    </div>
   },
-  {
-    id: 61, // Updated ID
-    title: "Social Support and Social Competence",
-    description: "Explore your social support network and social skills",
-    component: (onComplete) => <SocialSupport onComplete={onComplete} />
-  },
-  {
-    id: 62, // Updated ID
-    title: "Family Strengths",
-    description: "Identify family strengths that can help you achieve your goals",
-    component: (onComplete) => <FamilyStrengths onComplete={onComplete} />
-  },
-  {
-    id: 63, // Updated ID
-    title: "Time Management and Personal Structure",
-    description: "Find time in your schedule for fitness activities",
-    component: (onComplete) => <TimeManagement onComplete={onComplete} />
-  }
+  // Additional active change steps can be added here
 ];
