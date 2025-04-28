@@ -43,7 +43,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
         // Safely access stressors from the data
         const dataObj = data as ManagingStressData;
         
-        if (dataObj.stressors && Array.isArray(dataObj.stressors)) {
+        if (dataObj?.stressors && Array.isArray(dataObj.stressors)) {
           // Ensure we have 5 stressors, filling with empty strings if needed
           const savedStressors = [...dataObj.stressors];
           while (savedStressors.length < 5) {
@@ -53,7 +53,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
         }
         
         // Safely access impact from the data
-        if (dataObj.impact) {
+        if (dataObj?.impact) {
           setImpact(dataObj.impact);
         }
       }
