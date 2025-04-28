@@ -41,11 +41,11 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
     fetchData().then((response) => {
       // First check if response exists and isn't an error
       if (response && typeof response === 'object' && !('error' in response)) {
-        // Type assertion with null check
-        const data = response as ManagingStressData | null;
+        // Type assertion with explicit null check to fix the TypeScript error
+        const data = response as ManagingStressData;
         
-        // Now check if data is not null and has expected properties
-        if (data && data.stressors) {
+        // Now check if data has expected properties
+        if (data.stressors) {
           if (Array.isArray(data.stressors)) {
             // Ensure we have 5 stressors, filling with empty strings if needed
             const savedStressors = [...data.stressors];
