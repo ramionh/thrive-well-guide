@@ -890,6 +890,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_managing_stress: {
+        Row: {
+          created_at: string
+          id: string
+          impact: string | null
+          stressors: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          impact?: string | null
+          stressors?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          impact?: string | null
+          stressors?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_next_step_confidence: {
         Row: {
           created_at: string

@@ -41,6 +41,7 @@ import ValuesConflict from "../ValuesConflict";
 import YouHaveWhatItTakes from "../YouHaveWhatItTakes";
 import TheySeeTourStrengths from "../TheySeeTourStrengths";
 import BuildOnYourStrengths from "../BuildOnYourStrengths";
+import ManagingStress from "../ManagingStress";
 
 export const motivationSteps = [
   {
@@ -294,5 +295,11 @@ export const motivationSteps = [
     title: "Build on Your Strengths",
     description: "Apply your strengths to achieve your goals",
     component: (onComplete?: () => void) => <BuildOnYourStrengths onComplete={onComplete} />,
+  },
+  {
+    id: 43,
+    title: "Managing Stress",
+    description: "Identify and understand your key stressors",
+    component: (onComplete?: () => void) => <ManagingStress onComplete={onComplete} />,
   }
 ];
