@@ -42,9 +42,9 @@ export const useMotivationForm = <T extends Record<string, any>>({
       if (error) throw error;
       
       if (data) {
-        // Ensure data is treated as a compatible object before spreading
+        // Double-cast to avoid TypeScript errors: first to unknown, then to Partial<T>
         setFormData((prev) => {
-          const safeData = data as Partial<T>;
+          const safeData = data as unknown as Partial<T>;
           return {
             ...prev,
             ...safeData
