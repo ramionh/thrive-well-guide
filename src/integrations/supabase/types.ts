@@ -500,6 +500,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_coping_mechanisms: {
+        Row: {
+          created_at: string
+          current_techniques: Json
+          explanation: string | null
+          id: string
+          new_techniques: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_techniques?: Json
+          explanation?: string | null
+          id?: string
+          new_techniques?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_techniques?: Json
+          explanation?: string | null
+          id?: string
+          new_techniques?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_cultural_obstacles: {
         Row: {
           created_at: string

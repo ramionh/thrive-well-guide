@@ -1,4 +1,3 @@
-
 import React from 'react';
 import FindingInspiration from '../FindingInspiration';
 import Ambivalence from "../Ambivalence";
@@ -44,6 +43,7 @@ import BuildOnYourStrengths from "../BuildOnYourStrengths";
 import ManagingStress from "../ManagingStress";
 import IdentifyingStressTypes from "../IdentifyingStressTypes";
 import HowStressedAmI from "../HowStressedAmI";
+import CopingMechanisms from "../CopingMechanisms";
 
 export const motivationSteps = [
   {
@@ -315,5 +315,11 @@ export const motivationSteps = [
     title: "How Stressed Am I?",
     description: "Rate the intensity of your stressors",
     component: (onComplete?: () => void) => <HowStressedAmI onComplete={onComplete} />,
+  },
+  {
+    id: 46,
+    title: "Coping Mechanisms",
+    description: "Develop strategies to cope with stress",
+    component: (onComplete) => <CopingMechanisms onComplete={onComplete} />
   }
 ];
