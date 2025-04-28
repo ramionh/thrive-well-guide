@@ -1196,6 +1196,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_partial_change_feelings: {
+        Row: {
+          created_at: string
+          id: string
+          progress_steps: string | null
+          reward_ideas: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          progress_steps?: string | null
+          reward_ideas?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          progress_steps?: string | null
+          reward_ideas?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_past_success: {
         Row: {
           big_change: string
