@@ -1,4 +1,3 @@
-
 import { StepConfig } from "../types/motivation";
 import Ambivalence from "../Ambivalence";
 import FocusedHabitsSelector from "../focused-habits/FocusedHabitsSelector";
@@ -21,6 +20,7 @@ import PastSuccess from "../PastSuccess";
 import HowImportantIsIt from "../HowImportantIsIt";
 import WhatWouldChangeLookLike from "../WhatWouldChangeLookLike";
 import UnderstandingValues from "../UnderstandingValues";
+import DefiningImportance from "../DefiningImportance";
 
 export const motivationSteps: StepConfig[] = [
   {
@@ -148,5 +148,11 @@ export const motivationSteps: StepConfig[] = [
     title: "Understanding Values",
     description: "Explore and understand your core values",
     component: (onComplete) => <UnderstandingValues onComplete={onComplete} />
+  },
+  {
+    id: 22,
+    title: "Defining Importance",
+    description: "Understanding the significance of your goals",
+    component: (onComplete) => <DefiningImportance onComplete={onComplete} />
   }
 ];
