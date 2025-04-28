@@ -947,6 +947,42 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_mindfulness: {
+        Row: {
+          after_feelings: string | null
+          body_reactions: string | null
+          created_at: string
+          feelings: string | null
+          goal_application: string | null
+          id: string
+          thoughts: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          after_feelings?: string | null
+          body_reactions?: string | null
+          created_at?: string
+          feelings?: string | null
+          goal_application?: string | null
+          id?: string
+          thoughts?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          after_feelings?: string | null
+          body_reactions?: string | null
+          created_at?: string
+          feelings?: string | null
+          goal_application?: string | null
+          id?: string
+          thoughts?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_next_step_confidence: {
         Row: {
           created_at: string

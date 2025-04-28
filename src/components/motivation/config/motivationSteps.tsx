@@ -1,3 +1,4 @@
+
 import React from 'react';
 import FindingInspiration from '../FindingInspiration';
 import Ambivalence from "../Ambivalence";
@@ -44,6 +45,7 @@ import ManagingStress from "../ManagingStress";
 import IdentifyingStressTypes from "../IdentifyingStressTypes";
 import HowStressedAmI from "../HowStressedAmI";
 import CopingMechanisms from "../CopingMechanisms";
+import Mindfulness from "../Mindfulness";
 
 export const motivationSteps = [
   {
@@ -321,5 +323,11 @@ export const motivationSteps = [
     title: "Coping Mechanisms",
     description: "Develop strategies to cope with stress",
     component: (onComplete) => <CopingMechanisms onComplete={onComplete} />
+  },
+  {
+    id: 47,
+    title: "Mindfulness",
+    description: "Practice mindfulness meditation techniques",
+    component: (onComplete) => <Mindfulness onComplete={onComplete} />
   }
 ];
