@@ -824,6 +824,39 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_growth_mindset: {
+        Row: {
+          challenges: string | null
+          created_at: string
+          feedback: string | null
+          id: string
+          learning: string | null
+          new_things: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenges?: string | null
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          learning?: string | null
+          new_things?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenges?: string | null
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          learning?: string | null
+          new_things?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_identifying_ambivalence: {
         Row: {
           ambivalence_statement: string

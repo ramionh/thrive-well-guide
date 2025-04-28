@@ -46,6 +46,7 @@ import IdentifyingStressTypes from "../IdentifyingStressTypes";
 import HowStressedAmI from "../HowStressedAmI";
 import CopingMechanisms from "../CopingMechanisms";
 import Mindfulness from "../Mindfulness";
+import GrowthMindset from "../GrowthMindset";
 
 export const motivationSteps = [
   {
@@ -329,5 +330,11 @@ export const motivationSteps = [
     title: "Mindfulness",
     description: "Practice mindfulness meditation techniques",
     component: (onComplete) => <Mindfulness onComplete={onComplete} />
+  },
+  {
+    id: 48,
+    title: "Growth Mindset",
+    description: "Develop a mindset that embraces learning and growth",
+    component: (onComplete) => <GrowthMindset onComplete={onComplete} />
   }
 ];
