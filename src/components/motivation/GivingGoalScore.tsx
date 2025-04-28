@@ -26,17 +26,26 @@ const GivingGoalScore: React.FC<GivingGoalScoreProps> = ({ onComplete }) => {
 
     setIsSubmitting(true);
     try {
-      // Use type assertion to bypass TypeScript table checking
-      const { error } = await (supabase
-        .from('motivation_goal_scores') as any)
-        .insert({
+      // Use a generic fetch request to bypass TypeScript typing issues
+      const response = await fetch(`${supabase.supabaseUrl}/rest/v1/motivation_goal_scores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabase.supabaseKey,
+          'Authorization': `Bearer ${supabase.auth.session()?.access_token}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
           user_id: user.id,
           score: parseInt(score),
           descriptor,
           explanation
-        });
+        })
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`Error saving goal score: ${response.status}`);
+      }
 
       toast({
         title: "Success",
