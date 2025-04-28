@@ -40,21 +40,24 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
   useEffect(() => {
     fetchData().then((data) => {
       if (data && typeof data === 'object' && !('error' in data)) {
-        // Safely access stressors from the data
-        const dataObj = data as ManagingStressData;
-        
-        if (dataObj?.stressors && Array.isArray(dataObj.stressors)) {
-          // Ensure we have 5 stressors, filling with empty strings if needed
-          const savedStressors = [...dataObj.stressors];
-          while (savedStressors.length < 5) {
-            savedStressors.push("");
+        // Ensure data is not null before type casting
+        if (data) {
+          // Safely access stressors from the data
+          const dataObj = data as ManagingStressData;
+          
+          if (dataObj?.stressors && Array.isArray(dataObj.stressors)) {
+            // Ensure we have 5 stressors, filling with empty strings if needed
+            const savedStressors = [...dataObj.stressors];
+            while (savedStressors.length < 5) {
+              savedStressors.push("");
+            }
+            setStressors(savedStressors.slice(0, 5));
           }
-          setStressors(savedStressors.slice(0, 5));
-        }
-        
-        // Safely access impact from the data
-        if (dataObj?.impact) {
-          setImpact(dataObj.impact);
+          
+          // Safely access impact from the data
+          if (dataObj?.impact) {
+            setImpact(dataObj.impact);
+          }
         }
       }
     });
