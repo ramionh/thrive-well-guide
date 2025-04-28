@@ -1,3 +1,4 @@
+
 import { StepConfig } from "../types/motivation";
 import Ambivalence from "../Ambivalence";
 import FocusedHabitsSelector from "../focused-habits/FocusedHabitsSelector";
@@ -29,6 +30,11 @@ import SettingCeilingFloor from "../SettingCeilingFloor";
 import DefiningConfidence from "../DefiningConfidence";
 import CreatingConfidenceScale from "../CreatingConfidenceScale";
 import GivingConfidenceScore from "../GivingConfidenceScore";
+import AssessingConfidenceSteps from "../AssessingConfidenceSteps";
+import ImportanceConfidence from "../ImportanceConfidence";
+import ConfidenceTalk from "../ConfidenceTalk";
+import PastSuccessesAreas from "../PastSuccessesAreas";
+import FindingHope from "../FindingHope";
 
 export const motivationSteps: StepConfig[] = [
   {
@@ -216,5 +222,35 @@ export const motivationSteps: StepConfig[] = [
     title: "Taking Another Step Toward Change",
     description: "Consider what it would take to increase your score",
     component: (onComplete) => <TakingAnotherStepTowardChange onComplete={onComplete} />
+  },
+  {
+    id: 32,
+    title: "Assessing Your Confidence in Your Steps Forward",
+    description: "Rate your confidence in each step forward",
+    component: (onComplete) => <AssessingConfidenceSteps onComplete={onComplete} />
+  },
+  {
+    id: 33,
+    title: "Importance x Confidence",
+    description: "Identify which quadrant you belong in",
+    component: (onComplete) => <ImportanceConfidence onComplete={onComplete} />
+  },
+  {
+    id: 34,
+    title: "Building Confidence—Confidence Talk",
+    description: "Create positive self-talk to build confidence",
+    component: (onComplete) => <ConfidenceTalk onComplete={onComplete} />
+  },
+  {
+    id: 35,
+    title: "Past Successes",
+    description: "Reflect on small changes you've made",
+    component: (onComplete) => <PastSuccessesAreas onComplete={onComplete} />
+  },
+  {
+    id: 36,
+    title: "Finding Hope",
+    description: "Explore what gives you hope for change",
+    component: (onComplete) => <FindingHope onComplete={onComplete} />
   }
 ];

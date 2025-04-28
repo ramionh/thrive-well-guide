@@ -422,6 +422,57 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_confidence_steps: {
+        Row: {
+          confidence_steps: Json
+          created_at: string
+          id: string
+          selected_confidence_step: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confidence_steps?: Json
+          created_at?: string
+          id?: string
+          selected_confidence_step?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confidence_steps?: Json
+          created_at?: string
+          id?: string
+          selected_confidence_step?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      motivation_confidence_talk: {
+        Row: {
+          confidence_talk: Json
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confidence_talk?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confidence_talk?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_cultural_obstacles: {
         Row: {
           created_at: string
@@ -629,6 +680,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_finding_hope: {
+        Row: {
+          change_hope: string | null
+          created_at: string
+          general_hope: string | null
+          id: string
+          personal_hope: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          change_hope?: string | null
+          created_at?: string
+          general_hope?: string | null
+          id?: string
+          personal_hope?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          change_hope?: string | null
+          created_at?: string
+          general_hope?: string | null
+          id?: string
+          personal_hope?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_goal_scores: {
         Row: {
           created_at: string
@@ -678,6 +759,30 @@ export type Database = {
           ambivalence_statement?: string
           created_at?: string
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      motivation_importance_confidence: {
+        Row: {
+          created_at: string
+          id: string
+          selected_quadrant: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          selected_quadrant: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          selected_quadrant?: number
           updated_at?: string
           user_id?: string
         }
@@ -795,6 +900,60 @@ export type Database = {
           help_achieve_goals?: string
           id?: string
           life_context?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      motivation_past_successes_areas: {
+        Row: {
+          career: string | null
+          created_at: string
+          family_relationships: string | null
+          friendships: string | null
+          healthy_eating: string | null
+          id: string
+          intimate_relationships: string | null
+          money_management: string | null
+          organization: string | null
+          other: string | null
+          physical_activity: string | null
+          reflection: string | null
+          spiritual_life: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          career?: string | null
+          created_at?: string
+          family_relationships?: string | null
+          friendships?: string | null
+          healthy_eating?: string | null
+          id?: string
+          intimate_relationships?: string | null
+          money_management?: string | null
+          organization?: string | null
+          other?: string | null
+          physical_activity?: string | null
+          reflection?: string | null
+          spiritual_life?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          career?: string | null
+          created_at?: string
+          family_relationships?: string | null
+          friendships?: string | null
+          healthy_eating?: string | null
+          id?: string
+          intimate_relationships?: string | null
+          money_management?: string | null
+          organization?: string | null
+          other?: string | null
+          physical_activity?: string | null
+          reflection?: string | null
+          spiritual_life?: string | null
           updated_at?: string
           user_id?: string
         }
