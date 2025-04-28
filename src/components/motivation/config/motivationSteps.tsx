@@ -27,6 +27,8 @@ import TakingAnotherStepTowardChange from "../TakingAnotherStepTowardChange";
 import AssessingImportanceStepsForward from "../AssessingImportanceStepsForward";
 import SettingCeilingFloor from "../SettingCeilingFloor";
 import DefiningConfidence from "../DefiningConfidence";
+import CreatingConfidenceScale from "../CreatingConfidenceScale";
+import GivingConfidenceScore from "../GivingConfidenceScore";
 
 export const motivationSteps: StepConfig[] = [
   {
@@ -196,5 +198,23 @@ export const motivationSteps: StepConfig[] = [
     title: "Defining Confidence",
     description: "Explore what confidence means to you",
     component: (onComplete) => <DefiningConfidence onComplete={onComplete} />
+  },
+  {
+    id: 29,
+    title: "Creating a Confidence Scale",
+    description: "Define your confidence scale",
+    component: (onComplete) => <CreatingConfidenceScale onComplete={onComplete} />
+  },
+  {
+    id: 30,
+    title: "Giving Yourself a Score",
+    description: "Rate your current confidence level",
+    component: (onComplete) => <GivingConfidenceScore onComplete={onComplete} />
+  },
+  {
+    id: 31,
+    title: "Taking Another Step Toward Change",
+    description: "Consider what it would take to increase your score",
+    component: (onComplete) => <TakingAnotherStepTowardChange onComplete={onComplete} />
   }
 ];

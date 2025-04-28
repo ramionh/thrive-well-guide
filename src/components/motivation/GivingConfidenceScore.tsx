@@ -8,18 +8,18 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 
-interface TakingAnotherStepTowardChangeProps {
+interface GivingConfidenceScoreProps {
   onComplete?: () => void;
 }
 
-const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps> = ({ onComplete }) => {
+const GivingConfidenceScore: React.FC<GivingConfidenceScoreProps> = ({ onComplete }) => {
   const { user } = useUser();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [newScore, setNewScore] = useState("");
-  const [newDescriptor, setNewDescriptor] = useState("");
-  const [newExplanation, setNewExplanation] = useState("");
+  const [score, setScore] = useState("");
+  const [descriptor, setDescriptor] = useState("");
+  const [explanation, setExplanation] = useState("");
 
   useEffect(() => {
     const fetchExistingData = async () => {
@@ -28,7 +28,7 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
       setIsLoading(true);
       try {
         const { data, error } = await supabase
-          .from("motivation_next_step_confidence")
+          .from("motivation_confidence_score")
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
@@ -38,9 +38,9 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
         if (error) throw error;
         
         if (data) {
-          setNewScore(data.new_score.toString());
-          setNewDescriptor(data.new_descriptor);
-          setNewExplanation(data.new_explanation);
+          setScore(data.score.toString());
+          setDescriptor(data.descriptor);
+          setExplanation(data.explanation);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -64,12 +64,12 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from("motivation_next_step_confidence")
+        .from("motivation_confidence_score")
         .insert({
           user_id: user.id,
-          new_score: parseInt(newScore),
-          new_descriptor: newDescriptor,
-          new_explanation: newExplanation
+          score: parseInt(score),
+          descriptor,
+          explanation
         });
 
       if (error) throw error;
@@ -104,59 +104,59 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">Taking Another Step Toward Change</h2>
+              <h2 className="text-xl font-semibold text-purple-800 mb-4">Giving Yourself a Score</h2>
               <p className="text-gray-600 mb-6">
-                Consider what it would take to increase your confidence score by one. Write your new score and descriptor below.
+                Use your scale to rate your confidence in taking action toward your goal. Once you have chosen your rating, write it below.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="newScore" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Score (1-10)
+                <label htmlFor="score" className="block text-sm font-medium text-gray-700 mb-1">
+                  Current Score (1-10)
                 </label>
                 <Input
-                  id="newScore"
+                  id="score"
                   type="number"
                   min="1"
                   max="10"
-                  value={newScore}
-                  onChange={(e) => setNewScore(e.target.value)}
+                  value={score}
+                  onChange={(e) => setScore(e.target.value)}
                   required
                   className="w-32"
                 />
               </div>
 
               <div>
-                <label htmlFor="newDescriptor" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Descriptor
+                <label htmlFor="descriptor" className="block text-sm font-medium text-gray-700 mb-1">
+                  Descriptor
                 </label>
                 <Input
-                  id="newDescriptor"
+                  id="descriptor"
                   type="text"
-                  value={newDescriptor}
-                  onChange={(e) => setNewDescriptor(e.target.value)}
+                  value={descriptor}
+                  onChange={(e) => setDescriptor(e.target.value)}
                   required
-                  placeholder="e.g., determined, confident, etc."
+                  placeholder="e.g., determined, hesitant, etc."
                 />
               </div>
 
               <div>
-                <label htmlFor="newExplanation" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="explanation" className="block text-sm font-medium text-gray-700 mb-1">
                   Explanation
                 </label>
                 <Textarea
-                  id="newExplanation"
-                  value={newExplanation}
-                  onChange={(e) => setNewExplanation(e.target.value)}
+                  id="explanation"
+                  value={explanation}
+                  onChange={(e) => setExplanation(e.target.value)}
                   required
-                  placeholder="Write a short explanation that describes your rating or descriptor."
+                  placeholder="Write a short explanation that describes why you chose your rating or descriptor and not a lower number."
                   className="h-24"
                 />
               </div>
 
               <div className="italic text-gray-600 text-sm mt-4">
-                Example: "I rated myself 5. To become 6, I would need to have some new ideas to help me stick with my workout schedule and then be able to maintain it for a month."
+                Example: "I rated myself 5 and not 3 because I know how to create a workout plan and, on occasion, I make better choices by prioritizing my fitness over other activities."
               </div>
             </div>
 
@@ -174,4 +174,4 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
   );
 };
 
-export default TakingAnotherStepTowardChange;
+export default GivingConfidenceScore;

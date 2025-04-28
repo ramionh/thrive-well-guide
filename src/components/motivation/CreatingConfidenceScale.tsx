@@ -8,18 +8,28 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 
-interface TakingAnotherStepTowardChangeProps {
+interface ConfidenceScaleEntry {
+  number: number;
+  descriptor: string;
+  definition: string;
+}
+
+interface CreatingConfidenceScaleProps {
   onComplete?: () => void;
 }
 
-const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps> = ({ onComplete }) => {
+const CreatingConfidenceScale: React.FC<CreatingConfidenceScaleProps> = ({ onComplete }) => {
   const { user } = useUser();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [newScore, setNewScore] = useState("");
-  const [newDescriptor, setNewDescriptor] = useState("");
-  const [newExplanation, setNewExplanation] = useState("");
+  const [scale, setScale] = useState<ConfidenceScaleEntry[]>(
+    Array.from({ length: 10 }, (_, i) => ({
+      number: i + 1,
+      descriptor: "",
+      definition: ""
+    }))
+  );
 
   useEffect(() => {
     const fetchExistingData = async () => {
@@ -28,7 +38,7 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
       setIsLoading(true);
       try {
         const { data, error } = await supabase
-          .from("motivation_next_step_confidence")
+          .from("motivation_confidence_scale")
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
@@ -37,10 +47,8 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
         
         if (error) throw error;
         
-        if (data) {
-          setNewScore(data.new_score.toString());
-          setNewDescriptor(data.new_descriptor);
-          setNewExplanation(data.new_explanation);
+        if (data?.confidence_scale) {
+          setScale(data.confidence_scale);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -64,12 +72,10 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from("motivation_next_step_confidence")
+        .from("motivation_confidence_scale")
         .insert({
           user_id: user.id,
-          new_score: parseInt(newScore),
-          new_descriptor: newDescriptor,
-          new_explanation: newExplanation
+          confidence_scale: scale
         });
 
       if (error) throw error;
@@ -94,6 +100,14 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
     }
   };
 
+  const handleScaleChange = (index: number, field: keyof ConfidenceScaleEntry, value: string) => {
+    setScale(prevScale => 
+      prevScale.map((entry, i) => 
+        i === index ? { ...entry, [field]: value } : entry
+      )
+    );
+  };
+
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
@@ -104,60 +118,39 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">Taking Another Step Toward Change</h2>
+              <h2 className="text-xl font-semibold text-purple-800 mb-4">Creating a Confidence Scale</h2>
               <p className="text-gray-600 mb-6">
-                Consider what it would take to increase your confidence score by one. Write your new score and descriptor below.
+                Just as creating an importance scale helped you pinpoint the importance of your goal, creating a confidence scale will help you understand how much confidence you feel in your ability to take action toward your goal.
+              </p>
+              <p className="text-gray-600 mb-6">
+                Using the words from the previous step, create definitions and descriptors for each number on the scale below.
+                A score of 10 might be defined as determined, whereas a score of 1 might be defined as undecided.
               </p>
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label htmlFor="newScore" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Score (1-10)
-                </label>
-                <Input
-                  id="newScore"
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={newScore}
-                  onChange={(e) => setNewScore(e.target.value)}
-                  required
-                  className="w-32"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="newDescriptor" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Descriptor
-                </label>
-                <Input
-                  id="newDescriptor"
-                  type="text"
-                  value={newDescriptor}
-                  onChange={(e) => setNewDescriptor(e.target.value)}
-                  required
-                  placeholder="e.g., determined, confident, etc."
-                />
-              </div>
-
-              <div>
-                <label htmlFor="newExplanation" className="block text-sm font-medium text-gray-700 mb-1">
-                  Explanation
-                </label>
-                <Textarea
-                  id="newExplanation"
-                  value={newExplanation}
-                  onChange={(e) => setNewExplanation(e.target.value)}
-                  required
-                  placeholder="Write a short explanation that describes your rating or descriptor."
-                  className="h-24"
-                />
-              </div>
-
-              <div className="italic text-gray-600 text-sm mt-4">
-                Example: "I rated myself 5. To become 6, I would need to have some new ideas to help me stick with my workout schedule and then be able to maintain it for a month."
-              </div>
+              {scale.map((entry, index) => (
+                <div key={entry.number} className="flex gap-4 items-start p-4 bg-gray-50 rounded-lg">
+                  <div className="w-8 h-8 flex items-center justify-center bg-purple-100 rounded-full text-purple-800 font-semibold">
+                    {entry.number}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Input
+                      placeholder="Descriptor (e.g., determined)"
+                      value={entry.descriptor}
+                      onChange={(e) => handleScaleChange(index, "descriptor", e.target.value)}
+                      required
+                    />
+                    <Textarea
+                      placeholder="Definition"
+                      value={entry.definition}
+                      onChange={(e) => handleScaleChange(index, "definition", e.target.value)}
+                      required
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
 
             <Button
@@ -174,4 +167,4 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
   );
 };
 
-export default TakingAnotherStepTowardChange;
+export default CreatingConfidenceScale;

@@ -368,6 +368,60 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_confidence_scale: {
+        Row: {
+          confidence_scale: Json
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confidence_scale?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confidence_scale?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      motivation_confidence_score: {
+        Row: {
+          created_at: string
+          descriptor: string
+          explanation: string
+          id: string
+          score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descriptor: string
+          explanation: string
+          id?: string
+          score: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descriptor?: string
+          explanation?: string
+          id?: string
+          score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_cultural_obstacles: {
         Row: {
           created_at: string
@@ -672,6 +726,36 @@ export type Database = {
           created_at?: string
           id?: string
           question?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      motivation_next_step_confidence: {
+        Row: {
+          created_at: string
+          id: string
+          new_descriptor: string
+          new_explanation: string
+          new_score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          new_descriptor: string
+          new_explanation: string
+          new_score: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          new_descriptor?: string
+          new_explanation?: string
+          new_score?: number
           updated_at?: string
           user_id?: string
         }
