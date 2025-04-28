@@ -635,6 +635,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_environmental_resources: {
+        Row: {
+          created_at: string
+          environmental_resources: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          environmental_resources?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          environmental_resources?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_environmental_stressors: {
         Row: {
           created_at: string

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ExploringChange from "../../ExploringChange";
 import HowImportantIsIt from "../../HowImportantIsIt";
@@ -31,6 +32,7 @@ import Mindfulness from "../../Mindfulness";
 import GrowthMindset from "../../GrowthMindset";
 import Affirmations from "../../Affirmations";
 import SocialCulturalResources from "../../SocialCulturalResources";
+import EnvironmentalResources from "../../EnvironmentalResources";
 
 import type { StepConfig } from "../../types/motivation";
 
@@ -232,5 +234,11 @@ export const chartingPathSteps: StepConfig[] = [
     title: "Social and Cultural Resources",
     description: "Leverage your cultural background for motivation",
     component: (onComplete) => <SocialCulturalResources onComplete={onComplete} />
+  },
+  {
+    id: 55,
+    title: "Environmental or Situational Supports and Resources",
+    description: "Identify resources in your environment that support your fitness goals",
+    component: (onComplete) => <EnvironmentalResources onComplete={onComplete} />
   }
 ];
