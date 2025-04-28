@@ -335,6 +335,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_characteristics: {
+        Row: {
+          characteristics: Json
+          created_at: string
+          examples: Json
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          characteristics?: Json
+          created_at?: string
+          examples?: Json
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          characteristics?: Json
+          created_at?: string
+          examples?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_clarifying_values: {
         Row: {
           created_at: string

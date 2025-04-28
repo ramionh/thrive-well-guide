@@ -38,6 +38,7 @@ import PastSuccessesAreas from "../PastSuccessesAreas";
 import FindingHope from "../FindingHope";
 import RevisitValues from "../RevisitValues";
 import ValuesConflict from "../ValuesConflict";
+import YouHaveWhatItTakes from "../YouHaveWhatItTakes";
 
 export const motivationSteps = [
   {
@@ -273,5 +274,11 @@ export const motivationSteps = [
     title: "Values Conflict",
     description: "Explore values prioritization conflicts",
     component: (onComplete?: () => void) => <ValuesConflict onComplete={onComplete} />,
+  },
+  {
+    id: 40,
+    title: "You Have What It Takes",
+    description: "Identify your personal strengths",
+    component: (onComplete?: () => void) => <YouHaveWhatItTakes onComplete={onComplete} />,
   }
 ];
