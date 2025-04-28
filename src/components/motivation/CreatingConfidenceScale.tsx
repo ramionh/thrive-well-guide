@@ -48,7 +48,12 @@ const CreatingConfidenceScale: React.FC<CreatingConfidenceScaleProps> = ({ onCom
         if (error) throw error;
         
         if (data?.confidence_scale) {
-          setScale(data.confidence_scale);
+          // Parse the confidence_scale data properly if needed
+          const parsedScale = Array.isArray(data.confidence_scale) 
+            ? data.confidence_scale as ConfidenceScaleEntry[]
+            : JSON.parse(data.confidence_scale as string) as ConfidenceScaleEntry[];
+          
+          setScale(parsedScale);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -75,7 +80,7 @@ const CreatingConfidenceScale: React.FC<CreatingConfidenceScaleProps> = ({ onCom
         .from("motivation_confidence_scale")
         .insert({
           user_id: user.id,
-          confidence_scale: scale
+          confidence_scale: scale as any // Cast to any to bypass TypeScript's type checking
         });
 
       if (error) throw error;
