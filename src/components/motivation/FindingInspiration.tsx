@@ -21,8 +21,8 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
   } = useMotivationForm({
     tableName: "motivation_finding_inspiration",
     initialState: {
-      inspirationSources: "",
-      inspirationalContent: ""
+      inspiration_sources: "",
+      inspirational_content: ""
     }
   });
 
@@ -51,27 +51,27 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <label htmlFor="inspirationSources" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="inspiration_sources" className="block text-sm font-medium text-gray-700">
                   Where can you find inspiration? Who inspires you?
                 </label>
                 <Textarea
-                  id="inspirationSources"
-                  value={formData.inspirationSources}
-                  onChange={(e) => updateForm("inspirationSources", e.target.value)}
+                  id="inspiration_sources"
+                  value={formData.inspiration_sources}
+                  onChange={(e) => updateForm("inspiration_sources", e.target.value)}
                   className="min-h-[100px]"
                   placeholder="Enter your sources of inspiration..."
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="inspirationalContent" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="inspirational_content" className="block text-sm font-medium text-gray-700">
                   What are some quotes and images that inspire you to work toward your goal? 
                   Write them here or create a vision board.
                 </label>
                 <Textarea
-                  id="inspirationalContent"
-                  value={formData.inspirationalContent}
-                  onChange={(e) => updateForm("inspirationalContent", e.target.value)}
+                  id="inspirational_content"
+                  value={formData.inspirational_content}
+                  onChange={(e) => updateForm("inspirational_content", e.target.value)}
                   className="min-h-[100px]"
                   placeholder="Write inspirational quotes and describe images here..."
                 />
