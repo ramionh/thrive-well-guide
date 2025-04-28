@@ -1,0 +1,56 @@
+
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useStressTypes } from "./useStressTypes";
+import LoadingState from "../shared/LoadingState";
+import StressTypeExplanation from "./StressTypeExplanation";
+import StressTypeTable from "./StressTypeTable";
+
+interface IdentifyingStressTypesProps {
+  onComplete?: () => void;
+}
+
+const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onComplete }) => {
+  const {
+    stressTypes,
+    isLoadingStressors,
+    handleStressTypeChange,
+    handleSubmit,
+  } = useStressTypes({ onComplete });
+
+  return (
+    <Card className="bg-white">
+      <CardContent className="p-6">
+        {isLoadingStressors ? (
+          <LoadingState />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <StressTypeExplanation />
+
+            <div className="space-y-4">
+              <Label className="block text-sm font-medium text-gray-700">
+                For each of your identified stressors, indicate whether it is a source of distress or eustress:
+              </Label>
+
+              <StressTypeTable 
+                stressTypes={stressTypes} 
+                onStressTypeChange={handleStressTypeChange}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-purple-600 hover:bg-purple-700"
+            >
+              Complete Step
+            </Button>
+          </form>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default IdentifyingStressTypes;
