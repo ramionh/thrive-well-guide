@@ -22,7 +22,7 @@ const CopingMechanisms: React.FC<CopingMechanismsProps> = ({ onComplete }) => {
   } = useCopingMechanisms(onComplete);
 
   if (isLoading) {
-    return <LoadingState message="Loading your coping mechanisms..." />;
+    return <LoadingState />;
   }
 
   return (
