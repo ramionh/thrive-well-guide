@@ -1010,6 +1010,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_revisit_values: {
+        Row: {
+          created_at: string
+          id: string
+          reflection: string | null
+          updated_at: string
+          user_id: string
+          values: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reflection?: string | null
+          updated_at?: string
+          user_id: string
+          values?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reflection?: string | null
+          updated_at?: string
+          user_id?: string
+          values?: Json
+        }
+        Relationships: []
+      }
       motivation_social_network: {
         Row: {
           created_at: string
