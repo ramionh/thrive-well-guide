@@ -1313,6 +1313,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_realistic_change: {
+        Row: {
+          created_at: string
+          id: string
+          realistic_change: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          realistic_change?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          realistic_change?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_resource_development: {
         Row: {
           created_at: string

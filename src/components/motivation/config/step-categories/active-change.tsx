@@ -8,25 +8,25 @@ import type { StepConfig } from "../../types/motivation";
 
 export const activeChangeSteps: StepConfig[] = [
   {
-    id: 58,
+    id: 59, // Updated to start from 59
     title: "Financial and Economic Resources",
     description: "Identify financial resources that can support your fitness goals",
     component: (onComplete) => <FinancialResources onComplete={onComplete} />
   },
   {
-    id: 59,
+    id: 60, // Updated ID
     title: "Social Support and Social Competence",
     description: "Explore your social support network and social skills",
     component: (onComplete) => <SocialSupport onComplete={onComplete} />
   },
   {
-    id: 60,
+    id: 61, // Updated ID
     title: "Family Strengths",
     description: "Identify family strengths that can help you achieve your goals",
     component: (onComplete) => <FamilyStrengths onComplete={onComplete} />
   },
   {
-    id: 61,
+    id: 62, // Updated ID
     title: "Time Management and Personal Structure",
     description: "Find time in your schedule for fitness activities",
     component: (onComplete) => <TimeManagement onComplete={onComplete} />
