@@ -1,4 +1,3 @@
-
 import { StepConfig } from "../types/motivation";
 import Ambivalence from "../Ambivalence";
 import FocusedHabitsSelector from "../focused-habits/FocusedHabitsSelector";
@@ -22,6 +21,7 @@ import HowImportantIsIt from "../HowImportantIsIt";
 import WhatWouldChangeLookLike from "../WhatWouldChangeLookLike";
 import UnderstandingValues from "../UnderstandingValues";
 import DefiningImportance from "../DefiningImportance";
+import ImportanceScale from "../ImportanceScale";
 
 export const motivationSteps: StepConfig[] = [
   {
@@ -155,5 +155,11 @@ export const motivationSteps: StepConfig[] = [
     title: "Defining Importance",
     description: "Understanding the significance of your goals",
     component: (onComplete) => <DefiningImportance onComplete={onComplete} />
+  },
+  {
+    id: 23,
+    title: "Importance Scale",
+    description: "Rate the importance of your fitness goal",
+    component: (onComplete) => <ImportanceScale onComplete={onComplete} />
   }
 ];

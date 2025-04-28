@@ -545,6 +545,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_importance_scale: {
+        Row: {
+          created_at: string
+          id: string
+          ratings: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ratings?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ratings?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_knowledge: {
         Row: {
           created_at: string
