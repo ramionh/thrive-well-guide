@@ -26,15 +26,15 @@ const GivingGoalScore: React.FC<GivingGoalScoreProps> = ({ onComplete }) => {
 
     setIsSubmitting(true);
     try {
-      // Use the generic insert method that bypasses TypeScript table checking
-      const { error } = await supabase
-        .from('motivation_goal_scores')
+      // Use type assertion to bypass TypeScript table checking
+      const { error } = await (supabase
+        .from('motivation_goal_scores') as any)
         .insert({
           user_id: user.id,
           score: parseInt(score),
           descriptor,
           explanation
-        } as any); // Use type assertion to bypass TypeScript checking
+        });
 
       if (error) throw error;
 
