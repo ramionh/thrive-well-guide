@@ -42,10 +42,14 @@ export const useMotivationForm = <T extends Record<string, any>>({
       if (error) throw error;
       
       if (data) {
-        setFormData((prev) => ({
-          ...prev,
-          ...data
-        }));
+        // Ensure data is treated as a compatible object before spreading
+        setFormData((prev) => {
+          const safeData = data as Partial<T>;
+          return {
+            ...prev,
+            ...safeData
+          };
+        });
       }
 
       return data;
