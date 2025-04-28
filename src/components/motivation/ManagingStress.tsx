@@ -39,9 +39,9 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
 
   useEffect(() => {
     fetchData().then((response) => {
-      // First check if response exists and isn't an error
-      if (response && typeof response === 'object' && !('error' in response)) {
-        // Type assertion with explicit null check to fix the TypeScript error
+      // First check if response exists and isn't null
+      if (response) {
+        // Type assertion with explicit check to fix the TypeScript error
         const data = response as ManagingStressData;
         
         // Now check if data has expected properties

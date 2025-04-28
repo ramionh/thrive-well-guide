@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -80,9 +81,13 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
         const result = await fetchData();
         
         if (data?.stressors && Array.isArray(data.stressors)) {
-          const filteredStressors = data.stressors.filter(s => s.trim() !== "");
+          // Ensure we're working with string values and filter out empty stressors
+          const filteredStressors = data.stressors
+            .map(s => typeof s === 'string' ? s.trim() : String(s).trim())
+            .filter(s => s !== "");
           
-          if (result && result.stress_types && Array.isArray(result.stress_types)) {
+          // Check if we have existing data
+          if (result && 'stress_types' in result && Array.isArray(result.stress_types)) {
             // If we have existing data, use it
             setStressTypes(result.stress_types);
           } else {
