@@ -24,6 +24,7 @@ import DefiningImportance from "../DefiningImportance";
 import ImportanceScale from "../ImportanceScale";
 import GivingGoalScore from "../GivingGoalScore";
 import TakingAnotherStepTowardChange from "../TakingAnotherStepTowardChange";
+import AssessingImportanceStepsForward from "../AssessingImportanceStepsForward";
 
 export const motivationSteps: StepConfig[] = [
   {
@@ -175,5 +176,11 @@ export const motivationSteps: StepConfig[] = [
     title: "Taking Another Step Toward Change",
     description: "Consider what it would take to increase your score",
     component: (onComplete) => <TakingAnotherStepTowardChange onComplete={onComplete} />
+  },
+  {
+    id: 26,
+    title: "Assessing the Importance of My Steps Forward",
+    description: "Rate and choose your next steps forward",
+    component: (onComplete) => <AssessingImportanceStepsForward onComplete={onComplete} />
   }
 ];

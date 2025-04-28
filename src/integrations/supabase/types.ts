@@ -713,6 +713,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_step_assessments: {
+        Row: {
+          created_at: string
+          id: string
+          selected_step: string | null
+          steps: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          selected_step?: string | null
+          steps?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          selected_step?: string | null
+          steps?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_step_toward_change: {
         Row: {
           created_at: string
