@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -25,12 +25,40 @@ interface DefiningImportanceProps {
 const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) => {
   const { user } = useUser();
   const { toast } = useToast();
-  const { data: goalData, isLoading } = useCurrentGoal();
+  const { data: goalData, isLoading: goalLoading } = useCurrentGoal();
   const [selectedDescriptors, setSelectedDescriptors] = useState<string[]>([]);
   const [reflection, setReflection] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (isLoading) {
+  useEffect(() => {
+    const fetchSavedValues = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('motivation_defining_importance')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          setSelectedDescriptors(data.descriptors || []);
+          setReflection(data.reflection || "");
+        }
+      } catch (error) {
+        console.error("Error fetching saved values:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSavedValues();
+  }, [user]);
+
+  if (isLoading || goalLoading) {
     return (
       <div className="flex justify-center items-center p-8">
         <div className="animate-spin h-8 w-8 border-4 border-purple-600 rounded-full border-t-transparent"></div>
@@ -69,16 +97,37 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("motivation_defining_importance")
-        .insert({
-          user_id: user.id,
-          goal_text: goalText,
-          descriptors: selectedDescriptors,
-          reflection: reflection,
-        });
+      const { data: existingData } = await supabase
+        .from('motivation_defining_importance')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
 
-      if (error) throw error;
+      if (existingData) {
+        // Update existing record
+        const { error } = await supabase
+          .from('motivation_defining_importance')
+          .update({
+            descriptors: selectedDescriptors,
+            reflection: reflection,
+            goal_text: goalText,
+          })
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('motivation_defining_importance')
+          .insert({
+            user_id: user.id,
+            goal_text: goalText,
+            descriptors: selectedDescriptors,
+            reflection: reflection,
+          });
+
+        if (error) throw error;
+      }
 
       toast({
         title: "Success",
