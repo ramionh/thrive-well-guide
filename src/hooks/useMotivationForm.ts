@@ -30,9 +30,9 @@ export const useMotivationForm = <T extends Record<string, any>>({
     
     setIsLoading(true);
     try {
-      // Using string template to avoid TypeScript error with string literal types
+      // Cast the table name to any to avoid TypeScript limitations
       const { data, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
@@ -68,7 +68,7 @@ export const useMotivationForm = <T extends Record<string, any>>({
     }));
   };
 
-  const submitForm = async (e?: React.FormEvent) => {
+  const submitForm = async (e?: React.FormEvent, onComplete?: () => void) => {
     if (e) {
       e.preventDefault();
     }
@@ -91,9 +91,9 @@ export const useMotivationForm = <T extends Record<string, any>>({
     try {
       const dataToSubmit = transformData ? transformData(formData) : formData;
       
-      // Using string template to avoid TypeScript error with string literal types
+      // Cast the table name to any to avoid TypeScript limitations
       const { error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .insert({
           user_id: user.id,
           ...dataToSubmit
@@ -108,6 +108,10 @@ export const useMotivationForm = <T extends Record<string, any>>({
 
       if (onSuccess) {
         onSuccess();
+      }
+
+      if (onComplete) {
+        onComplete();
       }
     } catch (error) {
       console.error(`Error saving to ${tableName}:`, error);

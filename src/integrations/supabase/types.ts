@@ -710,6 +710,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_finding_inspiration: {
+        Row: {
+          created_at: string
+          id: string
+          inspiration_sources: string | null
+          inspirational_content: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inspiration_sources?: string | null
+          inspirational_content?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inspiration_sources?: string | null
+          inspirational_content?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_goal_scores: {
         Row: {
           created_at: string
