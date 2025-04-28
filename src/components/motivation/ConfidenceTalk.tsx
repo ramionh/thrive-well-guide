@@ -61,10 +61,23 @@ const ConfidenceTalk: React.FC<ConfidenceTalkProps> = ({ onComplete }) => {
         if (data?.confidence_talk) {
           let parsedTalk: ConfidenceTalkEntry[] = [];
           
-          if (typeof data.confidence_talk === 'string') {
-            parsedTalk = JSON.parse(data.confidence_talk);
-          } else {
-            parsedTalk = data.confidence_talk as ConfidenceTalkEntry[];
+          try {
+            // Convert the retrieved JSON data to the expected type
+            if (typeof data.confidence_talk === 'string') {
+              parsedTalk = JSON.parse(data.confidence_talk) as ConfidenceTalkEntry[];
+            } else {
+              // Cast the Json[] to the correct type using type assertion
+              const jsonArray = data.confidence_talk as unknown;
+              if (Array.isArray(jsonArray)) {
+                parsedTalk = (jsonArray as any[]).map(item => ({
+                  unhelpful: item.unhelpful || "",
+                  helpful: item.helpful || ""
+                }));
+              }
+            }
+          } catch (parseError) {
+            console.error("Error parsing confidence talk:", parseError);
+            parsedTalk = [];
           }
           
           // Ensure we have 5 entries

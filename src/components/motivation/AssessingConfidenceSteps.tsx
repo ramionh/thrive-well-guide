@@ -51,10 +51,23 @@ const AssessingConfidenceSteps: React.FC<AssessingConfidenceStepsProps> = ({ onC
           let parsedSteps: ConfidenceStep[] = [];
           
           if (data.confidence_steps) {
-            if (typeof data.confidence_steps === 'string') {
-              parsedSteps = JSON.parse(data.confidence_steps);
-            } else {
-              parsedSteps = data.confidence_steps as ConfidenceStep[];
+            try {
+              // Convert the retrieved JSON data to the expected type
+              if (typeof data.confidence_steps === 'string') {
+                parsedSteps = JSON.parse(data.confidence_steps) as ConfidenceStep[];
+              } else {
+                // Cast the Json[] to the correct type using type assertion
+                const jsonArray = data.confidence_steps as unknown;
+                if (Array.isArray(jsonArray)) {
+                  parsedSteps = (jsonArray as any[]).map(item => ({
+                    text: item.text || "",
+                    rating: parseInt(item.rating) || 1
+                  }));
+                }
+              }
+            } catch (parseError) {
+              console.error("Error parsing confidence steps:", parseError);
+              parsedSteps = [];
             }
             
             // Ensure we have 5 steps
