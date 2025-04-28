@@ -34,15 +34,15 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
   } = useMotivationForm({
     tableName: "motivation_strength_applications",
     initialState: {
-      strengthApplications: []
+      strength_applications: []  // Changed to snake_case to match database column naming convention
     }
   });
 
   useEffect(() => {
     fetchData().then((data) => {
-      if (data && 'strengthApplications' in data && Array.isArray(data.strengthApplications)) {
-        if (data.strengthApplications.length > 0) {
-          setStrengthApplications(data.strengthApplications);
+      if (data && 'strength_applications' in data && Array.isArray(data.strength_applications)) {  // Changed to match DB column name
+        if (data.strength_applications.length > 0) {  // Changed to match DB column name
+          setStrengthApplications(data.strength_applications);  // Changed to match DB column name
         }
       }
     });
@@ -62,7 +62,7 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("strengthApplications", strengthApplications);
+    updateForm("strength_applications", strengthApplications);  // Changed to match DB column name
     submitForm(e, onComplete);
   };
 

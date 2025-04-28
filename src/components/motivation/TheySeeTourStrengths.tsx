@@ -34,15 +34,15 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
   } = useMotivationForm({
     tableName: "motivation_strengths_feedback",
     initialState: {
-      feedbackEntries: []
+      feedback_entries: []  // Changed from feedbackEntries to feedback_entries to match database column
     }
   });
 
   useEffect(() => {
     fetchData().then((data) => {
-      if (data && 'feedbackEntries' in data && Array.isArray(data.feedbackEntries)) {
-        if (data.feedbackEntries.length > 0) {
-          setFeedbackEntries(data.feedbackEntries);
+      if (data && 'feedback_entries' in data && Array.isArray(data.feedback_entries)) {  // Changed from feedbackEntries to feedback_entries
+        if (data.feedback_entries.length > 0) {  // Changed from feedbackEntries to feedback_entries
+          setFeedbackEntries(data.feedback_entries);  // Changed from feedbackEntries to feedback_entries
         }
       }
     });
@@ -62,7 +62,7 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("feedbackEntries", feedbackEntries);
+    updateForm("feedback_entries", feedbackEntries);  // Changed from feedbackEntries to feedback_entries
     submitForm(e, onComplete);
   };
 
