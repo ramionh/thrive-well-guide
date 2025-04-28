@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useConfidenceSteps } from "@/hooks/useConfidenceSteps";
 import ConfidenceStepInput from "./ConfidenceStepInput";
+import LoadingState from "./shared/LoadingState";
 
 interface AssessingConfidenceStepsProps {
   onComplete?: () => void;
@@ -25,9 +26,7 @@ const AssessingConfidenceSteps: React.FC<AssessingConfidenceStepsProps> = ({ onC
     <Card className="bg-white">
       <CardContent className="p-6">
         {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin h-8 w-8 border-4 border-purple-500 rounded-full border-t-transparent"></div>
-          </div>
+          <LoadingState />
         ) : (
           <form onSubmit={(e) => handleSubmit(e, onComplete)} className="space-y-6">
             <div>

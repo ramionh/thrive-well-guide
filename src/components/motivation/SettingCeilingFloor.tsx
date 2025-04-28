@@ -1,102 +1,51 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
+import { useMotivationForm } from "@/hooks/useMotivationForm";
+import LoadingState from "./shared/LoadingState";
 
 interface SettingCeilingFloorProps {
   onComplete?: () => void;
 }
 
+interface CeilingFloorFormData {
+  best_outcome: string;
+  worst_outcome: string;
+}
+
 const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete }) => {
-  const { user } = useUser();
-  const { toast } = useToast();
-  const [bestOutcome, setBestOutcome] = useState("");
-  const [worstOutcome, setWorstOutcome] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    formData,
+    isLoading,
+    isSubmitting,
+    fetchData,
+    updateForm,
+    submitForm
+  } = useMotivationForm<CeilingFloorFormData>({
+    tableName: "motivation_ceiling_floor",
+    initialState: {
+      best_outcome: "",
+      worst_outcome: ""
+    },
+    onSuccess: onComplete
+  });
 
   useEffect(() => {
-    const fetchExistingData = async () => {
-      if (!user) return;
-      
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from("motivation_ceiling_floor")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        
-        if (error) throw error;
-        
-        if (data) {
-          setBestOutcome(data.best_outcome || "");
-          setWorstOutcome(data.worst_outcome || "");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load your previous responses",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    fetchData();
+  }, []);
 
-    fetchExistingData();
-  }, [user, toast]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
-
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase
-        .from("motivation_ceiling_floor")
-        .insert({
-          user_id: user.id,
-          best_outcome: bestOutcome,
-          worst_outcome: worstOutcome
-        });
-
-      if (error) throw error;
-      
-      toast({
-        title: "Success",
-        description: "Your response has been saved",
-      });
-
-      if (onComplete) {
-        onComplete();
-      }
-    } catch (error) {
-      console.error("Error saving response:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save your response",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    submitForm();
   };
 
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
         {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin h-8 w-8 border-4 border-purple-500 rounded-full border-t-transparent"></div>
-          </div>
+          <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="mb-6">
@@ -112,8 +61,8 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
                 </label>
                 <Textarea
                   id="best-outcome"
-                  value={bestOutcome}
-                  onChange={(e) => setBestOutcome(e.target.value)}
+                  value={formData.best_outcome}
+                  onChange={(e) => updateForm("best_outcome", e.target.value)}
                   rows={4}
                   placeholder="Describe the best possible outcome..."
                   required
@@ -127,8 +76,8 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
                 </label>
                 <Textarea
                   id="worst-outcome"
-                  value={worstOutcome}
-                  onChange={(e) => setWorstOutcome(e.target.value)}
+                  value={formData.worst_outcome}
+                  onChange={(e) => updateForm("worst_outcome", e.target.value)}
                   rows={4}
                   placeholder="Describe the worst possible outcome..."
                   required

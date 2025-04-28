@@ -1,9 +1,10 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useConfidenceTalk } from "@/hooks/useConfidenceTalk";
 import ConfidenceTalkEntry from "./ConfidenceTalkEntry";
+import LoadingState from "./shared/LoadingState";
 
 interface ConfidenceTalkProps {
   onComplete?: () => void;
@@ -23,9 +24,7 @@ const ConfidenceTalk: React.FC<ConfidenceTalkProps> = ({ onComplete }) => {
     <Card className="bg-white">
       <CardContent className="p-6">
         {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin h-8 w-8 border-4 border-purple-500 rounded-full border-t-transparent"></div>
-          </div>
+          <LoadingState />
         ) : (
           <form onSubmit={(e) => handleSubmit(e, onComplete)} className="space-y-6">
             <div>
