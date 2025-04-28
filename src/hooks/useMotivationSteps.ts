@@ -33,17 +33,46 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
       }
 
       if (data) {
+        // Update steps with completion data
         setSteps(prevSteps => 
           prevSteps.map(step => ({
             ...step,
             completed: data.some(p => p.step_number === step.id && p.completed)
           }))
         );
+        
+        // Find the last completed step or the first incomplete one
+        if (data.length > 0) {
+          const completedSteps = data.filter(p => p.completed).map(p => p.step_number);
+          
+          // If Build on Your Strengths (42) is completed, check if we need to skip to Identifying Your Type of Stress (44)
+          if (completedSteps.includes(42)) {
+            const stressTypeStepCompleted = completedSteps.includes(44);
+            if (!stressTypeStepCompleted) {
+              setCurrentStepId(44);  // Set to Identifying Your Type of Stress
+              return;
+            }
+          }
+          
+          // Normal progression logic - set to last completed + 1 or first step
+          if (completedSteps.length > 0) {
+            const maxCompletedStep = Math.max(...completedSteps);
+            const nextStepId = maxCompletedStep + 1;
+            if (steps.some(s => s.id === nextStepId)) {
+              setCurrentStepId(nextStepId);
+            } else {
+              // If next step doesn't exist, stay at the highest completed step
+              setCurrentStepId(maxCompletedStep);
+            }
+          } else {
+            setCurrentStepId(1);  // Start at the beginning
+          }
+        }
       }
     };
 
     fetchStepProgress();
-  }, [user]);
+  }, [user, steps]);
 
   const handleStepClick = (stepId: number) => {
     const maxAllowedStep = steps.filter((s) => s.completed).reduce(
@@ -60,41 +89,28 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
     if (!user) return;
 
     try {
-      // First check if a progress record already exists
-      const { data: existingProgress } = await supabase
-        .from('motivation_steps_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('step_number', stepId)
-        .maybeSingle();
-
-      if (existingProgress) {
-        // Update existing record
-        const { error: updateError } = await supabase
-          .from('motivation_steps_progress')
-          .update({
-            completed: true,
-            completed_at: new Date().toISOString()
-          })
-          .eq('user_id', user.id)
-          .eq('step_number', stepId);
-
-        if (updateError) throw updateError;
-      } else {
-        // Insert new record
-        const { error: insertError } = await supabase
-          .from('motivation_steps_progress')
-          .insert({
-            user_id: user.id,
-            step_number: stepId,
-            step_name: steps.find(s => s.id === stepId)?.title || '',
-            completed: true,
-            completed_at: new Date().toISOString()
-          });
-
-        if (insertError) throw insertError;
+      // Special handling for Build on Your Strengths (step 42)
+      if (stepId === 42) {
+        // First mark step 42 as complete
+        await saveStepProgress(user.id, stepId, steps);
+        
+        // Then mark step 43 (Managing Stress) as complete as we're skipping it
+        await saveStepProgress(user.id, 43, steps);
+        
+        // Set the current step to 44 (Identifying Your Type of Stress)
+        setCurrentStepId(44);
+        
+        toast({
+          title: "Step completed",
+          description: "Your progress has been saved"
+        });
+        
+        return;
       }
-
+      
+      // Normal completion handling for other steps
+      await saveStepProgress(user.id, stepId, steps);
+      
       setSteps(prevSteps => 
         prevSteps.map(step => 
           step.id === stepId 
@@ -119,6 +135,44 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
         description: "Failed to save progress",
         variant: "destructive"
       });
+    }
+  };
+  
+  // Helper function to save step progress to the database
+  const saveStepProgress = async (userId: string, stepNumber: number, stepsData: Step[]) => {
+    // First check if a progress record already exists
+    const { data: existingProgress } = await supabase
+      .from('motivation_steps_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('step_number', stepNumber)
+      .maybeSingle();
+
+    if (existingProgress) {
+      // Update existing record
+      const { error: updateError } = await supabase
+        .from('motivation_steps_progress')
+        .update({
+          completed: true,
+          completed_at: new Date().toISOString()
+        })
+        .eq('user_id', userId)
+        .eq('step_number', stepNumber);
+
+      if (updateError) throw updateError;
+    } else {
+      // Insert new record
+      const { error: insertError } = await supabase
+        .from('motivation_steps_progress')
+        .insert({
+          user_id: userId,
+          step_number: stepNumber,
+          step_name: stepsData.find(s => s.id === stepNumber)?.title || '',
+          completed: true,
+          completed_at: new Date().toISOString()
+        });
+
+      if (insertError) throw insertError;
     }
   };
 

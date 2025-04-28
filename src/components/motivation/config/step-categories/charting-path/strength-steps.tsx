@@ -57,6 +57,22 @@ export const strengthSteps: StepConfig[] = [
     id: 42,
     title: "Build on Your Strengths",
     description: "Apply your strengths to achieve your goals",
-    component: (onComplete) => <BuildOnYourStrengths onComplete={onComplete} />
+    component: (onComplete) => {
+      // When this step is completed, we'll mark it and also mark step 43 (removed Managing Stress)
+      // and advance to step 44 (Identifying Your Type of Stress)
+      const handleCompletion = async () => {
+        if (onComplete) {
+          onComplete();
+          
+          // Skip to step 44 by updating the URL
+          setTimeout(() => {
+            // Force a page refresh to update the current step in the journey
+            window.location.reload();
+          }, 500);
+        }
+      };
+      
+      return <BuildOnYourStrengths onComplete={handleCompletion} />;
+    }
   }
 ];
