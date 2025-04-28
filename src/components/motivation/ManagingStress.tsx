@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,31 +38,20 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
 
   useEffect(() => {
     fetchData().then((response) => {
-      if (!response) return; // Early return if response is null or undefined
+      if (!response) return;
       
-      // Explicitly assert response is non-null after our check
-      const nonNullResponse = response as NonNullable<typeof response>;
-      
-      if (typeof nonNullResponse === 'object' && !('error' in nonNullResponse)) {
-        // Safely cast to our expected type
-        const data = nonNullResponse as unknown as ManagingStressData;
+      const data = response as ManagingStressData;
         
-        // Now check if data has expected properties
-        if (data && typeof data === 'object' && 'stressors' in data) {
-          if (Array.isArray(data.stressors)) {
-            // Ensure we have 5 stressors, filling with empty strings if needed
-            const savedStressors = [...data.stressors];
-            while (savedStressors.length < 5) {
-              savedStressors.push("");
-            }
-            setStressors(savedStressors.slice(0, 5));
-          }
-          
-          // Safely access impact from the data
-          if ('impact' in data && data.impact) {
-            setImpact(data.impact);
-          }
+      if (Array.isArray(data.stressors)) {
+        const savedStressors = [...data.stressors];
+        while (savedStressors.length < 5) {
+          savedStressors.push("");
         }
+        setStressors(savedStressors.slice(0, 5));
+      }
+          
+      if (data.impact) {
+        setImpact(data.impact);
       }
     });
   }, [fetchData]);
@@ -81,7 +69,6 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Filter out empty stressors
     const filteredStressors = stressors.filter(s => s.trim() !== "");
     
     updateForm("stressors", filteredStressors);
