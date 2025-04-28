@@ -132,7 +132,7 @@ const ImportanceScale: React.FC<ImportanceScaleProps> = ({ onComplete }) => {
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <h2 className="text-xl font-semibold text-purple-800 mb-4">3.2 Importance Scale</h2>
+            <h2 className="text-xl font-semibold text-purple-800 mb-4">Importance Scale</h2>
             <p className="text-gray-600 mb-6">
               A 1-to-10 scale is useful for determining the importance of your goal. 
               Anchors give real meaning to each number. For example, Gina at Summit 
