@@ -57,10 +57,14 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
             } 
             // If data.steps is already an array (parsed JSON)
             else if (Array.isArray(data.steps)) {
-              parsedSteps = data.steps.map(step => ({
-                text: typeof step.text === 'string' ? step.text : '',
-                rating: typeof step.rating === 'number' ? step.rating : 0
-              }));
+              parsedSteps = data.steps.map(step => {
+                // Use type assertion to handle Json type
+                const jsonStep = step as unknown as { text?: string; rating?: number };
+                return {
+                  text: typeof jsonStep.text === 'string' ? jsonStep.text : '',
+                  rating: typeof jsonStep.rating === 'number' ? jsonStep.rating : 0
+                };
+              });
             }
           }
           
