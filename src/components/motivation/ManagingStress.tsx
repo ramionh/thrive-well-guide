@@ -39,8 +39,10 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
 
   useEffect(() => {
     fetchData().then((response) => {
-      // First check if response exists, isn't null, and is a valid object
-      if (response !== null && typeof response === 'object' && !('error' in response)) {
+      if (!response) return; // Early return if response is null
+      
+      // Now we know response is not null
+      if (typeof response === 'object' && !('error' in response)) {
         // Safely cast to unknown first, then to our expected type
         const data = response as unknown as ManagingStressData;
         
