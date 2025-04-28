@@ -1283,6 +1283,39 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_social_support: {
+        Row: {
+          build_social: string | null
+          created_at: string
+          id: string
+          social_feelings: string | null
+          social_skills: string[]
+          support_types: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          build_social?: string | null
+          created_at?: string
+          id?: string
+          social_feelings?: string | null
+          social_skills?: string[]
+          support_types?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          build_social?: string | null
+          created_at?: string
+          id?: string
+          social_feelings?: string | null
+          social_skills?: string[]
+          support_types?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_step_assessments: {
         Row: {
           created_at: string
