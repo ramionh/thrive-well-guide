@@ -12,6 +12,12 @@ interface ManagingStressProps {
   onComplete?: () => void;
 }
 
+// Define an interface for the data we expect to receive
+interface ManagingStressData {
+  stressors: string[];
+  impact: string;
+}
+
 const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
   const [stressors, setStressors] = useState<string[]>(["", "", "", "", ""]);
   const [impact, setImpact] = useState<string>("");
@@ -23,7 +29,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
     fetchData,
     updateForm,
     submitForm
-  } = useMotivationForm({
+  } = useMotivationForm<ManagingStressData>({
     tableName: "motivation_managing_stress",
     initialState: {
       stressors: [],
@@ -33,11 +39,13 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
 
   useEffect(() => {
     fetchData().then((data) => {
-      if (data) {
+      if (data && typeof data === 'object' && !('error' in data)) {
         // Safely access stressors from the data
-        if (data.stressors && Array.isArray(data.stressors)) {
+        const dataObj = data as ManagingStressData;
+        
+        if (dataObj.stressors && Array.isArray(dataObj.stressors)) {
           // Ensure we have 5 stressors, filling with empty strings if needed
-          const savedStressors = [...data.stressors];
+          const savedStressors = [...dataObj.stressors];
           while (savedStressors.length < 5) {
             savedStressors.push("");
           }
@@ -45,8 +53,8 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
         }
         
         // Safely access impact from the data
-        if (data.impact) {
-          setImpact(data.impact);
+        if (dataObj.impact) {
+          setImpact(dataObj.impact);
         }
       }
     });
