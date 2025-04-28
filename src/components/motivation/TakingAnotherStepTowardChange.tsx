@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,9 +38,29 @@ const TakingAnotherStepTowardChange: React.FC<TakingAnotherStepTowardChangeProps
         if (error) throw error;
         
         if (data) {
-          setNewScore(data.new_score.toString());
-          setNewDescriptor(data.new_descriptor);
-          setNewExplanation(data.new_explanation);
+          // Parse the data if it exists
+          const scoreValue = typeof data.new_score === 'string' ? parseInt(data.new_score) : data.new_score;
+          setNewScore(scoreValue.toString());
+          
+          // Handle new_descriptor which might be JSON string or plain text
+          try {
+            const descriptorValue = typeof data.new_descriptor === 'string' && data.new_descriptor.startsWith('{') 
+              ? JSON.parse(data.new_descriptor) 
+              : data.new_descriptor;
+            setNewDescriptor(typeof descriptorValue === 'object' ? descriptorValue.toString() : descriptorValue);
+          } catch (e) {
+            setNewDescriptor(data.new_descriptor || "");
+          }
+          
+          // Handle new_explanation which might be JSON string or plain text
+          try {
+            const explanationValue = typeof data.new_explanation === 'string' && data.new_explanation.startsWith('{')
+              ? JSON.parse(data.new_explanation)
+              : data.new_explanation;
+            setNewExplanation(typeof explanationValue === 'object' ? explanationValue.toString() : explanationValue);
+          } catch (e) {
+            setNewExplanation(data.new_explanation || "");
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
