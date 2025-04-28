@@ -4,6 +4,7 @@ import { confidenceSteps } from './charting-path/confidence-steps';
 import { strengthSteps } from './charting-path/strength-steps';
 import { stressSteps } from './charting-path/stress-steps';
 import { resourceSteps } from './charting-path/resource-steps';
+import { envisioningSteps } from './charting-path/envisioning-steps';
 import type { StepConfig } from "../../types/motivation";
 
 export const chartingPathSteps: StepConfig[] = [
@@ -12,4 +13,5 @@ export const chartingPathSteps: StepConfig[] = [
   ...strengthSteps,
   ...stressSteps,
   ...resourceSteps,
+  ...envisioningSteps,
 ];

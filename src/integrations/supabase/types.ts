@@ -683,6 +683,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_envisioning_change: {
+        Row: {
+          created_at: string
+          how_it_worked: string | null
+          id: string
+          successful_change: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          how_it_worked?: string | null
+          id?: string
+          successful_change?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          how_it_worked?: string | null
+          id?: string
+          successful_change?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_exceptions_to_rule: {
         Row: {
           behavior: string
