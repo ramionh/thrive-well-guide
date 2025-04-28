@@ -21,6 +21,10 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   currentStepId,
   onStepClick,
 }) => {
+  // Define step ranges for each section
+  const startingPointSteps = steps.slice(0, 17);
+  const chartingPathSteps = steps.slice(17, 49); // Updated to include step 48
+  
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
       <Card className="bg-white shadow-md border border-purple-100">
@@ -33,7 +37,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
               </AccordionTrigger>
               <AccordionContent>
                 <ul className="space-y-3">
-                  {steps.slice(0, 17).map((step) => {
+                  {startingPointSteps.map((step) => {
                     const isActive = step.id === currentStepId;
                     const isDisabled = step.id > currentStepId && !steps[step.id - 2]?.completed;
                     
@@ -75,9 +79,9 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                 Charting Your Path
               </AccordionTrigger>
               <AccordionContent>
-                {steps.slice(0, 17).some(step => step.completed) ? (
+                {startingPointSteps.some(step => step.completed) ? (
                   <ul className="space-y-3">
-                    {steps.slice(17, 49).map((step) => {
+                    {chartingPathSteps.map((step) => {
                       const isActive = step.id === currentStepId;
                       const isDisabled = !steps[step.id - 2]?.completed;
                       
