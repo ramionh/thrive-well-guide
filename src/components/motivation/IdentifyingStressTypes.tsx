@@ -87,7 +87,8 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
             .filter(s => s !== "");
           
           // Check if we have existing data
-          if (result && 'stress_types' in result && Array.isArray(result.stress_types)) {
+          if (result && typeof result === 'object' && !('error' in result) && 
+              'stress_types' in result && Array.isArray(result.stress_types)) {
             // If we have existing data, use it
             setStressTypes(result.stress_types);
           } else {

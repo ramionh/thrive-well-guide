@@ -40,9 +40,9 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
   useEffect(() => {
     fetchData().then((response) => {
       // First check if response exists and isn't null
-      if (response) {
-        // Type assertion with explicit check to fix the TypeScript error
-        const data = response as ManagingStressData;
+      if (response && typeof response === 'object' && !('error' in response)) {
+        // Safely cast to unknown first, then to our expected type
+        const data = response as unknown as ManagingStressData;
         
         // Now check if data has expected properties
         if (data.stressors) {
