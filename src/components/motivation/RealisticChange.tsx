@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
-import { LoadingState } from "./shared/LoadingState";
+import LoadingState from "./shared/LoadingState";
 
 interface RealisticChangeProps {
   onComplete: () => void;
