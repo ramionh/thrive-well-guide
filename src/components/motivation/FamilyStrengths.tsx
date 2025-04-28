@@ -1,0 +1,120 @@
+
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useMotivationForm } from "@/hooks/useMotivationForm";
+
+interface FamilyStrengthsProps {
+  onComplete: () => void;
+}
+
+const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
+  const initialState = {
+    familyStrengths: "",
+    perceivedStrengths: "",
+    familyFeelings: "",
+    buildFamily: ""
+  };
+
+  const { formData, updateForm, submitForm, isLoading } = useMotivationForm({
+    tableName: "motivation_family_strengths",
+    initialState,
+    onSuccess: onComplete,
+    transformData: (data) => {
+      return {
+        family_strengths: data.familyStrengths,
+        perceived_strengths: data.perceivedStrengths,
+        family_feelings: data.familyFeelings,
+        build_family: data.buildFamily
+      };
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm();
+  };
+
+  return (
+    <Card className="border-none shadow-none">
+      <CardHeader className="px-0">
+        <CardTitle className="text-2xl font-bold text-purple-800">Family Strengths</CardTitle>
+      </CardHeader>
+      <CardContent className="px-0">
+        <p className="mb-6 text-gray-600">
+          Think about your family as a resource. If you don't have a traditional family, that doesn't mean you won't be able to 
+          reach your fitness goals. Define family in whatever terms work for you. What are some strengths your family has 
+          that can help you achieve your goal? Consider the quality of your relationships, shared family values, common activities 
+          and traditions, conflict management, and loyalty.
+        </p>
+
+        <p className="mb-6 text-gray-600 italic">
+          "My family sticks by each other and doesn't keep secrets. I can count on them for help and to listen when I need an ear. 
+          We get together most Sundays for dinner to reconnect. My mom and I text each other daily about our workout progress."
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <Label htmlFor="familyStrengths" className="text-purple-600">What are your family's strengths?</Label>
+            <Textarea 
+              id="familyStrengths"
+              value={formData.familyStrengths}
+              onChange={(e) => updateForm("familyStrengths", e.target.value)}
+              className="mt-1"
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="perceivedStrengths" className="text-purple-600">What would your family members say your strengths are?</Label>
+            <Textarea 
+              id="perceivedStrengths"
+              value={formData.perceivedStrengths}
+              onChange={(e) => updateForm("perceivedStrengths", e.target.value)}
+              className="mt-1"
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="familyFeelings" className="text-purple-600">How do you feel about this area?</Label>
+            <Textarea 
+              id="familyFeelings"
+              value={formData.familyFeelings}
+              onChange={(e) => updateForm("familyFeelings", e.target.value)}
+              className="mt-1"
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="buildFamily" className="text-purple-600">What can you build on or add to any of these family supports or strengths?</Label>
+            <Textarea 
+              id="buildFamily"
+              value={formData.buildFamily}
+              onChange={(e) => updateForm("buildFamily", e.target.value)}
+              className="mt-1"
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
+
+          <Button 
+            type="submit"
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving..." : "Complete Step"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default FamilyStrengths;

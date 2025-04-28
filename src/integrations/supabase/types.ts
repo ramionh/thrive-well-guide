@@ -761,6 +761,39 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_family_strengths: {
+        Row: {
+          build_family: string | null
+          created_at: string
+          family_feelings: string | null
+          family_strengths: string | null
+          id: string
+          perceived_strengths: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          build_family?: string | null
+          created_at?: string
+          family_feelings?: string | null
+          family_strengths?: string | null
+          id?: string
+          perceived_strengths?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          build_family?: string | null
+          created_at?: string
+          family_feelings?: string | null
+          family_strengths?: string | null
+          id?: string
+          perceived_strengths?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_financial_resources: {
         Row: {
           build_resources: string | null

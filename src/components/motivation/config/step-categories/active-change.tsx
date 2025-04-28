@@ -2,6 +2,7 @@
 import React from 'react';
 import FinancialResources from "../../FinancialResources";
 import SocialSupport from "../../SocialSupport";
+import FamilyStrengths from "../../FamilyStrengths";
 import type { StepConfig } from "../../types/motivation";
 
 export const activeChangeSteps: StepConfig[] = [
@@ -17,5 +18,10 @@ export const activeChangeSteps: StepConfig[] = [
     description: "Explore your social support network and social skills",
     component: (onComplete) => <SocialSupport onComplete={onComplete} />
   },
-  // Step 52: Family Strengths will be added here
+  {
+    id: 52,
+    title: "Family Strengths",
+    description: "Identify family strengths that can help you achieve your goals",
+    component: (onComplete) => <FamilyStrengths onComplete={onComplete} />
+  },
 ];
