@@ -4,6 +4,7 @@ import FinancialResources from "../../FinancialResources";
 import SocialSupport from "../../SocialSupport";
 import FamilyStrengths from "../../FamilyStrengths";
 import TimeManagement from "../../TimeManagement";
+import SocialCulturalResources from "../../SocialCulturalResources";
 import type { StepConfig } from "../../types/motivation";
 
 export const activeChangeSteps: StepConfig[] = [
@@ -31,5 +32,10 @@ export const activeChangeSteps: StepConfig[] = [
     description: "Find time in your schedule for fitness activities",
     component: (onComplete) => <TimeManagement onComplete={onComplete} />
   },
+  {
+    id: 54,
+    title: "Social and Cultural Resources",
+    description: "Leverage your cultural background for motivation",
+    component: (onComplete) => <SocialCulturalResources onComplete={onComplete} />
+  },
 ];
-
