@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -48,7 +49,8 @@ export const useStressTypes = ({ onComplete }: UseStressTypesOptions = {}) => {
         
         if (stressorsData && stressorsData.stressors && Array.isArray(stressorsData.stressors)) {
           if (stressTypesData && stressTypesData.stress_types) {
-            const existingTypes = stressTypesData.stress_types as StressType[];
+            // First cast to unknown, then to the expected type
+            const existingTypes = stressTypesData.stress_types as unknown as StressType[];
             setStressTypes(existingTypes);
           } else {
             const initialStressTypes: StressType[] = stressorsData.stressors.map((stressor: string) => ({

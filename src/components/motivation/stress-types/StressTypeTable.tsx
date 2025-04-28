@@ -16,14 +16,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export interface StressType {
+// Use the same type as in useStressTypes.ts
+interface StressType {
   stressor: string;
-  type: "Distress" | "Eustress" | "";
+  type: "distress" | "eustress" | "";
 }
 
 interface StressTypeTableProps {
   stressTypes: StressType[];
-  onStressTypeChange: (index: number, value: "Distress" | "Eustress") => void;
+  onStressTypeChange: (index: number, value: "distress" | "eustress" | "") => void;
 }
 
 const StressTypeTable: React.FC<StressTypeTableProps> = ({
@@ -47,15 +48,15 @@ const StressTypeTable: React.FC<StressTypeTableProps> = ({
                 <Select
                   value={item.type}
                   onValueChange={(value) => 
-                    onStressTypeChange(index, value as "Distress" | "Eustress")
+                    onStressTypeChange(index, value as "distress" | "eustress" | "")
                   }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select type of stress" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Distress">Distress</SelectItem>
-                    <SelectItem value="Eustress">Eustress</SelectItem>
+                    <SelectItem value="distress">Distress</SelectItem>
+                    <SelectItem value="eustress">Eustress</SelectItem>
                   </SelectContent>
                 </Select>
               </TableCell>

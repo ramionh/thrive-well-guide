@@ -16,6 +16,7 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
   const {
     stressTypes,
     isLoadingStressors,
+    isSubmitting,
     handleStressTypeChange,
     handleSubmit,
   } = useStressTypes({ onComplete });
@@ -42,6 +43,7 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
               Complete Step
