@@ -1,4 +1,3 @@
-
 import { StepConfig } from "../types/motivation";
 import Ambivalence from "../Ambivalence";
 import FocusedHabitsSelector from "../focused-habits/FocusedHabitsSelector";
@@ -35,6 +34,7 @@ import ImportanceConfidence from "../ImportanceConfidence";
 import ConfidenceTalk from "../ConfidenceTalk";
 import PastSuccessesAreas from "../PastSuccessesAreas";
 import FindingHope from "../FindingHope";
+import FindingInspiration from "../FindingInspiration";
 
 export const motivationSteps: StepConfig[] = [
   {
@@ -252,5 +252,11 @@ export const motivationSteps: StepConfig[] = [
     title: "Finding Hope",
     description: "Explore what gives you hope for change",
     component: (onComplete) => <FindingHope onComplete={onComplete} />
+  },
+  {
+    id: 37,
+    title: "Finding Inspiration",
+    description: "Discover sources of motivation and inspiration",
+    component: (onComplete) => <FindingInspiration onComplete={onComplete} />
   }
 ];

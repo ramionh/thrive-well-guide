@@ -1,8 +1,8 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface UseMotivationFormOptions<T> {
   tableName: string;
@@ -30,6 +30,7 @@ export const useMotivationForm = <T extends Record<string, any>>({
     
     setIsLoading(true);
     try {
+      // Using string template to avoid TypeScript error with string literal types
       const { data, error } = await supabase
         .from(tableName)
         .select("*")
@@ -90,6 +91,7 @@ export const useMotivationForm = <T extends Record<string, any>>({
     try {
       const dataToSubmit = transformData ? transformData(formData) : formData;
       
+      // Using string template to avoid TypeScript error with string literal types
       const { error } = await supabase
         .from(tableName)
         .insert({
