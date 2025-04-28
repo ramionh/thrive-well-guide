@@ -153,28 +153,6 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
       </CardContent>
     </Card>
   );
-  
-  function handleStressorChange(index: number, value: string) {
-    const newStressors = [...stressors];
-    newStressors[index] = value;
-    setStressors(newStressors);
-  };
-
-  function handleImpactChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    setImpact(e.target.value);
-  };
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    
-    // Filter out empty stressors
-    const filteredStressors = stressors.filter(s => s.trim() !== "");
-    
-    updateForm("stressors", filteredStressors);
-    updateForm("impact", impact);
-    
-    submitForm(e, onComplete);
-  };
 };
 
 export default ManagingStress;
