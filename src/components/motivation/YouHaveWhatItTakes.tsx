@@ -55,13 +55,19 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
   useEffect(() => {
     fetchData().then((data) => {
       if (data) {
-        if (Array.isArray(data.characteristics)) {
+        // Safely check if data.characteristics exists and is an array
+        if (data && 'characteristics' in data && Array.isArray(data.characteristics)) {
           setSelectedCharacteristics(data.characteristics);
         }
         
-        if (Array.isArray(data.examples) && data.examples.length === 2) {
-          setExample1(data.examples[0] || "");
-          setExample2(data.examples[1] || "");
+        // Safely check if data.examples exists and is an array
+        if (data && 'examples' in data && Array.isArray(data.examples)) {
+          if (data.examples.length >= 1) {
+            setExample1(data.examples[0] || "");
+          }
+          if (data.examples.length >= 2) {
+            setExample2(data.examples[1] || "");
+          }
         }
       }
     });
