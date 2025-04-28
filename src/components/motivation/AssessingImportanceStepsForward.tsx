@@ -43,9 +43,36 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
         if (error) throw error;
         
         if (data) {
-          const parsedSteps = Array.isArray(data.steps) ? data.steps : JSON.parse(data.steps);
-          setSteps(parsedSteps);
-          setSelectedStep(data.selected_step || "");
+          // Parse the steps data safely
+          let parsedSteps: Step[] = [];
+          
+          if (data.steps) {
+            // If data.steps is a string, attempt to parse it
+            if (typeof data.steps === 'string') {
+              try {
+                parsedSteps = JSON.parse(data.steps);
+              } catch (e) {
+                console.error("Error parsing steps JSON:", e);
+              }
+            } 
+            // If data.steps is already an array (parsed JSON)
+            else if (Array.isArray(data.steps)) {
+              parsedSteps = data.steps.map(step => ({
+                text: typeof step.text === 'string' ? step.text : '',
+                rating: typeof step.rating === 'number' ? step.rating : 0
+              }));
+            }
+          }
+          
+          // If we have valid steps data, use it
+          if (parsedSteps.length > 0) {
+            setSteps(parsedSteps);
+          }
+          
+          // Set selected step if it exists
+          if (data.selected_step) {
+            setSelectedStep(typeof data.selected_step === 'string' ? data.selected_step : '');
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -81,7 +108,7 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
         .from("motivation_step_assessments")
         .insert({
           user_id: user.id,
-          steps: steps,
+          steps: JSON.stringify(steps), // Stringify the steps array to ensure it's stored as JSON
           selected_step: selectedStep
         });
 
