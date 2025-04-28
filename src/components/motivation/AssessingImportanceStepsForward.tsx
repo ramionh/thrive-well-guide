@@ -86,6 +86,23 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
     fetchExistingData();
   }, [user, toast]);
 
+  const getPlaceholder = (index: number) => {
+    switch(index) {
+      case 0:
+        return "Example: Establish a 3-day strength-training routine";
+      case 1:
+        return "Example: Track daily protein intake (≥1.6 g per kg bodyweight)";
+      case 2:
+        return "Example: Aim for at least 7 hours of sleep each night";
+      case 3:
+        return "Example: Include two weekly HIIT cardio sessions";
+      case 4:
+        return "Example: Drink at least 2.5 L of water daily";
+      default:
+        return `Step ${index + 1}`;
+    }
+  };
+
   const handleStepChange = (index: number, field: keyof Step, value: string | number) => {
     const newSteps = [...steps];
     newSteps[index] = {
@@ -154,7 +171,7 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
                     <Input
                       value={step.text}
                       onChange={(e) => handleStepChange(index, 'text', e.target.value)}
-                      placeholder={index === 0 ? "Example: Establish a 3-day strength-training routine" : `Step ${index + 1}`}
+                      placeholder={getPlaceholder(index)}
                       required
                     />
                   </div>
