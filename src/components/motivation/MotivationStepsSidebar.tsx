@@ -23,7 +23,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
 }) => {
   // Define step ranges for each section
   const startingPointSteps = steps.slice(0, 17);
-  const chartingPathSteps = steps.slice(17, 49); // Updated to include step 48
+  const chartingPathSteps = steps.slice(17, 50); // Updated to include step 49
   
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">

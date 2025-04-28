@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ExploringChange from "../../ExploringChange";
 import HowImportantIsIt from "../../HowImportantIsIt";
@@ -30,6 +29,7 @@ import HowStressedAmI from "../../HowStressedAmI";
 import CopingMechanisms from "../../CopingMechanisms";
 import Mindfulness from "../../Mindfulness";
 import GrowthMindset from "../../GrowthMindset";
+import Affirmations from "../../Affirmations";
 
 import type { StepConfig } from "../../types/motivation";
 
@@ -219,5 +219,11 @@ export const chartingPathSteps: StepConfig[] = [
     title: "Growth Mindset",
     description: "Develop a mindset that embraces learning and growth",
     component: (onComplete) => <GrowthMindset onComplete={onComplete} />
+  },
+  {
+    id: 49,
+    title: "Affirmations",
+    description: "Create positive self-affirmations",
+    component: (onComplete) => <Affirmations onComplete={onComplete} />
   }
 ];

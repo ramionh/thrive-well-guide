@@ -257,6 +257,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_affirmations: {
+        Row: {
+          affirmations: Json
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          affirmations?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          affirmations?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_attitude: {
         Row: {
           attitude_rating: string
