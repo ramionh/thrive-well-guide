@@ -1256,6 +1256,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_stress_types: {
+        Row: {
+          created_at: string
+          id: string
+          stress_types: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          stress_types?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          stress_types?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_thinking_assertively: {
         Row: {
           boundary_needs: string

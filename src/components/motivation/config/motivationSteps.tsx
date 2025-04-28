@@ -42,6 +42,7 @@ import YouHaveWhatItTakes from "../YouHaveWhatItTakes";
 import TheySeeTourStrengths from "../TheySeeTourStrengths";
 import BuildOnYourStrengths from "../BuildOnYourStrengths";
 import ManagingStress from "../ManagingStress";
+import IdentifyingStressTypes from "../IdentifyingStressTypes";
 
 export const motivationSteps = [
   {
@@ -301,5 +302,11 @@ export const motivationSteps = [
     title: "Managing Stress",
     description: "Identify and understand your key stressors",
     component: (onComplete?: () => void) => <ManagingStress onComplete={onComplete} />,
+  },
+  {
+    id: 44,
+    title: "Identifying Your Type of Stress",
+    description: "Understand different types of stress in your life",
+    component: (onComplete?: () => void) => <IdentifyingStressTypes onComplete={onComplete} />,
   }
 ];
