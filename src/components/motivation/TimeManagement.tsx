@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
     impact: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, fetchData } = useMotivationForm({
     tableName: "motivation_time_management",
     initialState,
     onSuccess: onComplete,
@@ -29,8 +29,21 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
         quick_activities: data.quickActivities,
         impact: data.impact
       };
+    },
+    parseData: (data) => {
+      console.log("Raw data from Time Management:", data);
+      return {
+        currentSchedule: data.current_schedule || "",
+        timeSlots: data.time_slots || "",
+        quickActivities: data.quick_activities || "",
+        impact: data.impact || ""
+      };
     }
   });
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
