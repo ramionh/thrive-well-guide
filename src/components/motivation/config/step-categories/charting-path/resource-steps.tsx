@@ -6,6 +6,7 @@ import ResourceDevelopment from "../../../ResourceDevelopment";
 import FinancialResources from "../../../FinancialResources";
 import SocialSupport from "../../../SocialSupport";
 import FamilyStrengths from "../../../FamilyStrengths";
+import TimeManagement from "../../../TimeManagement";
 import type { StepConfig } from "../../../types/motivation";
 
 export const resourceSteps: StepConfig[] = [
@@ -26,6 +27,12 @@ export const resourceSteps: StepConfig[] = [
     title: "Family Strengths",
     description: "Leverage your family strengths for motivation",
     component: (onComplete) => <FamilyStrengths onComplete={onComplete} />
+  },
+  {
+    id: 53,
+    title: "Time Management and Personal Structure",
+    description: "Learn to manage your time effectively for fitness goals",
+    component: (onComplete) => <TimeManagement onComplete={onComplete} />
   },
   {
     id: 54,
