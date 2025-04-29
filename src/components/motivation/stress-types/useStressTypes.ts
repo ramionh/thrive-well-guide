@@ -119,12 +119,15 @@ export const useStressTypes = ({ onComplete }: UseStressTypesOptions = {}) => {
       
       let result;
       
-      if (existingData && 'id' in existingData) {
+      // Convert StressType[] to a format compatible with Json type
+      const stressTypesJson = JSON.parse(JSON.stringify(validEntries));
+      
+      if (existingData && existingData.id) {
         // Update existing record
         result = await supabase
           .from("motivation_stress_types")
           .update({
-            stress_types: validEntries,
+            stress_types: stressTypesJson,
             updated_at: new Date().toISOString()
           })
           .eq("id", existingData.id);
@@ -134,7 +137,7 @@ export const useStressTypes = ({ onComplete }: UseStressTypesOptions = {}) => {
           .from("motivation_stress_types")
           .insert({
             user_id: user.id,
-            stress_types: validEntries
+            stress_types: stressTypesJson
           });
       }
       
