@@ -2,6 +2,7 @@
 import React from 'react';
 import RewardsCreateIncentive from "@/components/motivation/RewardsCreateIncentive";
 import RewardsFromPeopleWhoMatter from "@/components/motivation/RewardsFromPeopleWhoMatter";
+import RewardsEventsActivities from "@/components/motivation/RewardsEventsActivities";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -16,5 +17,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Rewards from People Who Matter",
     description: "Identify rewards involving praise from important people",
     component: (onComplete) => <RewardsFromPeopleWhoMatter onComplete={onComplete} />
+  },
+  {
+    id: 70,
+    title: "Rewards: Events and Activities",
+    description: "Plan activity-based rewards for achieving goals",
+    component: (onComplete) => <RewardsEventsActivities onComplete={onComplete} />
   }
 ];

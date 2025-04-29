@@ -227,6 +227,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_activity_rewards: {
+        Row: {
+          activity_rewards: string[]
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_rewards?: string[]
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_rewards?: string[]
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_addressing_ambivalence: {
         Row: {
           coping_strategies: string[] | null
