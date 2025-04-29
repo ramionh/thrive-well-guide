@@ -17,6 +17,47 @@ interface StrengthApplication {
   application: string;
 }
 
+// Define a parser for strength applications data
+const parseStrengthApplicationsData = (data: any) => {
+  console.log("Parsing strength applications data:", data);
+  
+  let strengthApplications: StrengthApplication[] = [
+    { strength: "", application: "" },
+    { strength: "", application: "" },
+    { strength: "", application: "" },
+  ];
+  
+  // Parse strength_applications
+  if (data.strength_applications) {
+    if (Array.isArray(data.strength_applications)) {
+      // Data is already in array format
+      strengthApplications = data.strength_applications.length > 0 
+        ? [...data.strength_applications]
+        : strengthApplications;
+    } else if (typeof data.strength_applications === 'string') {
+      try {
+        const parsed = JSON.parse(data.strength_applications);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          strengthApplications = parsed;
+        }
+      } catch (e) {
+        console.error("Error parsing strength_applications JSON:", e);
+      }
+    }
+    
+    // Ensure we have exactly 3 entries
+    if (strengthApplications.length < 3) {
+      const remaining = 3 - strengthApplications.length;
+      for (let i = 0; i < remaining; i++) {
+        strengthApplications.push({ strength: "", application: "" });
+      }
+    }
+  }
+  
+  console.log("Parsed strength applications:", strengthApplications);
+  return { strength_applications: strengthApplications };
+};
+
 const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete }) => {
   const [strengthApplications, setStrengthApplications] = useState<StrengthApplication[]>([
     { strength: "", application: "" },
@@ -34,23 +75,29 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
   } = useMotivationForm({
     tableName: "motivation_strength_applications",
     initialState: {
-      strength_applications: []  // Changed to snake_case to match database column naming convention
+      strength_applications: [] as StrengthApplication[]
     },
-    onSuccess: onComplete
+    onSuccess: onComplete,
+    parseData: parseStrengthApplicationsData
   });
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await fetchData();
-      if (data && 'strength_applications' in data && Array.isArray(data.strength_applications)) {
-        if (data.strength_applications.length > 0) {
-          setStrengthApplications(data.strength_applications);
-        }
-      }
+      await fetchData();
     };
     
     loadData();
   }, []);
+
+  // Update local state when formData changes
+  useEffect(() => {
+    console.log("Form data updated for strength applications:", formData);
+    if (formData && formData.strength_applications) {
+      if (Array.isArray(formData.strength_applications) && formData.strength_applications.length > 0) {
+        setStrengthApplications(formData.strength_applications);
+      }
+    }
+  }, [formData]);
 
   const handleStrengthChange = (index: number, value: string) => {
     const updatedApplications = [...strengthApplications];
@@ -66,7 +113,7 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("strength_applications", strengthApplications);  // Changed to match DB column name
+    updateForm("strength_applications", strengthApplications);
     submitForm();
   };
 

@@ -67,25 +67,29 @@ export const useMotivationForm = <T, U = T>({
         } else {
           // Default simple parsing
           const cleanedData = {} as T;
+          // Use type-safe approach to iterate through keys
           Object.keys(initialState).forEach(key => {
-            const dataKey = key as keyof T;
-            // Handle arrays and objects that might be stored as strings
-            if (data[dataKey] && typeof data[dataKey] === 'string' && 
-               (key === 'characteristics' || key === 'examples' || 
-                key === 'values' || key === 'selected_values')) {
-              try {
-                // @ts-ignore
-                cleanedData[dataKey] = JSON.parse(data[dataKey]);
-              } catch (e) {
-                console.error(`Error parsing JSON for ${dataKey}:`, e);
-                // @ts-ignore
-                cleanedData[dataKey] = initialState[dataKey];
+            const dataKey = key as keyof typeof initialState;
+            
+            // Check if data has the key
+            if (data[key] !== undefined) {
+              // Handle arrays and objects that might be stored as strings
+              if (typeof data[key] === 'string' && 
+                 (key === 'characteristics' || key === 'examples' || 
+                  key === 'values' || key === 'selected_values' || 
+                  key === 'strength_applications' || key === 'feedback_entries')) {
+                try {
+                  (cleanedData as any)[dataKey] = JSON.parse(data[key]);
+                } catch (e) {
+                  console.error(`Error parsing JSON for ${String(dataKey)}:`, e);
+                  (cleanedData as any)[dataKey] = (initialState as any)[dataKey];
+                }
+              } else {
+                (cleanedData as any)[dataKey] = data[key];
               }
             } else {
-              // @ts-ignore
-              cleanedData[dataKey] = data[dataKey] !== undefined && data[dataKey] !== null 
-                ? data[dataKey] 
-                : initialState[dataKey];
+              // Use initial state if data doesn't have this key
+              (cleanedData as any)[dataKey] = (initialState as any)[dataKey];
             }
           });
           

@@ -17,6 +17,47 @@ interface FeedbackEntry {
   evidence: string;
 }
 
+// Define a parser for feedback entries data
+const parseFeedbackEntriesData = (data: any) => {
+  console.log("Parsing feedback entries data:", data);
+  
+  let feedbackEntries: FeedbackEntry[] = [
+    { characteristic: "", evidence: "" },
+    { characteristic: "", evidence: "" },
+    { characteristic: "", evidence: "" },
+  ];
+  
+  // Parse feedback_entries
+  if (data.feedback_entries) {
+    if (Array.isArray(data.feedback_entries)) {
+      // Data is already in array format
+      feedbackEntries = data.feedback_entries.length > 0 
+        ? [...data.feedback_entries]
+        : feedbackEntries;
+    } else if (typeof data.feedback_entries === 'string') {
+      try {
+        const parsed = JSON.parse(data.feedback_entries);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          feedbackEntries = parsed;
+        }
+      } catch (e) {
+        console.error("Error parsing feedback_entries JSON:", e);
+      }
+    }
+    
+    // Ensure we have exactly 3 entries
+    if (feedbackEntries.length < 3) {
+      const remaining = 3 - feedbackEntries.length;
+      for (let i = 0; i < remaining; i++) {
+        feedbackEntries.push({ characteristic: "", evidence: "" });
+      }
+    }
+  }
+  
+  console.log("Parsed feedback entries:", feedbackEntries);
+  return { feedback_entries: feedbackEntries };
+};
+
 const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete }) => {
   const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([
     { characteristic: "", evidence: "" },
@@ -34,19 +75,29 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
   } = useMotivationForm({
     tableName: "motivation_strengths_feedback",
     initialState: {
-      feedback_entries: []  // Changed from feedbackEntries to feedback_entries to match database column
-    }
+      feedback_entries: [] as FeedbackEntry[]
+    },
+    onSuccess: onComplete,
+    parseData: parseFeedbackEntriesData
   });
 
   useEffect(() => {
-    fetchData().then((data) => {
-      if (data && 'feedback_entries' in data && Array.isArray(data.feedback_entries)) {  // Changed from feedbackEntries to feedback_entries
-        if (data.feedback_entries.length > 0) {  // Changed from feedbackEntries to feedback_entries
-          setFeedbackEntries(data.feedback_entries);  // Changed from feedbackEntries to feedback_entries
-        }
-      }
-    });
+    const loadData = async () => {
+      await fetchData();
+    };
+    
+    loadData();
   }, []);
+
+  // Update local state when formData changes
+  useEffect(() => {
+    console.log("Form data updated for feedback entries:", formData);
+    if (formData && formData.feedback_entries) {
+      if (Array.isArray(formData.feedback_entries) && formData.feedback_entries.length > 0) {
+        setFeedbackEntries(formData.feedback_entries);
+      }
+    }
+  }, [formData]);
 
   const handleCharacteristicChange = (index: number, value: string) => {
     const updatedEntries = [...feedbackEntries];
@@ -62,7 +113,7 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("feedback_entries", feedbackEntries);  // Changed from feedbackEntries to feedback_entries
+    updateForm("feedback_entries", feedbackEntries);
     submitForm();
     if (onComplete) {
       onComplete();
