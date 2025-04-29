@@ -50,7 +50,8 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
         
         // Mark default completed steps in the database if they're not already marked
         for (const stepId of defaultCompletedSteps) {
-          if (!data.some(p => p.step_number === stepId && p.completed)) {
+          const isAlreadyCompleted = data.some(p => p.step_number === stepId && p.completed);
+          if (!isAlreadyCompleted) {
             await saveStepProgress(user.id, stepId, initialSteps);
           }
         }
@@ -120,13 +121,56 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
         title: "Step completed",
         description: "Your progress has been saved"
       });
-    } catch (error) {
-      console.error('Error saving step progress:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save progress",
-        variant: "destructive"
-      });
+    } catch (error: any) {
+      // If we get a duplicate key error, it means the step was already marked as completed
+      // In this case, we should just update the completed status
+      if (error.code === '23505') {
+        try {
+          const { error: updateError } = await supabase
+            .from('motivation_steps_progress')
+            .update({
+              completed: true,
+              completed_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id)
+            .eq('step_number', stepId);
+          
+          if (updateError) throw updateError;
+          
+          // Still update the local state and move to next step
+          setSteps(prevSteps => 
+            prevSteps.map(step => 
+              step.id === stepId 
+                ? { ...step, completed: true } 
+                : step
+            )
+          );
+          
+          const nextStepId = stepId + 1;
+          if (steps.some(step => step.id === nextStepId)) {
+            setCurrentStepId(nextStepId);
+          }
+          
+          toast({
+            title: "Step completed",
+            description: "Your progress has been saved"
+          });
+        } catch (updateError) {
+          console.error('Error updating step progress:', updateError);
+          toast({
+            title: "Error",
+            description: "Failed to save progress",
+            variant: "destructive"
+          });
+        }
+      } else {
+        console.error('Error saving step progress:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save progress",
+          variant: "destructive"
+        });
+      }
     }
   };
   
