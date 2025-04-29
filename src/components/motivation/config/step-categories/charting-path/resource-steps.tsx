@@ -3,9 +3,16 @@ import React from 'react';
 import SocialCulturalResources from "../../../SocialCulturalResources";
 import EnvironmentalResources from "../../../EnvironmentalResources";
 import ResourceDevelopment from "../../../ResourceDevelopment";
+import FinancialResources from "../../../FinancialResources";
 import type { StepConfig } from "../../../types/motivation";
 
 export const resourceSteps: StepConfig[] = [
+  {
+    id: 50,
+    title: "Financial and Economic Resources",
+    description: "Identify financial resources that support your fitness goals",
+    component: (onComplete) => <FinancialResources onComplete={onComplete} />
+  },
   {
     id: 54,
     title: "Social and Cultural Resources",

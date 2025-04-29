@@ -108,6 +108,39 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
 
       if (error) throw error;
 
+      // Mark step 50 as completed
+      const { error: progressError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 50,
+            step_name: "Financial and Economic Resources",
+            completed: true,
+            completed_at: new Date().toISOString()
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (progressError) throw progressError;
+
+      // Make step 51 available
+      const { error: nextStepError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 51,
+            step_name: "Social Support and Social Competence",
+            completed: false,
+            available: true,
+            completed_at: null
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (nextStepError) throw nextStepError;
+
       toast({
         title: "Success",
         description: "Your financial resources information has been saved"
