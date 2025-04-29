@@ -27,7 +27,7 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
   const { 
     formData, 
     isLoading, 
-    isSubmitting, 
+    isSaving, 
     fetchData,
     updateForm,
     submitForm
@@ -35,17 +35,21 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
     tableName: "motivation_strength_applications",
     initialState: {
       strength_applications: []  // Changed to snake_case to match database column naming convention
-    }
+    },
+    onSuccess: onComplete
   });
 
   useEffect(() => {
-    fetchData().then((data) => {
-      if (data && 'strength_applications' in data && Array.isArray(data.strength_applications)) {  // Changed to match DB column name
-        if (data.strength_applications.length > 0) {  // Changed to match DB column name
-          setStrengthApplications(data.strength_applications);  // Changed to match DB column name
+    const loadData = async () => {
+      const data = await fetchData();
+      if (data && 'strength_applications' in data && Array.isArray(data.strength_applications)) {
+        if (data.strength_applications.length > 0) {
+          setStrengthApplications(data.strength_applications);
         }
       }
-    });
+    };
+    
+    loadData();
   }, []);
 
   const handleStrengthChange = (index: number, value: string) => {
@@ -63,7 +67,7 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateForm("strength_applications", strengthApplications);  // Changed to match DB column name
-    submitForm(e, onComplete);
+    submitForm();
   };
 
   return (
@@ -114,10 +118,10 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}

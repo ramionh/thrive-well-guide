@@ -16,7 +16,7 @@ interface UseMotivationFormProps<T, U> {
   steps?: Step[];
 }
 
-export const useMotivationForm = <T, U>({
+export const useMotivationForm = <T, U = T>({
   tableName,
   initialState,
   onSuccess,
@@ -41,12 +41,13 @@ export const useMotivationForm = <T, U>({
   }, [user]);
 
   const fetchData = async () => {
-    if (!user) return;
+    if (!user) return null;
     
     setIsLoading(true);
     try {
+      // Here we cast the tableName to any to avoid TypeScript errors with the table names
       const { data, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
@@ -73,6 +74,8 @@ export const useMotivationForm = <T, U>({
           setFormData(cleanedData);
         }
       }
+      
+      return data;
     } catch (error) {
       console.error(`Error fetching data from ${tableName}:`, error);
       toast({
@@ -80,6 +83,8 @@ export const useMotivationForm = <T, U>({
         description: `Failed to load your data from ${tableName}`,
         variant: "destructive"
       });
+      
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -103,8 +108,9 @@ export const useMotivationForm = <T, U>({
       
       console.log(`Submitting data to ${tableName}:`, dataToInsert);
       
+      // Here we cast the tableName to any to avoid TypeScript errors
       const { error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .upsert(dataToInsert);
       
       if (error) throw error;
@@ -139,6 +145,7 @@ export const useMotivationForm = <T, U>({
     updateForm,
     submitForm,
     isLoading,
-    isSaving
+    isSaving,
+    fetchData
   };
 };

@@ -14,7 +14,7 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
   const { 
     formData, 
     isLoading, 
-    isSubmitting, 
+    isSaving, 
     fetchData,
     updateForm,
     submitForm
@@ -23,7 +23,8 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
     initialState: {
       inspiration_sources: "",
       inspirational_content: ""
-    }
+    },
+    onSuccess: onComplete
   });
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitForm(e, onComplete);
+    submitForm();
   };
 
   return (
@@ -80,10 +81,10 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}

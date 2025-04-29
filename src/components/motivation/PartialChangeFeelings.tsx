@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
@@ -9,23 +9,26 @@ interface PartialChangeFeelingsProps {
   onComplete: () => void;
 }
 
+interface PartialChangeFormData {
+  progress_steps: string;
+  reward_ideas: string;
+}
+
 const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplete }) => {
   const {
     formData,
     isLoading,
-    isSubmitting,
+    isSaving,
     fetchData,
     updateForm,
     submitForm
-  } = useMotivationForm<{
-    progress_steps: string;
-    reward_ideas: string;
-  }>({
+  } = useMotivationForm<PartialChangeFormData>({
     tableName: "motivation_partial_change_feelings",
     initialState: {
       progress_steps: "",
       reward_ideas: ""
-    }
+    },
+    onSuccess: onComplete
   });
 
   useEffect(() => {
@@ -34,7 +37,7 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitForm(e, onComplete);
+    submitForm();
   };
 
   if (isLoading) {
@@ -84,10 +87,10 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isSubmitting || !formData.progress_steps.trim() || !formData.reward_ideas.trim()}
+            disabled={isSaving || !formData.progress_steps.trim() || !formData.reward_ideas.trim()}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
-            {isSubmitting ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </div>
       </form>
