@@ -27,14 +27,16 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
     try {
       setIsSubmitting(true);
       
-      // Save the user's reflections to the database
-      await supabase
-        .from('stress_management_reflections')
+      // Save the user's reflections to the database using type assertion to bypass TypeScript error
+      // until the types are regenerated
+      const { error } = await (supabase
+        .from('stress_management_reflections' as any)
         .insert({
           user_id: user.id,
           reflections: reflections
-        })
-        .single();
+        }) as any);
+      
+      if (error) throw error;
       
       toast({
         title: "Success",

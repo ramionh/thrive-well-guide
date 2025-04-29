@@ -1922,6 +1922,30 @@ export type Database = {
         }
         Relationships: []
       }
+      stress_management_reflections: {
+        Row: {
+          created_at: string
+          id: string
+          reflections: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reflections: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reflections?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_body_types: {
         Row: {
           body_type_id: string
