@@ -1,6 +1,5 @@
 
 // Re-export from the consolidated hook for backward compatibility
-export {
-  useAffirmationsForm as useAffirmations,
-  AffirmationItem
-} from './useAffirmationsForm';
+export { useAffirmationsForm as useAffirmations } from './useAffirmationsForm';
+// Export type properly with the 'export type' syntax
+export type { AffirmationItem } from './useAffirmationsForm';

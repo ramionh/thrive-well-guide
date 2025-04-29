@@ -7,7 +7,7 @@ import type { StepConfig } from "../../../types/motivation";
 
 export const resourceSteps: StepConfig[] = [
   {
-    id: 50,
+    id: 54,
     title: "Social and Cultural Resources",
     description: "Leverage your cultural background for motivation",
     component: (onComplete) => <SocialCulturalResources onComplete={onComplete} />

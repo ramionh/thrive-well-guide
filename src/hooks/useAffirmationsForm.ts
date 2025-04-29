@@ -111,13 +111,13 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
       
       if (progressError) throw progressError;
       
-      // Explicitly enable the next step (50) by marking it as available
+      // Explicitly enable the next step (54) by marking it as available - updated to 54 from 50
       const { error: nextStepError } = await supabase
         .from("motivation_steps_progress")
         .upsert(
           {
             user_id: user.id,
-            step_number: 50,
+            step_number: 54, // Updated to 54 from 50
             step_name: "Social and Cultural Resources",
             completed: false,
             available: true, // Explicitly mark as available

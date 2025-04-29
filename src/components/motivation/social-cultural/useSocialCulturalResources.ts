@@ -112,13 +112,13 @@ export const useSocialCulturalResources = (onComplete?: () => void) => {
       
       if (result.error) throw result.error;
       
-      // Mark current step (50) as completed
+      // Mark current step (54) as completed
       const { error: progressError } = await supabase
         .from("motivation_steps_progress")
         .upsert(
           {
             user_id: user.id,
-            step_number: 50,
+            step_number: 54, // Updated from 50 to 54
             step_name: "Social and Cultural Resources",
             completed: true,
             completed_at: new Date().toISOString()
