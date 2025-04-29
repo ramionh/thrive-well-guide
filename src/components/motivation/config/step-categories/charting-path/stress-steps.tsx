@@ -14,31 +14,19 @@ export const stressSteps: StepConfig[] = [
     id: 43,
     title: "Managing Stress",
     description: "Learn about stress management techniques",
-    component: (onComplete) => <ManagingStress onComplete={onComplete} />,
-    // Mark this component as hidden from navigation
-    hideFromNavigation: true,
-    // Mark as completed by default
-    defaultCompleted: true
+    component: (onComplete) => <ManagingStress onComplete={onComplete} />
   },
   {
     id: 44,
     title: "Identifying Your Type of Stress",
     description: "Understand different types of stress in your life",
-    component: (onComplete) => <IdentifyingStressTypes onComplete={onComplete} />,
-    // Mark this component as hidden from navigation
-    hideFromNavigation: true,
-    // Mark as completed by default
-    defaultCompleted: true
+    component: (onComplete) => <IdentifyingStressTypes onComplete={onComplete} />
   },
   {
     id: 45,
     title: "How Stressed Am I?",
     description: "Rate the intensity of your stressors",
-    component: (onComplete) => <HowStressedAmI onComplete={onComplete} />,
-    // Mark this component as hidden from navigation
-    hideFromNavigation: true,
-    // Mark as completed by default
-    defaultCompleted: true
+    component: (onComplete) => <HowStressedAmI onComplete={onComplete} />
   },
   {
     id: 46,
