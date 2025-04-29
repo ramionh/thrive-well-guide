@@ -12,6 +12,7 @@ const Motivation = () => {
   const { steps, currentStepId, currentStep, handleStepClick, markStepComplete } = useMotivationSteps(
     motivationSteps.map(step => ({
       ...step,
+      // Pass the onComplete callback to each component
       component: step.component(() => markStepComplete(step.id)),
       completed: false
     }))
