@@ -3,121 +3,67 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader,
-  TableRow 
-} from "@/components/ui/table";
+import { Label } from "@/components/ui/label";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface ActionItem {
+  text: string;
+  rating: number;
+}
 
 interface IdentifyingStepsToGoalProps {
   onComplete?: () => void;
 }
 
-interface Action {
-  text: string;
-  rating: number;
-}
-
-// Define a parser for actions data
-const parseActionsData = (data: any) => {
-  console.log("Parsing actions data:", data);
-  
-  let actions: Action[] = Array(10).fill(0).map(() => ({ text: "", rating: 1 }));
-  
-  // Parse actions data
-  if (data.actions) {
-    if (Array.isArray(data.actions)) {
-      // Data is already in array format
-      actions = data.actions.length > 0 
-        ? [...data.actions] 
-        : actions;
-    } else if (typeof data.actions === 'string') {
-      try {
-        const parsed = JSON.parse(data.actions);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          actions = parsed;
-        }
-      } catch (e) {
-        console.error("Error parsing actions JSON:", e);
-      }
-    }
-    
-    // Ensure we have exactly 10 entries
-    if (actions.length < 10) {
-      const remaining = 10 - actions.length;
-      for (let i = 0; i < remaining; i++) {
-        actions.push({ text: "", rating: 1 });
-      }
-    }
-  }
-  
-  console.log("Parsed actions:", actions);
-  return { actions };
-};
-
 const IdentifyingStepsToGoal: React.FC<IdentifyingStepsToGoalProps> = ({ onComplete }) => {
-  const [actions, setActions] = useState<Action[]>(
-    Array(10).fill(0).map(() => ({ text: "", rating: 1 }))
+  const [actions, setActions] = useState<ActionItem[]>(
+    Array(10).fill(null).map(() => ({ text: "", rating: 1 }))
   );
-
+  
   const { 
-    formData, 
+    formData,
     isLoading, 
     isSaving, 
-    fetchData, 
-    updateForm, 
-    submitForm 
+    submitForm, 
+    updateForm 
   } = useMotivationForm({
     tableName: "motivation_steps_to_goal",
     initialState: {
-      actions: [] as Action[]
+      actions: []
     },
-    onSuccess: onComplete,
-    parseData: parseActionsData
+    onSuccess: onComplete
   });
-
+  
   useEffect(() => {
-    const loadData = async () => {
-      await fetchData();
-    };
-    
-    loadData();
-  }, []);
-
-  // Update local state when formData changes
-  useEffect(() => {
-    console.log("Form data updated for actions:", formData);
-    if (formData && formData.actions) {
-      if (Array.isArray(formData.actions) && formData.actions.length > 0) {
-        setActions(formData.actions);
-      }
+    if (formData && formData.actions && formData.actions.length > 0) {
+      setActions(formData.actions);
     }
   }, [formData]);
-
+  
   const handleActionChange = (index: number, value: string) => {
-    const updatedActions = [...actions];
-    updatedActions[index].text = value;
-    setActions(updatedActions);
+    setActions(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], text: value };
+      return updated;
+    });
   };
-
+  
   const handleRatingChange = (index: number, value: string) => {
-    const updatedActions = [...actions];
-    updatedActions[index].rating = parseInt(value);
-    setActions(updatedActions);
+    setActions(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], rating: parseInt(value, 10) };
+      return updated;
+    });
   };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateForm("actions", actions);
     submitForm();
   };
-
+  
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
@@ -137,78 +83,80 @@ const IdentifyingStepsToGoal: React.FC<IdentifyingStepsToGoalProps> = ({ onCompl
               </p>
               
               <p className="text-gray-600 mb-4">
-                There are no right answers when you're brainstorming. You're simply trying to come up with 
-                as many potential solutions as possible. They don't have to be perfect. You don't even have 
-                to love the ideas. You might want to research before you brainstorm, or simply list some ideas 
-                and research them later. The important thing is to let yourself think about all the ways you 
-                might achieve your goal.
+                There are no right answers when you're brainstorming. You're simply trying to come up with as many potential 
+                solutions as possible. They don't have to be perfect. You don't even have to love the ideas. You might want 
+                to research before you brainstorm, or simply list some ideas and research them later. The important thing is 
+                to let yourself think about all the ways you might achieve your goal.
               </p>
               
-              <p className="text-gray-600 mb-6">
-                Here's what a brainstorm about losing 10 pounds in eight weeks might look like:
-                <br/>1. Start a walking program
-                <br/>2. Start a running program
-                <br/>3. Join group fitness classes (Zumba, spinning, HIIT)
-                <br/>4. Eat fewer carbohydrates
-                <br/>5. Eat fewer fats
-                <br/>6. Try a ketogenic diet
-                <br/>7. Eat fewer calories
-                <br/>8. Increase daily steps
-                <br/>9. Do more active chores and housework
-                <br/>10. Keep a daily food journal
-              </p>
-            </div>
-
-            <div>
-              <p className="text-purple-700 font-medium mb-4">
-                Brainstorm a list of 10 actions you could take to reach your goal and write them below. 
-                Rate each on a scale of 1 to 5. A score of 1 indicates you are unsure or unwilling to 
-                take that action, while a score of 5 indicates you are confident you could take that action.
-              </p>
-
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[80%]">ACTION</TableHead>
-                      <TableHead className="w-[20%]">RATING</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {actions.map((action, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <Input
-                            value={action.text}
-                            onChange={(e) => handleActionChange(index, e.target.value)}
-                            placeholder={`Action ${index + 1}`}
-                            className="w-full"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={action.rating.toString()}
-                            onValueChange={(value) => handleRatingChange(index, value)}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Rating" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[1, 2, 3, 4, 5].map(rating => (
-                                <SelectItem key={rating} value={rating.toString()}>
-                                  {rating}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="bg-purple-50 p-4 rounded-md mb-4 text-gray-700">
+                <p className="font-medium mb-2">Here's what a brainstorm about losing 10 pounds in eight weeks might look like:</p>
+                <ol className="list-decimal pl-5 space-y-1">
+                  <li>Start a walking program</li>
+                  <li>Start a running program</li>
+                  <li>Join group fitness classes (Zumba, spinning, HIIT)</li>
+                  <li>Eat fewer carbohydrates</li>
+                  <li>Eat fewer fats</li>
+                  <li>Try a ketogenic diet</li>
+                  <li>Eat fewer calories</li>
+                  <li>Increase daily steps</li>
+                  <li>Do more active chores and housework</li>
+                  <li>Keep a daily food journal</li>
+                </ol>
+              </div>
+              
+              <div className="mt-6">
+                <Label className="text-purple-700 font-medium block mb-4">
+                  Brainstorm a list of 10 actions you could take to reach your goal and write them below. Rate each on a scale of 1 to 5. 
+                  A score of 1 indicates you are unsure or unwilling to take that action, while a score of 5 indicates you are confident you could take that action.
+                </Label>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse mt-2">
+                    <thead>
+                      <tr>
+                        <th className="text-left py-2 px-4 bg-purple-100 text-purple-800 rounded-tl-md">#</th>
+                        <th className="text-left py-2 px-4 bg-purple-100 text-purple-800">ACTION</th>
+                        <th className="text-left py-2 px-4 bg-purple-100 text-purple-800 rounded-tr-md">RATING</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {actions.map((action, index) => (
+                        <tr key={index} className="border-b border-gray-200">
+                          <td className="py-3 px-4 text-gray-700">{index + 1}</td>
+                          <td className="py-3 px-4">
+                            <Input
+                              value={action.text}
+                              onChange={(e) => handleActionChange(index, e.target.value)}
+                              placeholder={`Action ${index + 1}`}
+                              className="w-full"
+                            />
+                          </td>
+                          <td className="py-3 px-4">
+                            <Select
+                              value={action.rating.toString()}
+                              onValueChange={(value) => handleRatingChange(index, value)}
+                            >
+                              <SelectTrigger className="w-24">
+                                <SelectValue placeholder="Rating" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1">1</SelectItem>
+                                <SelectItem value="2">2</SelectItem>
+                                <SelectItem value="3">3</SelectItem>
+                                <SelectItem value="4">4</SelectItem>
+                                <SelectItem value="5">5</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-
+            
             <Button
               type="submit"
               disabled={isSaving}

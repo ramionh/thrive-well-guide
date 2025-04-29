@@ -968,6 +968,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_goal_objectives: {
+        Row: {
+          action_goal: string
+          created_at: string
+          id: string
+          objectives: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action_goal: string
+          created_at?: string
+          id?: string
+          objectives?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action_goal?: string
+          created_at?: string
+          id?: string
+          objectives?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_goal_scores: {
         Row: {
           created_at: string
