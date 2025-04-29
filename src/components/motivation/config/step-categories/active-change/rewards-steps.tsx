@@ -4,6 +4,7 @@ import RewardsCreateIncentive from "@/components/motivation/RewardsCreateIncenti
 import RewardsFromPeopleWhoMatter from "@/components/motivation/RewardsFromPeopleWhoMatter";
 import RewardsEventsActivities from "@/components/motivation/RewardsEventsActivities";
 import NarrowingDownRewards from "@/components/motivation/NarrowingDownRewards";
+import GetOrganized from "@/components/motivation/GetOrganized";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -30,5 +31,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Narrowing Down the Rewards",
     description: "Select your top five most meaningful rewards",
     component: (onComplete) => <NarrowingDownRewards onComplete={onComplete} />
+  },
+  {
+    id: 72,
+    title: "Get Organized",
+    description: "Create a system to organize your action plan",
+    component: (onComplete) => <GetOrganized onComplete={onComplete} />
   }
 ];
