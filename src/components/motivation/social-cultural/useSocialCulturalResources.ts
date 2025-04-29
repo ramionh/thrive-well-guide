@@ -128,8 +128,7 @@ export const useSocialCulturalResources = (onComplete?: () => void) => {
         
       if (progressError) throw progressError;
       
-      // **Fix: Explicitly enable the next step (55) by marking it as available**
-      // This ensures it shows as enabled in the navigation
+      // Explicitly enable the next step (55) by marking it as available
       const { error: nextStepError } = await supabase
         .from("motivation_steps_progress")
         .upsert(

@@ -27,10 +27,12 @@ export const useMotivationStepsDB = () => {
       }
 
       // Mark default completed steps in the database if they're not already marked
-      for (const stepId of defaultCompletedSteps) {
-        const isAlreadyCompleted = data?.some(p => p.step_number === stepId && p.completed);
-        if (!isAlreadyCompleted) {
-          await saveStepProgress(userId, stepId, initialSteps);
+      if (data) {
+        for (const stepId of defaultCompletedSteps) {
+          const isAlreadyCompleted = data.some(p => p.step_number === stepId && p.completed);
+          if (!isAlreadyCompleted) {
+            await saveStepProgress(userId, stepId, initialSteps);
+          }
         }
       }
 

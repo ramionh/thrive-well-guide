@@ -1630,6 +1630,7 @@ export type Database = {
       }
       motivation_steps_progress: {
         Row: {
+          available: boolean | null
           completed: boolean | null
           completed_at: string | null
           created_at: string
@@ -1640,6 +1641,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          available?: boolean | null
           completed?: boolean | null
           completed_at?: string | null
           created_at?: string
@@ -1650,6 +1652,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          available?: boolean | null
           completed?: boolean | null
           completed_at?: string | null
           created_at?: string
