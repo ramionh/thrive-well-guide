@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,7 +31,7 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
     onSuccess: onComplete,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -62,7 +62,7 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
                 </Label>
                 <Textarea
                   id="new-activities"
-                  value={formData.new_activities}
+                  value={formData.new_activities || ""}
                   onChange={(e) => updateForm('new_activities', e.target.value)}
                   rows={4}
                   className="w-full p-2 border rounded-md"
@@ -81,7 +81,7 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
                 <div className="mt-2 mb-2 font-medium text-purple-800">IMPORTANT AND URGENT</div>
                 <Textarea
                   id="prioritized-activities"
-                  value={formData.prioritized_activities}
+                  value={formData.prioritized_activities || ""}
                   onChange={(e) => updateForm('prioritized_activities', e.target.value)}
                   rows={6}
                   className="w-full p-2 border rounded-md"

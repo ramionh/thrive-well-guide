@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import LoadingState from "./shared/LoadingState";
 
 interface EnvisioningChangeProps {
   onComplete: () => void;
@@ -16,7 +17,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     howItWorked: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, isSaving, fetchData } = useMotivationForm({
     tableName: "motivation_envisioning_change",
     initialState,
     onSuccess: onComplete,
@@ -25,13 +26,27 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
         successful_change: data.successfulChange,
         how_it_worked: data.howItWorked
       };
+    },
+    parseData: (data) => {
+      return {
+        successfulChange: data.successful_change || "",
+        howItWorked: data.how_it_worked || ""
+      };
     }
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitForm();
   };
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <Card className="border-none shadow-none">
@@ -48,11 +63,11 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
               </Label>
               <Textarea
                 id="successfulChange"
-                value={formData.successfulChange}
+                value={formData.successfulChange || ""}
                 onChange={(e) => updateForm("successfulChange", e.target.value)}
                 className="mt-2 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={4}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
             
@@ -62,11 +77,11 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
               </Label>
               <Textarea
                 id="howItWorked"
-                value={formData.howItWorked}
+                value={formData.howItWorked || ""}
                 onChange={(e) => updateForm("howItWorked", e.target.value)}
                 className="mt-2 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={4}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
           </div>
@@ -74,9 +89,9 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isLoading}
+            disabled={isSaving}
           >
-            {isLoading ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>

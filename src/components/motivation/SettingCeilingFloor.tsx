@@ -61,7 +61,7 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
                 </label>
                 <Textarea
                   id="best-outcome"
-                  value={formData.best_outcome}
+                  value={formData.best_outcome || ""}
                   onChange={(e) => updateForm("best_outcome", e.target.value)}
                   rows={4}
                   placeholder="Describe the best possible outcome..."
@@ -76,7 +76,7 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
                 </label>
                 <Textarea
                   id="worst-outcome"
-                  value={formData.worst_outcome}
+                  value={formData.worst_outcome || ""}
                   onChange={(e) => updateForm("worst_outcome", e.target.value)}
                   rows={4}
                   placeholder="Describe the worst possible outcome..."

@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import LoadingState from "./shared/LoadingState";
 
 interface EnvironmentalResourcesProps {
   onComplete: () => void;
@@ -15,7 +16,7 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
     environmentalResources: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, isSaving, fetchData } = useMotivationForm({
     tableName: "motivation_environmental_resources",
     initialState,
     onSuccess: onComplete,
@@ -23,13 +24,26 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
       return {
         environmental_resources: data.environmentalResources
       };
+    },
+    parseData: (data) => {
+      return {
+        environmentalResources: data.environmental_resources || ""
+      };
     }
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitForm();
   };
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <Card className="border-none shadow-none">
@@ -45,12 +59,12 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
               <Label htmlFor="environmentalResources" className="text-purple-600">Resources:</Label>
               <Textarea 
                 id="environmentalResources"
-                value={formData.environmentalResources}
+                value={formData.environmentalResources || ""}
                 onChange={(e) => updateForm("environmentalResources", e.target.value)}
                 placeholder="List the environmental or situational resources available to you..."
                 className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={7}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
           </div>
@@ -58,9 +72,9 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isLoading}
+            disabled={isSaving}
           >
-            {isLoading ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>

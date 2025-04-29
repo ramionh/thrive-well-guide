@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import LoadingState from "./shared/LoadingState";
 
 interface ResourceDevelopmentProps {
   onComplete: () => void;
@@ -16,7 +17,7 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
     resourceDevelopment: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, isSaving, fetchData } = useMotivationForm({
     tableName: "motivation_resource_development",
     initialState,
     onSuccess: onComplete,
@@ -25,13 +26,27 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
         helpful_resources: data.helpfulResources,
         resource_development: data.resourceDevelopment
       };
+    },
+    parseData: (data) => {
+      return {
+        helpfulResources: data.helpful_resources || "",
+        resourceDevelopment: data.resource_development || ""
+      };
     }
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitForm();
   };
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <Card className="border-none shadow-none">
@@ -46,11 +61,11 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
               <Label htmlFor="helpfulResources" className="text-purple-600">Most helpful resources:</Label>
               <Textarea 
                 id="helpfulResources"
-                value={formData.helpfulResources}
+                value={formData.helpfulResources || ""}
                 onChange={(e) => updateForm("helpfulResources", e.target.value)}
                 className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={4}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
           </div>
@@ -64,20 +79,20 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
             </p>
             <Textarea 
               id="resourceDevelopment"
-              value={formData.resourceDevelopment}
+              value={formData.resourceDevelopment || ""}
               onChange={(e) => updateForm("resourceDevelopment", e.target.value)}
               className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
               rows={4}
-              disabled={isLoading}
+              disabled={isSaving}
             />
           </div>
 
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isLoading}
+            disabled={isSaving}
           >
-            {isLoading ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>

@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
 
@@ -66,7 +65,7 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
           <Textarea
             id="realistic-change"
             rows={4}
-            value={formData.realistic_change}
+            value={formData.realistic_change || ""}
             onChange={(e) => updateForm("realistic_change", e.target.value)}
             className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
             placeholder="Describe a realistic version of your goal..."
@@ -76,7 +75,7 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isSaving || !formData.realistic_change.trim()}
+            disabled={isSaving || !formData.realistic_change?.trim()}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             {isSaving ? "Saving..." : "Complete Step"}
