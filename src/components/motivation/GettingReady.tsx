@@ -52,21 +52,26 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <p className="text-gray-700">
-              Let's play devil's advocate. Imagine you're sitting across from the part of you that isn't interested in changing your fitness habits. 
-              What would you say to convince yourself that you should work on the change?
+              Getting ready for change involves persuading yourself about why this change is important to you.
+              Take a moment to reflect on your motivations and write a brief self-persuasion statement below.
+            </p>
+            
+            <p className="text-md text-purple-600 italic">
+              For example: "I'm ready to make this change because improving my fitness will give me more energy for activities 
+              I enjoy with my family. This is important to me because quality time with loved ones brings me the most joy in life."
             </p>
             
             <div>
               <label htmlFor="self-persuasion" className="block text-sm font-medium text-purple-700 mb-2">
-                Self-persuasion
+                Your self-persuasion statement
               </label>
               <Textarea
                 id="self-persuasion"
-                rows={7}
+                rows={6}
                 value={formData.self_persuasion}
                 onChange={(e) => updateForm("self_persuasion", e.target.value)}
                 className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                placeholder="Write your self-persuasion arguments here..."
+                placeholder="I'm ready to make this change because..."
               />
             </div>
           </div>

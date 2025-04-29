@@ -1130,6 +1130,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_measurable_goal: {
+        Row: {
+          created_at: string
+          id: string
+          measurable_goal: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          measurable_goal: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          measurable_goal?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_mindfulness: {
         Row: {
           after_feelings: string | null
