@@ -17,7 +17,8 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
     stressTypes,
     isLoadingStressors,
     isSubmitting,
-    handleStressTypeChange,
+    handleStressorChange,
+    handleTypeChange,
     handleSubmit,
   } = useStressTypes({ onComplete });
 
@@ -32,12 +33,14 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
 
             <div className="space-y-4">
               <Label className="block text-sm font-medium text-gray-700">
-                For each of your identified stressors, indicate whether it is a source of distress or eustress:
+                Write your Top Five Stressors on the corresponding lines below
+                and note whether that stressor is causing you distress or eustress:
               </Label>
 
               <StressTypeTable 
                 stressTypes={stressTypes} 
-                onStressTypeChange={handleStressTypeChange}
+                onStressorChange={handleStressorChange}
+                onTypeChange={handleTypeChange}
               />
             </div>
 
@@ -46,7 +49,7 @@ const IdentifyingStressTypes: React.FC<IdentifyingStressTypesProps> = ({ onCompl
               disabled={isSubmitting}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              Complete Step
+              {isSubmitting ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}
