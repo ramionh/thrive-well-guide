@@ -29,6 +29,7 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
       prioritized_activities: '',
     },
     onSuccess: onComplete,
+    stepNumber: 61, // Updated from 62 to 61
   });
 
   useEffect(() => {

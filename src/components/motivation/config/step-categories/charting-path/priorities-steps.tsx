@@ -1,13 +1,13 @@
 
 import React from 'react';
-import Priorities from "../../../Priorities";
-import type { StepConfig } from "../../../types/motivation";
+import PrioritizingChange from "@/components/motivation/PrioritizingChange";
+import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const prioritiesSteps: StepConfig[] = [
   {
-    id: 60,
-    title: "Priorities",
-    description: "Organize your tasks by importance and urgency",
-    component: (onComplete) => <Priorities onComplete={onComplete} />
+    id: 61,
+    title: "Prioritizing Change",
+    description: "Identify your priority activities",
+    component: (onComplete) => <PrioritizingChange onComplete={onComplete} />
   }
 ];
