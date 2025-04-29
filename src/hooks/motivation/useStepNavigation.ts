@@ -15,10 +15,14 @@ export const useStepNavigation = (initialSteps: Step[]) => {
       .filter(step => step.completed)
       .reduce((max, step) => Math.max(max, step.id), 0);
     
+    // Also check for steps explicitly marked as available in progress data
+    const isAvailable = steps.find(step => step.id === stepId)?.available;
+    
     // Allow navigation if:
     // 1. The step has been completed, OR
-    // 2. It's the next step after the highest completed step
-    if (isCompleted || stepId === highestCompletedStepId + 1) {
+    // 2. It's the next step after the highest completed step, OR
+    // 3. It's explicitly marked as available
+    if (isCompleted || stepId === highestCompletedStepId + 1 || isAvailable) {
       setCurrentStepId(stepId);
     }
   }, []);
@@ -44,6 +48,20 @@ export const useStepNavigation = (initialSteps: Step[]) => {
     if (completedSteps.length > 0) {
       const maxCompletedStep = Math.max(...completedSteps);
       const nextStepId = maxCompletedStep + 1;
+      
+      // Check if next step is explicitly marked as available
+      const availableSteps = progressData
+        .filter(p => p.available === true && !p.completed)
+        .map(p => p.step_number);
+      
+      if (availableSteps.length > 0) {
+        // If there are available steps, use the lowest one
+        const lowestAvailableStep = Math.min(...availableSteps);
+        if (lowestAvailableStep < nextStepId) {
+          return lowestAvailableStep;
+        }
+      }
+      
       if (steps.some(s => s.id === nextStepId)) {
         return nextStepId;
       } else {

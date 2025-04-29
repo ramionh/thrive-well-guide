@@ -8,6 +8,7 @@ export interface Step {
   component: ReactNode;
   completed: boolean;
   hideFromNavigation?: boolean;
+  available?: boolean;
 }
 
 export interface StepConfig {

@@ -34,6 +34,15 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
     .filter(step => step.completed)
     .reduce((max, step) => Math.max(max, step.id), 0);
   
+  // Helper function to check if a step should be enabled
+  const isStepEnabled = (step: Step) => {
+    return (
+      step.completed || // Step is completed
+      step.id === highestCompletedStepId + 1 || // Next step after highest completed
+      step.available === true // Step is marked as explicitly available
+    );
+  };
+  
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
       <Card className="bg-white shadow-md border border-purple-100">
@@ -48,8 +57,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                 <ul className="space-y-3">
                   {startingPointSteps.map((step) => {
                     const isActive = step.id === currentStepId;
-                    // A step is clickable if it's completed or it's the next step after the highest completed step
-                    const isDisabled = !step.completed && step.id > highestCompletedStepId + 1;
+                    // Updated logic to include available flag
+                    const isDisabled = !isStepEnabled(step);
                     
                     return (
                       <li key={step.id}>
@@ -93,8 +102,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                   <ul className="space-y-3">
                     {chartingPathSteps.map((step) => {
                       const isActive = step.id === currentStepId;
-                      // A step is clickable if it's completed or it's the next step after the highest completed step
-                      const isDisabled = !step.completed && step.id > highestCompletedStepId + 1;
+                      // Updated logic to include available flag
+                      const isDisabled = !isStepEnabled(step);
                       
                       return (
                         <li key={step.id}>
@@ -143,8 +152,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                   <ul className="space-y-3">
                     {activeChangeSteps.map((step) => {
                       const isActive = step.id === currentStepId;
-                      // A step is clickable if it's completed or it's the next step after the highest completed step
-                      const isDisabled = !step.completed && step.id > highestCompletedStepId + 1;
+                      // Updated logic to include available flag
+                      const isDisabled = !isStepEnabled(step);
                       
                       return (
                         <li key={step.id}>

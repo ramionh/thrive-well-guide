@@ -18,7 +18,7 @@ export const useMotivationStepsDB = () => {
 
       const { data, error } = await supabase
         .from('motivation_steps_progress')
-        .select('step_number, completed')
+        .select('step_number, completed, available')
         .eq('user_id', userId);
 
       if (error) {
@@ -79,6 +79,30 @@ export const useMotivationStepsDB = () => {
           });
 
         if (insertError) throw insertError;
+      }
+      
+      // Automatically make the next step available when completing a step
+      const nextStepNumber = stepNumber + 1;
+      const nextStep = stepsData.find(s => s.id === nextStepNumber);
+      
+      if (nextStep) {
+        const { error: nextStepError } = await supabase
+          .from('motivation_steps_progress')
+          .upsert(
+            {
+              user_id: userId,
+              step_number: nextStepNumber,
+              step_name: nextStep.title || '',
+              completed: false,
+              available: true, // Mark the next step as available
+              completed_at: null
+            },
+            { onConflict: "user_id,step_number" }
+          );
+          
+        if (nextStepError) {
+          console.error('Error making next step available:', nextStepError);
+        }
       }
       
       return { error: null };

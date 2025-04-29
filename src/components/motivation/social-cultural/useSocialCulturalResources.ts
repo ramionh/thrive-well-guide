@@ -112,7 +112,7 @@ export const useSocialCulturalResources = (onComplete?: () => void) => {
       
       if (result.error) throw result.error;
       
-      // Update the step progress for step 50
+      // Mark current step (50) as completed
       const { error: progressError } = await supabase
         .from("motivation_steps_progress")
         .upsert(
@@ -128,7 +128,8 @@ export const useSocialCulturalResources = (onComplete?: () => void) => {
         
       if (progressError) throw progressError;
       
-      // Enable step 55 by marking it as the next available step
+      // **Fix: Explicitly enable the next step (55) by marking it as available**
+      // This ensures it shows as enabled in the navigation
       const { error: nextStepError } = await supabase
         .from("motivation_steps_progress")
         .upsert(
@@ -137,6 +138,7 @@ export const useSocialCulturalResources = (onComplete?: () => void) => {
             step_number: 55,
             step_name: "Environmental or Situational Supports and Resources",
             completed: false,
+            available: true, // Explicitly mark as available
             completed_at: null
           },
           { onConflict: "user_id,step_number" }
@@ -146,7 +148,7 @@ export const useSocialCulturalResources = (onComplete?: () => void) => {
       
       toast({
         title: "Success",
-        description: "Your response has been saved",
+        description: "Your response has been saved"
       });
 
       // Call the onComplete callback to move to the next step
@@ -158,7 +160,7 @@ export const useSocialCulturalResources = (onComplete?: () => void) => {
       toast({
         title: "Error",
         description: "Failed to save your response",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);

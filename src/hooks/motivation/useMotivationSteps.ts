@@ -42,12 +42,14 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
             .filter(step => (step as any).defaultCompleted)
             .map(step => step.id);
 
-          // Update steps with completion data and default completed steps
+          // Update steps with completion data, available flags, and default completed steps
           setSteps(prevSteps => 
             prevSteps.map(step => ({
               ...step,
               completed: data.some(p => p.step_number === step.id && p.completed) || 
-                        defaultCompletedSteps.includes(step.id)
+                        defaultCompletedSteps.includes(step.id),
+              // Also track if a step is explicitly marked as available
+              available: data.some(p => p.step_number === step.id && p.available === true)
             }))
           );
 
