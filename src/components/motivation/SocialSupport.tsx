@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { MessageCircle } from "lucide-react";
 
 interface SocialSupportProps {
   onComplete: () => void;
@@ -47,6 +48,58 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
     tableName: "motivation_social_support",
     initialState,
     onSuccess: onComplete,
+    parseData: (data) => {
+      // Parse data coming from the database
+      console.log("Raw social support data:", data);
+      
+      // Handle supportTypes, ensuring it's properly parsed
+      let supportTypes = initialState.supportTypes;
+      if (data?.support_types) {
+        // Handle if it's a string (parse it)
+        if (typeof data.support_types === 'string') {
+          try {
+            supportTypes = JSON.parse(data.support_types);
+          } catch (e) {
+            console.error("Error parsing support_types string:", e);
+          }
+        } 
+        // Handle if it's already an object
+        else if (typeof data.support_types === 'object') {
+          supportTypes = {
+            financial: parseField(data.support_types.financial),
+            listeners: parseField(data.support_types.listeners),
+            encouragers: parseField(data.support_types.encouragers),
+            valuers: parseField(data.support_types.valuers),
+            talkers: parseField(data.support_types.talkers)
+          };
+        }
+      }
+      
+      // Handle socialSkills array
+      let socialSkills = initialState.socialSkills;
+      if (data?.social_skills) {
+        if (typeof data.social_skills === 'string') {
+          try {
+            socialSkills = JSON.parse(data.social_skills);
+          } catch (e) {
+            // If it fails to parse as JSON, treat as a single skill
+            socialSkills = [data.social_skills];
+          }
+        } else if (Array.isArray(data.social_skills)) {
+          socialSkills = data.social_skills;
+        }
+      }
+      
+      const parsedData = {
+        supportTypes,
+        socialSkills,
+        socialFeelings: parseField(data?.social_feelings),
+        buildSocial: parseField(data?.build_social)
+      };
+      
+      console.log("Parsed social support data:", parsedData);
+      return parsedData;
+    },
     transformData: (data) => {
       return {
         support_types: data.supportTypes,
@@ -56,6 +109,31 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
       };
     }
   });
+  
+  // Helper function to parse field values that might be in different formats
+  const parseField = (value: any): string => {
+    if (!value) return "";
+    
+    // Already a string
+    if (typeof value === 'string') return value;
+    
+    // Try to handle case where value might be a JSON object/array
+    if (typeof value === 'object') {
+      try {
+        // If it's an object that contains a text property
+        if (value.text) return value.text;
+        // If it's an array and has a first element with text
+        if (Array.isArray(value) && value[0]?.text) return value[0].text;
+        // Last resort, stringify it
+        return JSON.stringify(value);
+      } catch (e) {
+        return "";
+      }
+    }
+    
+    // Default fallback
+    return String(value);
+  };
 
   const handleSocialSkillToggle = (skillId: string) => {
     const updatedSkills = formData.socialSkills.includes(skillId)
@@ -80,7 +158,10 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
   return (
     <Card className="border-none shadow-none">
       <CardHeader className="px-0">
-        <CardTitle className="text-2xl font-bold text-purple-800">Social Support and Social Competence</CardTitle>
+        <div className="flex items-center gap-3 mb-1">
+          <MessageCircle className="w-6 h-6 text-purple-600" />
+          <CardTitle className="text-2xl font-bold text-purple-800">Social Support and Social Competence</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="px-0">
         <p className="mb-6 text-gray-600">
@@ -103,6 +184,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   onChange={(e) => handleUpdateSupportType("financial", e.target.value)}
                   className="mt-1"
                   disabled={isLoading}
+                  placeholder="Type names of friends or family who can help you financially"
                 />
               </div>
               
@@ -114,6 +196,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   onChange={(e) => handleUpdateSupportType("listeners", e.target.value)}
                   className="mt-1"
                   disabled={isLoading}
+                  placeholder="Type names of friends or family who are good listeners"
                 />
               </div>
               
@@ -125,6 +208,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   onChange={(e) => handleUpdateSupportType("encouragers", e.target.value)}
                   className="mt-1"
                   disabled={isLoading}
+                  placeholder="Type names of friends or family who encourage you"
                 />
               </div>
               
@@ -136,6 +220,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   onChange={(e) => handleUpdateSupportType("valuers", e.target.value)}
                   className="mt-1"
                   disabled={isLoading}
+                  placeholder="Type names of friends or family who value your abilities"
                 />
               </div>
               
@@ -147,6 +232,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   onChange={(e) => handleUpdateSupportType("talkers", e.target.value)}
                   className="mt-1"
                   disabled={isLoading}
+                  placeholder="Type names of friends or family who you regularly talk with"
                 />
               </div>
             </div>
@@ -185,6 +271,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                 className="mt-1"
                 rows={4}
                 disabled={isLoading}
+                placeholder="Write your thoughts and feelings about your social life"
               />
             </div>
             
@@ -197,6 +284,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                 className="mt-1"
                 rows={4}
                 disabled={isLoading}
+                placeholder="Describe ways you can strengthen or expand your social support network"
               />
             </div>
           </div>

@@ -3,62 +3,82 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
+import { useMotivationStepsDB } from "@/hooks/motivation/useMotivationStepsDB";
+import type { Step } from "@/components/motivation/types/motivation";
 
-interface UseMotivationFormOptions<T> {
+interface UseMotivationFormProps<T, U> {
   tableName: string;
   initialState: T;
   onSuccess?: () => void;
-  transformData?: (data: T) => any;
-  validateData?: (data: T) => boolean | string;
+  transformData?: (data: T) => U;
+  stepNumber?: number;
+  parseData?: (data: any) => T;
+  steps?: Step[];
 }
 
-export const useMotivationForm = <T extends Record<string, any>>({
+export const useMotivationForm = <T, U>({
   tableName,
   initialState,
   onSuccess,
   transformData,
-  validateData
-}: UseMotivationFormOptions<T>) => {
+  stepNumber,
+  parseData,
+  steps
+}: UseMotivationFormProps<T, U>) => {
   const { user } = useUser();
   const { toast } = useToast();
-  const [formData, setFormData] = useState<T>(initialState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState<T>(initialState);
+  const { markStepComplete } = useMotivationStepsDB();
+
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   const fetchData = async () => {
     if (!user) return;
     
     setIsLoading(true);
     try {
-      // Cast the table name to any to avoid TypeScript limitations
       const { data, error } = await supabase
-        .from(tableName as any)
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
+        .from(tableName)
+        .select('*')
+        .eq('user_id', user.id)
         .maybeSingle();
       
-      if (error) throw error;
-      
-      if (data) {
-        // Double-cast to avoid TypeScript errors: first to unknown, then to Partial<T>
-        setFormData((prev) => {
-          const safeData = data as unknown as Partial<T>;
-          return {
-            ...prev,
-            ...safeData
-          };
-        });
+      if (error && error.code !== "PGRST116") {
+        throw error;
       }
 
-      return data;
+      console.log(`Raw data from ${tableName}:`, data);
+      
+      if (data) {
+        // Use custom parser if provided, otherwise use default handling
+        if (parseData) {
+          const parsedData = parseData(data);
+          console.log(`Parsed data for ${tableName}:`, parsedData);
+          setFormData(parsedData);
+        } else {
+          // Default simple parsing
+          const cleanedData = {} as T;
+          Object.keys(initialState).forEach(key => {
+            // @ts-ignore
+            cleanedData[key] = data[key] !== undefined && data[key] !== null ? data[key] : initialState[key];
+          });
+          setFormData(cleanedData);
+        }
+      }
     } catch (error) {
       console.error(`Error fetching data from ${tableName}:`, error);
       toast({
         title: "Error",
-        description: "Failed to load your previous responses",
-        variant: "destructive",
+        description: `Failed to load your data from ${tableName}`,
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
@@ -72,92 +92,53 @@ export const useMotivationForm = <T extends Record<string, any>>({
     }));
   };
 
-  const submitForm = async (e?: React.FormEvent, onComplete?: () => void) => {
-    if (e) {
-      e.preventDefault();
-    }
-    
+  const submitForm = async () => {
     if (!user) return;
-
-    if (validateData) {
-      const validationResult = validateData(formData);
-      if (validationResult !== true) {
-        toast({
-          title: "Validation Error",
-          description: typeof validationResult === 'string' ? validationResult : "Please check your inputs",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-
-    setIsSubmitting(true);
+    
+    setIsSaving(true);
     try {
-      const dataToSubmit = transformData ? transformData(formData) : formData;
+      const dataToInsert: any = transformData 
+        ? { user_id: user.id, ...transformData(formData), updated_at: new Date().toISOString() }
+        : { user_id: user.id, ...formData, updated_at: new Date().toISOString() };
       
-      // Check if a record already exists for this user
-      const { data: existingData, error: queryError } = await supabase
-        .from(tableName as any)
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      console.log(`Submitting data to ${tableName}:`, dataToInsert);
       
-      if (queryError) throw queryError;
+      const { error } = await supabase
+        .from(tableName)
+        .upsert(dataToInsert);
       
-      let result;
+      if (error) throw error;
       
-      if (existingData && 'id' in existingData) {
-        // Update existing record
-        result = await supabase
-          .from(tableName as any)
-          .update({
-            ...dataToSubmit,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", existingData.id)
-          .eq("user_id", user.id);
-      } else {
-        // Insert new record
-        result = await supabase
-          .from(tableName as any)
-          .insert({
-            user_id: user.id,
-            ...dataToSubmit
-          });
+      // Mark step as complete if stepNumber is provided
+      if (stepNumber) {
+        await markStepComplete(user.id, stepNumber, steps || []);
       }
-      
-      if (result.error) throw result.error;
       
       toast({
         title: "Success",
-        description: "Your response has been saved",
+        description: "Your information has been saved"
       });
-
+      
       if (onSuccess) {
         onSuccess();
       }
-
-      if (onComplete) {
-        onComplete();
-      }
     } catch (error) {
-      console.error(`Error saving to ${tableName}:`, error);
+      console.error(`Error saving data to ${tableName}:`, error);
       toast({
         title: "Error",
-        description: "Failed to save your response",
-        variant: "destructive",
+        description: `Failed to save your information to ${tableName}`,
+        variant: "destructive"
       });
     } finally {
-      setIsSubmitting(false);
+      setIsSaving(false);
     }
   };
 
   return {
     formData,
-    isLoading,
-    isSubmitting,
-    fetchData,
     updateForm,
-    submitForm
+    submitForm,
+    isLoading,
+    isSaving
   };
 };
