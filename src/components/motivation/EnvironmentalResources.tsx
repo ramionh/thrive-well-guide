@@ -72,7 +72,7 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isSaving}
+            disabled={isSaving || !formData.environmentalResources?.trim()}
           >
             {isSaving ? "Saving..." : "Complete Step"}
           </Button>

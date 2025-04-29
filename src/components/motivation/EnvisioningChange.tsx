@@ -89,7 +89,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isSaving}
+            disabled={isSaving || !formData.successfulChange.trim() || !formData.howItWorked.trim()}
           >
             {isSaving ? "Saving..." : "Complete Step"}
           </Button>
