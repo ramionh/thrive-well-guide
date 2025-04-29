@@ -1,0 +1,106 @@
+
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useMotivationForm } from "@/hooks/useMotivationForm";
+import LoadingState from "./shared/LoadingState";
+
+interface RewardsCreateIncentiveProps {
+  onComplete?: () => void;
+}
+
+const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onComplete }) => {
+  const [rewards, setRewards] = useState<string[]>(Array(5).fill(""));
+  
+  const { 
+    formData,
+    isLoading, 
+    isSaving, 
+    submitForm, 
+    updateForm 
+  } = useMotivationForm({
+    tableName: "motivation_rewards_incentive",
+    initialState: {
+      rewards: Array(5).fill("")
+    },
+    onSuccess: onComplete
+  });
+  
+  useEffect(() => {
+    if (formData) {
+      setRewards(formData.rewards || Array(5).fill(""));
+    }
+  }, [formData]);
+  
+  const handleRewardChange = (index: number, value: string) => {
+    setRewards(prev => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateForm("rewards", rewards);
+    submitForm();
+  };
+  
+  return (
+    <Card className="bg-white">
+      <CardContent className="p-6">
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-purple-800 mb-4">Rewards Create an Incentive to Change</h2>
+              
+              <p className="text-gray-600 mb-6">
+                When you're trying to change a behavior, it's very important to plan how you will reward yourself if you accomplish your goals. 
+                Tangible, meaningful rewards strengthen desirable behaviors and motivate you to stay on track.
+              </p>
+              
+              <p className="text-gray-600 mb-6">
+                Over the next few exercises, we explore what rewards are important to you and how to put them into your plan.
+              </p>
+              
+              <div className="space-y-4">
+                <Label className="text-purple-700 font-medium block mb-4">
+                  Think of five ways to finish this sentence: "If I stick to my fitness goal, I'll reward myself by doing this:"
+                </Label>
+                
+                {rewards.map((reward, index) => (
+                  <div key={index}>
+                    <Label htmlFor={`reward-${index}`} className="text-sm font-medium">
+                      Reward {index + 1}
+                    </Label>
+                    <Input
+                      id={`reward-${index}`}
+                      value={reward}
+                      onChange={(e) => handleRewardChange(index, e.target.value)}
+                      placeholder={`Enter reward ${index + 1}`}
+                      className="w-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className="w-full bg-purple-600 hover:bg-purple-700"
+            >
+              {isSaving ? "Saving..." : "Complete Step"}
+            </Button>
+          </form>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default RewardsCreateIncentive;

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
@@ -49,7 +48,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
       <Card className="bg-white shadow-md border border-purple-100">
         <CardContent className="p-4">
           <h3 className="text-lg font-semibold mb-4 text-purple-800">Your Progress</h3>
-          <Accordion type="single" collapsible defaultValue="starting-point">
+          <Accordion type="single" collapsible defaultValue="active-change">
             <AccordionItem value="starting-point">
               <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">
                 Starting Point

@@ -1556,6 +1556,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_rewards_incentive: {
+        Row: {
+          created_at: string
+          id: string
+          rewards: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rewards?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rewards?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_social_cultural_resources: {
         Row: {
           created_at: string
