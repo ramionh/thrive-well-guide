@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -10,6 +9,7 @@ export type Step = {
   description: string;
   component: React.ReactNode;
   completed: boolean;
+  hideFromNavigation?: boolean;
 };
 
 export const useMotivationSteps = (initialSteps: Step[]) => {
@@ -22,6 +22,11 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
     if (!user) return;
 
     const fetchStepProgress = async () => {
+      // Get steps that are marked as completed by default
+      const defaultCompletedSteps = initialSteps
+        .filter(step => (step as any).defaultCompleted)
+        .map(step => step.id);
+
       const { data, error } = await supabase
         .from('motivation_steps_progress')
         .select('step_number, completed')
@@ -33,17 +38,28 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
       }
 
       if (data) {
-        // Update steps with completion data
+        // Update steps with completion data and default completed steps
         setSteps(prevSteps => 
           prevSteps.map(step => ({
             ...step,
-            completed: data.some(p => p.step_number === step.id && p.completed)
+            completed: data.some(p => p.step_number === step.id && p.completed) || 
+                       defaultCompletedSteps.includes(step.id)
           }))
         );
         
+        // Mark default completed steps in the database if they're not already marked
+        for (const stepId of defaultCompletedSteps) {
+          if (!data.some(p => p.step_number === stepId && p.completed)) {
+            await saveStepProgress(user.id, stepId, initialSteps);
+          }
+        }
+        
         // Find the last completed step or the first incomplete one
         if (data.length > 0) {
-          const completedSteps = data.filter(p => p.completed).map(p => p.step_number);
+          const completedSteps = [
+            ...data.filter(p => p.completed).map(p => p.step_number),
+            ...defaultCompletedSteps
+          ];
           
           // Normal progression logic - set to last completed + 1 or first step
           if (completedSteps.length > 0) {
@@ -63,7 +79,7 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
     };
 
     fetchStepProgress();
-  }, [user, steps]);
+  }, [user, steps, initialSteps]);
 
   const handleStepClick = (stepId: number) => {
     const maxAllowedStep = steps.filter((s) => s.completed).reduce(

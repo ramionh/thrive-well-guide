@@ -7,6 +7,7 @@ export interface Step {
   description: string;
   component: ReactNode;
   completed: boolean;
+  hideFromNavigation?: boolean;
 }
 
 export interface StepConfig {
@@ -14,4 +15,6 @@ export interface StepConfig {
   title: string;
   description: string;
   component: (onComplete: () => void) => ReactNode;
+  hideFromNavigation?: boolean;
+  defaultCompleted?: boolean;
 }

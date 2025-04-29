@@ -21,10 +21,13 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   currentStepId,
   onStepClick,
 }) => {
-  // Define step ranges for each section
-  const startingPointSteps = steps.slice(0, 17);
-  const chartingPathSteps = steps.slice(17, 62); // Updated to include step 61
-  const activeChangeSteps = steps.slice(62, 63); // Updated to include step 62
+  // Filter out steps with hideFromNavigation flag
+  const visibleSteps = steps.filter(step => !step.hideFromNavigation);
+  
+  // Define step ranges for each section based on visible steps
+  const startingPointSteps = visibleSteps.filter(step => step.id < 18);
+  const chartingPathSteps = visibleSteps.filter(step => step.id >= 18 && step.id < 62);
+  const activeChangeSteps = visibleSteps.filter(step => step.id >= 62);
   
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
