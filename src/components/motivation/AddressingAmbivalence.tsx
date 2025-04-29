@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Carousel, 
@@ -29,6 +30,20 @@ const AddressingAmbivalence: React.FC<AddressingAmbivalenceProps> = ({ onComplet
   const handleSave = () => {
     saveAddressingAmbivalenceMutation.mutate();
   };
+
+  // Helper function to ensure arrays always have 3 slots for the form
+  const ensureThreeItems = (arr: string[]): string[] => {
+    const result = [...(arr || [])];
+    while (result.length < 3) {
+      result.push('');
+    }
+    return result.slice(0, 3); // Limit to 3 items
+  };
+
+  // Get the display arrays with exactly 3 items each
+  const displayPositiveExperiences = ensureThreeItems(positiveExperiences);
+  const displayMasteryPursuits = ensureThreeItems(masteryPursuits);
+  const displayCopingStrategies = ensureThreeItems(copingStrategies);
 
   return (
     <Carousel className="w-full">
@@ -81,22 +96,23 @@ const AddressingAmbivalence: React.FC<AddressingAmbivalenceProps> = ({ onComplet
                   <Textarea
                     key={index}
                     value={
-                      idx === 0 ? positiveExperiences[index] :
-                      idx === 1 ? masteryPursuits[index] :
-                      copingStrategies[index]
+                      idx === 0 ? displayPositiveExperiences[index] :
+                      idx === 1 ? displayMasteryPursuits[index] :
+                      displayCopingStrategies[index]
                     }
                     onChange={(e) => {
+                      const value = e.target.value;
                       if (idx === 0) {
-                        const newExperiences = [...positiveExperiences];
-                        newExperiences[index] = e.target.value;
+                        const newExperiences = [...displayPositiveExperiences];
+                        newExperiences[index] = value;
                         setPositiveExperiences(newExperiences.filter(Boolean));
                       } else if (idx === 1) {
-                        const newPursuits = [...masteryPursuits];
-                        newPursuits[index] = e.target.value;
+                        const newPursuits = [...displayMasteryPursuits];
+                        newPursuits[index] = value;
                         setMasteryPursuits(newPursuits.filter(Boolean));
                       } else {
-                        const newStrategies = [...copingStrategies];
-                        newStrategies[index] = e.target.value;
+                        const newStrategies = [...displayCopingStrategies];
+                        newStrategies[index] = value;
                         setCopingStrategies(newStrategies.filter(Boolean));
                       }
                     }}

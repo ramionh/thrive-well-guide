@@ -28,9 +28,20 @@ export const useAddressingAmbivalence = (onComplete?: () => void) => {
       }
       
       if (data) {
-        setPositiveExperiences(data.positive_experiences || []);
-        setMasteryPursuits(data.mastery_pursuits || []);
-        setCopingStrategies(data.coping_strategies || []);
+        console.log('Retrieved addressing ambivalence data:', data);
+        
+        // Ensure we're handling arrays correctly
+        setPositiveExperiences(Array.isArray(data.positive_experiences) ? 
+          data.positive_experiences.filter(Boolean) : 
+          []);
+          
+        setMasteryPursuits(Array.isArray(data.mastery_pursuits) ? 
+          data.mastery_pursuits.filter(Boolean) : 
+          []);
+          
+        setCopingStrategies(Array.isArray(data.coping_strategies) ? 
+          data.coping_strategies.filter(Boolean) : 
+          []);
       }
     };
     
@@ -40,6 +51,12 @@ export const useAddressingAmbivalence = (onComplete?: () => void) => {
   const saveAddressingAmbivalenceMutation = useMutation({
     mutationFn: async () => {
       if (!user) return;
+
+      console.log('Saving addressing ambivalence data:', {
+        positive_experiences: positiveExperiences,
+        mastery_pursuits: masteryPursuits,
+        coping_strategies: copingStrategies
+      });
 
       const { error: deleteError } = await supabase
         .from('motivation_addressing_ambivalence')
@@ -52,9 +69,9 @@ export const useAddressingAmbivalence = (onComplete?: () => void) => {
         .from('motivation_addressing_ambivalence')
         .insert({
           user_id: user.id,
-          positive_experiences: positiveExperiences,
-          mastery_pursuits: masteryPursuits,
-          coping_strategies: copingStrategies
+          positive_experiences: positiveExperiences.filter(Boolean),
+          mastery_pursuits: masteryPursuits.filter(Boolean),
+          coping_strategies: copingStrategies.filter(Boolean)
         });
 
       if (insertError) throw insertError;
