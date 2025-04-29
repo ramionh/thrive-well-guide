@@ -1391,6 +1391,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_people_rewards: {
+        Row: {
+          created_at: string
+          id: string
+          people_rewards: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          people_rewards?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          people_rewards?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_priorities: {
         Row: {
           created_at: string
