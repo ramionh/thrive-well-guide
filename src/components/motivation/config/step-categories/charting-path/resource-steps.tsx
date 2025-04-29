@@ -5,6 +5,7 @@ import EnvironmentalResources from "../../../EnvironmentalResources";
 import ResourceDevelopment from "../../../ResourceDevelopment";
 import FinancialResources from "../../../FinancialResources";
 import SocialSupport from "../../../SocialSupport";
+import FamilyStrengths from "../../../FamilyStrengths";
 import type { StepConfig } from "../../../types/motivation";
 
 export const resourceSteps: StepConfig[] = [
@@ -19,6 +20,12 @@ export const resourceSteps: StepConfig[] = [
     title: "Social Support and Social Competence",
     description: "Identify your social support system and competence",
     component: (onComplete) => <SocialSupport onComplete={onComplete} />
+  },
+  {
+    id: 52,
+    title: "Family Strengths",
+    description: "Leverage your family strengths for motivation",
+    component: (onComplete) => <FamilyStrengths onComplete={onComplete} />
   },
   {
     id: 54,
