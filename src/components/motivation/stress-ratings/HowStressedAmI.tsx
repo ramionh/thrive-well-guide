@@ -40,21 +40,15 @@ const HowStressedAmI: React.FC<HowStressedAmIProps> = ({ onComplete }) => {
               <RatingScaleDescription />
             </div>
 
-            {stressRatings.length > 0 ? (
-              <StressRatingTable
-                stressRatings={stressRatings}
-                onRatingChange={handleRatingChange}
-                onExplanationChange={handleExplanationChange}
-              />
-            ) : (
-              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
-                No stressors found from previous steps. Please complete the previous steps first.
-              </div>
-            )}
+            <StressRatingTable
+              stressRatings={stressRatings}
+              onRatingChange={handleRatingChange}
+              onExplanationChange={handleExplanationChange}
+            />
 
             <Button
               type="submit"
-              disabled={isSubmitting || stressRatings.length === 0}
+              disabled={isSubmitting}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
               Complete Step

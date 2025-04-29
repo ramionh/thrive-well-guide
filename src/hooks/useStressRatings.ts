@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -70,11 +69,16 @@ export const useStressRatings = ({ onComplete }: UseStressRatingsOptions = {}) =
           
           setStressRatings(newRatings);
         } else {
-          toast({
-            title: "No stressors found",
-            description: "Please complete the previous step first to identify your stressors.",
-            variant: "destructive",
-          });
+          // Create default stressors if none were found from previous steps
+          const defaultStressors = [
+            { stressor: "Work demands", rating: null, explanation: "" },
+            { stressor: "Family responsibilities", rating: null, explanation: "" },
+            { stressor: "Financial concerns", rating: null, explanation: "" },
+            { stressor: "Health issues", rating: null, explanation: "" },
+            { stressor: "Time management", rating: null, explanation: "" },
+          ];
+          
+          setStressRatings(defaultStressors);
         }
       } catch (error) {
         console.error("Error fetching stress data:", error);
@@ -83,6 +87,17 @@ export const useStressRatings = ({ onComplete }: UseStressRatingsOptions = {}) =
           description: "Failed to load your stressors",
           variant: "destructive",
         });
+        
+        // Even on error, provide default stressors
+        const defaultStressors = [
+          { stressor: "Work demands", rating: null, explanation: "" },
+          { stressor: "Family responsibilities", rating: null, explanation: "" },
+          { stressor: "Financial concerns", rating: null, explanation: "" },
+          { stressor: "Health issues", rating: null, explanation: "" },
+          { stressor: "Time management", rating: null, explanation: "" },
+        ];
+        
+        setStressRatings(defaultStressors);
       } finally {
         setIsLoading(false);
       }
