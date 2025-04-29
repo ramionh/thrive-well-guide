@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MotivationStepsSidebarProps {
   steps: Step[];
@@ -54,53 +55,9 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                 Starting Point
               </AccordionTrigger>
               <AccordionContent>
-                <ul className="space-y-3">
-                  {startingPointSteps.map((step) => {
-                    const isActive = step.id === currentStepId;
-                    // Updated logic to include available flag
-                    const isDisabled = !isStepEnabled(step);
-                    
-                    return (
-                      <li key={step.id}>
-                        <button
-                          onClick={() => onStepClick(step.id)}
-                          disabled={isDisabled}
-                          className={`flex items-center p-3 w-full rounded-lg transition-colors text-left
-                            ${isActive ? 'bg-purple-100 text-purple-800 font-medium' : ''}
-                            ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-50'}
-                          `}
-                        >
-                          <div className="mr-3 flex-shrink-0">
-                            {step.completed ? (
-                              <CheckCircle className="h-5 w-5 text-green-500" />
-                            ) : (
-                              <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs
-                                ${isActive ? 'bg-purple-600 text-white' : 'bg-gray-300 text-gray-700'}
-                              `}>
-                                {step.id}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-medium text-purple-900">{step.title}</div>
-                            <div className="text-sm text-purple-600">{step.description}</div>
-                          </div>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="charting-path">
-              <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">
-                Charting Your Path
-              </AccordionTrigger>
-              <AccordionContent>
-                {startingPointSteps.some(step => step.completed) ? (
+                <ScrollArea className="h-[250px] pr-4">
                   <ul className="space-y-3">
-                    {chartingPathSteps.map((step) => {
+                    {startingPointSteps.map((step) => {
                       const isActive = step.id === currentStepId;
                       // Updated logic to include available flag
                       const isDisabled = !isStepEnabled(step);
@@ -135,6 +92,54 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                       );
                     })}
                   </ul>
+                </ScrollArea>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="charting-path">
+              <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">
+                Charting Your Path
+              </AccordionTrigger>
+              <AccordionContent>
+                {startingPointSteps.some(step => step.completed) ? (
+                  <ScrollArea className="h-[300px] pr-4">
+                    <ul className="space-y-3">
+                      {chartingPathSteps.map((step) => {
+                        const isActive = step.id === currentStepId;
+                        // Updated logic to include available flag
+                        const isDisabled = !isStepEnabled(step);
+                        
+                        return (
+                          <li key={step.id}>
+                            <button
+                              onClick={() => onStepClick(step.id)}
+                              disabled={isDisabled}
+                              className={`flex items-center p-3 w-full rounded-lg transition-colors text-left
+                                ${isActive ? 'bg-purple-100 text-purple-800 font-medium' : ''}
+                                ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-50'}
+                              `}
+                            >
+                              <div className="mr-3 flex-shrink-0">
+                                {step.completed ? (
+                                  <CheckCircle className="h-5 w-5 text-green-500" />
+                                ) : (
+                                  <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs
+                                    ${isActive ? 'bg-purple-600 text-white' : 'bg-gray-300 text-gray-700'}
+                                  `}>
+                                    {step.id}
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <div className="font-medium text-purple-900">{step.title}</div>
+                                <div className="text-sm text-purple-600">{step.description}</div>
+                              </div>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </ScrollArea>
                 ) : (
                   <p className="text-purple-600 italic text-sm p-4">
                     Complete the starting point steps to unlock this section
@@ -149,42 +154,44 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
               </AccordionTrigger>
               <AccordionContent>
                 {chartingPathSteps.some(step => step.completed) ? (
-                  <ul className="space-y-3">
-                    {activeChangeSteps.map((step) => {
-                      const isActive = step.id === currentStepId;
-                      // Updated logic to include available flag
-                      const isDisabled = !isStepEnabled(step);
-                      
-                      return (
-                        <li key={step.id}>
-                          <button
-                            onClick={() => onStepClick(step.id)}
-                            disabled={isDisabled}
-                            className={`flex items-center p-3 w-full rounded-lg transition-colors text-left
-                              ${isActive ? 'bg-purple-100 text-purple-800 font-medium' : ''}
-                              ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-50'}
-                            `}
-                          >
-                            <div className="mr-3 flex-shrink-0">
-                              {step.completed ? (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
-                              ) : (
-                                <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs
-                                  ${isActive ? 'bg-purple-600 text-white' : 'bg-gray-300 text-gray-700'}
-                                `}>
-                                  {step.id}
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <div className="font-medium text-purple-900">{step.title}</div>
-                              <div className="text-sm text-purple-600">{step.description}</div>
-                            </div>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <ScrollArea className="h-[250px] pr-4">
+                    <ul className="space-y-3">
+                      {activeChangeSteps.map((step) => {
+                        const isActive = step.id === currentStepId;
+                        // Updated logic to include available flag
+                        const isDisabled = !isStepEnabled(step);
+                        
+                        return (
+                          <li key={step.id}>
+                            <button
+                              onClick={() => onStepClick(step.id)}
+                              disabled={isDisabled}
+                              className={`flex items-center p-3 w-full rounded-lg transition-colors text-left
+                                ${isActive ? 'bg-purple-100 text-purple-800 font-medium' : ''}
+                                ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-50'}
+                              `}
+                            >
+                              <div className="mr-3 flex-shrink-0">
+                                {step.completed ? (
+                                  <CheckCircle className="h-5 w-5 text-green-500" />
+                                ) : (
+                                  <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs
+                                    ${isActive ? 'bg-purple-600 text-white' : 'bg-gray-300 text-gray-700'}
+                                  `}>
+                                    {step.id}
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <div className="font-medium text-purple-900">{step.title}</div>
+                                <div className="text-sm text-purple-600">{step.description}</div>
+                              </div>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </ScrollArea>
                 ) : (
                   <p className="text-purple-600 italic text-sm p-4">
                     Complete the previous sections to unlock this section
