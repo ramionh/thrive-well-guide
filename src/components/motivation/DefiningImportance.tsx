@@ -31,21 +31,39 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch saved values from the database
   useEffect(() => {
     const fetchSavedValues = async () => {
       if (!user) return;
       
       try {
+        console.log('Fetching defining importance data for user:', user.id);
         const { data, error } = await supabase
           .from('motivation_defining_importance')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error("Error fetching saved values:", error);
+          throw error;
+        }
 
         if (data) {
-          setSelectedDescriptors(data.descriptors || []);
+          console.log('Retrieved defining importance data:', data);
+          // Ensure descriptors is treated as an array
+          if (data.descriptors) {
+            if (Array.isArray(data.descriptors)) {
+              setSelectedDescriptors(data.descriptors);
+            } else if (typeof data.descriptors === 'string') {
+              try {
+                setSelectedDescriptors(JSON.parse(data.descriptors));
+              } catch (e) {
+                console.error("Error parsing descriptors JSON:", e);
+                setSelectedDescriptors([]);
+              }
+            }
+          }
           setReflection(data.reflection || "");
         }
       } catch (error) {
@@ -97,11 +115,18 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
 
     setIsSubmitting(true);
     try {
+      console.log('Saving defining importance data:', {
+        user_id: user.id,
+        goal_text: goalText,
+        descriptors: selectedDescriptors,
+        reflection: reflection
+      });
+
       const { data: existingData } = await supabase
         .from('motivation_defining_importance')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (existingData) {
         // Update existing record
@@ -216,7 +241,7 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
             disabled={isSubmitting}
             className="w-full bg-purple-600 hover:bg-purple-700"
           >
-            Complete Step
+            {isSubmitting ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>
