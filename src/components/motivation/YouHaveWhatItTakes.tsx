@@ -32,6 +32,58 @@ const CHARACTERISTICS = [
   ["CLEVER", "FAITHFUL", "PATIENT", "STRONG", "ZESTFUL"],
 ];
 
+// Custom parser for the characteristics data
+const parseCharacteristicsData = (data: any) => {
+  console.log("Parsing characteristics data:", data);
+  
+  // Initialize with empty arrays if the data doesn't exist
+  let characteristics: string[] = [];
+  let examples: string[] = ["", ""];
+  
+  // Parse characteristics
+  if (data.characteristics) {
+    if (Array.isArray(data.characteristics)) {
+      characteristics = data.characteristics;
+    } else if (typeof data.characteristics === 'string') {
+      try {
+        characteristics = JSON.parse(data.characteristics);
+      } catch (e) {
+        console.error("Error parsing characteristics JSON:", e);
+        characteristics = [];
+      }
+    }
+  }
+  
+  // Parse examples
+  if (data.examples) {
+    if (Array.isArray(data.examples)) {
+      examples = data.examples.length >= 2 
+        ? [data.examples[0] || "", data.examples[1] || ""] 
+        : [...data.examples, ...Array(2 - data.examples.length).fill("")];
+    } else if (typeof data.examples === 'string') {
+      try {
+        const parsedExamples = JSON.parse(data.examples);
+        examples = Array.isArray(parsedExamples) 
+          ? (parsedExamples.length >= 2 
+              ? [parsedExamples[0] || "", parsedExamples[1] || ""] 
+              : [...parsedExamples, ...Array(2 - parsedExamples.length).fill("")])
+          : ["", ""];
+      } catch (e) {
+        console.error("Error parsing examples JSON:", e);
+        examples = ["", ""];
+      }
+    }
+  }
+  
+  console.log("Parsed characteristics:", characteristics);
+  console.log("Parsed examples:", examples);
+  
+  return {
+    characteristics,
+    examples
+  };
+};
+
 const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) => {
   const [selectedCharacteristics, setSelectedCharacteristics] = useState<string[]>([]);
   const [example1, setExample1] = useState("");
@@ -47,31 +99,38 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
   } = useMotivationForm({
     tableName: "motivation_characteristics",
     initialState: {
-      characteristics: [],
-      examples: ["", ""]
-    }
+      characteristics: [] as string[],
+      examples: ["", ""] as string[]
+    },
+    parseData: parseCharacteristicsData
   });
 
   useEffect(() => {
-    fetchData().then((data) => {
-      if (data) {
-        // Safely check if data.characteristics exists and is an array
-        if (data && 'characteristics' in data && Array.isArray(data.characteristics)) {
-          setSelectedCharacteristics(data.characteristics);
-        }
-        
-        // Safely check if data.examples exists and is an array
-        if (data && 'examples' in data && Array.isArray(data.examples)) {
-          if (data.examples.length >= 1) {
-            setExample1(data.examples[0] || "");
-          }
-          if (data.examples.length >= 2) {
-            setExample2(data.examples[1] || "");
-          }
-        }
-      }
+    fetchData().then(() => {
+      console.log("Fetch completed");
     });
   }, []);
+
+  // Update local state when formData changes
+  useEffect(() => {
+    console.log("Form data updated:", formData);
+    if (formData) {
+      // Handle characteristics
+      if (Array.isArray(formData.characteristics)) {
+        setSelectedCharacteristics(formData.characteristics);
+      }
+      
+      // Handle examples
+      if (Array.isArray(formData.examples)) {
+        if (formData.examples.length >= 1) {
+          setExample1(formData.examples[0] || "");
+        }
+        if (formData.examples.length >= 2) {
+          setExample2(formData.examples[1] || "");
+        }
+      }
+    }
+  }, [formData]);
 
   const handleCharacteristicToggle = (characteristic: string) => {
     setSelectedCharacteristics(prev => {

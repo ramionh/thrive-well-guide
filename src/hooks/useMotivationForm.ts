@@ -68,9 +68,28 @@ export const useMotivationForm = <T, U = T>({
           // Default simple parsing
           const cleanedData = {} as T;
           Object.keys(initialState).forEach(key => {
-            // @ts-ignore
-            cleanedData[key] = data[key] !== undefined && data[key] !== null ? data[key] : initialState[key];
+            const dataKey = key as keyof T;
+            // Handle arrays and objects that might be stored as strings
+            if (data[dataKey] && typeof data[dataKey] === 'string' && 
+               (key === 'characteristics' || key === 'examples' || 
+                key === 'values' || key === 'selected_values')) {
+              try {
+                // @ts-ignore
+                cleanedData[dataKey] = JSON.parse(data[dataKey]);
+              } catch (e) {
+                console.error(`Error parsing JSON for ${dataKey}:`, e);
+                // @ts-ignore
+                cleanedData[dataKey] = initialState[dataKey];
+              }
+            } else {
+              // @ts-ignore
+              cleanedData[dataKey] = data[dataKey] !== undefined && data[dataKey] !== null 
+                ? data[dataKey] 
+                : initialState[dataKey];
+            }
           });
+          
+          console.log(`Cleaned data for ${tableName}:`, cleanedData);
           setFormData(cleanedData);
         }
       }
