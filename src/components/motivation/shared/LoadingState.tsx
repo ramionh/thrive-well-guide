@@ -3,8 +3,11 @@ import React from "react";
 
 const LoadingState: React.FC = () => {
   return (
-    <div className="flex justify-center items-center py-8">
-      <div className="animate-spin h-8 w-8 border-4 border-purple-500 rounded-full border-t-transparent"></div>
+    <div className="flex items-center justify-center py-12">
+      <div className="flex flex-col items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-700 mb-3"></div>
+        <p className="text-purple-700 font-medium">Loading...</p>
+      </div>
     </div>
   );
 };

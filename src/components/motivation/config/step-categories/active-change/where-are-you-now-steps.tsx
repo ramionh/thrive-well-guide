@@ -1,9 +1,9 @@
 
 import React from "react";
-import WhereAreYouNow from "../../WhereAreYouNow";
-import GettingReady from "../../GettingReady";
-import MakingGoalMeasurable from "../../MakingGoalMeasurable";
-import IdentifyingStepsToGoal from "../../IdentifyingStepsToGoal";
+import WhereAreYouNow from "../../../WhereAreYouNow";
+import GettingReady from "../../../GettingReady";
+import MakingGoalMeasurable from "../../../MakingGoalMeasurable";
+import IdentifyingStepsToGoal from "../../../IdentifyingStepsToGoal";
 import type { StepConfig } from "../../../types/motivation";
 
 export const whereAreYouNowSteps: StepConfig[] = [

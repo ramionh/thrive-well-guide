@@ -1712,6 +1712,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_steps_to_goal: {
+        Row: {
+          actions: Json | null
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actions?: Json | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actions?: Json | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_strength_applications: {
         Row: {
           created_at: string

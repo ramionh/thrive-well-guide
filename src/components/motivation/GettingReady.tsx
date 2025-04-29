@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,85 +7,83 @@ import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
 
 interface GettingReadyProps {
-  onComplete: () => void;
+  onComplete?: () => void;
 }
 
 const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
-  const {
+  const [selfPersuasion, setSelfPersuasion] = useState<string>("");
+  
+  const { 
     formData,
-    isLoading,
-    isSaving,
-    fetchData,
-    updateForm,
-    submitForm
-  } = useMotivationForm<{
-    self_persuasion: string;
-  }>({
+    isLoading, 
+    isSaving, 
+    submitForm, 
+    updateForm 
+  } = useMotivationForm({
     tableName: "motivation_getting_ready",
     initialState: {
       self_persuasion: ""
     },
-    onSuccess: onComplete,
-    parseData: (data) => {
-      return {
-        self_persuasion: data?.self_persuasion || ""
-      };
-    }
+    onSuccess: onComplete
   });
-
+  
   useEffect(() => {
-    fetchData();
-  }, []);
-
+    if (formData) {
+      setSelfPersuasion(formData.self_persuasion || "");
+    }
+  }, [formData]);
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    updateForm("self_persuasion", selfPersuasion);
     submitForm();
   };
-
-  if (isLoading) {
-    return <LoadingState />;
-  }
-
+  
   return (
-    <Card className="border-none shadow-none">
-      <CardContent className="px-0">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <p className="text-gray-700">
-              Getting ready for change involves persuading yourself about why this change is important to you.
-              Take a moment to reflect on your motivations and write a brief self-persuasion statement below.
-            </p>
-            
-            <p className="text-md text-purple-600 italic">
-              For example: "I'm ready to make this change because improving my fitness will give me more energy for activities 
-              I enjoy with my family. This is important to me because quality time with loved ones brings me the most joy in life."
-            </p>
-            
+    <Card className="bg-white">
+      <CardContent className="p-6">
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="self-persuasion" className="block text-sm font-medium text-purple-700 mb-2">
-                Your self-persuasion statement
-              </label>
-              <Textarea
-                id="self-persuasion"
-                rows={6}
-                value={formData.self_persuasion}
-                onChange={(e) => updateForm("self_persuasion", e.target.value)}
-                className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                placeholder="I'm ready to make this change because..."
-              />
+              <h2 className="text-xl font-semibold text-purple-800 mb-4">Getting Ready for Change</h2>
+              
+              <p className="text-gray-600 mb-4">
+                Change is often challenging, especially when it comes to health and fitness habits 
+                that have been part of our lives for years. Before diving into specific action plans, 
+                it's important to prepare yourself mentally for the journey ahead.
+              </p>
+              
+              <p className="text-gray-600 mb-6">
+                Self-persuasion is a powerful technique where you actively convince yourself of the 
+                importance and possibility of change. Unlike external motivation that fades, self-persuasion 
+                creates lasting internal motivation that can sustain you through challenges.
+              </p>
+              
+              <div className="space-y-4">
+                <label className="text-purple-700 font-medium">
+                  Write a persuasive argument to yourself about why changing now is important and possible:
+                </label>
+                
+                <Textarea
+                  value={selfPersuasion}
+                  onChange={(e) => setSelfPersuasion(e.target.value)}
+                  placeholder="I need to make this change because... I know I can succeed because..."
+                  className="h-48"
+                />
+              </div>
             </div>
-          </div>
-
-          <div className="flex justify-end">
+            
             <Button
               type="submit"
-              disabled={isSaving || !formData.self_persuasion?.trim()}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              disabled={isSaving}
+              className="w-full bg-purple-600 hover:bg-purple-700"
             >
               {isSaving ? "Saving..." : "Complete Step"}
             </Button>
-          </div>
-        </form>
+          </form>
+        )}
       </CardContent>
     </Card>
   );
