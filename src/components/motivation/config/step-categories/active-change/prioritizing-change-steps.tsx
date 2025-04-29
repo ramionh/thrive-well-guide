@@ -1,9 +1,9 @@
 
 import React from 'react';
-import PrioritizingChange from "../../PrioritizingChange";
-import GettingReady from "../../GettingReady";
-import MakingGoalMeasurable from "../../MakingGoalMeasurable";
-import type { StepConfig } from "../../types/motivation";
+import PrioritizingChange from "../../../../PrioritizingChange";
+import GettingReady from "../../../../GettingReady";
+import MakingGoalMeasurable from "../../../../MakingGoalMeasurable";
+import type { StepConfig } from "../../../../types/motivation";
 
 export const prioritizingChangeSteps: StepConfig[] = [
   {
