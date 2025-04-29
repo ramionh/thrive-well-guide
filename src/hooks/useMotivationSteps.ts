@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -82,12 +83,16 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
   }, [user, steps, initialSteps]);
 
   const handleStepClick = (stepId: number) => {
-    const maxAllowedStep = steps.filter((s) => s.completed).reduce(
-      (max, step) => Math.max(max, step.id + 1),
-      1
-    );
+    // Modified logic to allow clicking on any completed step or the next available step
+    const isCompleted = steps.find(step => step.id === stepId)?.completed;
+    const highestCompletedStepId = steps
+      .filter(step => step.completed)
+      .reduce((max, step) => Math.max(max, step.id), 0);
     
-    if (stepId <= maxAllowedStep) {
+    // Allow navigation if:
+    // 1. The step has been completed, OR
+    // 2. It's the next step after the highest completed step
+    if (isCompleted || stepId === highestCompletedStepId + 1) {
       setCurrentStepId(stepId);
     }
   };

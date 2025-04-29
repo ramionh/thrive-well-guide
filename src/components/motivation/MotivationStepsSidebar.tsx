@@ -29,6 +29,11 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   const chartingPathSteps = visibleSteps.filter(step => step.id >= 18 && step.id < 62);
   const activeChangeSteps = visibleSteps.filter(step => step.id >= 62);
   
+  // Find the highest completed step ID to determine navigation permissions
+  const highestCompletedStepId = steps
+    .filter(step => step.completed)
+    .reduce((max, step) => Math.max(max, step.id), 0);
+  
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
       <Card className="bg-white shadow-md border border-purple-100">
@@ -43,7 +48,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                 <ul className="space-y-3">
                   {startingPointSteps.map((step) => {
                     const isActive = step.id === currentStepId;
-                    const isDisabled = step.id > currentStepId && !steps[step.id - 2]?.completed;
+                    // A step is clickable if it's completed or it's the next step after the highest completed step
+                    const isDisabled = !step.completed && step.id > highestCompletedStepId + 1;
                     
                     return (
                       <li key={step.id}>
@@ -87,7 +93,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                   <ul className="space-y-3">
                     {chartingPathSteps.map((step) => {
                       const isActive = step.id === currentStepId;
-                      const isDisabled = !steps[step.id - 2]?.completed;
+                      // A step is clickable if it's completed or it's the next step after the highest completed step
+                      const isDisabled = !step.completed && step.id > highestCompletedStepId + 1;
                       
                       return (
                         <li key={step.id}>
@@ -136,7 +143,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                   <ul className="space-y-3">
                     {activeChangeSteps.map((step) => {
                       const isActive = step.id === currentStepId;
-                      const isDisabled = !steps[step.id - 2]?.completed;
+                      // A step is clickable if it's completed or it's the next step after the highest completed step
+                      const isDisabled = !step.completed && step.id > highestCompletedStepId + 1;
                       
                       return (
                         <li key={step.id}>
