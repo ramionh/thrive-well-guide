@@ -1,5 +1,6 @@
 
 import React from 'react';
+import ManagingStress from "../../../ManagingStress";
 import IdentifyingStressTypes from "../../../IdentifyingStressTypes";
 import HowStressedAmI from "../../../HowStressedAmI";
 import CopingMechanisms from "../../../CopingMechanisms";
@@ -9,6 +10,12 @@ import Affirmations from "../../../Affirmations";
 import type { StepConfig } from "../../../types/motivation";
 
 export const stressSteps: StepConfig[] = [
+  {
+    id: 43,
+    title: "Managing Stress",
+    description: "Learn about stress management techniques",
+    component: (onComplete) => <ManagingStress onComplete={onComplete} />
+  },
   {
     id: 44,
     title: "Identifying Your Type of Stress",

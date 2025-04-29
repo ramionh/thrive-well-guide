@@ -45,15 +45,6 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
         if (data.length > 0) {
           const completedSteps = data.filter(p => p.completed).map(p => p.step_number);
           
-          // If Build on Your Strengths (42) is completed, check if we need to skip to Identifying Your Type of Stress (44)
-          if (completedSteps.includes(42)) {
-            const stressTypeStepCompleted = completedSteps.includes(44);
-            if (!stressTypeStepCompleted) {
-              setCurrentStepId(44);  // Set to Identifying Your Type of Stress
-              return;
-            }
-          }
-          
           // Normal progression logic - set to last completed + 1 or first step
           if (completedSteps.length > 0) {
             const maxCompletedStep = Math.max(...completedSteps);
@@ -89,26 +80,6 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
     if (!user) return;
 
     try {
-      // Special handling for Build on Your Strengths (step 42)
-      if (stepId === 42) {
-        // First mark step 42 as complete
-        await saveStepProgress(user.id, stepId, steps);
-        
-        // Then mark step 43 (Managing Stress) as complete as we're skipping it
-        await saveStepProgress(user.id, 43, steps);
-        
-        // Set the current step to 44 (Identifying Your Type of Stress)
-        setCurrentStepId(44);
-        
-        toast({
-          title: "Step completed",
-          description: "Your progress has been saved"
-        });
-        
-        return;
-      }
-      
-      // Normal completion handling for other steps
       await saveStepProgress(user.id, stepId, steps);
       
       setSteps(prevSteps => 
