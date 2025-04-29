@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Step } from "@/components/motivation/types/motivation";
 
 export const useStepNavigation = (initialSteps: Step[]) => {
@@ -8,7 +8,7 @@ export const useStepNavigation = (initialSteps: Step[]) => {
   /**
    * Handles clicking on a step in the navigation
    */
-  const handleStepClick = (stepId: number, steps: Step[]) => {
+  const handleStepClick = useCallback((stepId: number, steps: Step[]) => {
     // Modified logic to allow clicking on any completed step or the next available step
     const isCompleted = steps.find(step => step.id === stepId)?.completed;
     const highestCompletedStepId = steps
@@ -21,12 +21,12 @@ export const useStepNavigation = (initialSteps: Step[]) => {
     if (isCompleted || stepId === highestCompletedStepId + 1) {
       setCurrentStepId(stepId);
     }
-  };
+  }, []);
   
   /**
    * Finds the appropriate step to display based on completion status
    */
-  const findInitialStep = (steps: Step[], progressData: any[] | null) => {
+  const findInitialStep = useCallback((steps: Step[], progressData: any[] | null) => {
     if (!progressData || progressData.length === 0) return 1;
     
     // Get default completed steps
@@ -53,19 +53,19 @@ export const useStepNavigation = (initialSteps: Step[]) => {
     } else {
       return 1;  // Start at the beginning
     }
-  };
+  }, []);
 
   /**
    * Moves to the next step if available
    */
-  const moveToNextStep = (currentId: number, steps: Step[]) => {
+  const moveToNextStep = useCallback((currentId: number, steps: Step[]) => {
     const nextStepId = currentId + 1;
     if (steps.some(step => step.id === nextStepId)) {
       setCurrentStepId(nextStepId);
       return true;
     }
     return false;
-  };
+  }, []);
 
   return {
     currentStepId,

@@ -5,11 +5,12 @@ import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import MotivationStepContent from "./MotivationStepContent";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 import { motivationSteps } from "./config/motivationSteps";
+import LoadingState from "./shared/LoadingState";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
   
-  const { steps, currentStepId, currentStep, handleStepClick, markStepComplete } = useMotivationSteps(
+  const { steps, currentStepId, currentStep, handleStepClick, markStepComplete, isLoading } = useMotivationSteps(
     motivationSteps.map(step => ({
       ...step,
       // Pass the onComplete callback to each component
@@ -20,6 +21,10 @@ const Motivation = () => {
 
   if (showSplash) {
     return <MotivationSplash onContinue={() => setShowSplash(false)} />;
+  }
+
+  if (isLoading) {
+    return <LoadingState />;
   }
 
   return (
