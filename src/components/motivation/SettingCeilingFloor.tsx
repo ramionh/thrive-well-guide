@@ -19,7 +19,7 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
   const {
     formData,
     isLoading,
-    isSubmitting,
+    isSaving,
     fetchData,
     updateForm,
     submitForm
@@ -88,10 +88,10 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}

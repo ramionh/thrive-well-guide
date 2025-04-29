@@ -14,7 +14,7 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
   const {
     formData,
     isLoading,
-    isSubmitting,
+    isSaving,
     fetchData,
     updateForm,
     submitForm
@@ -33,7 +33,10 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitForm(e, onComplete);
+    submitForm();
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   if (isLoading) {
@@ -73,10 +76,10 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isSubmitting || !formData.realistic_change.trim()}
+            disabled={isSaving || !formData.realistic_change.trim()}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
-            {isSubmitting ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </div>
       </form>

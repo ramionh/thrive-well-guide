@@ -15,7 +15,7 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
   const {
     formData,
     isLoading,
-    isSubmitting,
+    isSaving,
     fetchData,
     updateForm,
     submitForm
@@ -35,13 +35,18 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
     fetchData();
   }, []);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm();
+  };
+
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
         {isLoading ? (
           <LoadingState />
         ) : (
-          <form onSubmit={(e) => submitForm(e)} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <h2 className="text-xl font-semibold text-purple-800 mb-4">Prioritizing the Change</h2>
               <p className="text-gray-600 mb-6">
@@ -87,10 +92,10 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}

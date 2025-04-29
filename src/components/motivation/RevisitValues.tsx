@@ -16,7 +16,7 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
   const { 
     formData, 
     isLoading, 
-    isSubmitting,
+    isSaving,
     fetchData,
     updateForm,
     submitForm
@@ -40,7 +40,10 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitForm(e, onComplete);
+    submitForm();
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   const updateValue = (index: number, value: string) => {
@@ -119,10 +122,10 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}

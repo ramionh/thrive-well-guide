@@ -40,7 +40,7 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
   const { 
     formData, 
     isLoading, 
-    isSubmitting, 
+    isSaving, 
     fetchData,
     updateForm,
     submitForm
@@ -89,7 +89,10 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
     updateForm("characteristics", selectedCharacteristics);
     updateForm("examples", [example1, example2]);
     
-    submitForm(e, onComplete);
+    submitForm();
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   return (
@@ -170,10 +173,10 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}

@@ -15,7 +15,7 @@ const ValuesConflict: React.FC<ValuesConflictProps> = ({ onComplete }) => {
   const { 
     formData, 
     isLoading, 
-    isSubmitting, 
+    isSaving, 
     fetchData,
     updateForm,
     submitForm
@@ -34,7 +34,10 @@ const ValuesConflict: React.FC<ValuesConflictProps> = ({ onComplete }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitForm(e, onComplete);
+    submitForm();
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   return (
@@ -94,10 +97,10 @@ const ValuesConflict: React.FC<ValuesConflictProps> = ({ onComplete }) => {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}
