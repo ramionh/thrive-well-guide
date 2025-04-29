@@ -23,7 +23,8 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
     tableName: "motivation_realistic_change",
     initialState: {
       realistic_change: ""
-    }
+    },
+    onSuccess: onComplete
   });
 
   useEffect(() => {
@@ -33,9 +34,6 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitForm();
-    if (onComplete) {
-      onComplete();
-    }
   };
 
   if (isLoading) {
