@@ -114,13 +114,13 @@ const SocialCulturalResources: React.FC<SocialCulturalResourcesProps> = ({ onCom
       
       if (result.error) throw result.error;
       
-      // Also update the step progress
+      // Update the step progress for step 50
       const { error: progressError } = await supabase
         .from("motivation_steps_progress")
         .upsert(
           {
             user_id: user.id,
-            step_number: 50, // Make sure this matches the correct step number
+            step_number: 50,
             step_name: "Social and Cultural Resources",
             completed: true,
             completed_at: new Date().toISOString()
@@ -130,11 +130,28 @@ const SocialCulturalResources: React.FC<SocialCulturalResourcesProps> = ({ onCom
         
       if (progressError) throw progressError;
       
+      // Enable step 55 by marking it as the next available step
+      const { error: nextStepError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 55,
+            step_name: "Environmental or Situational Supports and Resources",
+            completed: false,
+            completed_at: null
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (nextStepError) throw nextStepError;
+      
       toast({
         title: "Success",
         description: "Your response has been saved",
       });
 
+      // Call the onComplete callback to move to the next step
       if (onComplete) {
         onComplete();
       }
