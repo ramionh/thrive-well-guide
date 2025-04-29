@@ -36,7 +36,7 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         .from("motivation_affirmations")
         .select("affirmations")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== "PGRST116") {
         throw error;
@@ -101,7 +101,7 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         .upsert(
           {
             user_id: user.id,
-            step_number: 14, // Assuming Affirmations is step 14
+            step_number: 49, // Affirmations is step 49
             step_name: "Affirmations",
             completed: true,
             completed_at: new Date().toISOString()
@@ -110,6 +110,23 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         );
       
       if (progressError) throw progressError;
+      
+      // Explicitly enable the next step (50) by marking it as available
+      const { error: nextStepError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 50,
+            step_name: "Social and Cultural Resources",
+            completed: false,
+            available: true, // Explicitly mark as available
+            completed_at: null
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (nextStepError) throw nextStepError;
       
       toast({
         title: "Success",
