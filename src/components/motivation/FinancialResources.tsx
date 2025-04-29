@@ -58,16 +58,22 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
         throw error;
       }
 
+      console.log("Financial resources raw data:", data);
+
       if (data) {
-        setFormData({
-          income: data.income || "",
-          job_stability: data.job_stability || "",
-          workplace_benefits: data.workplace_benefits || "",
-          flexible_schedule: data.flexible_schedule || "",
-          job_satisfaction: data.job_satisfaction || "",
-          financial_feelings: data.financial_feelings || "",
-          build_resources: data.build_resources || ""
-        });
+        // Create a clean data object, handling both direct values and potential JSON parsing issues
+        const cleanData: FinancialResourcesFormData = {
+          income: parseField(data.income),
+          job_stability: parseField(data.job_stability),
+          workplace_benefits: parseField(data.workplace_benefits),
+          flexible_schedule: parseField(data.flexible_schedule),
+          job_satisfaction: parseField(data.job_satisfaction),
+          financial_feelings: parseField(data.financial_feelings),
+          build_resources: parseField(data.build_resources)
+        };
+
+        console.log("Parsed financial resources data:", cleanData);
+        setFormData(cleanData);
       }
     } catch (error) {
       console.error("Error fetching financial resources data:", error);
@@ -79,6 +85,31 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Helper function to parse potentially JSON-encoded string fields
+  const parseField = (value: any): string => {
+    if (!value) return "";
+    
+    // Already a string
+    if (typeof value === 'string') return value;
+    
+    // Try to handle case where value might be a JSON object/array
+    if (typeof value === 'object') {
+      try {
+        // If it's an object that contains a text property
+        if (value.text) return value.text;
+        // If it's an array and has a first element with text
+        if (Array.isArray(value) && value[0]?.text) return value[0].text;
+        // Last resort, stringify it
+        return JSON.stringify(value);
+      } catch (e) {
+        return "";
+      }
+    }
+    
+    // Default fallback
+    return String(value);
   };
 
   const handleInputChange = (field: keyof FinancialResourcesFormData, value: string) => {
