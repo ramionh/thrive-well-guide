@@ -96,15 +96,17 @@ export const useMotivationForm = <T extends Record<string, any>>({
       const dataToSubmit = transformData ? transformData(formData) : formData;
       
       // Check if a record already exists for this user
-      const { data: existingData } = await supabase
+      const { data: existingData, error: queryError } = await supabase
         .from(tableName as any)
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
       
+      if (queryError) throw queryError;
+      
       let result;
       
-      if (existingData?.id) {
+      if (existingData && 'id' in existingData) {
         // Update existing record
         result = await supabase
           .from(tableName as any)
