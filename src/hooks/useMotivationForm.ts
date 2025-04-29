@@ -95,15 +95,36 @@ export const useMotivationForm = <T extends Record<string, any>>({
     try {
       const dataToSubmit = transformData ? transformData(formData) : formData;
       
-      // Cast the table name to any to avoid TypeScript limitations
-      const { error } = await supabase
+      // Check if a record already exists for this user
+      const { data: existingData } = await supabase
         .from(tableName as any)
-        .insert({
-          user_id: user.id,
-          ...dataToSubmit
-        });
-
-      if (error) throw error;
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      let result;
+      
+      if (existingData?.id) {
+        // Update existing record
+        result = await supabase
+          .from(tableName as any)
+          .update({
+            ...dataToSubmit,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", existingData.id)
+          .eq("user_id", user.id);
+      } else {
+        // Insert new record
+        result = await supabase
+          .from(tableName as any)
+          .insert({
+            user_id: user.id,
+            ...dataToSubmit
+          });
+      }
+      
+      if (result.error) throw result.error;
       
       toast({
         title: "Success",
