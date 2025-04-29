@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import LoadingState from "../shared/LoadingState";
+import LoadingState from "./shared/LoadingState";
 import ExampleSection from "./social-cultural/ExampleSection";
 import SocialCulturalForm from "./social-cultural/SocialCulturalForm";
 import { useSocialCulturalResources } from "./social-cultural/useSocialCulturalResources";
