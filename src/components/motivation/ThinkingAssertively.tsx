@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,6 +24,9 @@ const ThinkingAssertively: React.FC<ThinkingAssertivelyProps> = ({ onComplete })
   const handleComplete = () => {
     saveThinkingAssertivelyMutation.mutate();
   };
+
+  const isPending = saveThinkingAssertivelyMutation.isPending;
+  const isFormComplete = thoughtChallenge && boundaryNeeds && boundaryRequest;
 
   return (
     <div className="space-y-6">
@@ -83,9 +87,9 @@ const ThinkingAssertively: React.FC<ThinkingAssertivelyProps> = ({ onComplete })
               <Button 
                 onClick={handleComplete}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                disabled={!thoughtChallenge || !boundaryNeeds || !boundaryRequest}
+                disabled={isPending || !isFormComplete}
               >
-                Complete Step
+                {isPending ? 'Saving...' : 'Complete Step'}
               </Button>
             </Card>
           </CarouselItem>
