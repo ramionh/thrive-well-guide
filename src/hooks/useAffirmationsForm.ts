@@ -43,8 +43,26 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
       }
       
       if (data?.affirmations) {
-        // Cast the Json type to our AffirmationItem array with type assertion
-        const savedAffirmations = data.affirmations as unknown as AffirmationItem[];
+        console.log("Raw affirmations data:", data.affirmations);
+        
+        // Handle different possible formats of the returned data
+        let savedAffirmations: AffirmationItem[] = [];
+        
+        if (Array.isArray(data.affirmations)) {
+          // Direct array format
+          savedAffirmations = data.affirmations as unknown as AffirmationItem[];
+        } else if (typeof data.affirmations === 'object' && data.affirmations !== null) {
+          // If it's an object with numeric keys (like from JSON parsing)
+          const affObj = data.affirmations as any;
+          if (affObj.affirmations && Array.isArray(affObj.affirmations)) {
+            savedAffirmations = affObj.affirmations;
+          } else {
+            // Try to extract values if it's an object with numeric keys
+            savedAffirmations = Object.values(affObj);
+          }
+        }
+        
+        console.log("Parsed affirmations:", savedAffirmations);
         
         // Ensure we have at least 5 rows for the form
         if (savedAffirmations.length < 5) {
@@ -111,13 +129,13 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
       
       if (progressError) throw progressError;
       
-      // Explicitly enable the next step (54) by marking it as available - updated to 54 from 50
+      // Explicitly enable the next step (54) by marking it as available
       const { error: nextStepError } = await supabase
         .from("motivation_steps_progress")
         .upsert(
           {
             user_id: user.id,
-            step_number: 54, // Updated to 54 from 50
+            step_number: 54, // Social and Cultural Resources
             step_name: "Social and Cultural Resources",
             completed: false,
             available: true, // Explicitly mark as available
