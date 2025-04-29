@@ -77,7 +77,14 @@ export const useMotivationForm = <T, U = T>({
               if (typeof data[key] === 'string' && 
                  (key === 'characteristics' || key === 'examples' || 
                   key === 'values' || key === 'selected_values' || 
-                  key === 'strength_applications' || key === 'feedback_entries')) {
+                  key === 'strength_applications' || key === 'feedback_entries' ||
+                  key === 'actions' || key === 'steps' || key === 'ratings' ||
+                  key === 'support_types' || key === 'confidence_scale' ||
+                  key === 'confidence_talk' || key === 'confidence_steps' ||
+                  key === 'stressors' || key === 'current_techniques' ||
+                  key === 'new_techniques' || key === 'stress_ratings' ||
+                  key === 'stress_types' || key === 'value_descriptions' ||
+                  key === 'selected_values')) {
                 try {
                   (cleanedData as any)[dataKey] = JSON.parse(data[key]);
                 } catch (e) {
