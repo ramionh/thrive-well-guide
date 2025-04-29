@@ -4,6 +4,7 @@ import SocialCulturalResources from "../../../SocialCulturalResources";
 import EnvironmentalResources from "../../../EnvironmentalResources";
 import ResourceDevelopment from "../../../ResourceDevelopment";
 import FinancialResources from "../../../FinancialResources";
+import SocialSupport from "../../../SocialSupport";
 import type { StepConfig } from "../../../types/motivation";
 
 export const resourceSteps: StepConfig[] = [
@@ -12,6 +13,12 @@ export const resourceSteps: StepConfig[] = [
     title: "Financial and Economic Resources",
     description: "Identify financial resources that support your fitness goals",
     component: (onComplete) => <FinancialResources onComplete={onComplete} />
+  },
+  {
+    id: 51,
+    title: "Social Support and Social Competence",
+    description: "Identify your social support system and competence",
+    component: (onComplete) => <SocialSupport onComplete={onComplete} />
   },
   {
     id: 54,
