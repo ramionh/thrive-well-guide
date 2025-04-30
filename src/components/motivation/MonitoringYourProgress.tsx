@@ -15,11 +15,11 @@ interface MonitoringYourProgressProps {
 type RatingOption = "None of the time" | "Some of the time" | "A fair amount of the time" | "Most of the time" | "All of the time";
 
 interface RatingsData {
-  consistent: RatingOption;
-  setbacks: RatingOption;
-  support: RatingOption;
-  community: RatingOption;
-  coping: RatingOption;
+  consistent: RatingOption | null;
+  setbacks: RatingOption | null;
+  support: RatingOption | null;
+  community: RatingOption | null;
+  coping: RatingOption | null;
 }
 
 const MonitoringYourProgress: React.FC<MonitoringYourProgressProps> = ({ onComplete }) => {
@@ -33,11 +33,11 @@ const MonitoringYourProgress: React.FC<MonitoringYourProgressProps> = ({ onCompl
     tableName: "motivation_monitoring_progress",
     initialState: {
       ratings: {
-        consistent: "",
-        setbacks: "",
-        support: "",
-        community: "",
-        coping: ""
+        consistent: null,
+        setbacks: null,
+        support: null,
+        community: null,
+        coping: null
       } as RatingsData,
       working_well: "",
       compliments: ""
