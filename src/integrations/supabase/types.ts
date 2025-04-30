@@ -572,6 +572,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_control: {
+        Row: {
+          can_control: string
+          cant_control: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_control?: string
+          cant_control?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_control?: string
+          cant_control?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_coping_mechanisms: {
         Row: {
           created_at: string

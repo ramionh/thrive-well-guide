@@ -7,6 +7,7 @@ import NarrowingDownRewards from "@/components/motivation/NarrowingDownRewards";
 import GetOrganized from "@/components/motivation/GetOrganized";
 import SeekPositiveInformation from "@/components/motivation/SeekPositiveInformation";
 import ThinkAboutBigPicture from "@/components/motivation/ThinkAboutBigPicture";
+import Control from "@/components/motivation/Control";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -51,5 +52,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Think About the Big Picture and Your Big Why",
     description: "Revisit your ultimate goal and motivations",
     component: (onComplete) => <ThinkAboutBigPicture onComplete={onComplete} />
+  },
+  {
+    id: 75,
+    title: "Control",
+    description: "Focus on what you can control and let go of what you can't",
+    component: (onComplete) => <Control onComplete={onComplete} />
   }
 ];
