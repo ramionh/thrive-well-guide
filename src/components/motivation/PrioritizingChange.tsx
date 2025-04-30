@@ -33,7 +33,8 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
       prioritized_activities: '',
     },
     onSuccess: onComplete,
-    stepNumber: 61, 
+    stepNumber: 61,
+    nextStepNumber: 64, // Setting "Where Are You Now" (ID: 64) as the next step
     parseData: (data) => {
       console.log("Raw data from Prioritizing Change:", data);
       return {
