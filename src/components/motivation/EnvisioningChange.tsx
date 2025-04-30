@@ -1,10 +1,11 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { EyeIcon } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
 
 interface EnvisioningChangeProps {
@@ -17,7 +18,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     howItWorked: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading, isSaving, fetchData } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, isSaving } = useMotivationForm({
     tableName: "motivation_envisioning_change",
     initialState,
     onSuccess: onComplete,
@@ -28,16 +29,13 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
       };
     },
     parseData: (data) => {
+      console.log("Raw data from Envisioning Change:", data);
       return {
         successfulChange: data.successful_change || "",
         howItWorked: data.how_it_worked || ""
       };
     }
   });
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,9 +47,12 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
   }
 
   return (
-    <Card className="bg-white shadow-md">
-      <CardContent className="p-6">
-        <h2 className="text-xl font-semibold text-purple-800 mb-4">Envisioning Change</h2>
+    <Card className="border-none shadow-none">
+      <CardContent className="px-0">
+        <div className="flex items-center gap-3 mb-4">
+          <EyeIcon className="w-6 h-6 text-purple-600" />
+          <h2 className="text-xl font-bold text-purple-800">Envisioning Change</h2>
+        </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <p className="text-gray-700 mb-6">
@@ -65,7 +66,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
               </Label>
               <Textarea
                 id="successfulChange"
-                value={formData.successfulChange || ""}
+                value={formData.successfulChange}
                 onChange={(e) => updateForm("successfulChange", e.target.value)}
                 className="mt-2 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={4}
@@ -79,7 +80,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
               </Label>
               <Textarea
                 id="howItWorked"
-                value={formData.howItWorked || ""}
+                value={formData.howItWorked}
                 onChange={(e) => updateForm("howItWorked", e.target.value)}
                 className="mt-2 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={4}
@@ -91,7 +92,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
           <Button 
             type="submit"
             className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isSaving || !formData.successfulChange.trim() || !formData.howItWorked.trim()}
+            disabled={isSaving}
           >
             {isSaving ? "Saving..." : "Complete Step"}
           </Button>
