@@ -17,6 +17,7 @@ import VisualizeResults from "@/components/motivation/VisualizeResults";
 import HelpfulIdeas from "@/components/motivation/HelpfulIdeas";
 import SelfObservation from "@/components/motivation/SelfObservation";
 import ObstaclesToOpportunities from "@/components/motivation/ObstaclesToOpportunities";
+import TheChangePlan from "@/components/motivation/TheChangePlan";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -121,5 +122,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Obstacles to Opportunities",
     description: "Transform potential barriers into chances for growth",
     component: (onComplete) => <ObstaclesToOpportunities onComplete={onComplete} />
+  },
+  {
+    id: 85,
+    title: "The Change Plan",
+    description: "Create your comprehensive fitness change plan",
+    component: (onComplete) => <TheChangePlan onComplete={onComplete} />
   }
 ];
