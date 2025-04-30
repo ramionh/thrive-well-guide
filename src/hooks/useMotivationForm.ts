@@ -149,7 +149,8 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
       if (queryError && queryError.code !== "PGRST116") throw queryError;
 
       let result;
-      if (existingData && existingData.id) {
+      // Fix: Properly check if existingData exists and has an id property
+      if (existingData && 'id' in existingData) {
         // Update existing record
         result = await supabase
           .from(tableName as any)
