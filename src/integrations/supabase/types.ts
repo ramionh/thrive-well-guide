@@ -434,6 +434,48 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_change_plan: {
+        Row: {
+          action_steps: string | null
+          created_at: string
+          goals: string | null
+          id: string
+          monitoring_progress: string | null
+          obstacles_plan: string | null
+          rewards: string | null
+          support_resources: string | null
+          updated_at: string
+          user_id: string
+          vision_statement: string | null
+        }
+        Insert: {
+          action_steps?: string | null
+          created_at?: string
+          goals?: string | null
+          id?: string
+          monitoring_progress?: string | null
+          obstacles_plan?: string | null
+          rewards?: string | null
+          support_resources?: string | null
+          updated_at?: string
+          user_id: string
+          vision_statement?: string | null
+        }
+        Update: {
+          action_steps?: string | null
+          created_at?: string
+          goals?: string | null
+          id?: string
+          monitoring_progress?: string | null
+          obstacles_plan?: string | null
+          rewards?: string | null
+          support_resources?: string | null
+          updated_at?: string
+          user_id?: string
+          vision_statement?: string | null
+        }
+        Relationships: []
+      }
       motivation_characteristics: {
         Row: {
           characteristics: Json

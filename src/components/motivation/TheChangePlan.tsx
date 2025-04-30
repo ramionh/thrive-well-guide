@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
 
@@ -58,7 +59,7 @@ const TheChangePlan: React.FC<TheChangePlanProps> = ({ onComplete }) => {
                   value={formData.vision_statement || ""}
                   onChange={(e) => updateForm("vision_statement", e.target.value)}
                   className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="I see myself as someone who prioritizes my health, feels strong and energetic, and can enjoy physical activities without limitation."
+                  placeholder="I want to feel stronger, more energetic, and confident in my physical abilities."
                   rows={3}
                 />
               </div>
@@ -71,7 +72,7 @@ const TheChangePlan: React.FC<TheChangePlanProps> = ({ onComplete }) => {
                   value={formData.goals || ""}
                   onChange={(e) => updateForm("goals", e.target.value)}
                   className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Exercise 4 days per week for at least 30 minutes. Maintain a daily calorie deficit of 300-500 calories. Increase protein intake to 30% of daily calories."
+                  placeholder="Lose 15 pounds and be able to run a 5K without stopping. Have more energy for activities with friends, and feel better in my clothes."
                   rows={3}
                 />
               </div>
@@ -84,8 +85,14 @@ const TheChangePlan: React.FC<TheChangePlanProps> = ({ onComplete }) => {
                   value={formData.action_steps || ""}
                   onChange={(e) => updateForm("action_steps", e.target.value)}
                   className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Meal prep every Sunday. Schedule workouts in my calendar. Use a tracking app for food and exercise. Take stairs instead of elevators."
-                  rows={3}
+                  placeholder="1. Schedule 3 workouts per week on my calendar
+2. Track all my meals in a fitness app
+3. Prepare healthy meals in advance for busy days
+4. Drink water instead of sugary beverages
+5. Join a local running group
+6. Get at least 7 hours of sleep each night
+7. Take progress photos once a month"
+                  rows={7}
                 />
               </div>
 
@@ -97,8 +104,18 @@ const TheChangePlan: React.FC<TheChangePlanProps> = ({ onComplete }) => {
                   value={formData.support_resources || ""}
                   onChange={(e) => updateForm("support_resources", e.target.value)}
                   className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Weekly check-ins with my friend who is also on a fitness journey. Online fitness community for accountability. Fitness tracking app for monitoring progress."
-                  rows={3}
+                  placeholder="Support System:
+→ Join a running club to meet people who share my goals
+→ Ask my partner to work out with me on weekends
+→ Schedule regular check-ins with my personal trainer
+→ Share my progress with close friends who are supportive
+
+My Resources:
+→ I have good running shoes and workout clothes
+→ My apartment complex has a fitness center I can use
+→ I can afford a basic gym membership
+→ I have a fitness app on my phone to track progress"
+                  rows={8}
                 />
               </div>
 
@@ -110,8 +127,16 @@ const TheChangePlan: React.FC<TheChangePlanProps> = ({ onComplete }) => {
                   value={formData.obstacles_plan || ""}
                   onChange={(e) => updateForm("obstacles_plan", e.target.value)}
                   className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Barrier: Busy work schedule - Solution: Schedule shorter, more intense workouts and have backup home workout options. Barrier: Social events - Solution: Eat protein-rich snacks beforehand and choose healthier menu options."
-                  rows={4}
+                  placeholder="Barriers:
+1. Work stress and long hours making it hard to maintain energy for workouts
+2. Social events with unhealthy food options
+3. Potential injury or illness interrupting my routine
+
+Getting Back on Track:
+1. Remind myself that perfect consistency isn't required for progress
+2. Be honest with myself about setbacks and adjust my plan as needed
+3. Look at this plan to revisit my reasons and resources"
+                  rows={6}
                 />
               </div>
 
@@ -123,8 +148,12 @@ const TheChangePlan: React.FC<TheChangePlanProps> = ({ onComplete }) => {
                   value={formData.monitoring_progress || ""}
                   onChange={(e) => updateForm("monitoring_progress", e.target.value)}
                   className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Weekly weigh-ins. Monthly body measurements. Progress photos every two weeks. Daily tracking of food intake and exercise. Weekly review of goals and adjustments as needed."
-                  rows={3}
+                  placeholder="Weekly weigh-ins
+Monthly body measurements
+Progress photos every two weeks
+Daily tracking of food intake and exercise
+Weekly review of goals and adjustments as needed"
+                  rows={5}
                 />
               </div>
 
@@ -136,8 +165,11 @@ const TheChangePlan: React.FC<TheChangePlanProps> = ({ onComplete }) => {
                   value={formData.rewards || ""}
                   onChange={(e) => updateForm("rewards", e.target.value)}
                   className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="New workout clothes after one month of consistent exercise. Massage after reaching my first weight goal. Weekend trip after reaching my final goal."
-                  rows={3}
+                  placeholder="→ New workout clothes after one month of consistent exercise
+→ Weekend hiking trip after losing 10 pounds
+→ Massage after completing my first 5K
+→ New fitness tracker when I reach my goal weight"
+                  rows={4}
                 />
               </div>
 
