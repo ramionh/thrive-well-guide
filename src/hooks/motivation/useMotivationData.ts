@@ -7,7 +7,7 @@ import { useUser } from "@/context/UserContext";
 /**
  * Hook for fetching motivation form data
  */
-export const useMotivationData = <T>(
+export const useMotivationData = <T extends Record<string, any>>(
   tableName: string, 
   initialState: T,
   parseData?: (data: any) => T
@@ -85,15 +85,6 @@ export const useMotivationData = <T>(
       setIsLoading(false);
     }
   }, [user, tableName, initialState, parseData, toast]);
-
-  // Initial data fetch
-  useEffect(() => {
-    if (user) {
-      fetchData();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user, fetchData]);
 
   return {
     formData,

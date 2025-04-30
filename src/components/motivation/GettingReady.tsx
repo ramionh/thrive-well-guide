@@ -12,7 +12,7 @@ interface GettingReadyProps {
 
 const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
   const [selfPersuasion, setSelfPersuasion] = useState<string>("");
-  const initialFetchDone = useRef(false);
+  const [dataFetched, setDataFetched] = useState<boolean>(false);
   
   const { 
     formData,
@@ -40,18 +40,18 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
   
   // Fetch data only once when component mounts
   useEffect(() => {
-    if (!initialFetchDone.current) {
+    if (!dataFetched) {
       fetchData();
-      initialFetchDone.current = true;
+      setDataFetched(true);
     }
-  }, [fetchData]);
+  }, [dataFetched, fetchData]);
   
-  // Update local state when form data changes
+  // Update local state when form data changes from the database
   useEffect(() => {
-    if (formData && formData.self_persuasion !== undefined && formData.self_persuasion !== selfPersuasion) {
+    if (formData && formData.self_persuasion !== undefined && !isSaving) {
       setSelfPersuasion(formData.self_persuasion);
     }
-  }, [formData]);
+  }, [formData, isSaving]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

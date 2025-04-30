@@ -74,6 +74,3 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
     submitForm
   };
 };
-
-// Export the legacy useMotivationForm from the original location
-export * from "./useMotivationForm";
