@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +12,7 @@ interface GettingReadyProps {
 
 const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
   const [selfPersuasion, setSelfPersuasion] = useState<string>("");
-  const [dataFetched, setDataFetched] = useState<boolean>(false);
+  const initialFetchDone = useRef(false);
   
   const { 
     formData,
@@ -40,18 +40,18 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
   
   // Fetch data only once when component mounts
   useEffect(() => {
-    if (!dataFetched) {
+    if (!initialFetchDone.current) {
       fetchData();
-      setDataFetched(true);
+      initialFetchDone.current = true;
     }
-  }, [dataFetched, fetchData]);
+  }, [fetchData]);
   
-  // Update local state when form data changes, but only if it's different
+  // Update local state when form data changes
   useEffect(() => {
     if (formData && formData.self_persuasion !== undefined && formData.self_persuasion !== selfPersuasion) {
       setSelfPersuasion(formData.self_persuasion);
     }
-  }, [formData, selfPersuasion]);
+  }, [formData]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

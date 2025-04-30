@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,22 +13,30 @@ interface NarrowingDownRewardsProps {
   onComplete?: () => void;
 }
 
-// Define the PeopleReward interface to match the expected structure
+// Define typed interfaces for more predictable data handling
 interface PeopleReward {
   name: string;
   relationship?: string;
   affirmation: string;
 }
 
+interface PreviousRewardsData {
+  rewards?: string[];
+  people_rewards?: PeopleReward[];
+  activity_rewards?: string[];
+}
+
 const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete }) => {
   const [topRewards, setTopRewards] = useState<string[]>(Array(5).fill(""));
   const { user } = useUser();
   const [previousRewards, setPreviousRewards] = useState<string[]>([]);
+  const [isLoadingPrevious, setIsLoadingPrevious] = useState<boolean>(true);
   
   // Fetch previous rewards
   useEffect(() => {
     if (user) {
       const fetchPreviousRewards = async () => {
+        setIsLoadingPrevious(true);
         try {
           // Fetch rewards from motivation_rewards_incentive
           const { data: incentiveData, error: incentiveError } = await supabase
@@ -73,20 +82,28 @@ const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete 
           // Handle people_rewards which comes as a JSON array
           if (peopleData?.people_rewards) {
             // Extract name values from people_rewards objects
-            if (Array.isArray(peopleData.people_rewards)) {
-              const peopleRewardNames = peopleData.people_rewards
-                .filter(item => item && typeof item === 'object')
-                .map(item => {
-                  // Cast to PeopleReward type to safely access properties
-                  const reward = item as unknown as PeopleReward;
-                  if (reward.name && reward.affirmation) {
-                    return `${reward.name}: ${reward.affirmation}`;
-                  }
-                  return "";
-                })
-                .filter(item => item !== ""); // Remove empty strings
-              
-              allRewards = [...allRewards, ...peopleRewardNames];
+            try {
+              // Parse people_rewards to ensure it's an array of objects
+              const peopleRewards = Array.isArray(peopleData.people_rewards)
+                ? peopleData.people_rewards
+                : JSON.parse(String(peopleData.people_rewards));
+                
+              if (Array.isArray(peopleRewards)) {
+                const peopleRewardNames = peopleRewards
+                  .filter(item => item && typeof item === 'object')
+                  .map(item => {
+                    const reward = item as PeopleReward;
+                    if (reward.name && reward.affirmation) {
+                      return `${reward.name}: ${reward.affirmation}`;
+                    }
+                    return "";
+                  })
+                  .filter(item => item !== ""); // Remove empty strings
+                
+                allRewards = [...allRewards, ...peopleRewardNames];
+              }
+            } catch (err) {
+              console.error("Error parsing people rewards:", err);
             }
           }
           
@@ -99,10 +116,14 @@ const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete 
           setPreviousRewards(allRewards.filter(reward => reward && reward.trim() !== ''));
         } catch (error) {
           console.error("Error fetching previous rewards:", error);
+        } finally {
+          setIsLoadingPrevious(false);
         }
       };
       
       fetchPreviousRewards();
+    } else {
+      setIsLoadingPrevious(false);
     }
   }, [user]);
   
@@ -167,7 +188,7 @@ const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete 
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
-        {isLoading ? (
+        {isLoading || isLoadingPrevious ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
