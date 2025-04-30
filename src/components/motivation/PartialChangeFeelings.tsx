@@ -1,39 +1,46 @@
 
-import React, { useEffect } from "react";
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { Award } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
 
 interface PartialChangeFeelingsProps {
   onComplete: () => void;
 }
 
-interface PartialChangeFormData {
-  progress_steps: string;
-  reward_ideas: string;
-}
-
 const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplete }) => {
+  const initialState = {
+    progressSteps: "",
+    rewardIdeas: ""
+  };
+
   const {
     formData,
     isLoading,
     isSaving,
-    fetchData,
     updateForm,
     submitForm
-  } = useMotivationForm<PartialChangeFormData>({
+  } = useMotivationForm({
     tableName: "motivation_partial_change_feelings",
-    initialState: {
-      progress_steps: "",
-      reward_ideas: ""
+    initialState,
+    onSuccess: onComplete,
+    transformData: (data) => {
+      return {
+        progress_steps: data.progressSteps,
+        reward_ideas: data.rewardIdeas
+      };
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      console.log("Raw data from Partial Change Feelings:", data);
+      return {
+        progressSteps: data.progress_steps || "",
+        rewardIdeas: data.reward_ideas || ""
+      };
+    }
   });
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,56 +52,63 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
   }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <p className="text-lg text-purple-800">
-          Now that you have a realistic, attainable goal, how will you feel if you don't quite meet it? 
-          Maybe you struggle to reach your target weight. Perhaps you only make it to the gym three times a week instead of five. 
-          Achieving only part of your goal is not as satisfying as fulfilling it completely, but you should be proud of the steps you have taken, 
-          and realize you are closer to achieving your goal than you were when you started.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label htmlFor="progress-steps" className="block text-sm font-medium text-purple-700 mb-2">
-            List some steps you have taken toward your goal, whether recently or in the past.
-          </label>
-          <Textarea
-            id="progress-steps"
-            rows={4}
-            value={formData.progress_steps}
-            onChange={(e) => updateForm("progress_steps", e.target.value)}
-            className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-            placeholder="Examples: I started walking more, I cut back on sugary drinks..."
-          />
+    <Card className="border-none shadow-none">
+      <CardContent className="px-0">
+        <div className="flex items-center gap-3 mb-4">
+          <Award className="w-6 h-6 text-purple-600" />
+          <h2 className="text-xl font-bold text-purple-800">Feelings Around Partial Change</h2>
         </div>
 
-        <div>
-          <label htmlFor="reward-ideas" className="block text-sm font-medium text-purple-700 mb-2">
-            Celebrate these small victories! What are some ways you can reward yourself for your progress that won't break your bank or sabotage your success?
-          </label>
-          <Textarea
-            id="reward-ideas"
-            rows={4}
-            value={formData.reward_ideas}
-            onChange={(e) => updateForm("reward_ideas", e.target.value)}
-            className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-            placeholder="Examples: A relaxing bath, watching a favorite show..."
-          />
+        <div className="space-y-4">
+          <p className="text-lg text-purple-800">
+            Now that you have a realistic, attainable goal, how will you feel if you don't quite meet it? 
+            Maybe you struggle to reach your target weight. Perhaps you only make it to the gym three times a week instead of five. 
+            Achieving only part of your goal is not as satisfying as fulfilling it completely, but you should be proud of the steps you have taken, 
+            and realize you are closer to achieving your goal than you were when you started.
+          </p>
         </div>
 
-        <div className="flex justify-end">
+        <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+          <div>
+            <label htmlFor="progress-steps" className="block text-sm font-medium text-purple-700 mb-2">
+              List some steps you have taken toward your goal, whether recently or in the past.
+            </label>
+            <Textarea
+              id="progress-steps"
+              rows={4}
+              value={formData.progressSteps}
+              onChange={(e) => updateForm("progressSteps", e.target.value)}
+              className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+              placeholder="Examples: I started walking more, I cut back on sugary drinks..."
+              disabled={isSaving}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="reward-ideas" className="block text-sm font-medium text-purple-700 mb-2">
+              Celebrate these small victories! What are some ways you can reward yourself for your progress that won't break your bank or sabotage your success?
+            </label>
+            <Textarea
+              id="reward-ideas"
+              rows={4}
+              value={formData.rewardIdeas}
+              onChange={(e) => updateForm("rewardIdeas", e.target.value)}
+              className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+              placeholder="Examples: A relaxing bath, watching a favorite show..."
+              disabled={isSaving}
+            />
+          </div>
+
           <Button
             type="submit"
-            disabled={isSaving || !formData.progress_steps.trim() || !formData.reward_ideas.trim()}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            disabled={isSaving}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
           >
             {isSaving ? "Saving..." : "Complete Step"}
           </Button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 
