@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
+import { CheckSquare } from "lucide-react";
 
 interface YouHaveWhatItTakesProps {
   onComplete?: () => void;
@@ -32,58 +33,6 @@ const CHARACTERISTICS = [
   ["CLEVER", "FAITHFUL", "PATIENT", "STRONG", "ZESTFUL"],
 ];
 
-// Custom parser for the characteristics data
-const parseCharacteristicsData = (data: any) => {
-  console.log("Parsing characteristics data:", data);
-  
-  // Initialize with empty arrays if the data doesn't exist
-  let characteristics: string[] = [];
-  let examples: string[] = ["", ""];
-  
-  // Parse characteristics
-  if (data.characteristics) {
-    if (Array.isArray(data.characteristics)) {
-      characteristics = data.characteristics;
-    } else if (typeof data.characteristics === 'string') {
-      try {
-        characteristics = JSON.parse(data.characteristics);
-      } catch (e) {
-        console.error("Error parsing characteristics JSON:", e);
-        characteristics = [];
-      }
-    }
-  }
-  
-  // Parse examples
-  if (data.examples) {
-    if (Array.isArray(data.examples)) {
-      examples = data.examples.length >= 2 
-        ? [data.examples[0] || "", data.examples[1] || ""] 
-        : [...data.examples, ...Array(2 - data.examples.length).fill("")];
-    } else if (typeof data.examples === 'string') {
-      try {
-        const parsedExamples = JSON.parse(data.examples);
-        examples = Array.isArray(parsedExamples) 
-          ? (parsedExamples.length >= 2 
-              ? [parsedExamples[0] || "", parsedExamples[1] || ""] 
-              : [...parsedExamples, ...Array(2 - parsedExamples.length).fill("")])
-          : ["", ""];
-      } catch (e) {
-        console.error("Error parsing examples JSON:", e);
-        examples = ["", ""];
-      }
-    }
-  }
-  
-  console.log("Parsed characteristics:", characteristics);
-  console.log("Parsed examples:", examples);
-  
-  return {
-    characteristics,
-    examples
-  };
-};
-
 const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) => {
   const [selectedCharacteristics, setSelectedCharacteristics] = useState<string[]>([]);
   const [example1, setExample1] = useState("");
@@ -102,19 +51,78 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
       characteristics: [] as string[],
       examples: ["", ""] as string[]
     },
-    parseData: parseCharacteristicsData
+    onSuccess: onComplete,
+    parseData: (data) => {
+      console.log("Parsing characteristics data:", data);
+      
+      // Initialize with empty arrays if the data doesn't exist
+      let characteristics: string[] = [];
+      let examples: string[] = ["", ""];
+      
+      // Parse characteristics
+      if (data.characteristics) {
+        if (Array.isArray(data.characteristics)) {
+          characteristics = data.characteristics;
+        } else if (typeof data.characteristics === 'string') {
+          try {
+            characteristics = JSON.parse(data.characteristics);
+          } catch (e) {
+            console.error("Error parsing characteristics JSON:", e);
+            characteristics = [];
+          }
+        } else if (typeof data.characteristics === 'object') {
+          // Handle case where characteristics is already a JSON object
+          characteristics = Array.isArray(data.characteristics) ? data.characteristics : [];
+        }
+      }
+      
+      // Parse examples
+      if (data.examples) {
+        if (Array.isArray(data.examples)) {
+          examples = data.examples.length >= 2 
+            ? [data.examples[0] || "", data.examples[1] || ""] 
+            : [...data.examples, ...Array(2 - data.examples.length).fill("")];
+        } else if (typeof data.examples === 'string') {
+          try {
+            const parsedExamples = JSON.parse(data.examples);
+            examples = Array.isArray(parsedExamples) 
+              ? (parsedExamples.length >= 2 
+                  ? [parsedExamples[0] || "", parsedExamples[1] || ""] 
+                  : [...parsedExamples, ...Array(2 - parsedExamples.length).fill("")])
+              : ["", ""];
+          } catch (e) {
+            console.error("Error parsing examples JSON:", e);
+            examples = ["", ""];
+          }
+        } else if (typeof data.examples === 'object') {
+          // Handle case where examples is already a JSON object
+          examples = Array.isArray(data.examples) ? 
+            (data.examples.length >= 2 ? data.examples : [...data.examples, ...Array(2 - data.examples.length).fill("")]) : 
+            ["", ""];
+        }
+      }
+      
+      console.log("Parsed characteristics:", characteristics);
+      console.log("Parsed examples:", examples);
+      
+      return {
+        characteristics,
+        examples
+      };
+    }
   });
 
   useEffect(() => {
     fetchData().then(() => {
-      console.log("Fetch completed");
+      console.log("Characteristics fetch completed");
     });
-  }, []);
+  }, [fetchData]);
 
   // Update local state when formData changes
   useEffect(() => {
-    console.log("Form data updated:", formData);
     if (formData) {
+      console.log("Characteristics form data updated:", formData);
+      
       // Handle characteristics
       if (Array.isArray(formData.characteristics)) {
         setSelectedCharacteristics(formData.characteristics);
@@ -145,33 +153,38 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Log data before submission to ensure it's properly formatted
+    console.log("Submitting characteristics:", selectedCharacteristics);
+    console.log("Submitting examples:", [example1, example2]);
+    
+    // Update the form with current state
     updateForm("characteristics", selectedCharacteristics);
     updateForm("examples", [example1, example2]);
     
+    // Submit the form data
     submitForm();
-    if (onComplete) {
-      onComplete();
-    }
   };
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
         {isLoading ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">You Have What It Takes</h2>
-              <p className="text-gray-600 mb-6">
-                There are certain characteristics or personal qualities that are common among successful people. 
-                Circle all that apply to you.
-              </p>
+            <div className="flex items-center gap-3 mb-4">
+              <CheckSquare className="h-5 w-5 text-purple-600" />
+              <h2 className="text-xl font-semibold text-purple-800">You Have What It Takes</h2>
             </div>
+            
+            <p className="text-gray-600 mb-6">
+              There are certain characteristics or personal qualities that are common among successful people. 
+              Select all that apply to you.
+            </p>
 
             <div className="space-y-5">
               <div className="bg-purple-50 p-4 rounded-lg">
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                   {CHARACTERISTICS.map((row, rowIndex) => (
                     <React.Fragment key={`row-${rowIndex}`}>
                       {row.map((characteristic) => (
@@ -209,7 +222,7 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
                       id="example1"
                       value={example1}
                       onChange={(e) => setExample1(e.target.value)}
-                      className="min-h-[80px] focus:border-purple-500 focus:ring-purple-500"
+                      className="min-h-[80px] border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                       placeholder="Describe a time when you demonstrated this characteristic..."
                     />
                   </div>
@@ -222,7 +235,7 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
                       id="example2"
                       value={example2}
                       onChange={(e) => setExample2(e.target.value)}
-                      className="min-h-[80px] focus:border-purple-500 focus:ring-purple-500"
+                      className="min-h-[80px] border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                       placeholder="Describe a time when you demonstrated this characteristic..."
                     />
                   </div>
@@ -233,7 +246,7 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
             <Button
               type="submit"
               disabled={isSaving}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
               {isSaving ? "Saving..." : "Complete Step"}
             </Button>
