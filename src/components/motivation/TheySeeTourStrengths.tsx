@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
+import { MessageSquare } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface TheySeeTourStrengthsProps {
   onComplete?: () => void;
@@ -59,6 +61,7 @@ const parseFeedbackEntriesData = (data: any) => {
 };
 
 const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete }) => {
+  const { toast } = useToast();
   const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([
     { characteristic: "", evidence: "" },
     { characteristic: "", evidence: "" },
@@ -78,16 +81,31 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
       feedback_entries: [] as FeedbackEntry[]
     },
     onSuccess: onComplete,
-    parseData: parseFeedbackEntriesData
+    parseData: parseFeedbackEntriesData,
+    transformData: (data) => {
+      // Ensure data is properly stringified for saving to database
+      return {
+        feedback_entries: data.feedback_entries
+      };
+    }
   });
 
   useEffect(() => {
     const loadData = async () => {
-      await fetchData();
+      try {
+        await fetchData();
+      } catch (error) {
+        console.error("Error fetching feedback entries:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load feedback data",
+          variant: "destructive"
+        });
+      }
     };
     
     loadData();
-  }, []);
+  }, [fetchData, toast]);
 
   // Update local state when formData changes
   useEffect(() => {
@@ -113,27 +131,27 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting feedback entries:", feedbackEntries);
     updateForm("feedback_entries", feedbackEntries);
     submitForm();
-    if (onComplete) {
-      onComplete();
-    }
   };
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
         {isLoading ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">They See Your Strengths</h2>
-              <p className="text-gray-600 mb-6">
-                Ask a trusted friend or family member to look at the list from the previous step, 
-                choose a few of the strengths you listed, and fill out the following exercise.
-              </p>
+            <div className="flex items-center gap-3 mb-2">
+              <MessageSquare className="h-5 w-5 text-purple-600" />
+              <h2 className="text-xl font-semibold text-purple-800">They See Your Strengths</h2>
             </div>
+            
+            <p className="text-gray-600 mb-6">
+              Ask a trusted friend or family member to look at the list from the previous step, 
+              choose a few of the strengths you listed, and fill out the following exercise.
+            </p>
 
             <div className="space-y-6">
               {feedbackEntries.map((entry, index) => (
@@ -146,7 +164,7 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
                       id={`characteristic-${index}`}
                       value={entry.characteristic}
                       onChange={(e) => handleCharacteristicChange(index, e.target.value)}
-                      className="focus:border-purple-500 focus:ring-purple-500"
+                      className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                       placeholder="Enter a characteristic"
                     />
                   </div>
@@ -159,7 +177,7 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
                       id={`evidence-${index}`}
                       value={entry.evidence}
                       onChange={(e) => handleEvidenceChange(index, e.target.value)}
-                      className="min-h-[80px] focus:border-purple-500 focus:ring-purple-500"
+                      className="min-h-[80px] border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                       placeholder="Enter evidence for this characteristic..."
                     />
                   </div>
@@ -170,7 +188,7 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
             <Button
               type="submit"
               disabled={isSaving}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
               {isSaving ? "Saving..." : "Complete Step"}
             </Button>

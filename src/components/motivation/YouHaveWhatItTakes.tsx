@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
 import { CheckSquare } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface YouHaveWhatItTakesProps {
   onComplete?: () => void;
@@ -34,6 +35,7 @@ const CHARACTERISTICS = [
 ];
 
 const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) => {
+  const { toast } = useToast();
   const [selectedCharacteristics, setSelectedCharacteristics] = useState<string[]>([]);
   const [example1, setExample1] = useState("");
   const [example2, setExample2] = useState("");
@@ -109,14 +111,33 @@ const YouHaveWhatItTakes: React.FC<YouHaveWhatItTakesProps> = ({ onComplete }) =
         characteristics,
         examples
       };
+    },
+    transformData: (data) => {
+      // Ensure data is properly formatted for saving to database
+      return {
+        characteristics: data.characteristics,
+        examples: [example1, example2]
+      };
     }
   });
 
   useEffect(() => {
-    fetchData().then(() => {
-      console.log("Characteristics fetch completed");
-    });
-  }, [fetchData]);
+    const loadData = async () => {
+      try {
+        await fetchData();
+        console.log("Characteristics fetch completed");
+      } catch (error) {
+        console.error("Error fetching characteristics:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load characteristics data",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    loadData();
+  }, [fetchData, toast]);
 
   // Update local state when formData changes
   useEffect(() => {
