@@ -25,7 +25,8 @@ const IdentifyingStepsToGoal: React.FC<IdentifyingStepsToGoalProps> = ({ onCompl
   const { 
     formData,
     isLoading, 
-    isSaving, 
+    isSaving,
+    fetchData,
     submitForm, 
     updateForm 
   } = useMotivationForm({
@@ -33,11 +34,26 @@ const IdentifyingStepsToGoal: React.FC<IdentifyingStepsToGoalProps> = ({ onCompl
     initialState: {
       actions: []
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      console.log("Raw data from Steps to Goal:", data);
+      return {
+        actions: data.actions || Array(10).fill(null).map(() => ({ text: "", rating: 1 }))
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 65,
+    nextStepNumber: 66,
+    stepName: "Identifying the Steps to Reach Your Goal",
+    nextStepName: "Getting Ready"
   });
   
   useEffect(() => {
-    if (formData && formData.actions && formData.actions.length > 0) {
+    fetchData();
+  }, [fetchData]);
+  
+  useEffect(() => {
+    if (formData && Array.isArray(formData.actions) && formData.actions.length > 0) {
+      console.log("Setting actions from formData:", formData.actions);
       setActions(formData.actions);
     }
   }, [formData]);
