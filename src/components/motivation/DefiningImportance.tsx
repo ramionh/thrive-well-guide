@@ -51,20 +51,29 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
 
         if (data) {
           console.log('Retrieved defining importance data:', data);
-          // Ensure descriptors is treated as an array
+          
+          // Handle descriptors properly
           if (data.descriptors) {
+            let parsedDescriptors: string[] = [];
+            
             if (Array.isArray(data.descriptors)) {
-              setSelectedDescriptors(data.descriptors);
+              parsedDescriptors = data.descriptors;
             } else if (typeof data.descriptors === 'string') {
               try {
-                setSelectedDescriptors(JSON.parse(data.descriptors));
+                parsedDescriptors = JSON.parse(data.descriptors);
               } catch (e) {
                 console.error("Error parsing descriptors JSON:", e);
-                setSelectedDescriptors([]);
               }
             }
+            
+            console.log('Parsed descriptors:', parsedDescriptors);
+            setSelectedDescriptors(parsedDescriptors);
           }
-          setReflection(data.reflection || "");
+          
+          // Set reflection
+          if (data.reflection) {
+            setReflection(data.reflection);
+          }
         }
       } catch (error) {
         console.error("Error fetching saved values:", error);
@@ -175,7 +184,7 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
   };
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
@@ -231,7 +240,7 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
                 value={reflection}
                 onChange={(e) => setReflection(e.target.value)}
                 rows={4}
-                className="w-full"
+                className="w-full border-purple-200 focus:border-purple-400"
               />
             </div>
           </div>
@@ -239,7 +248,7 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-purple-600 hover:bg-purple-700"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
           >
             {isSubmitting ? "Saving..." : "Complete Step"}
           </Button>
