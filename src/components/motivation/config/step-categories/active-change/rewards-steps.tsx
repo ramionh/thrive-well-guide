@@ -8,6 +8,7 @@ import GetOrganized from "@/components/motivation/GetOrganized";
 import SeekPositiveInformation from "@/components/motivation/SeekPositiveInformation";
 import ThinkAboutBigPicture from "@/components/motivation/ThinkAboutBigPicture";
 import Control from "@/components/motivation/Control";
+import SmallSteps from "@/components/motivation/SmallSteps";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -58,5 +59,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Control",
     description: "Focus on what you can control and let go of what you can't",
     component: (onComplete) => <Control onComplete={onComplete} />
+  },
+  {
+    id: 76,
+    title: "Small Steps",
+    description: "Break down large goals into achievable small steps",
+    component: (onComplete) => <SmallSteps onComplete={onComplete} />
   }
 ];
