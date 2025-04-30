@@ -1288,7 +1288,6 @@ export type Database = {
       }
       motivation_goal_objectives: {
         Row: {
-          action_goal: string
           created_at: string
           id: string
           objectives: string[]
@@ -1296,7 +1295,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          action_goal: string
           created_at?: string
           id?: string
           objectives?: string[]
@@ -1304,7 +1302,6 @@ export type Database = {
           user_id: string
         }
         Update: {
-          action_goal?: string
           created_at?: string
           id?: string
           objectives?: string[]
