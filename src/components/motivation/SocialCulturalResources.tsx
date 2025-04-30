@@ -14,19 +14,19 @@ const SocialCulturalResources: React.FC<SocialCulturalResourcesProps> = ({ onCom
   const { formData, isLoading, isSubmitting, updateForm, handleSubmit } = useSocialCulturalResources(onComplete);
 
   return (
-    <Card className="border-none shadow-none">
-      <CardHeader className="px-0">
-        <CardTitle className="text-2xl font-bold text-purple-800">Social and Cultural Resources</CardTitle>
+    <Card className="bg-white shadow-md">
+      <CardHeader className="p-6 pb-0">
+        <CardTitle className="text-xl font-semibold text-purple-800">Social and Cultural Resources</CardTitle>
       </CardHeader>
-      <CardContent className="px-0">
-        <p className="mb-6 text-gray-600">
+      <CardContent className="p-6">
+        <p className="mb-6 text-gray-700">
           A culture is a group of people who have a shared set of values, beliefs, and traditions. You might think of 
           ethnicity or race as the foundation of a culture, but you may be a member of many other cultural groups. 
           These include communities based around religion, gender, sexual orientation, or geography, as well as social 
           groups that embrace the same arts and philosophy, such as fitness enthusiasts or the running community.
         </p>
         
-        <p className="mb-6 text-gray-600">
+        <p className="mb-6 text-gray-700">
           For this exercise, focus on one culture you're a member of. For each aspect of culture listed, 
           describe the belief or custom and how it might support your goal.
         </p>

@@ -20,9 +20,11 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
       <Carousel className="w-full max-w-4xl mx-auto">
         <CarouselContent>
           <CarouselItem>
-            <Card className="bg-soft-purple border-purple-200 shadow-md">
+            <Card className="bg-white border-purple-200 shadow-md">
               <CardContent className="p-6">
-                <div className="prose max-w-none text-purple-900">
+                <h2 className="text-xl font-semibold text-purple-800 mb-4">How Important Is It?</h2>
+                
+                <div className="prose max-w-none text-gray-700">
                   <p className="mb-4">
                     You can feel a little ambivalence and still take action, but a lot of
                     ambivalence can keep you from acting. In order to prioritize and focus your
@@ -58,13 +60,11 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="bg-soft-purple border-purple-200 shadow-md">
+            <Card className="bg-white border-purple-200 shadow-md">
               <CardContent className="p-6">
-                <div className="prose max-w-none text-purple-900">
-                  <h2 className="text-2xl font-bold mb-6 text-thrive-purple">
-                    IMPORTANT DECISIONS ARE THE HARDEST TO MAKE
-                  </h2>
-                  
+                <h2 className="text-xl font-semibold text-purple-800 mb-4">Important Decisions Are The Hardest To Make</h2>
+                
+                <div className="prose max-w-none text-gray-700">
                   <p className="mb-4">
                     If change were easy, no one would need this program (or any other fitness program). There is comfort in continuing the same behavior, and when you are in the moment, what feels good now is the easy choice. It meets a need, whether it's security, comfort, pleasure, or avoidance. When I'm at the gym trying to decide which exercise to do, doing a comfortable 20-minute walk doesn't feel as good now as skipping the cardio altogether. When I'm tired, getting up early to go for a run doesn't feel as good now as sleeping in. When I'm overwhelmed after work, scrolling fitness influencers on my phone feels good now instead of actually working out.
                   </p>
@@ -77,7 +77,7 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
                 <div className="mt-8 flex justify-end">
                   <Button 
                     onClick={onComplete}
-                    className="bg-thrive-purple hover:bg-thrive-purple/90 text-white"
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
                   >
                     Complete This Step
                   </Button>
@@ -86,12 +86,11 @@ const HowImportantIsIt: React.FC<HowImportantIsItProps> = ({ onComplete }) => {
             </Card>
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious className="left-2 text-thrive-purple" />
-        <CarouselNext className="right-2 text-thrive-purple" />
+        <CarouselPrevious className="text-purple-600" />
+        <CarouselNext className="text-purple-600" />
       </Carousel>
     </div>
   );
 };
 
 export default HowImportantIsIt;
-

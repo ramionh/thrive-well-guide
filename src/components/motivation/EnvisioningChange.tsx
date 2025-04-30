@@ -49,8 +49,10 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
   }
 
   return (
-    <Card className="border-none shadow-none">
-      <CardContent className="px-0">
+    <Card className="bg-white shadow-md">
+      <CardContent className="p-6">
+        <h2 className="text-xl font-semibold text-purple-800 mb-4">Envisioning Change</h2>
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <p className="text-gray-700 mb-6">
             Let's think about your goal again. Now that you've explored this change and thought about your strengths, resources, obstacles, and stress, what does a successful change look like?
@@ -58,7 +60,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
           
           <div className="space-y-4">
             <div>
-              <Label htmlFor="successfulChange" className="text-purple-600 font-medium">
+              <Label htmlFor="successfulChange" className="text-purple-700 font-medium">
                 What does a successful change look like?
               </Label>
               <Textarea
@@ -72,7 +74,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
             </div>
             
             <div>
-              <Label htmlFor="howItWorked" className="text-purple-600 font-medium">
+              <Label htmlFor="howItWorked" className="text-purple-700 font-medium">
                 If you succeeded with this change, what most likely worked? How did it happen?
               </Label>
               <Textarea
@@ -88,7 +90,7 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
 
           <Button 
             type="submit"
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             disabled={isSaving || !formData.successfulChange.trim() || !formData.howItWorked.trim()}
           >
             {isSaving ? "Saving..." : "Complete Step"}

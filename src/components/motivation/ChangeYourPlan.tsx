@@ -53,13 +53,13 @@ const ChangeYourPlan: React.FC<ChangeYourPlanProps> = ({ onComplete }) => {
           }}>
             <div className="space-y-4">
               <div className="form-group">
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-purple-700 font-medium mb-2">
                   Plan adjustments
                 </label>
                 <Textarea
                   value={formData.plan_adjustments || ""}
                   onChange={(e) => updateForm("plan_adjustments", e.target.value)}
-                  className="w-full p-2 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="Write about the adjustments you want to make to your plan..."
                   rows={8}
                 />
@@ -69,7 +69,7 @@ const ChangeYourPlan: React.FC<ChangeYourPlanProps> = ({ onComplete }) => {
                 <Button
                   type="submit"
                   disabled={isSaving}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   {isSaving ? "Saving..." : "Complete Step"}
                 </Button>

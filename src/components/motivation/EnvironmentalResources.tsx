@@ -46,17 +46,19 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
   }
 
   return (
-    <Card className="border-none shadow-none">
-      <CardContent className="px-0">
+    <Card className="bg-white shadow-md">
+      <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
+            <h2 className="text-xl font-semibold text-purple-800 mb-4">Environmental Resources</h2>
+            
             <p className="text-gray-700 mb-6">
               What other resources are available to you in your community, online, at your house of worship, 
               or in or around your home that can help you take steps toward your fitness goal?
             </p>
             
             <div className="mt-4">
-              <Label htmlFor="environmentalResources" className="text-purple-600">Resources:</Label>
+              <Label htmlFor="environmentalResources" className="text-purple-700 font-medium">Resources:</Label>
               <Textarea 
                 id="environmentalResources"
                 value={formData.environmentalResources || ""}
@@ -71,7 +73,7 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
 
           <Button 
             type="submit"
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             disabled={isSaving || !formData.environmentalResources?.trim()}
           >
             {isSaving ? "Saving..." : "Complete Step"}

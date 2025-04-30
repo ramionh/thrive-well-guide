@@ -20,9 +20,11 @@ const ExploringChange: React.FC<ExploringChangeProps> = ({ onComplete }) => {
       <Carousel className="w-full max-w-4xl mx-auto">
         <CarouselContent>
           <CarouselItem>
-            <Card>
+            <Card className="bg-white shadow-md">
               <CardContent className="p-6">
-                <div className="prose max-w-none">
+                <h2 className="text-xl font-semibold text-purple-800 mb-4">Exploring Change</h2>
+                
+                <div className="prose max-w-none text-gray-700">
                   <p className="mb-4">
                     You've come this far because you are interested in
                     making a change in your body type. After completing the previous
@@ -66,7 +68,7 @@ const ExploringChange: React.FC<ExploringChangeProps> = ({ onComplete }) => {
                 <div className="mt-8 flex justify-end">
                   <Button 
                     onClick={onComplete}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
                   >
                     Complete This Step
                   </Button>
@@ -75,8 +77,8 @@ const ExploringChange: React.FC<ExploringChangeProps> = ({ onComplete }) => {
             </Card>
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious className="left-2" />
-        <CarouselNext className="right-2" />
+        <CarouselPrevious className="text-purple-600" />
+        <CarouselNext className="text-purple-600" />
       </Carousel>
     </div>
   );

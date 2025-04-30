@@ -54,27 +54,27 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
   };
   
   return (
-    <Card className="bg-white">
+    <Card className="bg-white shadow-md">
       <CardContent className="p-6">
+        <h2 className="text-xl font-semibold text-purple-800 mb-4">Developing Objectives for Your Goal</h2>
+        
         {isLoading ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">Developing Objectives for Your Goal</h2>
-              
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-700 mb-4">
                 Now that you have identified 10 actions you would be willing to take to reach your goal, 
                 the next step is to convert them into measurable objectives.
               </p>
               
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-700 mb-4">
                 Objectives, like your goal, should be specific, measurable, achievable, relevant, and time-bound. 
                 For example:
               </p>
               
-              <div className="bg-purple-50 p-4 rounded-md mb-4 text-gray-700">
-                <p className="font-medium">Goal: I'd like to lose 10 pounds over the next eight weeks.</p>
+              <div className="bg-purple-50 p-4 rounded-md mb-4 text-gray-700 border border-purple-100">
+                <p className="font-medium text-purple-700">Goal: I'd like to lose 10 pounds over the next eight weeks.</p>
                 <ul className="list-disc pl-5 mt-2 space-y-1">
                   <li>Objective 1: I will weigh myself every morning and track it in a fitness app for the next eight weeks.</li>
                   <li>Objective 2: I will keep a daily log of everything I eat for the next eight weeks.</li>
@@ -94,7 +94,7 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
                     value={actionGoal}
                     onChange={(e) => setActionGoal(e.target.value)}
                     placeholder="Write your goal here"
-                    className="w-full"
+                    className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
                 
@@ -105,7 +105,7 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
                   
                   {objectives.map((objective, index) => (
                     <div key={index} className="space-y-1">
-                      <Label htmlFor={`objective-${index}`} className="text-sm font-medium">
+                      <Label htmlFor={`objective-${index}`} className="text-sm font-medium text-purple-700">
                         Objective {index + 1}:
                       </Label>
                       <Textarea
@@ -113,7 +113,7 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
                         value={objective}
                         onChange={(e) => handleObjectiveChange(index, e.target.value)}
                         placeholder={`Write objective ${index + 1} here`}
-                        className="h-20"
+                        className="h-20 border-purple-200 focus:ring-purple-500 focus:border-purple-500"
                       />
                     </div>
                   ))}
@@ -124,7 +124,7 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
             <Button
               type="submit"
               disabled={isSaving}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
               {isSaving ? "Saving..." : "Complete Step"}
             </Button>
