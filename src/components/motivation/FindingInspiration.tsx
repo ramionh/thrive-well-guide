@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
-import { LightBulb } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 
 interface FindingInspirationProps {
   onComplete?: () => void;
@@ -52,7 +52,7 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex items-center gap-3 mb-2">
-              <LightBulb className="h-5 w-5 text-purple-600" />
+              <Lightbulb className="h-5 w-5 text-purple-600" />
               <h2 className="text-xl font-semibold text-purple-800">Finding Inspiration</h2>
             </div>
             

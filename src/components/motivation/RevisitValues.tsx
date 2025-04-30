@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
+import { BookOpen } from "lucide-react";
 
 interface RevisitValuesProps {
   onComplete?: () => void;
@@ -26,17 +27,41 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
       values: ["", "", ""],
       reflection: ""
     },
-    transformData: (data) => {
+    onSuccess: onComplete,
+    parseData: (data) => {
+      console.log("Raw data from revisit values:", data);
+      
+      // Handle values array which could be stored as a string or array
+      let parsedValues = ["", "", ""];
+      if (data.values) {
+        if (typeof data.values === 'string') {
+          try {
+            parsedValues = JSON.parse(data.values);
+          } catch (e) {
+            console.error("Error parsing values as JSON:", e);
+            // Create a default array if parsing fails
+            parsedValues = [data.values || "", "", ""];
+          }
+        } else if (Array.isArray(data.values)) {
+          parsedValues = data.values;
+        }
+      }
+      
+      // Ensure array has exactly 3 elements
+      while (parsedValues.length < 3) {
+        parsedValues.push("");
+      }
+      
       return {
-        values: Array.isArray(data.values) ? data.values : ["", "", ""],
-        reflection: data.reflection || ""
+        values: parsedValues.slice(0, 3),
+        reflection: typeof data.reflection === 'string' ? data.reflection : ""
       };
     }
   });
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,22 +78,24 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
   };
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
         {isLoading ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">Revisit Values</h2>
-              <p className="text-gray-600 mb-6">
-                List your top values, ordered from most important to least important.
-              </p>
+            <div className="flex items-center gap-3 mb-2">
+              <BookOpen className="h-5 w-5 text-purple-600" />
+              <h2 className="text-xl font-semibold text-purple-800">Revisit Values</h2>
             </div>
+            
+            <p className="text-gray-700 mb-4">
+              List your top values, ordered from most important to least important.
+            </p>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="value1" className="block text-sm font-medium text-gray-700">
+                <Label htmlFor="value1" className="block text-sm font-medium text-purple-700">
                   Value 1 (Most Important)
                 </Label>
                 <Input
@@ -76,12 +103,12 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
                   value={formData.values[0] || ''}
                   onChange={(e) => updateValue(0, e.target.value)}
                   placeholder="Enter your most important value..."
-                  className="focus:border-purple-500 focus:ring-purple-500"
+                  className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="value2" className="block text-sm font-medium text-gray-700">
+                <Label htmlFor="value2" className="block text-sm font-medium text-purple-700">
                   Value 2
                 </Label>
                 <Input
@@ -89,12 +116,12 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
                   value={formData.values[1] || ''}
                   onChange={(e) => updateValue(1, e.target.value)}
                   placeholder="Enter your second most important value..."
-                  className="focus:border-purple-500 focus:ring-purple-500"
+                  className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="value3" className="block text-sm font-medium text-gray-700">
+                <Label htmlFor="value3" className="block text-sm font-medium text-purple-700">
                   Value 3
                 </Label>
                 <Input
@@ -102,19 +129,19 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
                   value={formData.values[2] || ''}
                   onChange={(e) => updateValue(2, e.target.value)}
                   placeholder="Enter your third most important value..."
-                  className="focus:border-purple-500 focus:ring-purple-500"
+                  className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
 
               <div className="space-y-2 mt-6">
-                <Label htmlFor="reflection" className="block text-sm font-medium text-gray-700">
+                <Label htmlFor="reflection" className="block text-sm font-medium text-purple-700">
                   How did you decide which value trumps all others? Did anything change?
                 </Label>
                 <Textarea
                   id="reflection"
                   value={formData.reflection}
                   onChange={(e) => updateForm("reflection", e.target.value)}
-                  className="min-h-[120px] focus:border-purple-500 focus:ring-purple-500"
+                  className="min-h-[120px] border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                   placeholder="Share your reflections on how you prioritized your values..."
                 />
               </div>
@@ -123,7 +150,7 @@ const RevisitValues: React.FC<RevisitValuesProps> = ({ onComplete }) => {
             <Button
               type="submit"
               disabled={isSaving}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
               {isSaving ? "Saving..." : "Complete Step"}
             </Button>
