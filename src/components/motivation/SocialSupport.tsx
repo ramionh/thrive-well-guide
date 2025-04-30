@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import { MessageCircle } from "lucide-react";
+import LoadingState from "./shared/LoadingState";
 
 interface SocialSupportProps {
   onComplete: () => void;
@@ -55,46 +56,59 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
       // Handle supportTypes, ensuring it's properly parsed
       let supportTypes = initialState.supportTypes;
       if (data?.support_types) {
-        // Handle if it's a string (parse it)
-        if (typeof data.support_types === 'string') {
-          try {
-            supportTypes = JSON.parse(data.support_types);
-          } catch (e) {
-            console.error("Error parsing support_types string:", e);
+        try {
+          // If it's already a JSON object
+          if (typeof data.support_types === 'object' && data.support_types !== null) {
+            supportTypes = {
+              financial: typeof data.support_types.financial === 'string' ? data.support_types.financial : '',
+              listeners: typeof data.support_types.listeners === 'string' ? data.support_types.listeners : '',
+              encouragers: typeof data.support_types.encouragers === 'string' ? data.support_types.encouragers : '',
+              valuers: typeof data.support_types.valuers === 'string' ? data.support_types.valuers : '',
+              talkers: typeof data.support_types.talkers === 'string' ? data.support_types.talkers : ''
+            };
+          } 
+          // If it's a string (parse it)
+          else if (typeof data.support_types === 'string') {
+            const parsed = JSON.parse(data.support_types);
+            supportTypes = {
+              financial: typeof parsed.financial === 'string' ? parsed.financial : '',
+              listeners: typeof parsed.listeners === 'string' ? parsed.listeners : '',
+              encouragers: typeof parsed.encouragers === 'string' ? parsed.encouragers : '',
+              valuers: typeof parsed.valuers === 'string' ? parsed.valuers : '',
+              talkers: typeof parsed.talkers === 'string' ? parsed.talkers : ''
+            };
           }
-        } 
-        // Handle if it's already an object
-        else if (typeof data.support_types === 'object') {
-          supportTypes = {
-            financial: parseField(data.support_types.financial),
-            listeners: parseField(data.support_types.listeners),
-            encouragers: parseField(data.support_types.encouragers),
-            valuers: parseField(data.support_types.valuers),
-            talkers: parseField(data.support_types.talkers)
-          };
+        } catch (e) {
+          console.error("Error parsing support_types:", e);
         }
       }
       
       // Handle socialSkills array
       let socialSkills = initialState.socialSkills;
       if (data?.social_skills) {
-        if (typeof data.social_skills === 'string') {
-          try {
+        try {
+          // If it's already an array
+          if (Array.isArray(data.social_skills)) {
+            socialSkills = data.social_skills;
+          } 
+          // If it's a string (parse it)
+          else if (typeof data.social_skills === 'string') {
             socialSkills = JSON.parse(data.social_skills);
-          } catch (e) {
-            // If it fails to parse as JSON, treat as a single skill
+          }
+        } catch (e) {
+          console.error("Error parsing social_skills:", e);
+          // If parsing fails, try to use it as is if it's a string
+          if (typeof data.social_skills === 'string') {
             socialSkills = [data.social_skills];
           }
-        } else if (Array.isArray(data.social_skills)) {
-          socialSkills = data.social_skills;
         }
       }
       
       const parsedData = {
         supportTypes,
         socialSkills,
-        socialFeelings: parseField(data?.social_feelings),
-        buildSocial: parseField(data?.build_social)
+        socialFeelings: typeof data?.social_feelings === 'string' ? data.social_feelings : '',
+        buildSocial: typeof data?.build_social === 'string' ? data.build_social : ''
       };
       
       console.log("Parsed social support data:", parsedData);
@@ -110,31 +124,6 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
     }
   });
   
-  // Helper function to parse field values that might be in different formats
-  const parseField = (value: any): string => {
-    if (!value) return "";
-    
-    // Already a string
-    if (typeof value === 'string') return value;
-    
-    // Try to handle case where value might be a JSON object/array
-    if (typeof value === 'object') {
-      try {
-        // If it's an object that contains a text property
-        if (value.text) return value.text;
-        // If it's an array and has a first element with text
-        if (Array.isArray(value) && value[0]?.text) return value[0].text;
-        // Last resort, stringify it
-        return JSON.stringify(value);
-      } catch (e) {
-        return "";
-      }
-    }
-    
-    // Default fallback
-    return String(value);
-  };
-
   const handleSocialSkillToggle = (skillId: string) => {
     const updatedSkills = formData.socialSkills.includes(skillId)
       ? formData.socialSkills.filter(id => id !== skillId)
@@ -154,6 +143,10 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
     e.preventDefault();
     submitForm();
   };
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <Card className="border-none shadow-none">
