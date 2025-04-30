@@ -10,10 +10,16 @@ interface AffirmationsProps {
 }
 
 const Affirmations: React.FC<AffirmationsProps> = ({ onComplete }) => {
-  const { affirmations, isLoading, isSaving, updateAffirmation, saveAffirmations } = useAffirmationsForm(onComplete);
+  const { 
+    affirmations, 
+    isLoading, 
+    isSaving, 
+    updateAffirmation, 
+    saveAffirmations 
+  } = useAffirmationsForm(onComplete);
 
   return (
-    <Card>
+    <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
         {isLoading ? (
           <LoadingState />

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AffirmationItem } from "@/hooks/useAffirmationsForm";
 import AffirmationExamples from "./AffirmationExamples";
+import { MessageSquare } from "lucide-react";
 
 interface AffirmationsFormProps {
   affirmations: AffirmationItem[];
@@ -21,6 +22,11 @@ const AffirmationForm: React.FC<AffirmationsFormProps> = ({
 }) => {
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-2">
+        <MessageSquare className="h-5 w-5 text-purple-600" />
+        <h2 className="text-2xl font-bold text-purple-800">Affirmations</h2>
+      </div>
+
       <div className="space-y-4">
         <p className="text-gray-700">
           Positive self-talk helps us build confidence, and affirmations are especially effective. 
@@ -50,7 +56,7 @@ const AffirmationForm: React.FC<AffirmationsFormProps> = ({
             <TableRow key={index}>
               <TableCell>
                 <Input
-                  value={affirmation.criticism}
+                  value={affirmation.criticism || ""}
                   onChange={(e) => updateAffirmation(index, "criticism", e.target.value)}
                   placeholder="Enter your criticism here..."
                   className="w-full"
@@ -58,7 +64,7 @@ const AffirmationForm: React.FC<AffirmationsFormProps> = ({
               </TableCell>
               <TableCell>
                 <Input
-                  value={affirmation.positive}
+                  value={affirmation.positive || ""}
                   onChange={(e) => updateAffirmation(index, "positive", e.target.value)}
                   placeholder="Enter your positive affirmation here..."
                   className="w-full"
@@ -81,7 +87,7 @@ const AffirmationForm: React.FC<AffirmationsFormProps> = ({
         <Button 
           onClick={saveAffirmations}
           disabled={isSaving}
-          className="bg-purple-600 hover:bg-purple-700"
+          className="bg-purple-600 hover:bg-purple-700 text-white"
         >
           {isSaving ? (
             <>

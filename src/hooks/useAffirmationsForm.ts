@@ -45,31 +45,43 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
       if (data?.affirmations) {
         console.log("Raw affirmations data:", data.affirmations);
         
-        // Handle different possible formats of the returned data
-        let savedAffirmations: AffirmationItem[] = [];
+        // Parse the affirmations data based on its structure
+        let parsedAffirmations: AffirmationItem[] = [];
         
         if (Array.isArray(data.affirmations)) {
-          // Direct array format
-          savedAffirmations = data.affirmations as unknown as AffirmationItem[];
+          // It's already an array, use it directly
+          parsedAffirmations = data.affirmations as AffirmationItem[];
+        } else if (typeof data.affirmations === 'string') {
+          // It might be a JSON string, try to parse it
+          try {
+            parsedAffirmations = JSON.parse(data.affirmations);
+          } catch (e) {
+            console.error("Failed to parse affirmations JSON string:", e);
+          }
         } else if (typeof data.affirmations === 'object' && data.affirmations !== null) {
-          // If it's an object with numeric keys (like from JSON parsing)
+          // It might be a nested object with the affirmations inside
           const affObj = data.affirmations as any;
-          if (affObj.affirmations && Array.isArray(affObj.affirmations)) {
-            savedAffirmations = affObj.affirmations;
+          
+          if (Array.isArray(affObj)) {
+            parsedAffirmations = affObj;
+          } else if (affObj.affirmations && Array.isArray(affObj.affirmations)) {
+            parsedAffirmations = affObj.affirmations;
           } else {
-            // Try to extract values if it's an object with numeric keys
-            savedAffirmations = Object.values(affObj);
+            // Last resort: try to extract values if it's an object with numeric keys
+            parsedAffirmations = Object.values(affObj).filter(
+              item => item && typeof item === 'object' && 'criticism' in item && 'positive' in item
+            );
           }
         }
         
-        console.log("Parsed affirmations:", savedAffirmations);
+        console.log("Parsed affirmations:", parsedAffirmations);
         
         // Ensure we have at least 5 rows for the form
-        if (savedAffirmations.length < 5) {
-          const additionalRows = Array(5 - savedAffirmations.length).fill({ criticism: "", positive: "" });
-          setAffirmations([...savedAffirmations, ...additionalRows]);
+        if (parsedAffirmations.length < 5) {
+          const additionalRows = Array(5 - parsedAffirmations.length).fill({ criticism: "", positive: "" });
+          setAffirmations([...parsedAffirmations, ...additionalRows]);
         } else {
-          setAffirmations(savedAffirmations);
+          setAffirmations(parsedAffirmations);
         }
       }
     } catch (error) {
