@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAffirmationsForm } from "@/hooks/useAffirmationsForm";
 import AffirmationForm from "./affirmations/AffirmationForm";
@@ -17,6 +17,11 @@ const Affirmations: React.FC<AffirmationsProps> = ({ onComplete }) => {
     updateAffirmation, 
     saveAffirmations 
   } = useAffirmationsForm(onComplete);
+
+  // Add debugging to see what data we're getting
+  useEffect(() => {
+    console.log("Affirmations component - current affirmations:", affirmations);
+  }, [affirmations]);
 
   return (
     <Card className="bg-white shadow-lg border border-purple-200">
