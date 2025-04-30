@@ -10,6 +10,7 @@ import ThinkAboutBigPicture from "@/components/motivation/ThinkAboutBigPicture";
 import Control from "@/components/motivation/Control";
 import SmallSteps from "@/components/motivation/SmallSteps";
 import BeConsistent from "@/components/motivation/BeConsistent";
+import SupportSystemRoles from "@/components/motivation/SupportSystemRoles";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -72,5 +73,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Be Consistent",
     description: "Create a schedule for consistently working on your goals",
     component: (onComplete) => <BeConsistent onComplete={onComplete} />
+  },
+  {
+    id: 78,
+    title: "Support System Roles",
+    description: "Define how people in your support system can help you",
+    component: (onComplete) => <SupportSystemRoles onComplete={onComplete} />
   }
 ];
