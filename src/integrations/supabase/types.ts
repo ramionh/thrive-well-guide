@@ -749,6 +749,39 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_dealing_setbacks_stress_check: {
+        Row: {
+          created_at: string
+          emotion_focused: string[]
+          id: string
+          implementation: string | null
+          problem_focused: string[]
+          stress_level: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emotion_focused?: string[]
+          id?: string
+          implementation?: string | null
+          problem_focused?: string[]
+          stress_level: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emotion_focused?: string[]
+          id?: string
+          implementation?: string | null
+          problem_focused?: string[]
+          stress_level?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_defining_confidence: {
         Row: {
           created_at: string

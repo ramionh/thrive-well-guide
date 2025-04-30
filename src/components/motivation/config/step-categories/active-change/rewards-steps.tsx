@@ -20,6 +20,7 @@ import ObstaclesToOpportunities from "@/components/motivation/ObstaclesToOpportu
 import TheChangePlan from "@/components/motivation/TheChangePlan";
 import MonitoringYourProgress from "@/components/motivation/MonitoringYourProgress";
 import DealingWithSetbacksRecommit from "@/components/motivation/DealingWithSetbacksRecommit";
+import DealingWithSetbacksStressCheck from "@/components/motivation/DealingWithSetbacksStressCheck";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -142,5 +143,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Dealing with Setbacks: Recommit",
     description: "Select coping skills to help you get back on track",
     component: (onComplete) => <DealingWithSetbacksRecommit onComplete={onComplete} />
+  },
+  {
+    id: 88,
+    title: "Dealing with Setbacks: Stress Check",
+    description: "Evaluate your stress level and apply coping mechanisms",
+    component: (onComplete) => <DealingWithSetbacksStressCheck onComplete={onComplete} />
   }
 ];
