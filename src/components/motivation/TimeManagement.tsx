@@ -1,10 +1,12 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { Clock } from "lucide-react";
+import LoadingState from "./shared/LoadingState";
 
 interface TimeManagementProps {
   onComplete: () => void;
@@ -18,7 +20,7 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
     impact: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading, fetchData } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, isSaving } = useMotivationForm({
     tableName: "motivation_time_management",
     initialState,
     onSuccess: onComplete,
@@ -41,19 +43,22 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
     }
   });
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitForm();
   };
 
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
   return (
     <Card className="border-none shadow-none">
       <CardHeader className="px-0">
-        <CardTitle className="text-2xl font-bold text-purple-800">Time Management and Personal Structure</CardTitle>
+        <div className="flex items-center gap-3 mb-1">
+          <Clock className="w-6 h-6 text-purple-600" />
+          <CardTitle className="text-2xl font-bold text-purple-800">Time Management and Personal Structure</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="px-0">
         <p className="mb-6 text-gray-600">
@@ -75,7 +80,7 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("currentSchedule", e.target.value)}
               className="mt-1"
               rows={7}
-              disabled={isLoading}
+              disabled={isSaving}
             />
           </div>
           
@@ -89,7 +94,7 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("timeSlots", e.target.value)}
               className="mt-1"
               rows={4}
-              disabled={isLoading}
+              disabled={isSaving}
             />
           </div>
           
@@ -103,7 +108,7 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("quickActivities", e.target.value)}
               className="mt-1"
               rows={4}
-              disabled={isLoading}
+              disabled={isSaving}
             />
           </div>
           
@@ -117,16 +122,16 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("impact", e.target.value)}
               className="mt-1"
               rows={4}
-              disabled={isLoading}
+              disabled={isSaving}
             />
           </div>
 
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isLoading}
+            disabled={isSaving}
           >
-            {isLoading ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>

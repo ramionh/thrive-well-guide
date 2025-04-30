@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
@@ -33,13 +33,15 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!user) return;
 
     setIsLoading(true);
     try {
+      // Use 'as any' to bypass TypeScript's strict table name checking
+      // This is safe because tableName is provided by our code, not external input
       const { data, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
@@ -96,7 +98,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, tableName, initialState, parseData, toast]);
 
   useEffect(() => {
     if (user) {
@@ -104,7 +106,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
     } else {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, fetchData]); // This will only run when user or fetchData changes
 
   const updateForm = (field: keyof T, value: any) => {
     setFormData(prev => ({
@@ -136,7 +138,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
 
       // Check if a record already exists
       const { data: existingData, error: queryError } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -147,7 +149,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
       if (existingData?.id) {
         // Update existing record
         result = await supabase
-          .from(tableName)
+          .from(tableName as any)
           .update({
             ...dataToSubmit,
             updated_at: new Date().toISOString()
@@ -157,7 +159,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
       } else {
         // Insert new record
         result = await supabase
-          .from(tableName)
+          .from(tableName as any)
           .insert({
             ...dataToSubmit,
             created_at: new Date().toISOString(),
@@ -170,7 +172,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
       // Mark step as completed if stepNumber is provided
       if (stepNumber) {
         const { error: progressError } = await supabase
-          .from("motivation_steps_progress")
+          .from("motivation_steps_progress" as any)
           .upsert(
             {
               user_id: user.id,
@@ -187,7 +189,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
         // Make next step available if nextStepNumber is provided
         if (nextStepNumber) {
           const { error: nextStepError } = await supabase
-            .from("motivation_steps_progress")
+            .from("motivation_steps_progress" as any)
             .upsert(
               {
                 user_id: user.id,
