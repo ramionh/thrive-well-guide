@@ -8,12 +8,13 @@ import { Progress } from "@/components/ui/progress";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
+import { motivationSteps } from "@/components/motivation/config/motivationSteps";
 
 const MotivationProgress = () => {
   const { user } = useUser();
   const navigate = useNavigate();
 
-  const { data: motivationSteps } = useQuery({
+  const { data: motivationStepsProgress } = useQuery({
     queryKey: ['motivation-progress', user?.id],
     queryFn: async () => {
       if (!user) return [];
@@ -28,8 +29,9 @@ const MotivationProgress = () => {
     enabled: !!user
   });
 
-  const totalSteps = 12; // Total number of motivation steps
-  const completedSteps = motivationSteps?.length || 0;
+  // Get the total number of steps from the motivationSteps configuration
+  const totalSteps = motivationSteps.length;
+  const completedSteps = motivationStepsProgress?.length || 0;
   const progressPercentage = Math.round((completedSteps / totalSteps) * 100);
 
   return (
