@@ -332,6 +332,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_be_consistent: {
+        Row: {
+          consistent_activities: string
+          created_at: string
+          daily_schedule: Json
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consistent_activities?: string
+          created_at?: string
+          daily_schedule?: Json
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consistent_activities?: string
+          created_at?: string
+          daily_schedule?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_behaviors: {
         Row: {
           behavior: string

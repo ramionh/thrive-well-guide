@@ -9,6 +9,7 @@ import SeekPositiveInformation from "@/components/motivation/SeekPositiveInforma
 import ThinkAboutBigPicture from "@/components/motivation/ThinkAboutBigPicture";
 import Control from "@/components/motivation/Control";
 import SmallSteps from "@/components/motivation/SmallSteps";
+import BeConsistent from "@/components/motivation/BeConsistent";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -65,5 +66,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Small Steps",
     description: "Break down large goals into achievable small steps",
     component: (onComplete) => <SmallSteps onComplete={onComplete} />
+  },
+  {
+    id: 77,
+    title: "Be Consistent",
+    description: "Create a schedule for consistently working on your goals",
+    component: (onComplete) => <BeConsistent onComplete={onComplete} />
   }
 ];
