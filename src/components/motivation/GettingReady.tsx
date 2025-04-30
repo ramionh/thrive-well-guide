@@ -26,7 +26,6 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
       self_persuasion: ""
     },
     parseData: (data) => {
-      console.log("Raw data from Getting Ready:", data);
       return {
         self_persuasion: data.self_persuasion || ""
       };
@@ -38,14 +37,15 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
     nextStepName: "Making Your Goal Measurable"
   });
   
+  // Only fetch data once when component mounts
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []); // Remove fetchData from dependencies
   
+  // Update the state when formData changes
   useEffect(() => {
-    if (formData) {
-      console.log("Setting self persuasion from formData:", formData.self_persuasion);
-      setSelfPersuasion(formData.self_persuasion || "");
+    if (formData && formData.self_persuasion !== undefined) {
+      setSelfPersuasion(formData.self_persuasion);
     }
   }, [formData]);
   
