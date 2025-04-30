@@ -1,48 +1,118 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
+import { useToast } from "@/hooks/use-toast";
 import LoadingState from "./shared/LoadingState";
 
 interface SettingCeilingFloorProps {
   onComplete?: () => void;
 }
 
-interface CeilingFloorFormData {
-  best_outcome: string;
-  worst_outcome: string;
-}
-
 const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete }) => {
-  const {
-    formData,
-    isLoading,
-    isSaving,
-    fetchData,
-    updateForm,
-    submitForm
-  } = useMotivationForm<CeilingFloorFormData>({
-    tableName: "motivation_ceiling_floor",
-    initialState: {
-      best_outcome: "",
-      worst_outcome: ""
-    },
-    onSuccess: onComplete
-  });
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [bestOutcome, setBestOutcome] = useState("");
+  const [worstOutcome, setWorstOutcome] = useState("");
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const fetchData = async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      console.log('Fetching ceiling floor data for user:', user.id);
+      const { data, error } = await supabase
+        .from('motivation_ceiling_floor')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") {
+        console.error('Error fetching ceiling floor data:', error);
+        throw error;
+      }
+
+      console.log('Retrieved ceiling floor data:', data);
+      
+      if (data) {
+        // Set best outcome
+        if (data.best_outcome) {
+          console.log('Setting best outcome:', data.best_outcome);
+          setBestOutcome(data.best_outcome);
+        }
+        
+        // Set worst outcome
+        if (data.worst_outcome) {
+          console.log('Setting worst outcome:', data.worst_outcome);
+          setWorstOutcome(data.worst_outcome);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching ceiling floor data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load your saved responses",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    submitForm();
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const dataToSave = {
+        user_id: user.id,
+        best_outcome: bestOutcome,
+        worst_outcome: worstOutcome,
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('Saving ceiling floor data:', dataToSave);
+      
+      const { error } = await supabase
+        .from('motivation_ceiling_floor')
+        .upsert(dataToSave);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Your responses have been saved"
+      });
+      
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (error) {
+      console.error('Error saving ceiling floor data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your responses",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <Card className="bg-white shadow-md">
+    <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
         <h2 className="text-xl font-semibold text-purple-800 mb-4">Setting Ceiling & Floor</h2>
         
@@ -63,8 +133,8 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
                 </label>
                 <Textarea
                   id="best-outcome"
-                  value={formData.best_outcome || ""}
-                  onChange={(e) => updateForm("best_outcome", e.target.value)}
+                  value={bestOutcome}
+                  onChange={(e) => setBestOutcome(e.target.value)}
                   rows={4}
                   placeholder="Describe the best possible outcome..."
                   required
@@ -78,8 +148,8 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
                 </label>
                 <Textarea
                   id="worst-outcome"
-                  value={formData.worst_outcome || ""}
-                  onChange={(e) => updateForm("worst_outcome", e.target.value)}
+                  value={worstOutcome}
+                  onChange={(e) => setWorstOutcome(e.target.value)}
                   rows={4}
                   placeholder="Describe the worst possible outcome..."
                   required
