@@ -162,7 +162,7 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
   };
 
   if (isLoading) {
-    return <div>Loading habits...</div>;
+    return <div className="text-purple-700">Loading habits...</div>;
   }
 
   return (
@@ -170,30 +170,30 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
       <Carousel className="w-full">
         <CarouselContent>
           <CarouselItem>
-            <Card className="p-6 bg-purple-50 border-purple-200">
+            <Card className="p-6 bg-white border-purple-200">
               <h2 className="text-2xl font-bold text-purple-800 mb-4">Focusing</h2>
               <div className="prose max-w-none">
-                <p className="mb-4 text-purple-900">
+                <p className="mb-4 text-purple-700">
                   Now that you're thinking about your goal and potential obstacles, you may
                   have noticed that some (or maybe all) of those hindrances are your own
                   thoughts and actions. The greatest barrier to change is often that we can't
                   seem to get out of our own way.
                 </p>
-                <p className="mb-4 text-purple-900">
+                <p className="mb-4 text-purple-600">
                   People suffering from weight-related health issues know their eating habits and inactivity contribute
                   to the problem, but many of us still find it difficult to change.
                 </p>
-                <p className="mb-6 font-semibold text-purple-700">
+                <p className="mb-6 font-semibold text-purple-800">
                   How big is the gap or disparity between your current actions and your
                   ultimate goal?
                 </p>
-                <p className="mb-4 text-purple-900">
+                <p className="mb-4 text-purple-600">
                   You may be feeling a bit overwhelmed or even hopeless. These negative
                   emotions do not inspire change. If simply being miserable led to successful
                   change, nobody would need a book about motivation. But being
                   uncomfortable is a step in the right direction.
                 </p>
-                <p className="text-purple-900">
+                <p className="text-purple-700">
                   Dwelling on what we're doing wrong, however, won't get us to the finish line.
                 </p>
               </div>
@@ -201,16 +201,16 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">What are my concerns?</h2>
+            <Card className="p-6 bg-white border-purple-200">
+              <h2 className="text-2xl font-bold mb-4 text-purple-800">What are my concerns?</h2>
               <div className="prose mb-6">
-                <p className="mb-4">
+                <p className="mb-4 text-purple-600">
                   You might have a general idea that you need to change one aspect of
                   your fitness but are unsure what the change should be. You
                   don't have to address all the following topics, as we have plenty of
                   time to narrow things down later.
                 </p>
-                <p className="font-semibold mb-6">
+                <p className="font-semibold mb-6 text-purple-700">
                   Pick one or two core habits to focus on:
                 </p>
               </div>
@@ -219,20 +219,20 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
                 {allHabits?.map((habit) => (
                   <Card 
                     key={habit.id} 
-                    className={`p-4 cursor-pointer transition-all 
+                    className={`p-4 cursor-pointer transition-all bg-white
                       ${focusedHabits?.includes(habit.id) 
-                        ? 'border-2 border-green-500 bg-green-50' 
-                        : 'hover:bg-gray-100'
+                        ? 'border-2 border-purple-500' 
+                        : 'hover:bg-purple-50 border border-purple-200'
                       }`}
                     onClick={() => handleHabitSelect(habit.id)}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold">{habit.name}</h3>
-                        <p className="text-sm text-gray-500">{habit.description}</p>
+                        <h3 className="font-semibold text-purple-800">{habit.name}</h3>
+                        <p className="text-sm text-purple-600">{habit.description}</p>
                       </div>
                       {focusedHabits?.includes(habit.id) && (
-                        <CheckCircle className="text-green-500" />
+                        <CheckCircle className="text-purple-500" />
                       )}
                     </div>
                   </Card>
@@ -248,8 +248,8 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
             </Card>
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className="text-purple-600" />
+        <CarouselNext className="text-purple-600" />
       </Carousel>
     </div>
   );

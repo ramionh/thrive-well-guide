@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const FocusedHabitsIntro = () => (
-  <Card className="bg-purple-50 shadow-lg border-2 border-purple-200">
+  <Card className="bg-white shadow-lg border-2 border-purple-200">
     <CardContent className="p-6 md:p-8">
       <div className="prose max-w-none">
         <h2 className="text-2xl font-bold text-purple-800 mb-4">Focusing</h2>

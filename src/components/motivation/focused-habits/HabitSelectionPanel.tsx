@@ -19,7 +19,7 @@ const HabitSelectionPanel = ({
   onComplete,
 }: HabitSelectionPanelProps) => {
   return (
-    <Card className="p-6 bg-purple-50 border-purple-100">
+    <Card className="p-6 bg-white border-purple-200">
       <h2 className="text-2xl font-bold mb-4 text-purple-800">What are my concerns?</h2>
       <div className="prose mb-6">
         <p className="mb-4 text-purple-600">

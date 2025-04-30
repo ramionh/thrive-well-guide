@@ -25,7 +25,7 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
   } = useFocusedHabits(onComplete);
 
   if (isLoading) {
-    return <div>Loading habits...</div>;
+    return <div className="text-purple-700">Loading habits...</div>;
   }
 
   return (
@@ -45,8 +45,8 @@ const FocusedHabitsSelector = ({ onComplete }: FocusedHabitsSelectorProps) => {
             />
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className="text-purple-600" />
+        <CarouselNext className="text-purple-600" />
       </Carousel>
     </div>
   );
