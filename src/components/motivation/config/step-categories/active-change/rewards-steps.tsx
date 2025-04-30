@@ -22,6 +22,7 @@ import MonitoringYourProgress from "@/components/motivation/MonitoringYourProgre
 import DealingWithSetbacksRecommit from "@/components/motivation/DealingWithSetbacksRecommit";
 import DealingWithSetbacksStressCheck from "@/components/motivation/DealingWithSetbacksStressCheck";
 import DealingWithSetbacksSelfCare from "@/components/motivation/DealingWithSetbacksSelfCare";
+import ChangeYourPlan from "@/components/motivation/ChangeYourPlan";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -156,5 +157,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Dealing with Setbacks: Self-Care",
     description: "Choose self-care activities to help maintain your well-being",
     component: (onComplete) => <DealingWithSetbacksSelfCare onComplete={onComplete} />
+  },
+  {
+    id: 90,
+    title: "Change Your Plan",
+    description: "Adjust your fitness plan as needed based on your progress",
+    component: (onComplete) => <ChangeYourPlan onComplete={onComplete} />
   }
 ];

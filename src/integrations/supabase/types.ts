@@ -476,6 +476,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_change_plan_adjustments: {
+        Row: {
+          created_at: string
+          id: string
+          plan_adjustments: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan_adjustments?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan_adjustments?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_characteristics: {
         Row: {
           characteristics: Json
