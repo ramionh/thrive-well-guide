@@ -15,6 +15,7 @@ import SocialSystemBoundaries from "@/components/motivation/SocialSystemBoundari
 import FindingCommunity from "@/components/motivation/FindingCommunity";
 import VisualizeResults from "@/components/motivation/VisualizeResults";
 import HelpfulIdeas from "@/components/motivation/HelpfulIdeas";
+import SelfObservation from "@/components/motivation/SelfObservation";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -107,5 +108,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Helpful Ideas",
     description: "Rank the most helpful techniques you've learned",
     component: (onComplete) => <HelpfulIdeas onComplete={onComplete} />
+  },
+  {
+    id: 83,
+    title: "Self-Observation",
+    description: "Journal your daily observations about behavior patterns",
+    component: (onComplete) => <SelfObservation onComplete={onComplete} />
   }
 ];

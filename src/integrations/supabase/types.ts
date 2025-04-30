@@ -1814,6 +1814,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_self_observation: {
+        Row: {
+          created_at: string
+          id: string
+          observations: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          observations?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          observations?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_small_steps: {
         Row: {
           created_at: string
