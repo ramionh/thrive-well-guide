@@ -31,14 +31,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
   const { toast } = useToast();
   const [formData, setFormData] = useState<T>(initialState);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (user) {
-      fetchData();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
@@ -105,6 +98,14 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
     }
   };
 
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
+
   const updateForm = (field: keyof T, value: any) => {
     setFormData(prev => ({
       ...prev,
@@ -115,7 +116,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
   const submitForm = async () => {
     if (!user) return;
 
-    setIsLoading(true);
+    setIsSaving(true);
     try {
       // Transform the data if a transformer is provided
       let dataToSubmit: Record<string, any>;
@@ -219,13 +220,15 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
   return {
     formData,
     isLoading,
+    isSaving,
+    fetchData,
     updateForm,
     submitForm
   };

@@ -1,10 +1,12 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { Users } from "lucide-react";
+import LoadingState from "./shared/LoadingState";
 
 interface FamilyStrengthsProps {
   onComplete: () => void;
@@ -18,10 +20,24 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
     buildFamily: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, isSaving } = useMotivationForm({
     tableName: "motivation_family_strengths",
     initialState,
     onSuccess: onComplete,
+    parseData: (data) => {
+      console.log("Raw family strengths data:", data);
+      
+      // Extract values with proper error handling
+      const parsedData = {
+        familyStrengths: typeof data.family_strengths === 'string' ? data.family_strengths : '',
+        perceivedStrengths: typeof data.perceived_strengths === 'string' ? data.perceived_strengths : '',
+        familyFeelings: typeof data.family_feelings === 'string' ? data.family_feelings : '',
+        buildFamily: typeof data.build_family === 'string' ? data.build_family : ''
+      };
+      
+      console.log("Parsed family strengths data:", parsedData);
+      return parsedData;
+    },
     transformData: (data) => {
       return {
         family_strengths: data.familyStrengths,
@@ -37,10 +53,17 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
     submitForm();
   };
 
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
   return (
     <Card className="border-none shadow-none">
       <CardHeader className="px-0">
-        <CardTitle className="text-2xl font-bold text-purple-800">Family Strengths</CardTitle>
+        <div className="flex items-center gap-3 mb-1">
+          <Users className="w-6 h-6 text-purple-600" />
+          <CardTitle className="text-2xl font-bold text-purple-800">Family Strengths</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="px-0">
         <p className="mb-6 text-gray-600">
@@ -64,7 +87,8 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("familyStrengths", e.target.value)}
               className="mt-1"
               rows={4}
-              disabled={isLoading}
+              disabled={isLoading || isSaving}
+              placeholder="Describe your family's strengths..."
             />
           </div>
           
@@ -76,7 +100,8 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("perceivedStrengths", e.target.value)}
               className="mt-1"
               rows={4}
-              disabled={isLoading}
+              disabled={isLoading || isSaving}
+              placeholder="Describe how your family members see your strengths..."
             />
           </div>
           
@@ -88,7 +113,8 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("familyFeelings", e.target.value)}
               className="mt-1"
               rows={4}
-              disabled={isLoading}
+              disabled={isLoading || isSaving}
+              placeholder="Share your feelings about your family support..."
             />
           </div>
           
@@ -100,16 +126,17 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
               onChange={(e) => updateForm("buildFamily", e.target.value)}
               className="mt-1"
               rows={4}
-              disabled={isLoading}
+              disabled={isLoading || isSaving}
+              placeholder="Describe ways to strengthen your family support..."
             />
           </div>
 
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isLoading}
+            disabled={isLoading || isSaving}
           >
-            {isLoading ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>
