@@ -6,6 +6,7 @@ import RewardsEventsActivities from "@/components/motivation/RewardsEventsActivi
 import NarrowingDownRewards from "@/components/motivation/NarrowingDownRewards";
 import GetOrganized from "@/components/motivation/GetOrganized";
 import SeekPositiveInformation from "@/components/motivation/SeekPositiveInformation";
+import ThinkAboutBigPicture from "@/components/motivation/ThinkAboutBigPicture";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -44,5 +45,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Seek Positive Information Daily",
     description: "Find sources that reinforce your commitment to fitness",
     component: (onComplete) => <SeekPositiveInformation onComplete={onComplete} />
+  },
+  {
+    id: 74,
+    title: "Think About the Big Picture and Your Big Why",
+    description: "Revisit your ultimate goal and motivations",
+    component: (onComplete) => <ThinkAboutBigPicture onComplete={onComplete} />
   }
 ];

@@ -356,6 +356,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_big_picture_why: {
+        Row: {
+          big_picture_why: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          big_picture_why?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          big_picture_why?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_ceiling_floor: {
         Row: {
           best_outcome: string
