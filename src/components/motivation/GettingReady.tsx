@@ -12,6 +12,7 @@ interface GettingReadyProps {
 
 const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
   const [selfPersuasion, setSelfPersuasion] = useState<string>("");
+  const [dataFetched, setDataFetched] = useState<boolean>(false);
   
   const { 
     formData,
@@ -37,22 +38,29 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
     nextStepName: "Making Your Goal Measurable"
   });
   
-  // Only fetch data once when component mounts
+  // Fetch data only once when component mounts
   useEffect(() => {
-    fetchData();
-  }, []); // Remove fetchData from dependencies
+    if (!dataFetched) {
+      fetchData();
+      setDataFetched(true);
+    }
+  }, [dataFetched, fetchData]);
   
-  // Update the state when formData changes
+  // Update local state when form data changes, but only if it's different
   useEffect(() => {
-    if (formData && formData.self_persuasion !== undefined) {
+    if (formData && formData.self_persuasion !== undefined && formData.self_persuasion !== selfPersuasion) {
       setSelfPersuasion(formData.self_persuasion);
     }
-  }, [formData]);
+  }, [formData, selfPersuasion]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateForm("self_persuasion", selfPersuasion);
     submitForm();
+  };
+  
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setSelfPersuasion(e.target.value);
   };
   
   return (
@@ -84,7 +92,7 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
                 
                 <Textarea
                   value={selfPersuasion}
-                  onChange={(e) => setSelfPersuasion(e.target.value)}
+                  onChange={handleTextareaChange}
                   placeholder="I need to make this change because... I know I can succeed because..."
                   className="h-48"
                 />
