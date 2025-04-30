@@ -12,6 +12,7 @@ import SmallSteps from "@/components/motivation/SmallSteps";
 import BeConsistent from "@/components/motivation/BeConsistent";
 import SupportSystemRoles from "@/components/motivation/SupportSystemRoles";
 import SocialSystemBoundaries from "@/components/motivation/SocialSystemBoundaries";
+import FindingCommunity from "@/components/motivation/FindingCommunity";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -86,5 +87,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Social System Boundaries",
     description: "Set boundaries with people who may not support your goals",
     component: (onComplete) => <SocialSystemBoundaries onComplete={onComplete} />
+  },
+  {
+    id: 80,
+    title: "Finding Community",
+    description: "Connect with groups that can support your fitness journey",
+    component: (onComplete) => <FindingCommunity onComplete={onComplete} />
   }
 ];

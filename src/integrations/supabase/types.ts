@@ -989,6 +989,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_finding_community: {
+        Row: {
+          appealing: string | null
+          communities: Json
+          created_at: string
+          id: string
+          steps: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appealing?: string | null
+          communities?: Json
+          created_at?: string
+          id?: string
+          steps?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appealing?: string | null
+          communities?: Json
+          created_at?: string
+          id?: string
+          steps?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_finding_hope: {
         Row: {
           change_hope: string | null
