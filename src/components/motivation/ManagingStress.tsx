@@ -1,12 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LoadingState from "./shared/LoadingState";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { ActivitySquare } from 'lucide-react';
 
 interface ManagingStressProps {
   onComplete?: () => void;
@@ -15,9 +16,45 @@ interface ManagingStressProps {
 const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
   const { user } = useUser();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reflections, setReflections] = useState("");
+  
+  // Fetch existing reflections when component mounts
+  useEffect(() => {
+    const fetchReflections = async () => {
+      if (!user) return;
+      
+      try {
+        setIsLoading(true);
+        
+        const { data, error } = await supabase
+          .from('stress_management_reflections')
+          .select('reflections')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (error) throw error;
+        
+        if (data && data.reflections) {
+          setReflections(data.reflections);
+        }
+      } catch (error) {
+        console.error("Error fetching stress management reflections:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load your stress management reflections",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchReflections();
+  }, [user, toast]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,16 +64,41 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
     try {
       setIsSubmitting(true);
       
-      // Save the user's reflections to the database using type assertion to bypass TypeScript error
-      // until the types are regenerated
-      const { error } = await (supabase
-        .from('stress_management_reflections' as any)
-        .insert({
-          user_id: user.id,
-          reflections: reflections
-        }) as any);
+      // Check if a record already exists
+      const { data: existingData, error: queryError } = await supabase
+        .from('stress_management_reflections')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
       
-      if (error) throw error;
+      if (queryError) throw queryError;
+      
+      let saveError;
+      
+      if (existingData && existingData.id) {
+        // Update existing record
+        const { error } = await supabase
+          .from('stress_management_reflections')
+          .update({
+            reflections: reflections,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingData.id);
+        
+        saveError = error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('stress_management_reflections')
+          .insert({
+            user_id: user.id,
+            reflections: reflections
+          });
+        
+        saveError = error;
+      }
+      
+      if (saveError) throw saveError;
       
       toast({
         title: "Success",
@@ -64,9 +126,12 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
 
   return (
     <div className="space-y-6">
-      <div className="prose max-w-none">
+      <div className="flex items-center gap-3 mb-2">
+        <ActivitySquare className="h-5 w-5 text-purple-600" />
         <h2 className="text-2xl font-bold text-purple-800">Managing Stress</h2>
-        
+      </div>
+      
+      <div className="prose max-w-none">
         <p>
           Stress is a normal part of life, especially when making significant changes. Learning to
           manage stress effectively is crucial for maintaining your motivation and achieving your fitness goals.
@@ -125,7 +190,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
           <Button 
             type="submit" 
             disabled={isSubmitting} 
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             {isSubmitting ? "Saving..." : "Complete Step"}
           </Button>
