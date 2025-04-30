@@ -19,18 +19,33 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    fetchData
   } = useMotivationForm({
     tableName: "motivation_rewards_incentive",
     initialState: {
       rewards: Array(5).fill("")
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      // Make sure we're properly parsing the rewards array from the database
+      return {
+        rewards: Array.isArray(data.rewards) ? data.rewards : Array(5).fill("")
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 67,
+    nextStepNumber: 69,
+    stepName: "Rewards Create an Incentive to Change",
+    nextStepName: "Rewards from People Who Matter"
   });
   
   useEffect(() => {
-    if (formData) {
-      setRewards(formData.rewards || Array(5).fill(""));
+    fetchData();
+  }, [fetchData]);
+  
+  useEffect(() => {
+    if (formData && formData.rewards) {
+      setRewards(formData.rewards);
     }
   }, [formData]);
   
@@ -51,16 +66,17 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
+        <h2 className="text-xl font-semibold text-purple-800 mb-4">Rewards Create an Incentive to Change</h2>
+        
         {isLoading ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">Rewards Create an Incentive to Change</h2>
-              
               <p className="text-gray-600 mb-6">
-                When you're trying to change a behavior, it's very important to plan how you will reward yourself if you accomplish your goals. 
-                Tangible, meaningful rewards strengthen desirable behaviors and motivate you to stay on track.
+                When you're trying to change a behavior, it's very important to plan how you will reward yourself if you 
+                accomplish your goals. Tangible, meaningful rewards strengthen desirable behaviors and motivate you to stay on 
+                track.
               </p>
               
               <p className="text-gray-600 mb-6">
@@ -73,7 +89,7 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
                 </Label>
                 
                 {rewards.map((reward, index) => (
-                  <div key={index}>
+                  <div key={index} className="space-y-1">
                     <Label htmlFor={`reward-${index}`} className="text-sm font-medium">
                       Reward {index + 1}
                     </Label>

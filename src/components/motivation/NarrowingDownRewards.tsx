@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 import LoadingState from "./shared/LoadingState";
 
 interface NarrowingDownRewardsProps {
@@ -13,20 +15,91 @@ interface NarrowingDownRewardsProps {
 
 const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete }) => {
   const [topRewards, setTopRewards] = useState<string[]>(Array(5).fill(""));
+  const { user } = useUser();
+  const [previousRewards, setPreviousRewards] = useState<string[]>([]);
+  
+  // Fetch previous rewards
+  useEffect(() => {
+    if (user) {
+      const fetchPreviousRewards = async () => {
+        try {
+          // Fetch rewards from motivation_rewards_incentive
+          const { data: incentiveData, error: incentiveError } = await supabase
+            .from('motivation_rewards_incentive')
+            .select('rewards')
+            .eq('user_id', user.id)
+            .maybeSingle();
+            
+          if (incentiveError) {
+            console.error("Error fetching incentive rewards:", incentiveError);
+          }
+          
+          // Fetch rewards from motivation_people_rewards
+          const { data: peopleData, error: peopleError } = await supabase
+            .from('motivation_people_rewards')
+            .select('people_rewards')
+            .eq('user_id', user.id)
+            .maybeSingle();
+            
+          if (peopleError) {
+            console.error("Error fetching people rewards:", peopleError);
+          }
+          
+          // Fetch rewards from motivation_activity_rewards
+          const { data: activityData, error: activityError } = await supabase
+            .from('motivation_activity_rewards')
+            .select('activity_rewards')
+            .eq('user_id', user.id)
+            .maybeSingle();
+            
+          if (activityError) {
+            console.error("Error fetching activity rewards:", activityError);
+          }
+          
+          // Combine all rewards
+          const allRewards = [
+            ...(incentiveData?.rewards || []),
+            ...(peopleData?.people_rewards || []),
+            ...(activityData?.activity_rewards || [])
+          ].filter(reward => reward && reward.trim() !== '');
+          
+          setPreviousRewards(allRewards);
+        } catch (error) {
+          console.error("Error fetching previous rewards:", error);
+        }
+      };
+      
+      fetchPreviousRewards();
+    }
+  }, [user]);
   
   const { 
     formData,
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    fetchData
   } = useMotivationForm({
     tableName: "motivation_top_rewards",
     initialState: {
       top_rewards: Array(5).fill("")
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      return {
+        top_rewards: Array.isArray(data.top_rewards) ? data.top_rewards : Array(5).fill("")
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 71,
+    nextStepNumber: 72,
+    stepName: "Narrowing Down the Rewards",
+    nextStepName: "Get Organized"
   });
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
   
   useEffect(() => {
     if (formData && formData.top_rewards) {
@@ -70,8 +143,19 @@ const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete 
               
               <div className="space-y-4 text-gray-600">
                 <p className="mb-4">
-                  In the last three exercises, you identified 15 potential rewards that can help you stay focused on reaching your fitness goal. The final step is narrowing this down to five meaningful, tangible rewards.
+                  In the last three exercises, you identified potential rewards that can help you stay focused on reaching your fitness goal. The final step is narrowing this down to five meaningful, tangible rewards.
                 </p>
+                
+                {previousRewards.length > 0 && (
+                  <div className="bg-purple-50 p-4 rounded-lg mb-4">
+                    <p className="font-medium text-purple-700 mb-2">Your previously identified rewards:</p>
+                    <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                      {previousRewards.map((reward, index) => (
+                        <li key={index}>{reward}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 
                 <p className="mb-4">Some factors to consider include:</p>
                 
