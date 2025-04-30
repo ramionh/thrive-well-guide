@@ -1,10 +1,11 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { Building } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
 
 interface ResourceDevelopmentProps {
@@ -17,7 +18,7 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
     resourceDevelopment: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading, isSaving, fetchData } = useMotivationForm({
+  const { formData, updateForm, submitForm, isLoading, isSaving } = useMotivationForm({
     tableName: "motivation_resource_development",
     initialState,
     onSuccess: onComplete,
@@ -28,16 +29,13 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
       };
     },
     parseData: (data) => {
+      console.log("Raw data from Resource Development:", data);
       return {
         helpfulResources: data.helpful_resources || "",
         resourceDevelopment: data.resource_development || ""
       };
     }
   });
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +49,11 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
   return (
     <Card className="border-none shadow-none">
       <CardContent className="px-0">
+        <div className="flex items-center gap-3 mb-4">
+          <Building className="w-6 h-6 text-purple-600" />
+          <h2 className="text-xl font-bold text-purple-800">Resource Development</h2>
+        </div>
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <p className="text-gray-700 mb-6">
@@ -58,10 +61,10 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
             </p>
             
             <div className="mt-4">
-              <Label htmlFor="helpfulResources" className="text-purple-600">Most helpful resources:</Label>
+              <Label htmlFor="helpfulResources" className="text-purple-700 font-medium">Most helpful resources:</Label>
               <Textarea 
                 id="helpfulResources"
-                value={formData.helpfulResources || ""}
+                value={formData.helpfulResources}
                 onChange={(e) => updateForm("helpfulResources", e.target.value)}
                 className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={4}
@@ -71,7 +74,7 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
           </div>
 
           <div>
-            <Label htmlFor="resourceDevelopment" className="text-purple-600">
+            <Label htmlFor="resourceDevelopment" className="text-purple-700 font-medium">
               What resources can you begin to access or start to cultivate and develop? How will you do this?
             </Label>
             <p className="text-sm text-gray-500 mb-2">
@@ -79,7 +82,7 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
             </p>
             <Textarea 
               id="resourceDevelopment"
-              value={formData.resourceDevelopment || ""}
+              value={formData.resourceDevelopment}
               onChange={(e) => updateForm("resourceDevelopment", e.target.value)}
               className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
               rows={4}
@@ -89,7 +92,7 @@ const ResourceDevelopment: React.FC<ResourceDevelopmentProps> = ({ onComplete })
 
           <Button 
             type="submit"
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             disabled={isSaving}
           >
             {isSaving ? "Saving..." : "Complete Step"}
