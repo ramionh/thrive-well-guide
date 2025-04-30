@@ -19,6 +19,7 @@ import SelfObservation from "@/components/motivation/SelfObservation";
 import ObstaclesToOpportunities from "@/components/motivation/ObstaclesToOpportunities";
 import TheChangePlan from "@/components/motivation/TheChangePlan";
 import MonitoringYourProgress from "@/components/motivation/MonitoringYourProgress";
+import DealingWithSetbacksRecommit from "@/components/motivation/DealingWithSetbacksRecommit";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -135,5 +136,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Monitoring Your Progress",
     description: "Track and evaluate your progress on your fitness journey",
     component: (onComplete) => <MonitoringYourProgress onComplete={onComplete} />
+  },
+  {
+    id: 87,
+    title: "Dealing with Setbacks: Recommit",
+    description: "Select coping skills to help you get back on track",
+    component: (onComplete) => <DealingWithSetbacksRecommit onComplete={onComplete} />
   }
 ];

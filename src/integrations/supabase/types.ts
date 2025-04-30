@@ -722,6 +722,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_dealing_setbacks_recommit: {
+        Row: {
+          created_at: string
+          id: string
+          implementation_plan: string | null
+          selected_coping_skills: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          implementation_plan?: string | null
+          selected_coping_skills?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          implementation_plan?: string | null
+          selected_coping_skills?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_defining_confidence: {
         Row: {
           created_at: string
