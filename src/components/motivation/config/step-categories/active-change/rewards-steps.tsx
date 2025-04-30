@@ -13,6 +13,7 @@ import BeConsistent from "@/components/motivation/BeConsistent";
 import SupportSystemRoles from "@/components/motivation/SupportSystemRoles";
 import SocialSystemBoundaries from "@/components/motivation/SocialSystemBoundaries";
 import FindingCommunity from "@/components/motivation/FindingCommunity";
+import VisualizeResults from "@/components/motivation/VisualizeResults";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -93,5 +94,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Finding Community",
     description: "Connect with groups that can support your fitness journey",
     component: (onComplete) => <FindingCommunity onComplete={onComplete} />
+  },
+  {
+    id: 81,
+    title: "Visualize Results",
+    description: "Imagine your progress at different time milestones",
+    component: (onComplete) => <VisualizeResults onComplete={onComplete} />
   }
 ];

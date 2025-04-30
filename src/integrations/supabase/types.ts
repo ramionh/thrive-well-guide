@@ -2282,6 +2282,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_visualize_results: {
+        Row: {
+          created_at: string
+          id: string
+          one_year: string | null
+          six_months: string | null
+          three_months: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          one_year?: string | null
+          six_months?: string | null
+          three_months?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          one_year?: string | null
+          six_months?: string | null
+          three_months?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_where_are_you_now: {
         Row: {
           created_at: string
