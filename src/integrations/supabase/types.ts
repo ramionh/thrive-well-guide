@@ -1526,6 +1526,8 @@ export type Database = {
       motivation_measurable_goal: {
         Row: {
           created_at: string
+          goal_bodyfat_percentage: number | null
+          goal_weight_lbs: number | null
           id: string
           measurable_goal: string
           updated_at: string
@@ -1533,6 +1535,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          goal_bodyfat_percentage?: number | null
+          goal_weight_lbs?: number | null
           id?: string
           measurable_goal: string
           updated_at?: string
@@ -1540,6 +1544,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          goal_bodyfat_percentage?: number | null
+          goal_weight_lbs?: number | null
           id?: string
           measurable_goal?: string
           updated_at?: string

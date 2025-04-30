@@ -5,9 +5,59 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Dumbbell, Moon, Apple, Target } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const GoalProgress: React.FC = () => {
   const { user } = useUser();
+  
+  // Fetch the user's measurable goals
+  const { data: measurableGoals } = useQuery({
+    queryKey: ['measurable-goals', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('motivation_measurable_goal')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        console.error("Error fetching measurable goals:", error);
+        return null;
+      }
+      
+      return data;
+    },
+    enabled: !!user
+  });
+  
+  // Fetch current body metrics
+  const { data: currentMetrics } = useQuery({
+    queryKey: ['current-metrics', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('user_body_types')
+        .select('weight_lbs, bodyfat_percentage')
+        .eq('user_id', user.id)
+        .order('selected_date', { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        console.error("Error fetching current metrics:", error);
+        return null;
+      }
+      
+      return data;
+    },
+    enabled: !!user
+  });
   
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -74,6 +124,42 @@ const GoalProgress: React.FC = () => {
                     </span>
                     <span>{daysRemaining} days remaining</span>
                   </div>
+                  
+                  {/* Display goal metrics */}
+                  {(measurableGoals?.goal_weight_lbs || measurableGoals?.goal_bodyfat_percentage) && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <h4 className="text-sm font-medium mb-2">Measurable Targets</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {measurableGoals.goal_weight_lbs && (
+                          <div className="bg-blue-50 p-2 rounded text-sm">
+                            <div className="font-medium text-blue-900">Weight Goal</div>
+                            <div className="flex justify-between text-blue-800">
+                              <span>Current:</span>
+                              <span>{currentMetrics?.weight_lbs || '—'} lbs</span>
+                            </div>
+                            <div className="flex justify-between text-blue-800">
+                              <span>Target:</span>
+                              <span>{measurableGoals.goal_weight_lbs} lbs</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {measurableGoals.goal_bodyfat_percentage && (
+                          <div className="bg-green-50 p-2 rounded text-sm">
+                            <div className="font-medium text-green-900">Body Fat Goal</div>
+                            <div className="flex justify-between text-green-800">
+                              <span>Current:</span>
+                              <span>{currentMetrics?.bodyfat_percentage || '—'}%</span>
+                            </div>
+                            <div className="flex justify-between text-green-800">
+                              <span>Target:</span>
+                              <span>{measurableGoals.goal_bodyfat_percentage}%</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
