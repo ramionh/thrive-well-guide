@@ -5,6 +5,7 @@ import RewardsFromPeopleWhoMatter from "@/components/motivation/RewardsFromPeopl
 import RewardsEventsActivities from "@/components/motivation/RewardsEventsActivities";
 import NarrowingDownRewards from "@/components/motivation/NarrowingDownRewards";
 import GetOrganized from "@/components/motivation/GetOrganized";
+import SeekPositiveInformation from "@/components/motivation/SeekPositiveInformation";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -37,5 +38,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Get Organized",
     description: "Create a system to organize your action plan",
     component: (onComplete) => <GetOrganized onComplete={onComplete} />
+  },
+  {
+    id: 73,
+    title: "Seek Positive Information Daily",
+    description: "Find sources that reinforce your commitment to fitness",
+    component: (onComplete) => <SeekPositiveInformation onComplete={onComplete} />
   }
 ];

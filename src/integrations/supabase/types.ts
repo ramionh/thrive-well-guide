@@ -1466,6 +1466,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_positive_information: {
+        Row: {
+          created_at: string
+          id: string
+          selected_source_types: string[]
+          specific_sources: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          selected_source_types?: string[]
+          specific_sources?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          selected_source_types?: string[]
+          specific_sources?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_priorities: {
         Row: {
           created_at: string
