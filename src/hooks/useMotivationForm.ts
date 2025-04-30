@@ -73,13 +73,16 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
               if (typeof data[key] === 'string' && 
                 (data[key].startsWith('{') || data[key].startsWith('['))) {
                 try {
-                  parsedData[camelKey as keyof T] = JSON.parse(data[key]);
+                  // We need to cast this to any first to avoid TypeScript errors
+                  (parsedData[camelKey as keyof T] as any) = JSON.parse(data[key]);
                 } catch (e) {
                   console.warn(`Failed to parse JSON for ${key}:`, e);
-                  parsedData[camelKey as keyof T] = data[key];
+                  // We need to cast this to any first to avoid TypeScript errors
+                  (parsedData[camelKey as keyof T] as any) = data[key];
                 }
               } else {
-                parsedData[camelKey as keyof T] = data[key];
+                // We need to cast this to any first to avoid TypeScript errors
+                (parsedData[camelKey as keyof T] as any) = data[key];
               }
             }
           });
@@ -146,7 +149,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
       if (queryError && queryError.code !== "PGRST116") throw queryError;
 
       let result;
-      if (existingData?.id) {
+      if (existingData && existingData.id) {
         // Update existing record
         result = await supabase
           .from(tableName as any)
