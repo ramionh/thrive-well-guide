@@ -73,7 +73,7 @@ const SocialSystemBoundaries: React.FC<SocialSystemBoundariesProps> = ({ onCompl
   };
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
         {isLoading ? (
           <LoadingState />
@@ -82,7 +82,7 @@ const SocialSystemBoundaries: React.FC<SocialSystemBoundariesProps> = ({ onCompl
             <div>
               <h2 className="text-xl font-semibold text-purple-800 mb-4">Social System Boundaries</h2>
               
-              <p className="text-gray-600 mb-6">
+              <p className="text-purple-700 mb-6">
                 Some people may not be as helpful as you want them to be. Who could be less than helpful as you start to take action? 
                 These people don't believe in you or expect you to fail. What boundaries do you need to set with them or yourself?
               </p>
@@ -103,7 +103,7 @@ const SocialSystemBoundaries: React.FC<SocialSystemBoundariesProps> = ({ onCompl
                             value={item.who}
                             onChange={(e) => handleWhoChange(index, e.target.value)}
                             placeholder={index === 0 ? "Coworker Jordan" : "Enter name"}
-                            className="border-purple-200 focus:ring-purple-500 focus:border-purple-500"
+                            className="border-purple-200 focus:ring-purple-500 focus:border-purple-500 bg-white"
                           />
                         </TableCell>
                         <TableCell>
@@ -111,7 +111,7 @@ const SocialSystemBoundaries: React.FC<SocialSystemBoundariesProps> = ({ onCompl
                             value={item.boundary}
                             onChange={(e) => handleBoundaryChange(index, e.target.value)}
                             placeholder={index === 0 ? "Politely decline offers to go out for unhealthy lunches and bring my planned meals from home" : "How I can set boundaries"}
-                            className="border-purple-200 focus:ring-purple-500 focus:border-purple-500"
+                            className="border-purple-200 focus:ring-purple-500 focus:border-purple-500 bg-white"
                           />
                         </TableCell>
                       </TableRow>
@@ -124,7 +124,7 @@ const SocialSystemBoundaries: React.FC<SocialSystemBoundariesProps> = ({ onCompl
             <Button
               type="submit"
               disabled={isSaving}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
               {isSaving ? "Saving..." : "Complete Step"}
             </Button>

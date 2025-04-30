@@ -27,7 +27,7 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Cultural Obstacles</h2>
             <div className="prose mb-6">
               <p className="text-purple-700 leading-relaxed">
@@ -52,7 +52,7 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Identify Cultural Obstacles</h2>
             <div className="prose mb-6">
               <p className="text-purple-700">
@@ -68,7 +68,7 @@ const CulturalObstacles: React.FC<CulturalObstaclesProps> = ({ onComplete }) => 
                   value={entry.obstacle}
                   onChange={(e) => handleEntryChange(index, e.target.value)}
                   placeholder={`Cultural obstacle ${index + 1}`}
-                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="w-full bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
 

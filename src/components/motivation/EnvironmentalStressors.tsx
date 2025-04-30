@@ -1,3 +1,4 @@
+
 import React from "react";
 import { 
   Carousel, 
@@ -26,7 +27,7 @@ const EnvironmentalStressors: React.FC<EnvironmentalStressorsProps> = ({ onCompl
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Environmental Stressors</h2>
             <div className="prose mb-6">
               <p className="text-purple-700 leading-relaxed">
@@ -42,7 +43,7 @@ const EnvironmentalStressors: React.FC<EnvironmentalStressorsProps> = ({ onCompl
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Identify Environmental Stressors</h2>
             <div className="prose mb-6">
               <p className="text-purple-700">
@@ -58,7 +59,7 @@ const EnvironmentalStressors: React.FC<EnvironmentalStressorsProps> = ({ onCompl
                   value={entry.stressor}
                   onChange={(e) => handleEntryChange(index, e.target.value)}
                   placeholder={`Environmental stressor ${index + 1}`}
-                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="w-full bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
 

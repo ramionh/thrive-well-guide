@@ -12,7 +12,7 @@ interface FocusedHabitCardProps {
 
 const FocusedHabitCard = ({ habit, isFocused, onSelect }: FocusedHabitCardProps) => (
   <Card 
-    className={`p-4 cursor-pointer transition-all bg-white
+    className={`p-4 cursor-pointer transition-all bg-white shadow-sm
       ${isFocused 
         ? 'border-2 border-purple-500' 
         : 'hover:bg-purple-50 border border-purple-200'

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { 
   Carousel, 
@@ -26,10 +27,10 @@ const IdentifyingAmbivalence: React.FC<IdentifyingAmbivalenceProps> = ({ onCompl
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 border-2 border-purple-300">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Identifying Ambivalence</h2>
             <div className="prose mb-6">
-              <p className="text-purple-900/80 leading-relaxed">
+              <p className="text-purple-700 leading-relaxed">
                 Even though you've taken steps to identify your goals and possible obstacles, 
                 you still might not feel completely committed. Perhaps you recognize something 
                 needs to change, yet something is in the way. Ambivalence can derail goals, 
@@ -41,7 +42,7 @@ const IdentifyingAmbivalence: React.FC<IdentifyingAmbivalenceProps> = ({ onCompl
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Write Your Ambivalent Statements</h2>
             <div className="prose mb-6">
               <p className="text-purple-700">
@@ -50,7 +51,7 @@ const IdentifyingAmbivalence: React.FC<IdentifyingAmbivalenceProps> = ({ onCompl
                 that makes you feel ambivalent. Use an obstacle you've identified in one of the 
                 previous exercises.
               </p>
-              <p className="italic">
+              <p className="italic text-purple-600">
                 Ex. I want to lower my blood pressure, but I enjoy eating too many unhealthy foods.
                 Ex. I want to build muscle strength, but I'm afraid of looking awkward at the gym.
               </p>
@@ -63,7 +64,7 @@ const IdentifyingAmbivalence: React.FC<IdentifyingAmbivalenceProps> = ({ onCompl
                   value={entry.ambivalence_statement}
                   onChange={(e) => handleEntryChange(index, e.target.value)}
                   placeholder={`Ambivalence statement ${index + 1}`}
-                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="w-full bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
 

@@ -27,7 +27,7 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Social Support Network</h2>
             <div className="prose mb-6">
               <p className="text-purple-700 leading-relaxed">
@@ -49,7 +49,7 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Your Social Network</h2>
             <div className="prose mb-6">
               <p className="text-purple-700">
@@ -70,7 +70,7 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
                     value={entry.person}
                     onChange={(e) => handleEntryChange(index, 'person', e.target.value)}
                     placeholder={`Person or group ${index + 1}`}
-                    className="flex-1 bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                    className="flex-1 bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   />
                   <Input
                     type="number"
@@ -79,7 +79,7 @@ const SocialNetwork: React.FC<SocialNetworkProps> = ({ onComplete }) => {
                     value={entry.rating || ''}
                     onChange={(e) => handleEntryChange(index, 'rating', parseInt(e.target.value) || 0)}
                     placeholder="Rating"
-                    className="w-24 bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                    className="w-24 bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   />
                 </div>
               ))}
