@@ -17,6 +17,7 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
     formData,
     isLoading, 
     isSaving, 
+    fetchData,
     submitForm, 
     updateForm 
   } = useMotivationForm({
@@ -24,11 +25,26 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
     initialState: {
       self_persuasion: ""
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      console.log("Raw data from Getting Ready:", data);
+      return {
+        self_persuasion: data.self_persuasion || ""
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 66,
+    nextStepNumber: 67,
+    stepName: "Getting Ready",
+    nextStepName: "Making Your Goal Measurable"
   });
   
   useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+  
+  useEffect(() => {
     if (formData) {
+      console.log("Setting self persuasion from formData:", formData.self_persuasion);
       setSelfPersuasion(formData.self_persuasion || "");
     }
   }, [formData]);
