@@ -11,6 +11,7 @@ import Control from "@/components/motivation/Control";
 import SmallSteps from "@/components/motivation/SmallSteps";
 import BeConsistent from "@/components/motivation/BeConsistent";
 import SupportSystemRoles from "@/components/motivation/SupportSystemRoles";
+import SocialSystemBoundaries from "@/components/motivation/SocialSystemBoundaries";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -79,5 +80,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Support System Roles",
     description: "Define how people in your support system can help you",
     component: (onComplete) => <SupportSystemRoles onComplete={onComplete} />
+  },
+  {
+    id: 79,
+    title: "Social System Boundaries",
+    description: "Set boundaries with people who may not support your goals",
+    component: (onComplete) => <SocialSystemBoundaries onComplete={onComplete} />
   }
 ];

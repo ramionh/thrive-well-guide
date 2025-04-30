@@ -1784,6 +1784,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_social_boundaries: {
+        Row: {
+          boundaries: Json
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          boundaries?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          boundaries?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_social_cultural_resources: {
         Row: {
           created_at: string
