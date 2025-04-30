@@ -19,16 +19,32 @@ const WhereAreYouNow: React.FC<WhereAreYouNowProps> = ({ onComplete }) => {
     formData,
     isLoading, 
     isSaving, 
-    submitForm, 
-    updateForm 
+    fetchData,
+    submitForm,
+    updateForm
   } = useMotivationForm({
     tableName: "motivation_where_are_you_now",
     initialState: {
       readiness_rating: 5,
       progress_summary: ""
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      console.log("Raw data from Where Are You Now:", data);
+      return {
+        readiness_rating: data.readiness_rating || 5,
+        progress_summary: data.progress_summary || ""
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 64,
+    nextStepNumber: 65,
+    stepName: "Where Are You Now",
+    nextStepName: "Identifying the Steps to Reach Your Goal"
   });
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
   
   useEffect(() => {
     if (formData) {
