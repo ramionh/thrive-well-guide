@@ -49,12 +49,24 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         let parsedAffirmations: AffirmationItem[] = [];
         
         if (Array.isArray(data.affirmations)) {
-          // It's already an array, use it directly
-          parsedAffirmations = data.affirmations as AffirmationItem[];
+          // Type assertion for the JSON data
+          const affArray = data.affirmations as unknown as any[];
+          
+          // Validate and transform each item to ensure it matches AffirmationItem structure
+          parsedAffirmations = affArray.map(item => ({
+            criticism: typeof item.criticism === 'string' ? item.criticism : '',
+            positive: typeof item.positive === 'string' ? item.positive : ''
+          }));
         } else if (typeof data.affirmations === 'string') {
           // It might be a JSON string, try to parse it
           try {
-            parsedAffirmations = JSON.parse(data.affirmations);
+            const parsed = JSON.parse(data.affirmations);
+            if (Array.isArray(parsed)) {
+              parsedAffirmations = parsed.map(item => ({
+                criticism: typeof item.criticism === 'string' ? item.criticism : '',
+                positive: typeof item.positive === 'string' ? item.positive : ''
+              }));
+            }
           } catch (e) {
             console.error("Failed to parse affirmations JSON string:", e);
           }
@@ -63,14 +75,25 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
           const affObj = data.affirmations as any;
           
           if (Array.isArray(affObj)) {
-            parsedAffirmations = affObj;
+            parsedAffirmations = affObj.map(item => ({
+              criticism: typeof item.criticism === 'string' ? item.criticism : '',
+              positive: typeof item.positive === 'string' ? item.positive : ''
+            }));
           } else if (affObj.affirmations && Array.isArray(affObj.affirmations)) {
-            parsedAffirmations = affObj.affirmations;
+            parsedAffirmations = affObj.affirmations.map(item => ({
+              criticism: typeof item.criticism === 'string' ? item.criticism : '',
+              positive: typeof item.positive === 'string' ? item.positive : ''
+            }));
           } else {
             // Last resort: try to extract values if it's an object with numeric keys
-            parsedAffirmations = Object.values(affObj).filter(
+            const values = Object.values(affObj).filter(
               item => item && typeof item === 'object' && 'criticism' in item && 'positive' in item
             );
+            
+            parsedAffirmations = values.map(item => ({
+              criticism: typeof (item as any).criticism === 'string' ? (item as any).criticism : '',
+              positive: typeof (item as any).positive === 'string' ? (item as any).positive : ''
+            }));
           }
         }
         
@@ -119,6 +142,7 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         .from("motivation_affirmations")
         .upsert({
           user_id: user.id,
+          // Explicit cast to ensure TypeScript knows we're handling this correctly
           affirmations: filteredAffirmations as unknown as Json,
           updated_at: new Date().toISOString()
         });

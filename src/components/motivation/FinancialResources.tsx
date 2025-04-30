@@ -61,15 +61,15 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
       console.log("Financial resources raw data:", data);
 
       if (data) {
-        // Create a clean data object, handling both direct values and potential JSON parsing issues
+        // Create a clean data object with safer parsing
         const cleanData: FinancialResourcesFormData = {
-          income: parseField(data.income),
-          job_stability: parseField(data.job_stability),
-          workplace_benefits: parseField(data.workplace_benefits),
-          flexible_schedule: parseField(data.flexible_schedule),
-          job_satisfaction: parseField(data.job_satisfaction),
-          financial_feelings: parseField(data.financial_feelings),
-          build_resources: parseField(data.build_resources)
+          income: parseStringField(data.income),
+          job_stability: parseStringField(data.job_stability),
+          workplace_benefits: parseStringField(data.workplace_benefits),
+          flexible_schedule: parseStringField(data.flexible_schedule),
+          job_satisfaction: parseStringField(data.job_satisfaction),
+          financial_feelings: parseStringField(data.financial_feelings),
+          build_resources: parseStringField(data.build_resources)
         };
 
         console.log("Parsed financial resources data:", cleanData);
@@ -87,9 +87,9 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
     }
   };
 
-  // Helper function to parse potentially JSON-encoded string fields
-  const parseField = (value: any): string => {
-    if (!value) return "";
+  // Helper function to safely parse string fields from various data formats
+  const parseStringField = (value: any): string => {
+    if (value === null || value === undefined) return "";
     
     // Already a string
     if (typeof value === 'string') return value;
@@ -98,9 +98,9 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
     if (typeof value === 'object') {
       try {
         // If it's an object that contains a text property
-        if (value.text) return value.text;
+        if (value.text) return String(value.text);
         // If it's an array and has a first element with text
-        if (Array.isArray(value) && value[0]?.text) return value[0].text;
+        if (Array.isArray(value) && value[0]?.text) return String(value[0].text);
         // Last resort, stringify it
         return JSON.stringify(value);
       } catch (e) {
