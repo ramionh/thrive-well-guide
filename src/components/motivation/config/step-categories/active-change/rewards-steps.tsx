@@ -16,6 +16,7 @@ import FindingCommunity from "@/components/motivation/FindingCommunity";
 import VisualizeResults from "@/components/motivation/VisualizeResults";
 import HelpfulIdeas from "@/components/motivation/HelpfulIdeas";
 import SelfObservation from "@/components/motivation/SelfObservation";
+import ObstaclesToOpportunities from "@/components/motivation/ObstaclesToOpportunities";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -114,5 +115,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Self-Observation",
     description: "Journal your daily observations about behavior patterns",
     component: (onComplete) => <SelfObservation onComplete={onComplete} />
+  },
+  {
+    id: 84,
+    title: "Obstacles to Opportunities",
+    description: "Transform potential barriers into chances for growth",
+    component: (onComplete) => <ObstaclesToOpportunities onComplete={onComplete} />
   }
 ];

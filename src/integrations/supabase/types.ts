@@ -1454,6 +1454,51 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_obstacles_opportunities: {
+        Row: {
+          actions: string | null
+          consequences: string | null
+          coping_statements: string | null
+          created_at: string
+          feelings: string | null
+          id: string
+          likelihood: string | null
+          opportunity_for_growth: string | null
+          situation: string | null
+          thoughts: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actions?: string | null
+          consequences?: string | null
+          coping_statements?: string | null
+          created_at?: string
+          feelings?: string | null
+          id?: string
+          likelihood?: string | null
+          opportunity_for_growth?: string | null
+          situation?: string | null
+          thoughts?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actions?: string | null
+          consequences?: string | null
+          coping_statements?: string | null
+          created_at?: string
+          feelings?: string | null
+          id?: string
+          likelihood?: string | null
+          opportunity_for_growth?: string | null
+          situation?: string | null
+          thoughts?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_partial_change_feelings: {
         Row: {
           created_at: string
