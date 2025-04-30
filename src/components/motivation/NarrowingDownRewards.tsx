@@ -57,13 +57,31 @@ const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete 
           }
           
           // Combine all rewards
-          const allRewards = [
-            ...(incentiveData?.rewards || []),
-            ...(peopleData?.people_rewards || []),
-            ...(activityData?.activity_rewards || [])
-          ].filter(reward => reward && reward.trim() !== '');
+          let allRewards: string[] = [];
           
-          setPreviousRewards(allRewards);
+          // Safely add incentive rewards if they exist and are an array
+          if (incentiveData?.rewards && Array.isArray(incentiveData.rewards)) {
+            allRewards = [...allRewards, ...incentiveData.rewards];
+          }
+          
+          // Handle people_rewards which comes as a JSON array
+          if (peopleData?.people_rewards) {
+            // Extract name values from people_rewards objects
+            if (Array.isArray(peopleData.people_rewards)) {
+              const peopleRewardNames = peopleData.people_rewards
+                .filter(item => item && typeof item === 'object' && 'name' in item)
+                .map(item => `${item.name}: ${item.affirmation}`);
+              allRewards = [...allRewards, ...peopleRewardNames];
+            }
+          }
+          
+          // Handle activity_rewards which should be an array of strings
+          if (activityData?.activity_rewards && Array.isArray(activityData.activity_rewards)) {
+            allRewards = [...allRewards, ...activityData.activity_rewards];
+          }
+          
+          // Filter out empty rewards
+          setPreviousRewards(allRewards.filter(reward => reward && reward.trim() !== ''));
         } catch (error) {
           console.error("Error fetching previous rewards:", error);
         }
