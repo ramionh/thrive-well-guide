@@ -18,6 +18,7 @@ import HelpfulIdeas from "@/components/motivation/HelpfulIdeas";
 import SelfObservation from "@/components/motivation/SelfObservation";
 import ObstaclesToOpportunities from "@/components/motivation/ObstaclesToOpportunities";
 import TheChangePlan from "@/components/motivation/TheChangePlan";
+import MonitoringYourProgress from "@/components/motivation/MonitoringYourProgress";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -128,5 +129,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "The Change Plan",
     description: "Create your comprehensive fitness change plan",
     component: (onComplete) => <TheChangePlan onComplete={onComplete} />
+  },
+  {
+    id: 86,
+    title: "Monitoring Your Progress",
+    description: "Track and evaluate your progress on your fitness journey",
+    component: (onComplete) => <MonitoringYourProgress onComplete={onComplete} />
   }
 ];

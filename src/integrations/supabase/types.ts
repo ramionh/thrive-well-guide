@@ -1466,6 +1466,36 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_monitoring_progress: {
+        Row: {
+          compliments: string | null
+          created_at: string
+          id: string
+          ratings: Json
+          updated_at: string
+          user_id: string
+          working_well: string | null
+        }
+        Insert: {
+          compliments?: string | null
+          created_at?: string
+          id?: string
+          ratings?: Json
+          updated_at?: string
+          user_id: string
+          working_well?: string | null
+        }
+        Update: {
+          compliments?: string | null
+          created_at?: string
+          id?: string
+          ratings?: Json
+          updated_at?: string
+          user_id?: string
+          working_well?: string | null
+        }
+        Relationships: []
+      }
       motivation_next_step_confidence: {
         Row: {
           created_at: string
