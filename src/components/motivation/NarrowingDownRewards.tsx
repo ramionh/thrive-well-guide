@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,13 @@ import LoadingState from "./shared/LoadingState";
 
 interface NarrowingDownRewardsProps {
   onComplete?: () => void;
+}
+
+// Define the PeopleReward interface to match the expected structure
+interface PeopleReward {
+  name: string;
+  relationship?: string;
+  affirmation: string;
 }
 
 const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete }) => {
@@ -69,8 +75,17 @@ const NarrowingDownRewards: React.FC<NarrowingDownRewardsProps> = ({ onComplete 
             // Extract name values from people_rewards objects
             if (Array.isArray(peopleData.people_rewards)) {
               const peopleRewardNames = peopleData.people_rewards
-                .filter(item => item && typeof item === 'object' && 'name' in item)
-                .map(item => `${item.name}: ${item.affirmation}`);
+                .filter(item => item && typeof item === 'object')
+                .map(item => {
+                  // Cast to PeopleReward type to safely access properties
+                  const reward = item as unknown as PeopleReward;
+                  if (reward.name && reward.affirmation) {
+                    return `${reward.name}: ${reward.affirmation}`;
+                  }
+                  return "";
+                })
+                .filter(item => item !== ""); // Remove empty strings
+              
               allRewards = [...allRewards, ...peopleRewardNames];
             }
           }
