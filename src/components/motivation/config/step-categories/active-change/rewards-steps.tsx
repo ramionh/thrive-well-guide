@@ -14,6 +14,7 @@ import SupportSystemRoles from "@/components/motivation/SupportSystemRoles";
 import SocialSystemBoundaries from "@/components/motivation/SocialSystemBoundaries";
 import FindingCommunity from "@/components/motivation/FindingCommunity";
 import VisualizeResults from "@/components/motivation/VisualizeResults";
+import HelpfulIdeas from "@/components/motivation/HelpfulIdeas";
 import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
@@ -100,5 +101,11 @@ export const rewardsSteps: StepConfig[] = [
     title: "Visualize Results",
     description: "Imagine your progress at different time milestones",
     component: (onComplete) => <VisualizeResults onComplete={onComplete} />
+  },
+  {
+    id: 82,
+    title: "Helpful Ideas",
+    description: "Rank the most helpful techniques you've learned",
+    component: (onComplete) => <HelpfulIdeas onComplete={onComplete} />
   }
 ];
