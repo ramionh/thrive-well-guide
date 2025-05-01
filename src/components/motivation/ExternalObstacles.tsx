@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Carousel, 
@@ -53,7 +54,7 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">External Obstacles</h2>
             <div className="prose mb-6">
               <p className="text-purple-900/80 leading-relaxed">
@@ -69,13 +70,13 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
               value={obstacle}
               onChange={(e) => setObstacle(e.target.value)}
               placeholder="Describe your external obstacle"
-              className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+              className="w-full bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
             />
           </Card>
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Brainstorm Solutions</h2>
             <div className="prose mb-6">
               <p>
@@ -95,7 +96,7 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
                   value={solutions[index] || ''}
                   onChange={(e) => handleSolutionChange(index, e.target.value)}
                   placeholder={`Possible solution ${index + 1}`}
-                  className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="w-full bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               ))}
             </div>
@@ -103,7 +104,7 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Solution Analysis</h2>
             <div className="prose mb-6">
               <p>
@@ -117,16 +118,16 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
                   value={solution1}
                   onChange={(e) => setSolution1(e.target.value)}
                   placeholder="Solution #1"
-                  className="w-full mb-4"
+                  className="w-full mb-4 bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
                 <Select 
                   value={solution1Attitude}
                   onValueChange={setSolution1Attitude}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-purple-200 focus:ring-purple-400">
                     <SelectValue placeholder="Select your attitude towards this solution" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="negative">Negative: I am not likely to put this solution into action</SelectItem>
                     <SelectItem value="somewhat_negative">Somewhat Negative: I might not try this solution</SelectItem>
                     <SelectItem value="neutral">Neutral: I have a lot of mixed feelings about this solution</SelectItem>
@@ -141,16 +142,16 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
                   value={solution2}
                   onChange={(e) => setSolution2(e.target.value)}
                   placeholder="Solution #2"
-                  className="w-full mb-4"
+                  className="w-full mb-4 bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
                 <Select 
                   value={solution2Attitude}
                   onValueChange={setSolution2Attitude}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-purple-200 focus:ring-purple-400">
                     <SelectValue placeholder="Select your attitude towards this solution" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="negative">Negative: I am not likely to put this solution into action</SelectItem>
                     <SelectItem value="somewhat_negative">Somewhat Negative: I might not try this solution</SelectItem>
                     <SelectItem value="neutral">Neutral: I have a lot of mixed feelings about this solution</SelectItem>

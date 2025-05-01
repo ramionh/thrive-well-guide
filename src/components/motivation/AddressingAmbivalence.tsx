@@ -49,7 +49,7 @@ const AddressingAmbivalence: React.FC<AddressingAmbivalenceProps> = ({ onComplet
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border border-purple-200">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Managing Emotions</h2>
             <div className="prose mb-6">
               <p className="text-purple-900/80 leading-relaxed">
@@ -64,7 +64,7 @@ const AddressingAmbivalence: React.FC<AddressingAmbivalenceProps> = ({ onComplet
 
         {['Positive Experiences', 'Building Mastery', 'Coping Strategies'].map((section, idx) => (
           <CarouselItem key={section}>
-            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <Card className="p-6 bg-white shadow-lg border border-purple-200">
               <h2 className="text-2xl font-bold mb-4 text-purple-800">{section}</h2>
               <div className="prose mb-6">
                 <p className="text-purple-700">
@@ -117,7 +117,7 @@ const AddressingAmbivalence: React.FC<AddressingAmbivalenceProps> = ({ onComplet
                       }
                     }}
                     placeholder={`${section.slice(0, -1)} ${index + 1}`}
-                    className="w-full bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                    className="w-full bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                   />
                 ))}
               </div>
