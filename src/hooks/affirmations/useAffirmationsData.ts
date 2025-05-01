@@ -14,14 +14,6 @@ export const useAffirmationsData = () => {
     Array(5).fill({}).map(() => ({ criticism: "", positive: "" }))
   );
 
-  useEffect(() => {
-    if (user) {
-      fetchData();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
-
   const fetchData = async () => {
     if (!user) return;
     
@@ -58,9 +50,25 @@ export const useAffirmationsData = () => {
     }
   };
 
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  // Add the refresh function to allow manual data refresh
+  const refresh = () => {
+    if (user) {
+      fetchData();
+    }
+  };
+
   return {
     affirmations,
     setAffirmations,
-    isLoading
+    isLoading,
+    refresh
   };
 };
