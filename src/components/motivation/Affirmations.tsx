@@ -18,7 +18,7 @@ const Affirmations: React.FC<AffirmationsProps> = ({ onComplete }) => {
     saveAffirmations 
   } = useAffirmationsForm(onComplete);
 
-  // Add more detailed debugging to see what data we're getting
+  // Add more detailed debugging
   useEffect(() => {
     console.log("Affirmations component - current affirmations:", affirmations);
     // Display each affirmation separately for easier debugging

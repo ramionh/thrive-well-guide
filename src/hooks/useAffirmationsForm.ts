@@ -10,12 +10,6 @@ export interface AffirmationItem {
   positive: string;
 }
 
-// Type guard to check if an item has criticism and positive properties
-function isAffirmationItem(item: any): item is AffirmationItem {
-  return typeof item === 'object' && item !== null && 
-         'criticism' in item && 'positive' in item;
-}
-
 export const useAffirmationsForm = (onComplete?: () => void) => {
   const { user } = useUser();
   const { toast } = useToast();
@@ -38,6 +32,7 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
     
     setIsLoading(true);
     try {
+      // Fetch data from Supabase
       const { data, error } = await supabase
         .from("motivation_affirmations")
         .select("affirmations")
@@ -55,77 +50,73 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         let parsedAffirmations: AffirmationItem[] = Array(5).fill({}).map(() => ({ criticism: "", positive: "" }));
         
         try {
-          // Parse the affirmations data based on its format
-          if (typeof data.affirmations === 'object') {
-            console.log("Affirmations is an object:", data.affirmations);
-            
-            // Handle case when the object has direct numerical keys (0, 1, 2...)
-            if ('0' in data.affirmations || '1' in data.affirmations) {
-              console.log("Object has numeric keys");
-              for (let i = 0; i < 5; i++) {
-                const item = (data.affirmations as any)[i];
-                if (item) {
-                  parsedAffirmations[i] = {
-                    criticism: item.criticism || "",
-                    positive: item.positive || ""
-                  };
-                }
-              }
+          // The data can come in various formats - let's handle them all
+          let affirmationsArray: any[] = [];
+          
+          if (typeof data.affirmations === 'string') {
+            // Handle string format
+            try {
+              affirmationsArray = JSON.parse(data.affirmations);
+            } catch (e) {
+              console.error("Failed to parse affirmations string");
+            }
+          } else if (Array.isArray(data.affirmations)) {
+            // Direct array format
+            affirmationsArray = data.affirmations;
+          } else if (typeof data.affirmations === 'object' && data.affirmations !== null) {
+            // Check if it's the nested format from the network response
+            if ('affirmations' in data.affirmations && Array.isArray(data.affirmations.affirmations)) {
+              affirmationsArray = data.affirmations.affirmations;
             } 
-            // Handle case when it's in the format { affirmations: [...] }
-            else if ('affirmations' in data.affirmations) {
-              console.log("Object has 'affirmations' key");
-              const affArray = (data.affirmations as any).affirmations;
-              if (Array.isArray(affArray)) {
-                for (let i = 0; i < Math.min(affArray.length, 5); i++) {
-                  const item = affArray[i];
-                  if (item) {
-                    parsedAffirmations[i] = {
-                      criticism: item.criticism || "",
-                      positive: item.positive || ""
-                    };
-                  }
+            // Check if it has numeric keys (0, 1, 2...)
+            else if ('0' in data.affirmations || '1' in data.affirmations) {
+              affirmationsArray = [];
+              for (let i = 0; i < 5; i++) {
+                if ((data.affirmations as any)[i]) {
+                  affirmationsArray.push((data.affirmations as any)[i]);
                 }
               }
             }
-            // Handle direct array format
-            else if (Array.isArray(data.affirmations)) {
-              console.log("Data is an array");
-              for (let i = 0; i < Math.min(data.affirmations.length, 5); i++) {
-                const item = data.affirmations[i];
-                if (item && typeof item === 'object') {
-                  parsedAffirmations[i] = {
-                    criticism: (item as any).criticism || "",
-                    positive: (item as any).positive || ""
-                  };
-                }
-              }
+            // Check if it's the expanded object format from the network image
+            else if (Object.keys(data.affirmations).length > 0) {
+              affirmationsArray = Object.values(data.affirmations);
             }
           }
-          // Handle string format that needs parsing
-          else if (typeof data.affirmations === 'string') {
-            console.log("Affirmations is a string, attempting to parse");
-            try {
-              const parsed = JSON.parse(data.affirmations);
-              if (Array.isArray(parsed)) {
-                for (let i = 0; i < Math.min(parsed.length, 5); i++) {
-                  const item = parsed[i];
-                  if (item && typeof item === 'object') {
-                    parsedAffirmations[i] = {
-                      criticism: (item as any).criticism || "",
-                      positive: (item as any).positive || ""
-                    };
-                  }
+          
+          // Process the array, handling different possible formats
+          for (let i = 0; i < Math.min(affirmationsArray.length, 5); i++) {
+            const item = affirmationsArray[i];
+            
+            if (item && typeof item === 'object') {
+              // Format 1: {criticism: "...", positive: "..."}
+              if ('criticism' in item && 'positive' in item) {
+                parsedAffirmations[i] = {
+                  criticism: item.criticism || "",
+                  positive: item.positive || ""
+                };
+              } 
+              // Format 2: {affirmations: [{positive: "...", criticism: "..."}, ...]}
+              else if ('affirmations' in item && Array.isArray(item.affirmations)) {
+                const affItem = item.affirmations[0];
+                if (affItem && typeof affItem === 'object') {
+                  parsedAffirmations[i] = {
+                    criticism: affItem.criticism || "",
+                    positive: affItem.positive || ""
+                  };
                 }
+              } 
+              // Format 3: {positive: "...", criticism: "..."}
+              else if ('positive' in item && 'criticism' in item) {
+                parsedAffirmations[i] = {
+                  criticism: item.criticism || "",
+                  positive: item.positive || ""
+                };
               }
-            } catch (parseError) {
-              console.error("Failed to parse affirmations string:", parseError);
             }
           }
           
           console.log("Parsed affirmations before setting:", parsedAffirmations);
           setAffirmations(parsedAffirmations);
-          
         } catch (parseError) {
           console.error("Error parsing affirmations data:", parseError);
           toast({
