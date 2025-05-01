@@ -23,7 +23,7 @@ const UnderstandingValues: React.FC<UnderstandingValuesProps> = ({ onComplete })
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white border-2 border-purple-200 shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Establishing Values</h2>
             <div className="prose max-w-none space-y-4">
               <p className="text-purple-900/80 leading-relaxed">
@@ -50,7 +50,7 @@ const UnderstandingValues: React.FC<UnderstandingValuesProps> = ({ onComplete })
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white border-2 border-purple-200 shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Conflicting Values</h2>
             <div className="prose max-w-none space-y-4">
               <p className="text-purple-900/80 leading-relaxed">
@@ -76,7 +76,7 @@ const UnderstandingValues: React.FC<UnderstandingValuesProps> = ({ onComplete })
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white border-2 border-purple-200 shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Tapping into Your Strengths</h2>
             <div className="prose max-w-none space-y-4">
               <p className="text-purple-900/80 leading-relaxed">
@@ -100,7 +100,7 @@ const UnderstandingValues: React.FC<UnderstandingValuesProps> = ({ onComplete })
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white border-2 border-purple-200 shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-purple-800">Tapping into Your Resources</h2>
             <div className="prose max-w-none space-y-4">
               <p className="text-purple-900/80 leading-relaxed">
