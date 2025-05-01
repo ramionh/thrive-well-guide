@@ -33,8 +33,9 @@ export const useFixMotivationSteps = () => {
       console.log(`Checking completion status for step ${stepId} in table ${tableName}`);
       
       // First check if the user has data in the specified table
+      // Using any here to avoid TypeScript issues with dynamic table names
       const { data, error: fetchError } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select('id')
         .eq('user_id', user.id)
         .limit(1);
