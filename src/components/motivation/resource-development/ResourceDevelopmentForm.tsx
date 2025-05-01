@@ -3,90 +3,61 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
 
 interface ResourceDevelopmentFormProps {
-  onComplete: () => void;
+  formData: {
+    helpful_resources: string;
+    resource_development: string;
+  };
+  isSaving: boolean;
+  updateForm: (field: string, value: string) => void;
+  handleSubmit: (e: React.FormEvent) => void;
 }
 
-interface ResourceFormData {
-  helpfulResources: string;
-  resourceDevelopment: string;
-}
-
-const ResourceDevelopmentForm: React.FC<ResourceDevelopmentFormProps> = ({ 
-  onComplete 
+const ResourceDevelopmentForm: React.FC<ResourceDevelopmentFormProps> = ({
+  formData,
+  isSaving,
+  updateForm,
+  handleSubmit
 }) => {
-  const initialState: ResourceFormData = {
-    helpfulResources: "",
-    resourceDevelopment: ""
-  };
-
-  const { 
-    formData, 
-    updateForm, 
-    submitForm, 
-    isSaving 
-  } = useMotivationForm<ResourceFormData>({
-    tableName: "motivation_resource_development",
-    initialState,
-    onSuccess: onComplete,
-    transformData: (data) => ({
-      helpful_resources: data.helpfulResources,
-      resource_development: data.resourceDevelopment
-    }),
-    parseData: (data) => ({
-      helpfulResources: data.helpful_resources || "",
-      resourceDevelopment: data.resource_development || ""
-    }),
-    stepNumber: 56,
-    nextStepNumber: 57,
-    stepName: "Resource Development",
-    nextStepName: "Envisioning Change"
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    submitForm();
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <Label htmlFor="helpfulResources" className="text-purple-700 font-medium">
-          Most helpful resources:
-        </Label>
-        <Textarea 
-          id="helpfulResources"
-          value={formData.helpfulResources}
-          onChange={(e) => updateForm("helpfulResources", e.target.value)}
-          className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-          rows={4}
-          disabled={isSaving}
-        />
+    <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="resource-development" className="text-sm font-medium text-gray-700">
+            As you look over the strengths and resources exercises completed so far, what resources do you think will be most helpful?
+          </Label>
+          <Textarea
+            id="resource-development"
+            value={formData.resource_development}
+            onChange={(e) => updateForm('resource_development', e.target.value)}
+            rows={5}
+            className="w-full mt-2 resize-y"
+            placeholder="Enter your thoughts on which resources will be most helpful..."
+            required
+          />
+        </div>
+
+        <div className="mt-4">
+          <Label htmlFor="helpful-resources" className="text-sm font-medium text-gray-700">
+            What additional resources can you develop to support your work on this specific goal?
+          </Label>
+          <Textarea
+            id="helpful-resources"
+            value={formData.helpful_resources}
+            onChange={(e) => updateForm('helpful_resources', e.target.value)}
+            rows={5}
+            className="w-full mt-2 resize-y"
+            placeholder="Enter additional resources you can develop to support your goal..."
+            required
+          />
+        </div>
       </div>
 
-      <div>
-        <Label htmlFor="resourceDevelopment" className="text-purple-700 font-medium">
-          What resources can you begin to access or start to cultivate and develop? How will you do this?
-        </Label>
-        <p className="text-sm text-gray-500 mb-2">
-          For example, if your workplace offers free or discounted gym memberships or online fitness coaching assistance, you can sign up to access these benefits.
-        </p>
-        <Textarea 
-          id="resourceDevelopment"
-          value={formData.resourceDevelopment}
-          onChange={(e) => updateForm("resourceDevelopment", e.target.value)}
-          className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-          rows={4}
-          disabled={isSaving}
-        />
-      </div>
-
-      <Button 
+      <Button
         type="submit"
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white"
         disabled={isSaving}
+        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md"
       >
         {isSaving ? "Saving..." : "Complete Step"}
       </Button>

@@ -1,8 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { useToast } from "@/components/ui/use-toast";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 import PrioritizingChangeHeader from "./prioritizing-change/PrioritizingChangeHeader";
 import PrioritizingChangeDescription from "./prioritizing-change/PrioritizingChangeDescription";
 import PrioritizingChangeForm from "./prioritizing-change/PrioritizingChangeForm";
@@ -13,68 +15,150 @@ interface PrioritizingChangeProps {
 }
 
 const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) => {
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    new_activities: '',
+    prioritized_activities: ''
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
   // Get the current goal data
   const { 
     data: goalData, 
     isLoading: isGoalLoading,
     error: goalError
   } = useCurrentGoal();
-  
-  // Initialize form hook with proper error handling
-  const {
-    formData,
-    isLoading: isFormLoading,
-    isSaving,
-    error: formError,
-    fetchData,
-    updateForm,
-    submitForm
-  } = useMotivationForm<{
-    new_activities: string;
-    prioritized_activities: string;
-  }>({
-    tableName: 'motivation_prioritizing_change',
-    initialState: {
-      new_activities: '',
-      prioritized_activities: '',
-    },
-    onSuccess: onComplete,
-    stepNumber: 61,
-    nextStepNumber: 64, // Setting "Where Are You Now" (ID: 64) as the next step
-    parseData: (data) => {
-      console.log("Raw data from Prioritizing Change:", data);
-      return {
-        new_activities: data.new_activities || '',
-        prioritized_activities: data.prioritized_activities || ''
-      };
-    }
-  });
 
-  // Fetch data on component mount, with proper dependency handling
-  useEffect(() => {
-    console.log("PrioritizingChange: Fetching data");
+  // Fetch existing data when component mounts
+  React.useEffect(() => {
+    const fetchData = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        console.log("PrioritizingChange: Fetching data for user", user.id);
+        
+        const { data, error } = await supabase
+          .from('motivation_prioritizing_change')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error && error.code !== "PGRST116") {
+          throw error;
+        }
+
+        if (data) {
+          console.log("PrioritizingChange: Raw data:", data);
+          setFormData({
+            new_activities: data.new_activities || '',
+            prioritized_activities: data.prioritized_activities || ''
+          });
+        }
+        
+        setError(null);
+      } catch (err: any) {
+        console.error("Error fetching prioritizing change data:", err);
+        setError(err);
+        toast({
+          title: "Error",
+          description: "Failed to load your data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchData();
-  }, [fetchData]);
+    // Only run this effect once when the component mounts
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const updateForm = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("PrioritizingChange: Submitting form", formData);
-    submitForm();
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      console.log("PrioritizingChange: Submitting form", formData);
+      
+      const { error } = await supabase
+        .from('motivation_prioritizing_change')
+        .insert({
+          user_id: user.id,
+          new_activities: formData.new_activities,
+          prioritized_activities: formData.prioritized_activities
+        });
+
+      if (error) throw error;
+
+      // Update step progress
+      const { error: progressError } = await supabase
+        .from('motivation_steps_progress')
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 61,
+            step_name: "Prioritizing Change",
+            completed: true,
+            completed_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id,step_number' }
+        );
+
+      if (progressError) {
+        console.error("Error updating step progress:", progressError);
+      }
+
+      toast({
+        title: "Success",
+        description: "Your prioritized activities have been saved",
+      });
+
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (err: any) {
+      console.error("Error saving prioritizing change data:", err);
+      toast({
+        title: "Error",
+        description: "Failed to save your data",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Check for loading states
-  const isLoading = isFormLoading || isGoalLoading;
+  const isPageLoading = isLoading || isGoalLoading;
   
   // Error handling
-  const error = formError || goalError;
-  if (error) {
-    console.error("Error in PrioritizingChange:", error);
+  if (error || goalError) {
+    const displayError = error || goalError;
+    console.error("Error in PrioritizingChange:", displayError);
     return (
       <Card className="bg-white">
         <CardContent className="p-6">
           <div className="text-red-500">
             <p>An error occurred while loading this component. Please try refreshing the page.</p>
-            <p className="text-sm mt-2">{error.message}</p>
+            <p className="text-sm mt-2">{displayError?.message}</p>
           </div>
         </CardContent>
       </Card>
@@ -82,7 +166,7 @@ const PrioritizingChange: React.FC<PrioritizingChangeProps> = ({ onComplete }) =
   }
 
   // Skeleton loading state
-  if (isLoading) {
+  if (isPageLoading) {
     return (
       <Card className="bg-white">
         <CardContent className="p-6">
