@@ -14,6 +14,14 @@ export const useAffirmationsData = () => {
     Array(5).fill({}).map(() => ({ criticism: "", positive: "" }))
   );
 
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
+
   const fetchData = async () => {
     if (!user) return;
     
@@ -36,7 +44,12 @@ export const useAffirmationsData = () => {
       
       if (data) {
         const parsedAffirmations = parseAffirmationsData(data);
-        setAffirmations(parsedAffirmations);
+        console.log("Setting parsed affirmations:", parsedAffirmations);
+        // Make sure we have a clean array of objects, not references
+        setAffirmations(parsedAffirmations.map(item => ({
+          criticism: item.criticism || "",
+          positive: item.positive || ""
+        })));
       }
     } catch (error) {
       console.error("Error fetching affirmations:", error);
@@ -50,25 +63,10 @@ export const useAffirmationsData = () => {
     }
   };
 
-  useEffect(() => {
-    if (user) {
-      fetchData();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  // Add the refresh function to allow manual data refresh
-  const refresh = () => {
-    if (user) {
-      fetchData();
-    }
-  };
-
   return {
     affirmations,
     setAffirmations,
     isLoading,
-    refresh
+    refresh: fetchData // Add refresh function to allow manual refreshing
   };
 };
