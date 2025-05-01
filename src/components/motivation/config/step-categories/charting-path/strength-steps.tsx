@@ -8,6 +8,7 @@ import ValuesConflict from "../../../ValuesConflict";
 import YouHaveWhatItTakes from "../../../YouHaveWhatItTakes";
 import TheySeeTourStrengths from "../../../TheySeeTourStrengths";
 import BuildOnYourStrengths from "../../../BuildOnYourStrengths";
+import FamilyStrengths from "../../../FamilyStrengths";
 import type { StepConfig } from "../../../types/motivation";
 
 export const strengthSteps: StepConfig[] = [
@@ -58,5 +59,11 @@ export const strengthSteps: StepConfig[] = [
     title: "Build on Your Strengths",
     description: "Apply your strengths to achieve your goals",
     component: (onComplete) => <BuildOnYourStrengths onComplete={onComplete} />
+  },
+  {
+    id: 52,
+    title: "Family Strengths",
+    description: "Leverage your family strengths",
+    component: (onComplete) => <FamilyStrengths onComplete={onComplete} />
   }
 ];

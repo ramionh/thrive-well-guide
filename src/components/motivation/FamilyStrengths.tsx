@@ -1,52 +1,192 @@
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
 import { Users } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/context/UserContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FamilyStrengthsProps {
   onComplete: () => void;
 }
 
+interface FamilyStrengthsFormData {
+  familyStrengths: string;
+  perceivedStrengths: string;
+  familyFeelings: string;
+  buildFamily: string;
+}
+
 const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
-  const initialState = {
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const initialState: FamilyStrengthsFormData = {
     familyStrengths: "",
     perceivedStrengths: "",
     familyFeelings: "",
     buildFamily: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading, isSaving } = useMotivationForm({
-    tableName: "motivation_family_strengths",
-    initialState,
-    onSuccess: onComplete,
-    parseData: (data) => {
+  const [formData, setFormData] = useState<FamilyStrengthsFormData>(initialState);
+
+  useEffect(() => {
+    if (user) {
+      fetchExistingData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const fetchExistingData = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("motivation_family_strengths")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") {
+        throw error;
+      }
+
       console.log("Raw family strengths data:", data);
       
-      // Extract values with proper error handling
-      const parsedData = {
-        familyStrengths: typeof data.family_strengths === 'string' ? data.family_strengths : '',
-        perceivedStrengths: typeof data.perceived_strengths === 'string' ? data.perceived_strengths : '',
-        familyFeelings: typeof data.family_feelings === 'string' ? data.family_feelings : '',
-        buildFamily: typeof data.build_family === 'string' ? data.build_family : ''
-      };
-      
-      console.log("Parsed family strengths data:", parsedData);
-      return parsedData;
-    },
-    transformData: (data) => {
-      return {
-        family_strengths: data.familyStrengths,
-        perceived_strengths: data.perceivedStrengths,
-        family_feelings: data.familyFeelings,
-        build_family: data.buildFamily
-      };
+      if (data) {
+        setFormData({
+          familyStrengths: data.family_strengths || "",
+          perceivedStrengths: data.perceived_strengths || "",
+          familyFeelings: data.family_feelings || "",
+          buildFamily: data.build_family || ""
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching family strengths data:", err);
+      toast({
+        title: "Error",
+        description: "Failed to load your family strengths data",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
+
+  const updateForm = (field: keyof FamilyStrengthsFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const submitForm = async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    try {
+      // Prepare data for database
+      const dataToSubmit = {
+        user_id: user.id,
+        family_strengths: formData.familyStrengths,
+        perceived_strengths: formData.perceivedStrengths,
+        family_feelings: formData.familyFeelings,
+        build_family: formData.buildFamily,
+        updated_at: new Date().toISOString()
+      };
+
+      // Check if record already exists
+      const { data: existingData, error: queryError } = await supabase
+        .from("motivation_family_strengths")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (queryError && queryError.code !== "PGRST116") throw queryError;
+
+      let result;
+      if (existingData && 'id' in existingData) {
+        // Update existing record
+        result = await supabase
+          .from("motivation_family_strengths")
+          .update(dataToSubmit)
+          .eq("id", existingData.id)
+          .eq("user_id", user.id);
+      } else {
+        // Insert new record
+        const insertData = {
+          ...dataToSubmit,
+          created_at: new Date().toISOString()
+        };
+        result = await supabase
+          .from("motivation_family_strengths")
+          .insert(insertData);
+      }
+
+      if (result.error) throw result.error;
+
+      // Update step progress
+      const { error: progressError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 52,
+            step_name: "Family Strengths",
+            completed: true,
+            completed_at: new Date().toISOString()
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (progressError) throw progressError;
+      
+      // Make next step available
+      const { error: nextStepError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 53,
+            step_name: "Time Management",
+            completed: false,
+            available: true,
+            completed_at: null
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (nextStepError) throw nextStepError;
+
+      toast({
+        title: "Success",
+        description: "Your family strengths information has been saved"
+      });
+
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (error) {
+      console.error("Error saving family strengths data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save your family strengths information",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
