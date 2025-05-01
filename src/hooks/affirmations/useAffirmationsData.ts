@@ -24,32 +24,27 @@ export const useAffirmationsData = () => {
 
   const fetchData = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
       console.log("Fetching affirmations data for user:", user.id);
-      
+
       // Fetch data from Supabase
       const { data, error } = await supabase
         .from("motivation_affirmations")
         .select("affirmations")
         .eq("user_id", user.id)
         .maybeSingle();
-      
+
       if (error && error.code !== "PGRST116") {
         throw error;
       }
-      
+
       console.log("Raw affirmations data:", data);
-      
+
       if (data) {
         const parsedAffirmations = parseAffirmationsData(data);
-        console.log("Setting parsed affirmations:", parsedAffirmations);
-        // Make sure we have a clean array of objects, not references
-        setAffirmations(parsedAffirmations.map(item => ({
-          criticism: item.criticism || "",
-          positive: item.positive || ""
-        })));
+        setAffirmations(parsedAffirmations);
       }
     } catch (error) {
       console.error("Error fetching affirmations:", error);
@@ -67,6 +62,5 @@ export const useAffirmationsData = () => {
     affirmations,
     setAffirmations,
     isLoading,
-    refresh: fetchData // Add refresh function to allow manual refreshing
   };
 };
