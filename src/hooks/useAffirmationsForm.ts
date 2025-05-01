@@ -10,6 +10,12 @@ export interface AffirmationItem {
   positive: string;
 }
 
+// Type guard to check if an item has criticism and positive properties
+function isAffirmationItem(item: any): item is AffirmationItem {
+  return typeof item === 'object' && item !== null && 
+         'criticism' in item && 'positive' in item;
+}
+
 export const useAffirmationsForm = (onComplete?: () => void) => {
   const { user } = useUser();
   const { toast } = useToast();
@@ -51,9 +57,9 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         try {
           // Handle case when affirmations is already a parsed JSON array
           if (Array.isArray(data.affirmations)) {
-            parsedAffirmations = data.affirmations.map(item => ({
-              criticism: typeof item.criticism === 'string' ? item.criticism : '',
-              positive: typeof item.positive === 'string' ? item.positive : ''
+            parsedAffirmations = (data.affirmations as any[]).map(item => ({
+              criticism: isAffirmationItem(item) ? item.criticism : '',
+              positive: isAffirmationItem(item) ? item.positive : ''
             }));
           } 
           // Handle case when affirmations is a JSON string
@@ -61,19 +67,19 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
             const parsed = JSON.parse(data.affirmations);
             if (Array.isArray(parsed)) {
               parsedAffirmations = parsed.map(item => ({
-                criticism: typeof item.criticism === 'string' ? item.criticism : '',
-                positive: typeof item.positive === 'string' ? item.positive : ''
+                criticism: isAffirmationItem(item) ? item.criticism : '',
+                positive: isAffirmationItem(item) ? item.positive : ''
               }));
             }
           }
           // Handle other possible formats
           else if (data.affirmations && typeof data.affirmations === 'object') {
             // Convert object to array if needed
-            const values = Object.values(data.affirmations);
+            const values = Object.values(data.affirmations as Record<string, any>);
             if (Array.isArray(values) && values.length > 0) {
               parsedAffirmations = values.map(item => ({
-                criticism: typeof item.criticism === 'string' ? item.criticism : '',
-                positive: typeof item.positive === 'string' ? item.positive : ''
+                criticism: isAffirmationItem(item) ? item.criticism : '',
+                positive: isAffirmationItem(item) ? item.positive : ''
               }));
             }
           }
