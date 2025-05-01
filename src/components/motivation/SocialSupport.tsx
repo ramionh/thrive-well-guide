@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/context/UserContext";
+import { supabase } from "@/integrations/supabase/client";
 import { MessageCircle } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
 
@@ -19,7 +21,27 @@ interface SocialSkillOption {
   label: string;
 }
 
+interface SupportTypes {
+  financial: string;
+  listeners: string;
+  encouragers: string;
+  valuers: string;
+  talkers: string;
+}
+
+interface SocialSupportFormData {
+  supportTypes: SupportTypes;
+  socialSkills: string[];
+  socialFeelings: string;
+  buildSocial: string;
+}
+
 const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  
   const socialSkillOptions: SocialSkillOption[] = [
     { id: "meet_new_people", label: "MEET NEW PEOPLE" },
     { id: "comfortable_social", label: "FEEL COMFORTABLE IN NEW SOCIAL SITUATIONS" },
@@ -32,7 +54,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
     { id: "make_others_laugh", label: "MAKE OTHER PEOPLE LAUGH" }
   ];
 
-  const initialState = {
+  const initialState: SocialSupportFormData = {
     supportTypes: {
       financial: "",
       listeners: "",
@@ -40,103 +62,267 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
       valuers: "",
       talkers: ""
     },
-    socialSkills: [] as string[],
+    socialSkills: [],
     socialFeelings: "",
     buildSocial: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading } = useMotivationForm({
-    tableName: "motivation_social_support",
-    initialState,
-    onSuccess: onComplete,
-    parseData: (data) => {
-      // Parse data coming from the database
+  const [formData, setFormData] = useState<SocialSupportFormData>(initialState);
+
+  useEffect(() => {
+    if (user) {
+      fetchExistingData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const fetchExistingData = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("motivation_social_support")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") {
+        throw error;
+      }
+
       console.log("Raw social support data:", data);
       
-      // Handle supportTypes, ensuring it's properly parsed
-      let supportTypes = initialState.supportTypes;
-      if (data?.support_types) {
-        try {
-          // If it's already a JSON object
-          if (typeof data.support_types === 'object' && data.support_types !== null) {
-            supportTypes = {
-              financial: typeof data.support_types.financial === 'string' ? data.support_types.financial : '',
-              listeners: typeof data.support_types.listeners === 'string' ? data.support_types.listeners : '',
-              encouragers: typeof data.support_types.encouragers === 'string' ? data.support_types.encouragers : '',
-              valuers: typeof data.support_types.valuers === 'string' ? data.support_types.valuers : '',
-              talkers: typeof data.support_types.talkers === 'string' ? data.support_types.talkers : ''
-            };
-          } 
-          // If it's a string (parse it)
-          else if (typeof data.support_types === 'string') {
-            const parsed = JSON.parse(data.support_types);
-            supportTypes = {
-              financial: typeof parsed.financial === 'string' ? parsed.financial : '',
-              listeners: typeof parsed.listeners === 'string' ? parsed.listeners : '',
-              encouragers: typeof parsed.encouragers === 'string' ? parsed.encouragers : '',
-              valuers: typeof parsed.valuers === 'string' ? parsed.valuers : '',
-              talkers: typeof parsed.talkers === 'string' ? parsed.talkers : ''
-            };
-          }
-        } catch (e) {
-          console.error("Error parsing support_types:", e);
-        }
+      if (data) {
+        const parsedData: SocialSupportFormData = {
+          supportTypes: parseSupportTypes(data.support_types),
+          socialSkills: parseSocialSkills(data.social_skills),
+          socialFeelings: parseStringField(data.social_feelings),
+          buildSocial: parseStringField(data.build_social)
+        };
+        
+        console.log("Parsed social support data:", parsedData);
+        setFormData(parsedData);
       }
-      
-      // Handle socialSkills array
-      let socialSkills = initialState.socialSkills;
-      if (data?.social_skills) {
-        try {
-          // If it's already an array
-          if (Array.isArray(data.social_skills)) {
-            socialSkills = data.social_skills;
-          } 
-          // If it's a string (parse it)
-          else if (typeof data.social_skills === 'string') {
-            socialSkills = JSON.parse(data.social_skills);
-          }
-        } catch (e) {
-          console.error("Error parsing social_skills:", e);
-          // If parsing fails, try to use it as is if it's a string
-          if (typeof data.social_skills === 'string') {
-            socialSkills = [data.social_skills];
-          }
-        }
-      }
-      
-      const parsedData = {
-        supportTypes,
-        socialSkills,
-        socialFeelings: typeof data?.social_feelings === 'string' ? data.social_feelings : '',
-        buildSocial: typeof data?.build_social === 'string' ? data.build_social : ''
-      };
-      
-      console.log("Parsed social support data:", parsedData);
-      return parsedData;
-    },
-    transformData: (data) => {
-      return {
-        support_types: data.supportTypes,
-        social_skills: data.socialSkills,
-        social_feelings: data.socialFeelings,
-        build_social: data.buildSocial
-      };
+    } catch (err) {
+      console.error("Error fetching social support data:", err);
+      toast({
+        title: "Error",
+        description: "Failed to load your social support data",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
-  });
-  
+  };
+
+  const parseStringField = (value: any): string => {
+    if (value === null || value === undefined) return "";
+    if (typeof value === 'string') return value;
+    return String(value);
+  };
+
+  const parseSupportTypes = (data: any): SupportTypes => {
+    const defaultTypes: SupportTypes = {
+      financial: "",
+      listeners: "",
+      encouragers: "",
+      valuers: "",
+      talkers: ""
+    };
+    
+    if (!data) return defaultTypes;
+    
+    try {
+      // If it's already an object
+      if (typeof data === 'object' && data !== null) {
+        return {
+          financial: parseStringField(data.financial),
+          listeners: parseStringField(data.listeners),
+          encouragers: parseStringField(data.encouragers),
+          valuers: parseStringField(data.valuers),
+          talkers: parseStringField(data.talkers)
+        };
+      }
+      
+      // If it's a JSON string
+      if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          return {
+            financial: parseStringField(parsed.financial),
+            listeners: parseStringField(parsed.listeners),
+            encouragers: parseStringField(parsed.encouragers),
+            valuers: parseStringField(parsed.valuers),
+            talkers: parseStringField(parsed.talkers)
+          };
+        } catch (e) {
+          console.error("Error parsing support_types as JSON string:", e);
+          return defaultTypes;
+        }
+      }
+    } catch (e) {
+      console.error("Error parsing support_types:", e);
+    }
+    
+    return defaultTypes;
+  };
+
+  const parseSocialSkills = (data: any): string[] => {
+    if (!data) return [];
+    
+    try {
+      // If it's already an array
+      if (Array.isArray(data)) {
+        return data.map(skill => String(skill));
+      }
+      
+      // If it's a JSON string
+      if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed)) {
+            return parsed.map(skill => String(skill));
+          }
+          return [String(data)];
+        } catch (e) {
+          console.error("Error parsing social_skills as JSON string:", e);
+          return [String(data)];
+        }
+      }
+    } catch (e) {
+      console.error("Error parsing social_skills:", e);
+    }
+    
+    return [];
+  };
+
   const handleSocialSkillToggle = (skillId: string) => {
     const updatedSkills = formData.socialSkills.includes(skillId)
       ? formData.socialSkills.filter(id => id !== skillId)
       : [...formData.socialSkills, skillId];
     
-    updateForm("socialSkills", updatedSkills);
+    setFormData({
+      ...formData,
+      socialSkills: updatedSkills
+    });
   };
 
-  const handleUpdateSupportType = (key: keyof typeof formData.supportTypes, value: string) => {
-    updateForm("supportTypes", {
-      ...formData.supportTypes,
-      [key]: value
+  const handleUpdateSupportType = (key: keyof SupportTypes, value: string) => {
+    setFormData({
+      ...formData,
+      supportTypes: {
+        ...formData.supportTypes,
+        [key]: value
+      }
     });
+  };
+
+  const updateForm = (field: keyof Omit<SocialSupportFormData, 'supportTypes'>, value: any) => {
+    setFormData({
+      ...formData,
+      [field]: value
+    });
+  };
+
+  const submitForm = async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    try {
+      // Prepare data for database
+      const dataToSubmit = {
+        user_id: user.id,
+        support_types: formData.supportTypes,
+        social_skills: formData.socialSkills,
+        social_feelings: formData.socialFeelings,
+        build_social: formData.buildSocial,
+        updated_at: new Date().toISOString()
+      };
+
+      // Check if record already exists
+      const { data: existingData, error: queryError } = await supabase
+        .from("motivation_social_support")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (queryError && queryError.code !== "PGRST116") throw queryError;
+
+      let result;
+      if (existingData && 'id' in existingData) {
+        // Update existing record
+        result = await supabase
+          .from("motivation_social_support")
+          .update(dataToSubmit)
+          .eq("id", existingData.id)
+          .eq("user_id", user.id);
+      } else {
+        // Insert new record
+        result = await supabase
+          .from("motivation_social_support")
+          .insert({
+            ...dataToSubmit,
+            created_at: new Date().toISOString()
+          });
+      }
+
+      if (result.error) throw result.error;
+
+      // Update step progress
+      const { error: progressError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 51,
+            step_name: "Social Support and Social Competence",
+            completed: true,
+            completed_at: new Date().toISOString()
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (progressError) throw progressError;
+      
+      // Make next step available
+      const { error: nextStepError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 52,
+            step_name: "Family Strengths",
+            completed: false,
+            available: true,
+            completed_at: null
+          },
+          { onConflict: "user_id,step_number" }
+        );
+
+      if (nextStepError) throw nextStepError;
+
+      toast({
+        title: "Success",
+        description: "Your social support information has been saved"
+      });
+
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (error) {
+      console.error("Error saving social support data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save your social support information",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -176,7 +362,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   value={formData.supportTypes.financial}
                   onChange={(e) => handleUpdateSupportType("financial", e.target.value)}
                   className="mt-1"
-                  disabled={isLoading}
+                  disabled={isSaving}
                   placeholder="Type names of friends or family who can help you financially"
                 />
               </div>
@@ -188,7 +374,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   value={formData.supportTypes.listeners}
                   onChange={(e) => handleUpdateSupportType("listeners", e.target.value)}
                   className="mt-1"
-                  disabled={isLoading}
+                  disabled={isSaving}
                   placeholder="Type names of friends or family who are good listeners"
                 />
               </div>
@@ -200,7 +386,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   value={formData.supportTypes.encouragers}
                   onChange={(e) => handleUpdateSupportType("encouragers", e.target.value)}
                   className="mt-1"
-                  disabled={isLoading}
+                  disabled={isSaving}
                   placeholder="Type names of friends or family who encourage you"
                 />
               </div>
@@ -212,7 +398,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   value={formData.supportTypes.valuers}
                   onChange={(e) => handleUpdateSupportType("valuers", e.target.value)}
                   className="mt-1"
-                  disabled={isLoading}
+                  disabled={isSaving}
                   placeholder="Type names of friends or family who value your abilities"
                 />
               </div>
@@ -224,7 +410,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                   value={formData.supportTypes.talkers}
                   onChange={(e) => handleUpdateSupportType("talkers", e.target.value)}
                   className="mt-1"
-                  disabled={isLoading}
+                  disabled={isSaving}
                   placeholder="Type names of friends or family who you regularly talk with"
                 />
               </div>
@@ -241,7 +427,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                     id={option.id}
                     checked={formData.socialSkills.includes(option.id)}
                     onCheckedChange={() => handleSocialSkillToggle(option.id)}
-                    disabled={isLoading}
+                    disabled={isSaving}
                   />
                   <label
                     htmlFor={option.id}
@@ -263,7 +449,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                 onChange={(e) => updateForm("socialFeelings", e.target.value)}
                 className="mt-1"
                 rows={4}
-                disabled={isLoading}
+                disabled={isSaving}
                 placeholder="Write your thoughts and feelings about your social life"
               />
             </div>
@@ -276,7 +462,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
                 onChange={(e) => updateForm("buildSocial", e.target.value)}
                 className="mt-1"
                 rows={4}
-                disabled={isLoading}
+                disabled={isSaving}
                 placeholder="Describe ways you can strengthen or expand your social support network"
               />
             </div>
@@ -285,9 +471,9 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
           <Button 
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={isLoading}
+            disabled={isSaving}
           >
-            {isLoading ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>
