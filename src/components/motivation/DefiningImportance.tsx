@@ -8,6 +8,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
+import { useMotivationStepsDB } from "@/hooks/motivation/useMotivationStepsDB";
 
 const IMPORTANCE_DESCRIPTORS = [
   "GREAT", "VALUE", "VITAL", "URGENT", "CRUCIAL", "SERIOUS",
@@ -25,6 +26,7 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
   const { user } = useUser();
   const { toast } = useToast();
   const { data: goalData, isLoading: goalLoading } = useCurrentGoal();
+  const { markStepComplete } = useMotivationStepsDB();
 
   const [selectedDescriptors, setSelectedDescriptors] = useState<string[]>([]);
   const [reflection, setReflection] = useState("");
@@ -143,8 +145,29 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
 
       if (error) throw error;
 
+      // Explicitly mark the step as completed in the steps_progress table
+      await supabase.from("motivation_steps_progress").upsert(
+        {
+          user_id: user.id,
+          step_number: 12, // The step number for Defining Importance
+          step_name: "Defining Importance",
+          completed: true,
+          completed_at: new Date().toISOString(),
+          available: true
+        },
+        { onConflict: "user_id,step_number" }
+      );
+
       toast({ title: "Saved", description: "Your responses have been stored." });
-      onComplete?.();
+      
+      // Use the markStepComplete from useMotivationStepsDB to ensure consistent handling
+      if (user && user.id) {
+        // We pass an empty array as stepsData since we're providing the step number directly
+        await markStepComplete(user.id, 12, [], onComplete);
+      } else {
+        // If for some reason markStepComplete can't be used, still trigger onComplete
+        onComplete?.();
+      }
     } catch (err) {
       console.error("Error saving importance:", err);
       toast({

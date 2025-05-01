@@ -158,16 +158,23 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
     if (!user) return;
     
     try {
-      const { error } = await supabase.from("motivation_steps_progress").insert({
+      // Instead of insert, use upsert to handle the case where a record already exists
+      // This will ensure we update existing records rather than trying to create duplicates
+      const { error } = await supabase.from("motivation_steps_progress").upsert({
         user_id: user.id,
         step_number: stepNum,
         step_name: name || `Step ${stepNum}`,
         completed: true,
         completed_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,step_number'  // Specify the columns that determine a unique record
       });
       
-      if (error && error.code !== '23505') { // Ignore unique constraint violations (step already logged)
+      if (error) {
         console.error("Error logging step progress:", error);
+        // Don't throw the error to prevent breaking the form submission
+      } else {
+        console.log(`Successfully marked step ${stepNum} (${name}) as completed`);
       }
     } catch (err) {
       console.error("Failed to log step progress:", err);

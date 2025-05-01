@@ -59,39 +59,25 @@ export const useMotivationStepsDB = () => {
         stepName: stepsData.find(s => s.id === stepNumber)?.title || ''
       });
 
-      // First check if a progress record already exists
-      const { data: existingProgress } = await supabase
+      // Use upsert with explicit onConflict instead of checking for existing record
+      // This simplifies the logic and ensures we always have the latest data
+      const { error } = await supabase
         .from('motivation_steps_progress')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('step_number', stepNumber)
-        .maybeSingle();
-
-      if (existingProgress) {
-        // Update existing record
-        const { error: updateError } = await supabase
-          .from('motivation_steps_progress')
-          .update({
-            completed: true,
-            completed_at: new Date().toISOString()
-          })
-          .eq('user_id', userId)
-          .eq('step_number', stepNumber);
-
-        if (updateError) throw updateError;
-      } else {
-        // Insert new record
-        const { error: insertError } = await supabase
-          .from('motivation_steps_progress')
-          .insert({
+        .upsert(
+          {
             user_id: userId,
             step_number: stepNumber,
             step_name: stepsData.find(s => s.id === stepNumber)?.title || '',
             completed: true,
-            completed_at: new Date().toISOString()
-          });
+            completed_at: new Date().toISOString(),
+            available: true // Mark step as available when completed
+          },
+          { onConflict: 'user_id,step_number' }
+        );
 
-        if (insertError) throw insertError;
+      if (error) {
+        console.error('Error in saveStepProgress upsert:', error);
+        return { error };
       }
       
       // Automatically make the next step available when completing a step
@@ -120,29 +106,8 @@ export const useMotivationStepsDB = () => {
       
       return { error: null };
     } catch (error: any) {
-      // If we get a duplicate key error, it means the step was already marked as completed
-      // This should be handled by the check above, but just in case
-      if (error.code === '23505') {
-        try {
-          const { error: updateError } = await supabase
-            .from('motivation_steps_progress')
-            .update({
-              completed: true,
-              completed_at: new Date().toISOString()
-            })
-            .eq('user_id', userId)
-            .eq('step_number', stepNumber);
-          
-          if (updateError) throw updateError;
-          return { error: null };
-        } catch (updateError) {
-          console.error('Error updating step progress:', updateError);
-          return { error: updateError };
-        }
-      } else {
-        console.error('Error saving step progress:', error);
-        return { error };
-      }
+      console.error('Error saving step progress:', error);
+      return { error };
     }
   };
 
