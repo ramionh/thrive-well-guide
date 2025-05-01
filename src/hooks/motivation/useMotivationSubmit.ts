@@ -70,13 +70,28 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
 
     try {
       // Transform data if a transformer function is provided
-      const dataToSubmit: Record<string, any> = { 
+      const baseData = { 
         user_id: user.id,
         ...(transformData ? transformData(formData) : formData),
       };
       
-      // Only add step metadata if both are provided (to avoid schema errors)
-      if (stepNumber !== undefined && stepName) {
+      // First, check if the table has step_name and step_number columns
+      // by sending a dummy query to retrieve the table structure
+      const { data: tableInfo, error: tableInfoError } = await supabase
+        .from(tableName as any)
+        .select('*')
+        .limit(1);
+      
+      const hasStepColumns = tableInfoError 
+        ? false  // If there was an error, assume columns don't exist
+        : (tableInfo && tableInfo.length > 0 
+          ? 'step_name' in tableInfo[0] && 'step_number' in tableInfo[0] 
+          : false);
+      
+      // Only add step metadata if table has those columns and both values are provided
+      let dataToSubmit: Record<string, any> = { ...baseData };
+      
+      if (hasStepColumns && stepNumber !== undefined && stepName) {
         dataToSubmit.step_number = stepNumber;
         dataToSubmit.step_name = stepName;
       }
@@ -90,8 +105,9 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
       
       if (error) {
         console.error(`Error inserting data:`, error);
-        // If the error is related to step_name column, try again without it
-        if (error.message && error.message.includes("step_name")) {
+        
+        // If the error is related to column issues, try again without step tracking columns
+        if (error.message && (error.message.includes("step_name") || error.message.includes("step_number"))) {
           console.log("Retrying without step_name and step_number columns");
           delete dataToSubmit.step_name;
           delete dataToSubmit.step_number;
