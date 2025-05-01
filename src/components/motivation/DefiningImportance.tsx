@@ -30,6 +30,7 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
   const [reflection, setReflection] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [goalText, setGoalText] = useState("");
 
   // Fetch saved values from the database
   useEffect(() => {
@@ -70,9 +71,13 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
             setSelectedDescriptors(parsedDescriptors);
           }
           
-          // Set reflection
+          // Set reflection and goal text
           if (data.reflection) {
             setReflection(data.reflection);
+          }
+          
+          if (data.goal_text) {
+            setGoalText(data.goal_text);
           }
         }
       } catch (error) {
@@ -85,6 +90,14 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
     fetchSavedValues();
   }, [user]);
 
+  // Set goal text when goalData loads if not already set from saved data
+  useEffect(() => {
+    if (goalData && !goalText) {
+      const text = `Transform from ${goalData.current_body_type.name} to ${goalData.goal_body_type.name}`;
+      setGoalText(text);
+    }
+  }, [goalData, goalText]);
+
   if (isLoading || goalLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -93,15 +106,13 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
     );
   }
 
-  if (!goalData) {
+  if (!goalText && !goalData) {
     return (
       <div className="text-center p-8">
         <p className="text-purple-600">Please set up your fitness goal first.</p>
       </div>
     );
   }
-
-  const goalText = `Transform from ${goalData.current_body_type.name} to ${goalData.goal_body_type.name}`;
 
   const handleDescriptorToggle = (values: string[]) => {
     if (values.length <= 5) {
