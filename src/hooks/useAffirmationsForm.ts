@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -57,6 +56,7 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
         try {
           // Handle case when affirmations is already a parsed JSON array
           if (Array.isArray(data.affirmations)) {
+            console.log("Handling array format");
             parsedAffirmations = (data.affirmations as any[]).map(item => ({
               criticism: isAffirmationItem(item) ? item.criticism : '',
               positive: isAffirmationItem(item) ? item.positive : ''
@@ -64,23 +64,41 @@ export const useAffirmationsForm = (onComplete?: () => void) => {
           } 
           // Handle case when affirmations is a JSON string
           else if (typeof data.affirmations === 'string') {
-            const parsed = JSON.parse(data.affirmations);
-            if (Array.isArray(parsed)) {
-              parsedAffirmations = parsed.map(item => ({
-                criticism: isAffirmationItem(item) ? item.criticism : '',
-                positive: isAffirmationItem(item) ? item.positive : ''
-              }));
+            console.log("Handling string format");
+            try {
+              const parsed = JSON.parse(data.affirmations);
+              if (Array.isArray(parsed)) {
+                parsedAffirmations = parsed.map(item => ({
+                  criticism: isAffirmationItem(item) ? item.criticism : '',
+                  positive: isAffirmationItem(item) ? item.positive : ''
+                }));
+              }
+            } catch (e) {
+              console.error("Failed to parse affirmations string:", e);
             }
           }
-          // Handle other possible formats
+          // Handle other possible formats (object format from Supabase)
           else if (data.affirmations && typeof data.affirmations === 'object') {
-            // Convert object to array if needed
-            const values = Object.values(data.affirmations as Record<string, any>);
-            if (Array.isArray(values) && values.length > 0) {
-              parsedAffirmations = values.map(item => ({
-                criticism: isAffirmationItem(item) ? item.criticism : '',
-                positive: isAffirmationItem(item) ? item.positive : ''
+            console.log("Handling object format");
+            
+            // If it's a direct jsonb object from Supabase with numeric keys
+            if ('0' in data.affirmations) {
+              console.log("Detected numeric keys in object");
+              const affirmationEntries = Object.entries(data.affirmations as Record<string, any>);
+              parsedAffirmations = affirmationEntries.map(([_, value]) => ({
+                criticism: isAffirmationItem(value) ? value.criticism : '',
+                positive: isAffirmationItem(value) ? value.positive : ''
               }));
+            } 
+            // Otherwise try to convert object values to array
+            else {
+              const values = Object.values(data.affirmations as Record<string, any>);
+              if (Array.isArray(values) && values.length > 0) {
+                parsedAffirmations = values.map(item => ({
+                  criticism: isAffirmationItem(item) ? item.criticism : '',
+                  positive: isAffirmationItem(item) ? item.positive : ''
+                }));
+              }
             }
           }
           
