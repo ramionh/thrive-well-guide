@@ -6,15 +6,26 @@ import MotivationStepContent from "./MotivationStepContent";
 import { useMotivationSteps } from "@/hooks/useMotivationSteps";
 import { motivationSteps } from "./config/motivationSteps";
 import LoadingState from "./shared/LoadingState";
+import ErrorBoundary from "@/components/ui/error-boundary";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
   
-  const { steps, currentStepId, currentStep, handleStepClick, markStepComplete, isLoading } = useMotivationSteps(
+  const { 
+    steps, 
+    currentStepId, 
+    currentStep, 
+    handleStepClick, 
+    markStepComplete, 
+    isLoading 
+  } = useMotivationSteps(
     motivationSteps.map(step => ({
       ...step,
-      // Pass the onComplete callback to each component
-      component: step.component(() => markStepComplete(step.id)),
+      // Make sure the component has access to the markStepComplete function
+      component: step.component(() => {
+        console.log(`Motivation: Marking step ${step.id} complete`);
+        markStepComplete(step.id);
+      }),
       completed: false
     }))
   );
@@ -28,14 +39,16 @@ const Motivation = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-6">
-      <MotivationStepsSidebar
-        steps={steps}
-        currentStepId={currentStepId}
-        onStepClick={handleStepClick}
-      />
-      <MotivationStepContent currentStep={currentStep} />
-    </div>
+    <ErrorBoundary>
+      <div className="flex flex-col md:flex-row gap-6">
+        <MotivationStepsSidebar
+          steps={steps}
+          currentStepId={currentStepId}
+          onStepClick={handleStepClick}
+        />
+        <MotivationStepContent currentStep={currentStep} />
+      </div>
+    </ErrorBoundary>
   );
 };
 

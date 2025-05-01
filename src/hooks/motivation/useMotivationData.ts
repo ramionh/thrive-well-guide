@@ -19,8 +19,12 @@ export const useMotivationData = <T extends Record<string, any>>(
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      console.log(`useMotivationData: No user found for ${tableName}`);
+      return;
+    }
 
+    console.log(`useMotivationData: Fetching data for ${tableName}, user ${user.id}`);
     setIsLoading(true);
     try {
       // Use 'as any' to bypass TypeScript's strict table name checking
@@ -32,8 +36,11 @@ export const useMotivationData = <T extends Record<string, any>>(
         .limit(1)
         .maybeSingle();
 
-      if (error && error.code !== "PGRST116") {
-        throw error;
+      if (error) {
+        console.error(`useMotivationData: Error fetching ${tableName} data:`, error);
+        if (error.code !== "PGRST116") {
+          throw error;
+        }
       }
 
       if (data) {
@@ -42,9 +49,11 @@ export const useMotivationData = <T extends Record<string, any>>(
         
         if (parseData) {
           // Use the custom parser if provided
+          console.log(`useMotivationData: Using custom parser for ${tableName}`);
           parsedData = parseData(data);
         } else {
           // Default parsing logic: map column names to camelCase keys
+          console.log(`useMotivationData: Using default parser for ${tableName}`);
           parsedData = { ...initialState };
           Object.keys(data).forEach(key => {
             const camelKey = key.replace(/([-_][a-z])/g, group =>
@@ -72,6 +81,8 @@ export const useMotivationData = <T extends Record<string, any>>(
         console.log(`Parsed ${tableName} data:`, parsedData);
         setFormData(parsedData);
         setError(null);
+      } else {
+        console.log(`useMotivationData: No data found for ${tableName}`);
       }
     } catch (err: any) {
       console.error(`Error fetching ${tableName} data:`, err);
@@ -83,6 +94,7 @@ export const useMotivationData = <T extends Record<string, any>>(
       });
     } finally {
       setIsLoading(false);
+      console.log(`useMotivationData: Finished loading for ${tableName}, isLoading set to false`);
     }
   }, [user, tableName, initialState, parseData, toast]);
 
