@@ -15,147 +15,147 @@ interface SettingCeilingFloorProps {
 const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete }) => {
   const { user } = useUser();
   const { toast } = useToast();
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  // track the DB row's PK so our upsert will update instead of insert
+  const [recordId, setRecordId] = useState<string | null>(null);
+
   const [bestOutcome, setBestOutcome] = useState("");
   const [worstOutcome, setWorstOutcome] = useState("");
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
-  const fetchData = async () => {
+  async function fetchData() {
     if (!user) {
       setIsLoading(false);
       return;
     }
 
     try {
-      console.log('Fetching ceiling floor data for user:', user.id);
-      const { data, error } = await supabase
-        .from('motivation_ceiling_floor')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      // pull back only the *latest* row for this user
+      const { data: row, error } = await supabase
+        .from("motivation_ceiling_floor")
+        .select("id, best_outcome, worst_outcome, updated_at")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false }) // newest first
+        .limit(1)
+        .single();                                   // treat as one object
 
-      if (error && error.code !== "PGRST116") {
-        console.error('Error fetching ceiling floor data:', error);
+      // PGRST116 = "no rows found" — safe to ignore, just means first time
+      if (error && (error.code !== "PGRST116" && error.message !== "No rows found")) {
         throw error;
       }
 
-      console.log('Retrieved ceiling floor data:', data);
-      
-      if (data) {
-        // Set best outcome
-        if (data.best_outcome) {
-          console.log('Setting best outcome:', data.best_outcome);
-          setBestOutcome(data.best_outcome);
-        }
-        
-        // Set worst outcome
-        if (data.worst_outcome) {
-          console.log('Setting worst outcome:', data.worst_outcome);
-          setWorstOutcome(data.worst_outcome);
-        }
+      if (row) {
+        setRecordId(row.id);
+        setBestOutcome(row.best_outcome || "");
+        setWorstOutcome(row.worst_outcome || "");
       }
-    } catch (error) {
-      console.error('Error fetching ceiling floor data:', error);
+    } catch (err) {
+      console.error("Error fetching ceiling/floor:", err);
       toast({
         title: "Error",
-        description: "Failed to load your saved responses",
-        variant: "destructive"
+        description: "Could not load your previous answers.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
 
     setIsSaving(true);
     try {
-      const dataToSave = {
+      // build payload: include `id` if we fetched one, so upsert uses PK conflict
+      const payload: any = {
         user_id: user.id,
         best_outcome: bestOutcome,
         worst_outcome: worstOutcome,
-        updated_at: new Date().toISOString()
       };
-      
-      console.log('Saving ceiling floor data:', dataToSave);
-      
+      if (recordId) payload.id = recordId;
+
       const { error } = await supabase
-        .from('motivation_ceiling_floor')
-        .upsert(dataToSave);
-        
+        .from("motivation_ceiling_floor")
+        .upsert(payload /* defaults to ON CONFLICT (id) */);
+
       if (error) throw error;
-      
+
       toast({
-        title: "Success",
-        description: "Your responses have been saved"
+        title: "Saved",
+        description: "Your ceiling & floor have been stored.",
       });
-      
-      if (onComplete) {
-        onComplete();
-      }
-    } catch (error) {
-      console.error('Error saving ceiling floor data:', error);
+      onComplete?.();
+    } catch (err) {
+      console.error("Error saving ceiling/floor:", err);
       toast({
         title: "Error",
-        description: "Failed to save your responses",
-        variant: "destructive"
+        description: "Could not save your answers.",
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
     }
-  };
+  }
 
   return (
     <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
-        <h2 className="text-xl font-semibold text-purple-800 mb-4">Setting Ceiling & Floor</h2>
-        
+        <h2 className="text-xl font-semibold text-purple-800 mb-4">
+          Setting Ceiling &amp; Floor
+        </h2>
+
         {isLoading ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="mb-6">
-              <p className="text-gray-700">
-                Before moving on to assessing your level of confidence in taking action, let's set your importance floor and ceiling.
-              </p>
+            <p className="text-gray-700">
+              Before moving on to assessing your level of confidence in taking action,
+              let's set your importance floor and ceiling.
+            </p>
+
+            <div>
+              <label
+                htmlFor="best-outcome"
+                className="block mb-2 font-medium text-purple-700"
+              >
+                Imagine you scored yourself a 10… What's the best thing that could happen
+                if you make this change?
+              </label>
+              <Textarea
+                id="best-outcome"
+                value={bestOutcome}
+                onChange={(e) => setBestOutcome(e.target.value)}
+                rows={4}
+                placeholder="Describe the best possible outcome…"
+                required
+                className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
+              />
             </div>
 
-            <div className="space-y-6">
-              <div>
-                <label htmlFor="best-outcome" className="block mb-2 font-medium text-purple-700">
-                  Imagine you scored yourself a 10, meaning it is extremely important for you to take action. What's the best thing that could happen if you make this change?
-                </label>
-                <Textarea
-                  id="best-outcome"
-                  value={bestOutcome}
-                  onChange={(e) => setBestOutcome(e.target.value)}
-                  rows={4}
-                  placeholder="Describe the best possible outcome..."
-                  required
-                  className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="worst-outcome" className="block mb-2 font-medium text-purple-700">
-                  On the other hand, imagine you scored yourself a 1, meaning it is extremely unimportant for you to take action (at least for the time being). What's the worst thing that could happen if you don't make this change?
-                </label>
-                <Textarea
-                  id="worst-outcome"
-                  value={worstOutcome}
-                  onChange={(e) => setWorstOutcome(e.target.value)}
-                  rows={4}
-                  placeholder="Describe the worst possible outcome..."
-                  required
-                  className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                />
-              </div>
+            <div>
+              <label
+                htmlFor="worst-outcome"
+                className="block mb-2 font-medium text-purple-700"
+              >
+                Now imagine you scored yourself a 1… What's the worst thing that could
+                happen if you don't make this change?
+              </label>
+              <Textarea
+                id="worst-outcome"
+                value={worstOutcome}
+                onChange={(e) => setWorstOutcome(e.target.value)}
+                rows={4}
+                placeholder="Describe the worst possible outcome…"
+                required
+                className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
+              />
             </div>
 
             <Button
@@ -163,7 +163,7 @@ const SettingCeilingFloor: React.FC<SettingCeilingFloorProps> = ({ onComplete })
               disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             >
-              {isSaving ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving…" : "Complete Step"}
             </Button>
           </form>
         )}
