@@ -22,9 +22,11 @@ const Motivation = () => {
     motivationSteps.map(step => ({
       ...step,
       // Make sure the component has access to the markStepComplete function
-      component: step.component(() => {
-        console.log(`Motivation: Marking step ${step.id} complete`);
-        markStepComplete(step.id);
+      component: step.component((stepId?: number) => {
+        // Allow either marking the current step or a specific step complete
+        const idToMark = stepId || step.id;
+        console.log(`Motivation: Marking step ${idToMark} complete`);
+        markStepComplete(idToMark);
       }),
       completed: false
     }))
