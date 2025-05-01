@@ -23,7 +23,7 @@ const Affirmations: React.FC<AffirmationsProps> = ({ onComplete }) => {
     console.log("Affirmations component - current affirmations:", affirmations);
     // Display each affirmation separately for easier debugging
     affirmations.forEach((aff, index) => {
-      console.log(`Affirmation ${index}:`, aff.criticism, aff.positive);
+      console.log(`Affirmation ${index}:`, JSON.stringify(aff));
     });
   }, [affirmations]);
 
