@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import LoadingState from "./shared/LoadingState";
 import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
@@ -28,10 +28,10 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
 
   // Parse data from DB column format to our form data format
   const parseData = (data: any): FamilyStrengthsFormData => ({
-    familyStrengths: data.family_strengths || "",
-    perceivedStrengths: data.perceived_strengths || "",
-    familyFeelings: data.family_feelings || "",
-    buildFamily: data.build_family || ""
+    familyStrengths: data?.family_strengths || "",
+    perceivedStrengths: data?.perceived_strengths || "",
+    familyFeelings: data?.family_feelings || "",
+    buildFamily: data?.build_family || ""
   });
 
   // Transform form data to DB column format
@@ -48,7 +48,9 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
     updateForm,
     submitForm,
     isLoading,
-    isSaving
+    isSaving,
+    error,
+    fetchData
   } = useMotivationForm<FamilyStrengthsFormData>({
     tableName: "motivation_family_strengths",
     initialState,
@@ -61,6 +63,12 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
     nextStepName: "Time Management"
   });
 
+  // Add useEffect to ensure data is fetched on component mount
+  useEffect(() => {
+    console.log("FamilyStrengths: Fetching data on mount");
+    fetchData();
+  }, [fetchData]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitForm();
@@ -68,6 +76,19 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
 
   if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="px-0">
+          <div className="p-6 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error.message}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (

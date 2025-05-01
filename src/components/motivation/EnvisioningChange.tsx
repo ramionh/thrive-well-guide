@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -18,10 +18,22 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     howItWorked: ""
   };
 
-  const { formData, updateForm, submitForm, isLoading, isSaving } = useMotivationForm({
+  const { 
+    formData, 
+    updateForm, 
+    submitForm, 
+    isLoading, 
+    isSaving, 
+    error,
+    fetchData 
+  } = useMotivationForm({
     tableName: "motivation_envisioning_change",
     initialState,
     onSuccess: onComplete,
+    stepNumber: 57,
+    nextStepNumber: 58,
+    stepName: "Envisioning Change",
+    nextStepName: "Realistic Change",
     transformData: (data) => {
       return {
         successful_change: data.successfulChange,
@@ -31,11 +43,17 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     parseData: (data) => {
       console.log("Raw data from Envisioning Change:", data);
       return {
-        successfulChange: data.successful_change || "",
-        howItWorked: data.how_it_worked || ""
+        successfulChange: data?.successful_change || "",
+        howItWorked: data?.how_it_worked || ""
       };
     }
   });
+
+  // Add useEffect to ensure data is fetched on component mount
+  useEffect(() => {
+    console.log("EnvisioningChange: Fetching data on mount");
+    fetchData();
+  }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +62,19 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
 
   if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="px-0">
+          <div className="p-6 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error.message}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (

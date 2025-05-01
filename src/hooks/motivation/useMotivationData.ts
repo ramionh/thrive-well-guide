@@ -21,6 +21,7 @@ export const useMotivationData = <T extends Record<string, any>>(
   const fetchData = useCallback(async () => {
     if (!user) {
       console.log(`useMotivationData: No user found for ${tableName}`);
+      setIsLoading(false);
       return;
     }
 

@@ -31,6 +31,8 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     onSuccess: onComplete,
     stepNumber: 59, // Adding explicit step number
     stepName: "Feelings Around Partial Change",
+    nextStepNumber: 60,
+    nextStepName: "Prioritizing Change",
     transformData: (data) => {
       return {
         progress_steps: data.progressSteps,

@@ -30,6 +30,8 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
     onSuccess: onComplete,
     stepNumber: 58, // Adding explicit step number
     stepName: "Realistic Change",
+    nextStepNumber: 59,
+    nextStepName: "Feelings Around Partial Change",
     transformData: (data) => {
       return {
         realistic_change: data.realisticChange
