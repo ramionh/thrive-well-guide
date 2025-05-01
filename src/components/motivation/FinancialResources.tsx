@@ -1,24 +1,21 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/context/UserContext";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import LoadingState from "./shared/LoadingState";
+import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
 import { Coins } from "lucide-react";
 import { parseFinancialResourcesData, FinancialResourcesFormData } from "@/hooks/motivation/parseFinancialResourcesData";
+import LoadingState from "./shared/LoadingState";
 
 interface FinancialResourcesProps {
   onComplete?: () => void;
 }
 
 const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) => {
-  const { user } = useUser();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<FinancialResourcesFormData>({
+  const didInitialFetch = useRef(false);
+  
+  const initialState: FinancialResourcesFormData = {
     income: "",
     job_stability: "",
     workplace_benefits: "",
@@ -26,129 +23,69 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
     job_satisfaction: "",
     financial_feelings: "",
     build_resources: ""
+  };
+
+  const transformData = (formData: FinancialResourcesFormData) => {
+    return {
+      income: formData.income,
+      job_stability: formData.job_stability,
+      workplace_benefits: formData.workplace_benefits,
+      flexible_schedule: formData.flexible_schedule,
+      job_satisfaction: formData.job_satisfaction,
+      financial_feelings: formData.financial_feelings,
+      build_resources: formData.build_resources
+    };
+  };
+
+  const { 
+    formData, 
+    updateForm, 
+    submitForm, 
+    isLoading, 
+    isSaving, 
+    error,
+    fetchData 
+  } = useMotivationForm<FinancialResourcesFormData>({
+    tableName: "motivation_financial_resources",
+    initialState,
+    parseData: parseFinancialResourcesData,
+    transformData,
+    onSuccess: onComplete,
+    stepNumber: 50,
+    nextStepNumber: 51,
+    stepName: "Financial and Economic Resources",
+    nextStepName: "Social Support and Social Competence"
   });
 
+  // Only fetch data once on component mount
   useEffect(() => {
-    if (user) {
-      fetchExistingData();
-    } else {
-      setIsLoading(false);
+    if (!didInitialFetch.current) {
+      console.log("FinancialResources: Fetching data on mount");
+      fetchData();
+      didInitialFetch.current = true;
     }
-  }, [user]);
+  }, [fetchData]);
 
-  const fetchExistingData = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("motivation_financial_resources")
-        .select("*")
-        .eq("user_id", user?.id)
-        .maybeSingle();
-
-      if (error && error.code !== "PGRST116") {
-        throw error;
-      }
-
-      console.log("Financial resources raw data:", data);
-
-      if (data) {
-        // Use our parser to handle the data
-        const parsedData = parseFinancialResourcesData(data);
-        setFormData(parsedData);
-      }
-    } catch (error) {
-      console.error("Error fetching financial resources data:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load your financial resources data",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleInputChange = (field: keyof FinancialResourcesFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) return;
-    
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase
-        .from("motivation_financial_resources")
-        .upsert({
-          user_id: user.id,
-          income: formData.income,
-          job_stability: formData.job_stability,
-          workplace_benefits: formData.workplace_benefits,
-          flexible_schedule: formData.flexible_schedule,
-          job_satisfaction: formData.job_satisfaction,
-          financial_feelings: formData.financial_feelings,
-          build_resources: formData.build_resources,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-
-      // Mark step 50 as completed
-      const { error: progressError } = await supabase
-        .from("motivation_steps_progress")
-        .upsert(
-          {
-            user_id: user.id,
-            step_number: 50,
-            step_name: "Financial and Economic Resources",
-            completed: true,
-            completed_at: new Date().toISOString()
-          },
-          { onConflict: "user_id,step_number" }
-        );
-
-      if (progressError) throw progressError;
-
-      // Make step 51 available
-      const { error: nextStepError } = await supabase
-        .from("motivation_steps_progress")
-        .upsert(
-          {
-            user_id: user.id,
-            step_number: 51,
-            step_name: "Social Support and Social Competence",
-            completed: false,
-            available: true,
-            completed_at: null
-          },
-          { onConflict: "user_id,step_number" }
-        );
-
-      if (nextStepError) throw nextStepError;
-
-      toast({
-        title: "Success",
-        description: "Your financial resources information has been saved"
-      });
-
-      if (onComplete) {
-        onComplete();
-      }
-    } catch (error) {
-      console.error("Error saving financial resources data:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save your financial resources information",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    submitForm();
   };
 
   if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-white">
+        <CardContent className="p-6">
+          <div className="p-4 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error.message}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -173,7 +110,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="income"
               rows={2}
               value={formData.income}
-              onChange={(e) => handleInputChange("income", e.target.value)}
+              onChange={(e) => updateForm("income", e.target.value)}
               className="w-full resize-none"
             />
           </div>
@@ -186,7 +123,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="job_stability" 
               rows={2}
               value={formData.job_stability}
-              onChange={(e) => handleInputChange("job_stability", e.target.value)}
+              onChange={(e) => updateForm("job_stability", e.target.value)}
               className="w-full resize-none"
             />
           </div>
@@ -199,7 +136,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="workplace_benefits"
               rows={2}
               value={formData.workplace_benefits}
-              onChange={(e) => handleInputChange("workplace_benefits", e.target.value)}
+              onChange={(e) => updateForm("workplace_benefits", e.target.value)}
               className="w-full resize-none"
             />
           </div>
@@ -212,7 +149,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="flexible_schedule"
               rows={2}
               value={formData.flexible_schedule}
-              onChange={(e) => handleInputChange("flexible_schedule", e.target.value)}
+              onChange={(e) => updateForm("flexible_schedule", e.target.value)}
               className="w-full resize-none"
             />
           </div>
@@ -225,7 +162,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="job_satisfaction"
               rows={2}
               value={formData.job_satisfaction}
-              onChange={(e) => handleInputChange("job_satisfaction", e.target.value)}
+              onChange={(e) => updateForm("job_satisfaction", e.target.value)}
               className="w-full resize-none"
             />
           </div>
@@ -238,7 +175,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="financial_feelings"
               rows={2}
               value={formData.financial_feelings}
-              onChange={(e) => handleInputChange("financial_feelings", e.target.value)}
+              onChange={(e) => updateForm("financial_feelings", e.target.value)}
               className="w-full resize-none"
             />
           </div>
@@ -251,17 +188,17 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="build_resources"
               rows={3}
               value={formData.build_resources}
-              onChange={(e) => handleInputChange("build_resources", e.target.value)}
+              onChange={(e) => updateForm("build_resources", e.target.value)}
               className="w-full resize-none"
             />
           </div>
 
           <Button 
             type="submit" 
-            disabled={isSubmitting}
+            disabled={isSaving}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 mt-6"
           >
-            {isSubmitting ? "Saving..." : "Complete Step"}
+            {isSaving ? "Saving..." : "Complete Step"}
           </Button>
         </form>
       </CardContent>
