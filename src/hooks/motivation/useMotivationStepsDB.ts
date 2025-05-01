@@ -59,8 +59,7 @@ export const useMotivationStepsDB = () => {
         stepName: stepsData.find(s => s.id === stepNumber)?.title || ''
       });
 
-      // Use upsert with explicit onConflict instead of checking for existing record
-      // This simplifies the logic and ensures we always have the latest data
+      // Always use upsert with explicit onConflict to handle duplicate key errors
       const { error } = await supabase
         .from('motivation_steps_progress')
         .upsert(

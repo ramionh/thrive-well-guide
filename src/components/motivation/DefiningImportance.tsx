@@ -145,18 +145,22 @@ const DefiningImportance: React.FC<DefiningImportanceProps> = ({ onComplete }) =
 
       if (error) throw error;
 
-      // Explicitly mark the step as completed in the steps_progress table
-      await supabase.from("motivation_steps_progress").upsert(
-        {
-          user_id: user.id,
-          step_number: 12, // The step number for Defining Importance
-          step_name: "Defining Importance",
-          completed: true,
-          completed_at: new Date().toISOString(),
-          available: true
-        },
-        { onConflict: "user_id,step_number" }
-      );
+      // Explicitly mark the step as completed in the steps_progress table using upsert
+      const { error: progressError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            step_number: 12, // The step number for Defining Importance
+            step_name: "Defining Importance",
+            completed: true,
+            completed_at: new Date().toISOString(),
+            available: true
+          },
+          { onConflict: "user_id,step_number" }
+        );
+        
+      if (progressError) throw progressError;
 
       toast({ title: "Saved", description: "Your responses have been stored." });
       

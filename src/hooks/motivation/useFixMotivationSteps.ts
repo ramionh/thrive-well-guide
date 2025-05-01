@@ -46,7 +46,7 @@ export const useFixMotivationSteps = () => {
       if (data && data.length > 0) {
         console.log(`Found data for step ${stepId}, marking as completed`);
         
-        // Update the step progress
+        // Update the step progress using upsert with onConflict to handle existing records
         const { error: updateError } = await supabase
           .from('motivation_steps_progress')
           .upsert({
