@@ -43,8 +43,8 @@ const InternalObstacles = ({ onComplete }: InternalObstaclesProps) => {
             />
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className="text-purple-600" />
+        <CarouselNext className="text-purple-600" />
       </Carousel>
     </div>
   );
