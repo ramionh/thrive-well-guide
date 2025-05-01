@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
@@ -17,8 +17,16 @@ export const useMotivationData = <T extends Record<string, any>>(
   const [formData, setFormData] = useState<T>(initialState);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const isMounted = useRef(true);
+  const fetchInProgress = useRef(false);
 
   const fetchData = useCallback(async () => {
+    // Prevent multiple simultaneous fetches
+    if (fetchInProgress.current) {
+      console.log(`useMotivationData: Fetch already in progress for ${tableName}, skipping`);
+      return;
+    }
+
     if (!user) {
       console.log(`useMotivationData: No user found for ${tableName}`);
       setIsLoading(false);
@@ -27,6 +35,8 @@ export const useMotivationData = <T extends Record<string, any>>(
 
     console.log(`useMotivationData: Fetching data for ${tableName}, user ${user.id}`);
     setIsLoading(true);
+    fetchInProgress.current = true;
+    
     try {
       // Use 'as any' to bypass TypeScript's strict table name checking
       const { data, error } = await supabase
@@ -44,60 +54,76 @@ export const useMotivationData = <T extends Record<string, any>>(
         }
       }
 
-      if (data) {
-        console.log(`Raw ${tableName} data:`, data);
-        let parsedData: T;
-        
-        if (parseData) {
-          // Use the custom parser if provided
-          console.log(`useMotivationData: Using custom parser for ${tableName}`);
-          parsedData = parseData(data);
-        } else {
-          // Default parsing logic: map column names to camelCase keys
-          console.log(`useMotivationData: Using default parser for ${tableName}`);
-          parsedData = { ...initialState };
-          Object.keys(data).forEach(key => {
-            const camelKey = key.replace(/([-_][a-z])/g, group =>
-              group.toUpperCase().replace('-', '').replace('_', '')
-            );
-            
-            // Only set if the key exists in initialState
-            if (camelKey in parsedData) {
-              // Check if it's possibly JSON stored as string
-              if (typeof data[key] === 'string' && 
-                (data[key].startsWith('{') || data[key].startsWith('['))) {
-                try {
-                  (parsedData[camelKey as keyof T] as any) = JSON.parse(data[key]);
-                } catch (e) {
-                  console.warn(`Failed to parse JSON for ${key}:`, e);
+      // Only update state if the component is still mounted
+      if (isMounted.current) {
+        if (data) {
+          console.log(`Raw ${tableName} data:`, data);
+          let parsedData: T;
+          
+          if (parseData) {
+            // Use the custom parser if provided
+            console.log(`useMotivationData: Using custom parser for ${tableName}`);
+            parsedData = parseData(data);
+          } else {
+            // Default parsing logic: map column names to camelCase keys
+            console.log(`useMotivationData: Using default parser for ${tableName}`);
+            parsedData = { ...initialState };
+            Object.keys(data).forEach(key => {
+              const camelKey = key.replace(/([-_][a-z])/g, group =>
+                group.toUpperCase().replace('-', '').replace('_', '')
+              );
+              
+              // Only set if the key exists in initialState
+              if (camelKey in parsedData) {
+                // Check if it's possibly JSON stored as string
+                if (typeof data[key] === 'string' && 
+                  (data[key].startsWith('{') || data[key].startsWith('['))) {
+                  try {
+                    (parsedData[camelKey as keyof T] as any) = JSON.parse(data[key]);
+                  } catch (e) {
+                    console.warn(`Failed to parse JSON for ${key}:`, e);
+                    (parsedData[camelKey as keyof T] as any) = data[key];
+                  }
+                } else {
                   (parsedData[camelKey as keyof T] as any) = data[key];
                 }
-              } else {
-                (parsedData[camelKey as keyof T] as any) = data[key];
               }
-            }
-          });
+            });
+          }
+          
+          console.log(`Parsed ${tableName} data:`, parsedData);
+          setFormData(parsedData);
+          setError(null);
+        } else {
+          console.log(`useMotivationData: No data found for ${tableName}`);
         }
-        
-        console.log(`Parsed ${tableName} data:`, parsedData);
-        setFormData(parsedData);
-        setError(null);
-      } else {
-        console.log(`useMotivationData: No data found for ${tableName}`);
       }
     } catch (err: any) {
       console.error(`Error fetching ${tableName} data:`, err);
-      setError(err);
-      toast({
-        title: "Error",
-        description: "Failed to load your data",
-        variant: "destructive",
-      });
+      if (isMounted.current) {
+        setError(err);
+        toast({
+          title: "Error",
+          description: "Failed to load your data",
+          variant: "destructive",
+        });
+      }
     } finally {
-      setIsLoading(false);
-      console.log(`useMotivationData: Finished loading for ${tableName}, isLoading set to false`);
+      if (isMounted.current) {
+        setIsLoading(false);
+        console.log(`useMotivationData: Finished loading for ${tableName}, isLoading set to false`);
+      }
+      fetchInProgress.current = false;
     }
   }, [user, tableName, initialState, parseData, toast]);
+
+  // Set up cleanup when component unmounts
+  useEffect(() => {
+    // Set isMounted ref for cleanup
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   return {
     formData,

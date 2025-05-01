@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
@@ -25,6 +25,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
+  const isSubmitting = useRef(false);
   
   const { 
     onSuccess, 
@@ -38,6 +39,11 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
    * Submit form data to the database
    */
   const submitForm = async (formData: T) => {
+    if (isSubmitting.current) {
+      console.log(`useMotivationSubmit: Submission already in progress for ${tableName}, skipping`);
+      return;
+    }
+
     if (!user) {
       toast({
         title: "Error",
@@ -51,6 +57,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
     console.log("Raw form data:", formData);
     
     setIsSaving(true);
+    isSubmitting.current = true;
 
     try {
       // Transform data if a transformer function is provided
@@ -94,6 +101,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
       });
     } finally {
       setIsSaving(false);
+      isSubmitting.current = false;
     }
   };
 

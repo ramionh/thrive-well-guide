@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,8 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     progressSteps: "",
     rewardIdeas: ""
   };
+  
+  const didInitialFetch = useRef(false);
 
   const {
     formData,
@@ -29,7 +31,7 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     tableName: "motivation_partial_change_feelings",
     initialState,
     onSuccess: onComplete,
-    stepNumber: 59, // Adding explicit step number
+    stepNumber: 59,
     stepName: "Feelings Around Partial Change",
     nextStepNumber: 60,
     nextStepName: "Prioritizing Change",
@@ -48,10 +50,13 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     }
   });
 
-  // Add useEffect to ensure data is fetched on component mount
+  // Only fetch data once on component mount
   useEffect(() => {
-    console.log("PartialChangeFeelings: Fetching data on mount");
-    fetchData();
+    if (!didInitialFetch.current) {
+      console.log("PartialChangeFeelings: Fetching data on mount");
+      fetchData();
+      didInitialFetch.current = true;
+    }
   }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {

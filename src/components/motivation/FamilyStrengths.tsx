@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import LoadingState from "./shared/LoadingState";
 import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
@@ -25,6 +25,8 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
     familyFeelings: "",
     buildFamily: ""
   };
+
+  const didInitialFetch = useRef(false);
 
   // Parse data from DB column format to our form data format
   const parseData = (data: any): FamilyStrengthsFormData => ({
@@ -63,10 +65,13 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
     nextStepName: "Time Management"
   });
 
-  // Add useEffect to ensure data is fetched on component mount
+  // Only fetch data once on component mount
   useEffect(() => {
-    console.log("FamilyStrengths: Fetching data on mount");
-    fetchData();
+    if (!didInitialFetch.current) {
+      console.log("FamilyStrengths: Fetching data on mount");
+      fetchData();
+      didInitialFetch.current = true;
+    }
   }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +15,8 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
   const initialState = {
     realisticChange: ""
   };
+  
+  const didInitialFetch = useRef(false);
 
   const {
     formData,
@@ -28,7 +30,7 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
     tableName: "motivation_realistic_change",
     initialState,
     onSuccess: onComplete,
-    stepNumber: 58, // Adding explicit step number
+    stepNumber: 58,
     stepName: "Realistic Change",
     nextStepNumber: 59,
     nextStepName: "Feelings Around Partial Change",
@@ -45,10 +47,13 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
     }
   });
 
-  // Add useEffect to ensure data is fetched on component mount
+  // Only fetch data once on component mount
   useEffect(() => {
-    console.log("RealisticChange: Fetching data on mount");
-    fetchData();
+    if (!didInitialFetch.current) {
+      console.log("RealisticChange: Fetching data on mount");
+      fetchData();
+      didInitialFetch.current = true;
+    }
   }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
