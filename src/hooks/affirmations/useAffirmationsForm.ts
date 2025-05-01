@@ -4,34 +4,51 @@ import { AffirmationItem, UseAffirmationsFormResult } from "./types";
 import { useAffirmationsData } from "./useAffirmationsData";
 import { useSaveAffirmations } from "./useSaveAffirmations";
 
-export const useAffirmationsForm = (onComplete?: () => void): UseAffirmationsFormResult => {
-  const { affirmations: initialAffirmations, setAffirmations, isLoading } = useAffirmationsData();
-  const [localAffirmations, setLocalAffirmations] = useState<AffirmationItem[]>(initialAffirmations);
-  const { isSaving, saveAffirmations: saveToDb } = useSaveAffirmations(localAffirmations, onComplete);
+export const useAffirmationsForm = (
+  onComplete?: () => void
+): UseAffirmationsFormResult => {
+  // Grab rowId + loaded data
+  const {
+    recordId,
+    affirmations: initial,
+    setAffirmations: setRemote,
+    isLoading,
+  } = useAffirmationsData();
 
+  // Local copy for editing
+  const [affirmations, setLocal] = useState<AffirmationItem[]>(initial);
+
+  // When server data arrives, overwrite local
   useEffect(() => {
-    // Synchronize local state with initial data when it changes (and is not loading)
-    if (!isLoading && initialAffirmations !== localAffirmations) {
-      setLocalAffirmations(initialAffirmations);
+    if (!isLoading) {
+      setLocal(initial);
     }
-  }, [isLoading, initialAffirmations]);
+  }, [isLoading, initial]);
 
-  const updateAffirmation = (index: number, field: keyof AffirmationItem, value: string) => {
-    const updatedAffirmations = [...localAffirmations];
-    updatedAffirmations[index] = {
-      ...updatedAffirmations[index],
-      [field]: value,
-    };
-    setLocalAffirmations(updatedAffirmations);
-    setAffirmations(updatedAffirmations);
+  // Hook to persist changes
+  const { isSaving, saveAffirmations: _save } = useSaveAffirmations(
+    affirmations,
+    recordId,
+    onComplete
+  );
+
+  const updateAffirmation = (
+    index: number,
+    field: keyof AffirmationItem,
+    value: string
+  ) => {
+    const copy = [...affirmations];
+    copy[index] = { ...copy[index], [field]: value };
+    setLocal(copy);
+    setRemote(copy);
   };
 
   const saveAffirmations = async () => {
-    await saveToDb();
+    await _save();
   };
 
   return {
-    affirmations: isLoading ? initialAffirmations : localAffirmations,
+    affirmations: isLoading ? initial : affirmations,
     isLoading,
     isSaving,
     updateAffirmation,
