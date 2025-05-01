@@ -30,64 +30,53 @@ export const parseAffirmationsData = (data: any): AffirmationItem[] => {
     
     console.log("Affirmations data (pre-processing):", affirmationsData);
     
-    // If we have a nested 'affirmations' property, use that
-    if (affirmationsData && typeof affirmationsData === 'object') {
-      if ('affirmations' in affirmationsData) {
-        affirmationsData = affirmationsData.affirmations;
-      }
-    }
-    
-    // Check if it's an array directly
+    // Based on the DevTools screenshot, the data structure has "affirmations" as the top-level array
     if (Array.isArray(affirmationsData)) {
-      // Direct array format
+      // Map the array items to our expected format
       for (let i = 0; i < Math.min(affirmationsData.length, 5); i++) {
         const item = affirmationsData[i];
         if (item && typeof item === 'object') {
           parsedAffirmations[i] = {
-            criticism: item.criticism || "",
-            positive: item.positive || ""
+            criticism: typeof item.criticism === 'string' ? item.criticism : "",
+            positive: typeof item.positive === 'string' ? item.positive : ""
           };
         }
       }
     } 
-    // Check if it has numbered properties (0, 1, 2...) that should be treated as an array
+    // Check for the specific numbered format seen in the DevTools screenshot
     else if (affirmationsData && typeof affirmationsData === 'object') {
-      // It might contain a nested 'affirmations' array
-      if (Array.isArray(affirmationsData.affirmations)) {
-        for (let i = 0; i < Math.min(affirmationsData.affirmations.length, 5); i++) {
-          const item = affirmationsData.affirmations[i];
-          if (item && typeof item === 'object') {
-            parsedAffirmations[i] = {
-              criticism: item.criticism || "",
-              positive: item.positive || ""
-            };
-          }
-        }
-      }
-      // Handle key-value pairs where keys are numbers or strings like "0", "1", etc.
-      else {
-        for (let i = 0; i < 5; i++) {
-          const item = affirmationsData[i] || affirmationsData[String(i)];
-          if (item && typeof item === 'object') {
-            parsedAffirmations[i] = {
-              criticism: item.criticism || "",
-              positive: item.positive || ""
-            };
-          }
+      // It might be an object with numerical keys (0, 1, 2, etc.)
+      for (let i = 0; i < 5; i++) {
+        // Check if the key exists as either a number or string number
+        const item = affirmationsData[i] || affirmationsData[String(i)];
+        if (item && typeof item === 'object') {
+          parsedAffirmations[i] = {
+            criticism: typeof item.criticism === 'string' ? item.criticism : "",
+            positive: typeof item.positive === 'string' ? item.positive : ""
+          };
         }
       }
       
-      // Look for specific format with "first", "Second", etc.
+      // Special handling for the format seen in the DevTools screenshot
+      // Where there are entries with "first", "Second", etc.
       if (parsedAffirmations.every(a => a.criticism === "" && a.positive === "")) {
-        console.log("Checking for special format with 'first', etc.");
-        if (affirmationsData[0] && affirmationsData[0].criticism === "first") {
-          for (let i = 0; i < 5; i++) {
-            const item = affirmationsData[i];
-            if (item && typeof item === 'object') {
+        // Look for keys that match ordinal names or specific structure from DevTools
+        const ordinalKeys = ["first", "Second", "Third", "Fourth", "fifth"];
+        for (let i = 0; i < Math.min(5, ordinalKeys.length); i++) {
+          // Find entries where criticism matches the ordinal key
+          for (const key in affirmationsData) {
+            const item = affirmationsData[key];
+            if (
+              item && 
+              typeof item === 'object' && 
+              item.criticism && 
+              item.criticism.toLowerCase() === ordinalKeys[i].toLowerCase()
+            ) {
               parsedAffirmations[i] = {
-                criticism: item.criticism || "",
-                positive: item.positive || ""
+                criticism: ordinalKeys[i],
+                positive: typeof item.positive === 'string' ? item.positive : String(i + 1)
               };
+              break;
             }
           }
         }
