@@ -11,6 +11,7 @@ import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageCircle } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
+import { SocialSupportFormData, SupportTypes, parseSocialSupportData } from "@/hooks/motivation/parseSocialSupportData";
 
 interface SocialSupportProps {
   onComplete: () => void;
@@ -19,21 +20,6 @@ interface SocialSupportProps {
 interface SocialSkillOption {
   id: string;
   label: string;
-}
-
-interface SupportTypes {
-  financial: string;
-  listeners: string;
-  encouragers: string;
-  valuers: string;
-  talkers: string;
-}
-
-interface SocialSupportFormData {
-  supportTypes: SupportTypes;
-  socialSkills: string[];
-  socialFeelings: string;
-  buildSocial: string;
 }
 
 const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
@@ -97,14 +83,7 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
       console.log("Raw social support data:", data);
       
       if (data) {
-        const parsedData: SocialSupportFormData = {
-          supportTypes: parseSupportTypes(data.support_types),
-          socialSkills: parseSocialSkills(data.social_skills),
-          socialFeelings: parseStringField(data.social_feelings),
-          buildSocial: parseStringField(data.build_social)
-        };
-        
-        console.log("Parsed social support data:", parsedData);
+        const parsedData = parseSocialSupportData(data);
         setFormData(parsedData);
       }
     } catch (err) {
@@ -117,87 +96,6 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const parseStringField = (value: any): string => {
-    if (value === null || value === undefined) return "";
-    if (typeof value === 'string') return value;
-    return String(value);
-  };
-
-  const parseSupportTypes = (data: any): SupportTypes => {
-    const defaultTypes: SupportTypes = {
-      financial: "",
-      listeners: "",
-      encouragers: "",
-      valuers: "",
-      talkers: ""
-    };
-    
-    if (!data) return defaultTypes;
-    
-    try {
-      // If it's already an object
-      if (typeof data === 'object' && data !== null) {
-        return {
-          financial: parseStringField(data.financial),
-          listeners: parseStringField(data.listeners),
-          encouragers: parseStringField(data.encouragers),
-          valuers: parseStringField(data.valuers),
-          talkers: parseStringField(data.talkers)
-        };
-      }
-      
-      // If it's a JSON string
-      if (typeof data === 'string') {
-        try {
-          const parsed = JSON.parse(data);
-          return {
-            financial: parseStringField(parsed.financial),
-            listeners: parseStringField(parsed.listeners),
-            encouragers: parseStringField(parsed.encouragers),
-            valuers: parseStringField(parsed.valuers),
-            talkers: parseStringField(parsed.talkers)
-          };
-        } catch (e) {
-          console.error("Error parsing support_types as JSON string:", e);
-          return defaultTypes;
-        }
-      }
-    } catch (e) {
-      console.error("Error parsing support_types:", e);
-    }
-    
-    return defaultTypes;
-  };
-
-  const parseSocialSkills = (data: any): string[] => {
-    if (!data) return [];
-    
-    try {
-      // If it's already an array
-      if (Array.isArray(data)) {
-        return data.map(skill => String(skill));
-      }
-      
-      // If it's a JSON string
-      if (typeof data === 'string') {
-        try {
-          const parsed = JSON.parse(data);
-          if (Array.isArray(parsed)) {
-            return parsed.map(skill => String(skill));
-          }
-          return [String(data)];
-        } catch (e) {
-          console.error("Error parsing social_skills as JSON string:", e);
-          return [String(data)];
-        }
-      }
-    } catch (e) {
-      console.error("Error parsing social_skills:", e);
-    }
-    
-    return [];
   };
 
   const handleSocialSkillToggle = (skillId: string) => {
@@ -233,10 +131,10 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
     
     setIsSaving(true);
     try {
-      // Prepare data for database
+      // Prepare data for database - convert the SupportTypes to a plain object that can be stored as JSON
       const dataToSubmit = {
         user_id: user.id,
-        support_types: formData.supportTypes,
+        support_types: formData.supportTypes as any, // This works because SupportTypes is a plain object
         social_skills: formData.socialSkills,
         social_feelings: formData.socialFeelings,
         build_social: formData.buildSocial,
@@ -261,13 +159,14 @@ const SocialSupport: React.FC<SocialSupportProps> = ({ onComplete }) => {
           .eq("id", existingData.id)
           .eq("user_id", user.id);
       } else {
-        // Insert new record
+        // Insert new record with created_at
+        const insertData = {
+          ...dataToSubmit,
+          created_at: new Date().toISOString()
+        };
         result = await supabase
           .from("motivation_social_support")
-          .insert({
-            ...dataToSubmit,
-            created_at: new Date().toISOString()
-          });
+          .insert(insertData);
       }
 
       if (result.error) throw result.error;

@@ -124,12 +124,13 @@ const TimeManagement: React.FC<TimeManagementProps> = ({ onComplete }) => {
           .eq("user_id", user.id);
       } else {
         // Insert new record
+        const insertData = {
+          ...dataToSubmit,
+          created_at: new Date().toISOString()
+        };
         result = await supabase
           .from("motivation_time_management")
-          .insert({
-            ...dataToSubmit,
-            created_at: new Date().toISOString()
-          });
+          .insert(insertData);
       }
 
       if (result.error) throw result.error;
