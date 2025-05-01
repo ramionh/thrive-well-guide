@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +22,8 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
     isSaving,
     error,
     updateForm,
-    submitForm
+    submitForm,
+    fetchData
   } = useMotivationForm({
     tableName: "motivation_realistic_change",
     initialState,
@@ -41,6 +42,12 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
       };
     }
   });
+
+  // Add useEffect to ensure data is fetched on component mount
+  useEffect(() => {
+    console.log("RealisticChange: Fetching data on mount");
+    fetchData();
+  }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
