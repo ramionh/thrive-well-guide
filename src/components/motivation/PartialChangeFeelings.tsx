@@ -21,12 +21,15 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     formData,
     isLoading,
     isSaving,
+    error,
     updateForm,
     submitForm
   } = useMotivationForm({
     tableName: "motivation_partial_change_feelings",
     initialState,
     onSuccess: onComplete,
+    stepNumber: 59, // Adding explicit step number
+    stepName: "Feelings Around Partial Change",
     transformData: (data) => {
       return {
         progress_steps: data.progressSteps,
@@ -36,8 +39,8 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     parseData: (data) => {
       console.log("Raw data from Partial Change Feelings:", data);
       return {
-        progressSteps: data.progress_steps || "",
-        rewardIdeas: data.reward_ideas || ""
+        progressSteps: data?.progress_steps || "",
+        rewardIdeas: data?.reward_ideas || ""
       };
     }
   });
@@ -49,6 +52,19 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
 
   if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="px-0">
+          <div className="p-6 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error.message}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
