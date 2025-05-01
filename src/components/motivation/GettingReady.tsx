@@ -1,9 +1,11 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 import LoadingState from "./shared/LoadingState";
 
 interface GettingReadyProps {
@@ -12,55 +14,104 @@ interface GettingReadyProps {
 
 const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
   const [selfPersuasion, setSelfPersuasion] = useState<string>("");
-  const [dataFetched, setDataFetched] = useState<boolean>(false);
+  const { user } = useUser();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   
-  const { 
-    formData,
-    isLoading, 
-    isSaving, 
-    fetchData,
-    submitForm, 
-    updateForm 
-  } = useMotivationForm({
-    tableName: "motivation_getting_ready",
-    initialState: {
-      self_persuasion: ""
-    },
-    parseData: (data) => {
-      return {
-        self_persuasion: data.self_persuasion || ""
-      };
-    },
-    onSuccess: onComplete,
-    stepNumber: 66,
-    nextStepNumber: 67,
-    stepName: "Getting Ready",
-    nextStepName: "Making Your Goal Measurable"
-  });
-  
-  // Fetch data only once when component mounts
+  // Fetch existing data on component mount
   useEffect(() => {
-    if (!dataFetched) {
-      fetchData();
-      setDataFetched(true);
-    }
-  }, [dataFetched, fetchData]);
-  
-  // Update local state when form data changes from the database
-  useEffect(() => {
-    if (formData && formData.self_persuasion !== undefined && !isSaving) {
-      setSelfPersuasion(formData.self_persuasion);
-    }
-  }, [formData, isSaving]);
-  
-  const handleSubmit = (e: React.FormEvent) => {
+    const fetchExistingData = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("motivation_getting_ready")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        
+        if (data) {
+          console.log("Found existing getting ready data:", data);
+          setSelfPersuasion(data.self_persuasion || "");
+        }
+      } catch (error) {
+        console.error("Error fetching Getting Ready data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchExistingData();
+  }, [user]);
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("self_persuasion", selfPersuasion);
-    submitForm();
-  };
-  
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setSelfPersuasion(e.target.value);
+    if (!user) return;
+    
+    setIsSaving(true);
+    try {
+      // Use upsert to handle both insert and update scenarios
+      const { error } = await supabase
+        .from("motivation_getting_ready")
+        .upsert({
+          user_id: user.id,
+          self_persuasion: selfPersuasion,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: "user_id"
+        });
+
+      if (error) throw error;
+
+      // Mark the step as completed in the progress tracking table
+      const { error: progressError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert({
+          user_id: user.id,
+          step_number: 66, // Step number for Getting Ready
+          step_name: "Getting Ready",
+          completed: true,
+          completed_at: new Date().toISOString(),
+          available: true
+        }, {
+          onConflict: "user_id,step_number"
+        });
+
+      if (progressError) throw progressError;
+      
+      // Also make the next step available
+      const { error: nextStepError } = await supabase
+        .from("motivation_steps_progress")
+        .upsert({
+          user_id: user.id,
+          step_number: 67,
+          step_name: "Making Your Goal Measurable",
+          completed: false,
+          available: true,
+          completed_at: null
+        }, {
+          onConflict: "user_id,step_number"
+        });
+      
+      if (nextStepError) throw nextStepError;
+      
+      // Call the onComplete callback if provided
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (error) {
+      console.error("Error saving Getting Ready data:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
   
   return (
@@ -92,7 +143,7 @@ const GettingReady: React.FC<GettingReadyProps> = ({ onComplete }) => {
                 
                 <Textarea
                   value={selfPersuasion}
-                  onChange={handleTextareaChange}
+                  onChange={(e) => setSelfPersuasion(e.target.value)}
                   placeholder="I need to make this change because... I know I can succeed because..."
                   className="h-48"
                 />
