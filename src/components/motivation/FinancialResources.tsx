@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import LoadingState from "./shared/LoadingState";
 import { Coins } from "lucide-react";
+import { parseFinancialResourcesData, parseStringField } from "@/hooks/motivation/parseFinancialResourcesData";
 
 interface FinancialResourcesFormData {
   income: string;
@@ -61,19 +61,9 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
       console.log("Financial resources raw data:", data);
 
       if (data) {
-        // Create a clean data object with safer parsing
-        const cleanData: FinancialResourcesFormData = {
-          income: parseStringField(data.income),
-          job_stability: parseStringField(data.job_stability),
-          workplace_benefits: parseStringField(data.workplace_benefits),
-          flexible_schedule: parseStringField(data.flexible_schedule),
-          job_satisfaction: parseStringField(data.job_satisfaction),
-          financial_feelings: parseStringField(data.financial_feelings),
-          build_resources: parseStringField(data.build_resources)
-        };
-
-        console.log("Parsed financial resources data:", cleanData);
-        setFormData(cleanData);
+        // Use our new parsing function
+        const parsedData = parseFinancialResourcesData(data);
+        setFormData(parsedData as FinancialResourcesFormData);
       }
     } catch (error) {
       console.error("Error fetching financial resources data:", error);
@@ -85,31 +75,6 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Helper function to safely parse string fields from various data formats
-  const parseStringField = (value: any): string => {
-    if (value === null || value === undefined) return "";
-    
-    // Already a string
-    if (typeof value === 'string') return value;
-    
-    // Try to handle case where value might be a JSON object/array
-    if (typeof value === 'object') {
-      try {
-        // If it's an object that contains a text property
-        if (value.text) return String(value.text);
-        // If it's an array and has a first element with text
-        if (Array.isArray(value) && value[0]?.text) return String(value[0].text);
-        // Last resort, stringify it
-        return JSON.stringify(value);
-      } catch (e) {
-        return "";
-      }
-    }
-    
-    // Default fallback
-    return String(value);
   };
 
   const handleInputChange = (field: keyof FinancialResourcesFormData, value: string) => {
