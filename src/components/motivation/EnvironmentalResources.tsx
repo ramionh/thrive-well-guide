@@ -1,13 +1,11 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Home } from "lucide-react";
+import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
 
 interface EnvironmentalResourcesProps {
@@ -19,127 +17,55 @@ interface EnvironmentalResourcesFormData {
 }
 
 const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onComplete }) => {
-  const { user } = useUser();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState<EnvironmentalResourcesFormData>({
+  const didInitialFetch = useRef(false);
+  
+  const initialState: EnvironmentalResourcesFormData = {
     environmentalResources: ""
+  };
+
+  const parseData = (data: any): EnvironmentalResourcesFormData => {
+    console.log("Parsing Environmental Resources data:", data);
+    return {
+      environmentalResources: typeof data.environmental_resources === 'string' 
+        ? data.environmental_resources 
+        : ""
+    };
+  };
+
+  const transformData = (formData: EnvironmentalResourcesFormData) => {
+    return {
+      environmental_resources: formData.environmentalResources
+    };
+  };
+
+  const { 
+    formData, 
+    updateForm, 
+    submitForm, 
+    isLoading, 
+    isSaving, 
+    error,
+    fetchData 
+  } = useMotivationForm<EnvironmentalResourcesFormData>({
+    tableName: "motivation_environmental_resources",
+    initialState,
+    parseData,
+    transformData,
+    onSuccess: onComplete,
+    stepNumber: 55,
+    nextStepNumber: 56,
+    stepName: "Environmental or Situational Supports and Resources",
+    nextStepName: "Resource Development"
   });
 
+  // Only fetch data once on component mount
   useEffect(() => {
-    if (user) {
-      fetchExistingData();
-    } else {
-      setIsLoading(false);
+    if (!didInitialFetch.current) {
+      console.log("EnvironmentalResources: Fetching data on mount");
+      fetchData();
+      didInitialFetch.current = true;
     }
-  }, [user]);
-
-  const fetchExistingData = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("motivation_environmental_resources")
-        .select("*")
-        .eq("user_id", user?.id)
-        .maybeSingle();
-
-      if (error && error.code !== "PGRST116") {
-        throw error;
-      }
-
-      console.log("Environmental resources raw data:", data);
-
-      if (data) {
-        // Parse the data
-        setFormData({
-          environmentalResources: typeof data.environmental_resources === 'string' 
-            ? data.environmental_resources 
-            : ""
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching environmental resources data:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load your environmental resources data",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleInputChange = (value: string) => {
-    setFormData(prev => ({ ...prev, environmentalResources: value }));
-  };
-
-  const submitForm = async () => {
-    if (!user) return;
-    
-    setIsSaving(true);
-    try {
-      const { error } = await supabase
-        .from("motivation_environmental_resources")
-        .upsert({
-          user_id: user.id,
-          environmental_resources: formData.environmentalResources,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-
-      // Mark step as completed
-      const { error: progressError } = await supabase
-        .from("motivation_steps_progress")
-        .upsert(
-          {
-            user_id: user.id,
-            step_number: 55,
-            step_name: "Environmental or Situational Supports and Resources",
-            completed: true,
-            completed_at: new Date().toISOString()
-          },
-          { onConflict: "user_id,step_number" }
-        );
-
-      if (progressError) throw progressError;
-
-      // Make next step available
-      const { error: nextStepError } = await supabase
-        .from("motivation_steps_progress")
-        .upsert(
-          {
-            user_id: user.id,
-            step_number: 56,
-            step_name: "Resource Development",
-            completed: false,
-            available: true,
-            completed_at: null
-          },
-          { onConflict: "user_id,step_number" }
-        );
-
-      if (nextStepError) throw nextStepError;
-
-      toast({
-        title: "Success",
-        description: "Your environmental resources information has been saved"
-      });
-
-      if (onComplete) {
-        onComplete();
-      }
-    } catch (error) {
-      console.error("Error saving environmental resources data:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save your environmental resources information",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,6 +74,19 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
 
   if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="px-0">
+          <div className="p-6 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error.message}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -170,7 +109,7 @@ const EnvironmentalResources: React.FC<EnvironmentalResourcesProps> = ({ onCompl
               <Textarea 
                 id="environmentalResources"
                 value={formData.environmentalResources}
-                onChange={(e) => handleInputChange(e.target.value)}
+                onChange={(e) => updateForm("environmentalResources", e.target.value)}
                 placeholder="List the environmental or situational resources available to you..."
                 className="mt-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 rows={7}

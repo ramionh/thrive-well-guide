@@ -84,12 +84,15 @@ export const useMotivationData = <T extends Record<string, any>>(
               // Only set if the key exists in initialState
               if (camelKey in parsedData) {
                 // Check if it's possibly JSON stored as string
-                if (typeof data[key] === 'string' && 
-                  (data[key].startsWith('{') || data[key].startsWith('['))) {
-                  try {
-                    (parsedData[camelKey as keyof T] as any) = JSON.parse(data[key]);
-                  } catch (e) {
-                    console.warn(`Failed to parse JSON for ${key}:`, e);
+                if (typeof data[key] === 'string') {
+                  if (data[key].startsWith('{') || data[key].startsWith('[')) {
+                    try {
+                      (parsedData[camelKey as keyof T] as any) = JSON.parse(data[key]);
+                    } catch (e) {
+                      console.warn(`Failed to parse JSON for ${key}:`, e);
+                      (parsedData[camelKey as keyof T] as any) = data[key];
+                    }
+                  } else {
                     (parsedData[camelKey as keyof T] as any) = data[key];
                   }
                 } else {
