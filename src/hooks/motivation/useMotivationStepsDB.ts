@@ -48,6 +48,17 @@ export const useMotivationStepsDB = () => {
    */
   const saveStepProgress = async (userId: string, stepNumber: number, stepsData: Step[]) => {
     try {
+      if (!stepNumber || typeof stepNumber !== 'number') {
+        console.error('Invalid step number:', stepNumber);
+        return { error: new Error('Invalid step number') };
+      }
+
+      console.log('Saving step progress:', {
+        userId,
+        stepNumber,
+        stepName: stepsData.find(s => s.id === stepNumber)?.title || ''
+      });
+
       // First check if a progress record already exists
       const { data: existingProgress } = await supabase
         .from('motivation_steps_progress')
@@ -139,9 +150,18 @@ export const useMotivationStepsDB = () => {
    * Handles step completion and shows toast notification
    */
   const markStepComplete = async (userId: string, stepId: number, steps: Step[], onSuccess?: () => void) => {
-    if (!userId) return;
+    if (!userId || !stepId || typeof stepId !== 'number') {
+      console.error('Invalid parameters for markStepComplete:', { userId, stepId });
+      return;
+    }
 
     try {
+      console.log('Marking step complete:', {
+        userId,
+        stepId,
+        stepName: steps.find(s => s.id === stepId)?.title || ''
+      });
+      
       const { error } = await saveStepProgress(userId, stepId, steps);
       
       if (error) throw error;

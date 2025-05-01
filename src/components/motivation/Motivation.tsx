@@ -26,7 +26,8 @@ const Motivation = () => {
         // Allow either marking the current step or a specific step complete
         const idToMark = stepId || step.id;
         console.log(`Motivation: Marking step ${idToMark} complete`);
-        markStepComplete(idToMark);
+        // Ensure we're passing a number, not an object
+        markStepComplete(typeof idToMark === 'number' ? idToMark : step.id);
       }),
       completed: false
     }))

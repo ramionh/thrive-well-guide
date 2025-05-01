@@ -15,6 +15,13 @@ interface ExploringChangeProps {
 }
 
 const ExploringChange: React.FC<ExploringChangeProps> = ({ onComplete }) => {
+  // Simple handler for completing the step
+  const handleComplete = () => {
+    if (onComplete) {
+      onComplete();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Carousel className="w-full max-w-4xl mx-auto">
@@ -67,7 +74,7 @@ const ExploringChange: React.FC<ExploringChangeProps> = ({ onComplete }) => {
 
                 <div className="mt-8 flex justify-end">
                   <Button 
-                    onClick={onComplete}
+                    onClick={handleComplete}
                     className="bg-purple-600 hover:bg-purple-700 text-white"
                   >
                     Complete This Step

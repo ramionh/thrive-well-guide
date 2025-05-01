@@ -15,12 +15,19 @@ interface WhatWouldChangeLookLikeProps {
 }
 
 const WhatWouldChangeLookLike: React.FC<WhatWouldChangeLookLikeProps> = ({ onComplete }) => {
+  // Simple handler for completing the step
+  const handleComplete = () => {
+    if (onComplete) {
+      onComplete();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Carousel className="w-full max-w-4xl mx-auto">
         <CarouselContent>
           <CarouselItem>
-            <Card className="bg-soft-purple border-purple-200 shadow-md">
+            <Card className="bg-white shadow-lg border border-purple-200">
               <CardContent className="p-6">
                 <div className="prose max-w-none text-purple-900">
                   <h2 className="text-2xl font-bold mb-6 text-thrive-purple">
@@ -50,7 +57,7 @@ const WhatWouldChangeLookLike: React.FC<WhatWouldChangeLookLikeProps> = ({ onCom
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="bg-soft-purple border-purple-200 shadow-md">
+            <Card className="bg-white shadow-lg border border-purple-200">
               <CardContent className="p-6">
                 <div className="prose max-w-none text-purple-900">
                   <h2 className="text-2xl font-bold mb-6 text-thrive-purple">
@@ -71,7 +78,7 @@ const WhatWouldChangeLookLike: React.FC<WhatWouldChangeLookLikeProps> = ({ onCom
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="bg-soft-purple border-purple-200 shadow-md">
+            <Card className="bg-white shadow-lg border border-purple-200">
               <CardContent className="p-6">
                 <div className="prose max-w-none text-purple-900">
                   <h2 className="text-2xl font-bold mb-6 text-thrive-purple">
@@ -92,7 +99,7 @@ const WhatWouldChangeLookLike: React.FC<WhatWouldChangeLookLikeProps> = ({ onCom
                 </div>
                 <div className="mt-8 flex justify-end">
                   <Button 
-                    onClick={onComplete}
+                    onClick={handleComplete}
                     className="bg-thrive-purple hover:bg-thrive-purple/90 text-white"
                   >
                     Complete This Step

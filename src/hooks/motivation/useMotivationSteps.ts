@@ -75,8 +75,13 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
 
   // Wrapper for the mark step complete handler
   const markStepComplete = useCallback(async (stepId: number) => {
-    if (!user) return;
+    if (!user || !stepId || typeof stepId !== 'number') {
+      console.error('Invalid parameters for markStepComplete:', { userId: user?.id, stepId });
+      return;
+    }
 
+    console.log('useMotivationSteps.markStepComplete called with:', stepId);
+    
     await dbMarkStepComplete(
       user.id, 
       stepId, 
