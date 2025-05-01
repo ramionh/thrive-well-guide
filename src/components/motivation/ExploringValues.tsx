@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -66,7 +67,7 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
       <Carousel className="w-full">
         <CarouselContent>
           <CarouselItem>
-            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <Card className="p-6 bg-white shadow-lg border border-purple-200">
               <h3 className="text-2xl font-bold mb-4 text-purple-800">Understanding Your Values</h3>
               <p className="text-purple-700">
                 Your values help guide your decisions and actions. Identifying and
@@ -78,9 +79,9 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <Card className="p-6 bg-white shadow-lg border border-purple-200">
               <h3 className="text-2xl font-bold mb-4 text-purple-800">Select Your Core Values</h3>
-              <p className="mb-4 text-foreground/80">
+              <p className="mb-4 text-purple-700">
                 Circle those values that are most important to you. You decide how to define 
                 the meaning of each value.
               </p>
@@ -102,9 +103,9 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
           </CarouselItem>
 
           <CarouselItem>
-            <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+            <Card className="p-6 bg-white shadow-lg border border-purple-200">
               <h3 className="text-2xl font-bold mb-4 text-purple-800">Describe Your Values</h3>
-              <p className="mb-4 text-foreground/80">
+              <p className="mb-4 text-purple-700">
                 From the values you selected, describe what each means to you.
               </p>
               <div className="space-y-4">
@@ -115,7 +116,7 @@ const ExploringValues: React.FC<ExploringValuesProps> = ({ onComplete }) => {
                       value={valueDescriptions[value] || ''}
                       onChange={(e) => handleValueDescriptionChange(value, e.target.value)}
                       placeholder={`What does ${value} mean to you? Describe its importance...`}
-                      className="min-h-[100px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                      className="min-h-[100px] bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                     />
                   </div>
                 ))}

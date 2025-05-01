@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -32,18 +33,18 @@ const ExceptionsToRule: React.FC<ExceptionsToRuleProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border-2 border-purple-200">
             <h3 className="text-2xl font-bold mb-4 text-purple-800">Exceptions to the Rule</h3>
-            <p className="text-foreground/80 mb-4">
+            <p className="text-purple-700 mb-4">
               Think of a time you successfully faced one of the obstacles you identified:
             </p>
             
             {internalObstacles && internalObstacles.length > 0 && (
               <div className="mb-4">
                 <h4 className="font-medium mb-2 text-purple-800">Internal Obstacles:</h4>
-                <ul className="list-disc pl-6">
+                <ul className="list-disc pl-6 text-purple-700">
                   {internalObstacles.map((obstacle, index) => (
-                    <li key={index} className="text-foreground/70">{obstacle.excuse}</li>
+                    <li key={index}>{obstacle.excuse}</li>
                   ))}
                 </ul>
               </div>
@@ -52,9 +53,9 @@ const ExceptionsToRule: React.FC<ExceptionsToRuleProps> = ({ onComplete }) => {
             {externalObstacles && externalObstacles.length > 0 && (
               <div className="mb-4">
                 <h4 className="font-medium mb-2 text-purple-800">External Obstacles:</h4>
-                <ul className="list-disc pl-6">
+                <ul className="list-disc pl-6 text-purple-700">
                   {externalObstacles.map((obstacle, index) => (
-                    <li key={index} className="text-foreground/70">{obstacle.obstacle}</li>
+                    <li key={index}>{obstacle.obstacle}</li>
                   ))}
                 </ul>
               </div>
@@ -63,51 +64,56 @@ const ExceptionsToRule: React.FC<ExceptionsToRuleProps> = ({ onComplete }) => {
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border-2 border-purple-200">
             <h3 className="text-2xl font-bold mb-4 text-purple-800">Document Your Success</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">What did you do?</label>
+                <label className="block text-sm font-medium mb-2 text-purple-800">What did you do?</label>
                 <Textarea
                   value={formData.behavior}
                   onChange={(e) => setFormData(prev => ({ ...prev, behavior: e.target.value }))}
                   placeholder="Describe the behavior..."
+                  className="bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Who were you with?</label>
+                <label className="block text-sm font-medium mb-2 text-purple-800">Who were you with?</label>
                 <Textarea
                   value={formData.who}
                   onChange={(e) => setFormData(prev => ({ ...prev, who: e.target.value }))}
                   placeholder="Who was involved..."
+                  className="bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">When did this happen?</label>
+                <label className="block text-sm font-medium mb-2 text-purple-800">When did this happen?</label>
                 <Textarea
                   value={formData.when_context}
                   onChange={(e) => setFormData(prev => ({ ...prev, when_context: e.target.value }))}
                   placeholder="When did this occur..."
+                  className="bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Where were you and what was happening?</label>
+                <label className="block text-sm font-medium mb-2 text-purple-800">Where were you and what was happening?</label>
                 <Textarea
                   value={formData.where_what}
                   onChange={(e) => setFormData(prev => ({ ...prev, where_what: e.target.value }))}
                   placeholder="Describe the situation and location..."
+                  className="bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">What were you thinking and feeling?</label>
+                <label className="block text-sm font-medium mb-2 text-purple-800">What were you thinking and feeling?</label>
                 <Textarea
                   value={formData.thoughts_feelings}
                   onChange={(e) => setFormData(prev => ({ ...prev, thoughts_feelings: e.target.value }))}
                   placeholder="Describe your thoughts and feelings..."
+                  className="bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 

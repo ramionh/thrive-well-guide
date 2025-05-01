@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,7 +29,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
     <Carousel className="w-full">
       <CarouselContent>
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border-2 border-purple-200">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2 text-purple-800">
@@ -38,7 +39,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
                   value={formData.big_change}
                   onChange={(e) => setFormData(prev => ({ ...prev, big_change: e.target.value }))}
                   placeholder="Write your response here..."
-                  className="min-h-[100px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="min-h-[100px] bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
               
@@ -50,7 +51,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
                   value={formData.life_context}
                   onChange={(e) => setFormData(prev => ({ ...prev, life_context: e.target.value }))}
                   placeholder="Describe the context..."
-                  className="min-h-[100px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="min-h-[100px] bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
@@ -62,7 +63,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
                   value={formData.change_approach}
                   onChange={(e) => setFormData(prev => ({ ...prev, change_approach: e.target.value }))}
                   placeholder="Describe your approach..."
-                  className="min-h-[100px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="min-h-[100px] bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
             </div>
@@ -70,7 +71,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border-2 border-purple-200">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2 text-purple-800">
@@ -80,7 +81,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
                   value={formData.change_steps}
                   onChange={(e) => setFormData(prev => ({ ...prev, change_steps: e.target.value }))}
                   placeholder="List the steps..."
-                  className="min-h-[100px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="min-h-[100px] bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
@@ -92,7 +93,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
                   value={formData.current_feelings}
                   onChange={(e) => setFormData(prev => ({ ...prev, current_feelings: e.target.value }))}
                   placeholder="Share your feelings..."
-                  className="min-h-[100px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="min-h-[100px] bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
             </div>
@@ -100,7 +101,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
         </CarouselItem>
 
         <CarouselItem>
-          <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+          <Card className="p-6 bg-white shadow-lg border-2 border-purple-200">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2 text-purple-800">
@@ -110,7 +111,7 @@ const PastSuccess: React.FC<PastSuccessProps> = ({ onComplete }) => {
                   value={formData.help_achieve_goals}
                   onChange={(e) => setFormData(prev => ({ ...prev, help_achieve_goals: e.target.value }))}
                   placeholder="Share your thoughts..."
-                  className="min-h-[200px] bg-white/50 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="min-h-[200px] bg-white border-purple-200 focus:border-purple-400 focus:ring-purple-400"
                 />
               </div>
 
