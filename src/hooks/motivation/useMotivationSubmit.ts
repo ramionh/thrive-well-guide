@@ -73,9 +73,13 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
       const dataToSubmit: Record<string, any> = { 
         user_id: user.id,
         ...(transformData ? transformData(formData) : formData),
-        step_number: stepNumber,
-        step_name: stepName
       };
+      
+      // Only add step metadata if both are provided (to avoid schema errors)
+      if (stepNumber !== undefined && stepName) {
+        dataToSubmit.step_number = stepNumber;
+        dataToSubmit.step_name = stepName;
+      }
       
       console.log("Transformed data to submit:", dataToSubmit);
       
@@ -84,7 +88,23 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
         .from(tableName as any)
         .insert(dataToSubmit);
       
-      if (error) throw error;
+      if (error) {
+        console.error(`Error inserting data:`, error);
+        // If the error is related to step_name column, try again without it
+        if (error.message && error.message.includes("step_name")) {
+          console.log("Retrying without step_name and step_number columns");
+          delete dataToSubmit.step_name;
+          delete dataToSubmit.step_number;
+          
+          const retryResult = await supabase
+            .from(tableName as any)
+            .insert(dataToSubmit);
+            
+          if (retryResult.error) throw retryResult.error;
+        } else {
+          throw error;
+        }
+      }
       
       // Log progress to the steps_progress table to track completion
       if (stepNumber) {

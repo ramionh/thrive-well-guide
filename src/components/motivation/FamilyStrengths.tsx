@@ -59,6 +59,7 @@ const FamilyStrengths: React.FC<FamilyStrengthsProps> = ({ onComplete }) => {
     parseData,
     transformData,
     onSuccess: onComplete,
+    // This is the information used for tracking progress, not necessarily DB columns
     stepNumber: 52,
     nextStepNumber: 53,
     stepName: "Family Strengths",
