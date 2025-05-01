@@ -7,17 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import LoadingState from "./shared/LoadingState";
 import { Coins } from "lucide-react";
-import { parseFinancialResourcesData, parseStringField } from "@/hooks/motivation/parseFinancialResourcesData";
-
-interface FinancialResourcesFormData {
-  income: string;
-  job_stability: string;
-  workplace_benefits: string;
-  flexible_schedule: string;
-  job_satisfaction: string;
-  financial_feelings: string;
-  build_resources: string;
-}
+import { parseFinancialResourcesData, FinancialResourcesFormData } from "@/hooks/motivation/parseFinancialResourcesData";
 
 interface FinancialResourcesProps {
   onComplete?: () => void;
@@ -61,9 +51,9 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
       console.log("Financial resources raw data:", data);
 
       if (data) {
-        // Use our new parsing function
+        // Use our parser to handle the data
         const parsedData = parseFinancialResourcesData(data);
-        setFormData(parsedData as FinancialResourcesFormData);
+        setFormData(parsedData);
       }
     } catch (error) {
       console.error("Error fetching financial resources data:", error);

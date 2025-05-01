@@ -27,9 +27,22 @@ export const parseStringField = (value: any): string => {
 };
 
 /**
+ * Type definition for financial resources data
+ */
+export interface FinancialResourcesFormData {
+  income: string;
+  job_stability: string;
+  workplace_benefits: string;
+  flexible_schedule: string;
+  job_satisfaction: string;
+  financial_feelings: string;
+  build_resources: string;
+}
+
+/**
  * Function to parse financial resources data from the database
  */
-export const parseFinancialResourcesData = (data: any): Record<string, string> => {
+export const parseFinancialResourcesData = (data: any): FinancialResourcesFormData => {
   if (!data) {
     console.log("No financial resources data to parse");
     return {
@@ -47,7 +60,7 @@ export const parseFinancialResourcesData = (data: any): Record<string, string> =
     console.log("Parsing financial resources data:", data);
 
     // Create a clean data object with safer parsing
-    const cleanData: Record<string, string> = {
+    const cleanData: FinancialResourcesFormData = {
       income: parseStringField(data.income),
       job_stability: parseStringField(data.job_stability),
       workplace_benefits: parseStringField(data.workplace_benefits),
