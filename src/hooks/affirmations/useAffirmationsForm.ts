@@ -5,7 +5,7 @@ import { useAffirmationsData } from "./useAffirmationsData";
 import { useSaveAffirmations } from "./useSaveAffirmations";
 
 export const useAffirmationsForm = (onComplete?: () => void): UseAffirmationsFormResult => {
-  const { affirmations: initialAffirmations, setAffirmations, isLoading, refresh } = useAffirmationsData();
+  const { affirmations: initialAffirmations, setAffirmations, isLoading } = useAffirmationsData();
   const [affirmations, setLocalAffirmations] = useState<AffirmationItem[]>(initialAffirmations);
   const { isSaving, saveAffirmations: saveToDb } = useSaveAffirmations(affirmations, onComplete);
   
@@ -33,8 +33,6 @@ export const useAffirmationsForm = (onComplete?: () => void): UseAffirmationsFor
 
   const saveAffirmations = async () => {
     await saveToDb();
-    // Refresh the data after saving to ensure UI is in sync with database
-    refresh();
   };
 
   return {
