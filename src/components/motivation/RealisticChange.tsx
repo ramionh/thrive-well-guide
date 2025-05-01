@@ -20,12 +20,15 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
     formData,
     isLoading,
     isSaving,
+    error,
     updateForm,
     submitForm
   } = useMotivationForm({
     tableName: "motivation_realistic_change",
     initialState,
     onSuccess: onComplete,
+    stepNumber: 58, // Adding explicit step number
+    stepName: "Realistic Change",
     transformData: (data) => {
       return {
         realistic_change: data.realisticChange
@@ -34,7 +37,7 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
     parseData: (data) => {
       console.log("Raw data from Realistic Change:", data);
       return {
-        realisticChange: data.realistic_change || ""
+        realisticChange: data?.realistic_change || ""
       };
     }
   });
@@ -46,6 +49,19 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
 
   if (isLoading) {
     return <LoadingState />;
+  }
+  
+  if (error) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="px-0">
+          <div className="p-6 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error.message}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
