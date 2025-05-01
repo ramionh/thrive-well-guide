@@ -26,6 +26,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const isSubmitting = useRef(false);
+  const hasCompletedSubmission = useRef(false);
   
   const { 
     onSuccess, 
@@ -39,6 +40,14 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
    * Submit form data to the database
    */
   const submitForm = async (formData: T) => {
+    if (hasCompletedSubmission.current) {
+      console.log(`useMotivationSubmit: Submission already completed for ${tableName}, skipping`);
+      // If the user is trying to submit again after a successful submission,
+      // just trigger the onSuccess callback again
+      if (onSuccess) onSuccess();
+      return;
+    }
+
     if (isSubmitting.current) {
       console.log(`useMotivationSubmit: Submission already in progress for ${tableName}, skipping`);
       return;
@@ -89,6 +98,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
           : "Your progress has been saved.",
       });
       
+      hasCompletedSubmission.current = true;
       if (onSuccess) {
         onSuccess();
       }
@@ -116,7 +126,8 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
         user_id: user.id,
         step_number: stepNum,
         step_name: name || `Step ${stepNum}`,
-        completed: true
+        completed: true,
+        completed_at: new Date().toISOString()
       });
       
       if (error && error.code !== '23505') { // Ignore unique constraint violations (step already logged)

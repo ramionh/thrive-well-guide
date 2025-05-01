@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,8 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     successfulChange: "",
     howItWorked: ""
   };
+  
+  const didInitialFetch = useRef(false);
 
   const { 
     formData, 
@@ -49,10 +51,13 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     }
   });
 
-  // Add useEffect to ensure data is fetched on component mount
+  // Only fetch data once on component mount
   useEffect(() => {
-    console.log("EnvisioningChange: Fetching data on mount");
-    fetchData();
+    if (!didInitialFetch.current) {
+      console.log("EnvisioningChange: Fetching data on mount");
+      fetchData();
+      didInitialFetch.current = true;
+    }
   }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {

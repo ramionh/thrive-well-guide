@@ -19,8 +19,15 @@ export const useMotivationData = <T extends Record<string, any>>(
   const [error, setError] = useState<Error | null>(null);
   const isMounted = useRef(true);
   const fetchInProgress = useRef(false);
+  const hasAttemptedFetch = useRef(false);
 
   const fetchData = useCallback(async () => {
+    // Only run once per component lifecycle
+    if (hasAttemptedFetch.current) {
+      console.log(`useMotivationData: Already attempted fetch for ${tableName}, using cached data`);
+      return;
+    }
+    
     // Prevent multiple simultaneous fetches
     if (fetchInProgress.current) {
       console.log(`useMotivationData: Fetch already in progress for ${tableName}, skipping`);
@@ -36,6 +43,7 @@ export const useMotivationData = <T extends Record<string, any>>(
     console.log(`useMotivationData: Fetching data for ${tableName}, user ${user.id}`);
     setIsLoading(true);
     fetchInProgress.current = true;
+    hasAttemptedFetch.current = true;
     
     try {
       // Use 'as any' to bypass TypeScript's strict table name checking
@@ -117,9 +125,13 @@ export const useMotivationData = <T extends Record<string, any>>(
     }
   }, [user, tableName, initialState, parseData, toast]);
 
+  // Reset hasAttemptedFetch when user changes
+  useEffect(() => {
+    hasAttemptedFetch.current = false;
+  }, [user?.id]);
+
   // Set up cleanup when component unmounts
   useEffect(() => {
-    // Set isMounted ref for cleanup
     return () => {
       isMounted.current = false;
     };
