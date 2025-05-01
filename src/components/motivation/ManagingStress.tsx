@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reflections, setReflections] = useState("");
+  const [recordId, setRecordId] = useState<string | null>(null);
   
   // Fetch existing reflections when component mounts
   useEffect(() => {
@@ -30,7 +30,7 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
         
         const { data, error } = await supabase
           .from('stress_management_reflections')
-          .select('reflections')
+          .select('id, reflections')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(1)
@@ -38,8 +38,9 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
         
         if (error) throw error;
         
-        if (data && data.reflections) {
-          setReflections(data.reflections);
+        if (data) {
+          setRecordId(data.id);
+          setReflections(data.reflections || "");
         }
       } catch (error) {
         console.error("Error fetching stress management reflections:", error);
@@ -64,41 +65,28 @@ const ManagingStress: React.FC<ManagingStressProps> = ({ onComplete }) => {
     try {
       setIsSubmitting(true);
       
-      // Check if a record already exists
-      const { data: existingData, error: queryError } = await supabase
-        .from('stress_management_reflections')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (queryError) throw queryError;
-      
-      let saveError;
-      
-      if (existingData && existingData.id) {
-        // Update existing record
+      // If we have a record ID, update the existing record
+      if (recordId) {
         const { error } = await supabase
           .from('stress_management_reflections')
           .update({
             reflections: reflections,
             updated_at: new Date().toISOString()
           })
-          .eq('id', existingData.id);
-        
-        saveError = error;
+          .eq('id', recordId);
+          
+        if (error) throw error;
       } else {
-        // Insert new record
+        // Otherwise insert a new record
         const { error } = await supabase
           .from('stress_management_reflections')
           .insert({
             user_id: user.id,
             reflections: reflections
           });
-        
-        saveError = error;
+          
+        if (error) throw error;
       }
-      
-      if (saveError) throw saveError;
       
       toast({
         title: "Success",
