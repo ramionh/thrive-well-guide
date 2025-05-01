@@ -27,7 +27,7 @@ const ExcuseInput: React.FC<ExcuseProps> = ({ excuse, index, onChange }) => {
 };
 
 interface ObstaclesFormProps {
-  goal?: { title: string } | null;
+  goal?: { current_body_type?: { name: string }; goal_body_type?: { name: string } } | null;
   excuses: string[];
   isStepCompleted: boolean;
   onExcuseChange: (index: number, value: string) => void;
@@ -42,6 +42,11 @@ const ObstaclesForm: React.FC<ObstaclesFormProps> = ({
   onSave
 }) => {
   const hasAtLeastOneExcuse = excuses.some(e => e.trim() !== '');
+  
+  // Create a readable goal text from the goal object
+  const goalText = goal ? 
+    `transform from ${goal.current_body_type?.name || ''} to ${goal.goal_body_type?.name || ''}` : 
+    "your fitness goal";
 
   return (
     <Card className="bg-white shadow-lg border-2 border-purple-300">
@@ -51,7 +56,7 @@ const ObstaclesForm: React.FC<ObstaclesFormProps> = ({
         <div className="mb-6">
           <p className="text-purple-900/80 mb-4">
             What thoughts might get in the way of achieving your goal:
-            <span className="font-medium text-purple-700"> {goal?.title || "your fitness goal"}</span>?
+            <span className="font-medium text-purple-700"> {goalText}</span>?
           </p>
           <p className="text-purple-900/80 mb-4">
             List at least one but up to five excuses, rationalizations, or other things you tell yourself
