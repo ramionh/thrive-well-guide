@@ -33,6 +33,9 @@ const Motivation = () => {
     }))
   );
 
+  // Check if final step is completed
+  const isFinalStepCompleted = steps.some(step => step.id === 91 && step.completed);
+
   if (showSplash) {
     return <MotivationSplash onContinue={() => setShowSplash(false)} />;
   }
@@ -44,6 +47,15 @@ const Motivation = () => {
   return (
     <ErrorBoundary>
       <div className="flex flex-col md:flex-row gap-6">
+        {isFinalStepCompleted && currentStepId === 91 && (
+          <div className="w-full mb-4 bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+            <h2 className="text-xl font-bold text-green-800">Congratulations!</h2>
+            <p className="text-green-700">
+              You've completed your motivation journey! You can now continue to apply what you've learned.
+            </p>
+          </div>
+        )}
+        
         <MotivationStepsSidebar
           steps={steps}
           currentStepId={currentStepId}

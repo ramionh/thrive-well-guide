@@ -44,6 +44,14 @@ export const useStepNavigation = (initialSteps: Step[]) => {
       ...defaultCompletedSteps
     ];
     
+    // Check if the final step (91) is completed
+    const isFinalStepCompleted = progressData.some(p => p.step_number === 91 && p.completed);
+    
+    // If final step is completed, set to that step
+    if (isFinalStepCompleted) {
+      return 91;
+    }
+    
     // Normal progression logic - set to last completed + 1 or first step
     if (completedSteps.length > 0) {
       const maxCompletedStep = Math.max(...completedSteps);
@@ -77,6 +85,19 @@ export const useStepNavigation = (initialSteps: Step[]) => {
    * Moves to the next step if available
    */
   const moveToNextStep = useCallback((currentId: number, steps: Step[]) => {
+    // Check if current step is the final step (91)
+    if (currentId === 91) {
+      // No next step after final step, stay on the same step
+      return false;
+    }
+    
+    // Handle special jumps defined in step configuration
+    const currentStepConfig = steps.find(step => step.id === currentId) as any;
+    if (currentStepConfig && currentStepConfig.nextStepNumber) {
+      setCurrentStepId(currentStepConfig.nextStepNumber);
+      return true;
+    }
+    
     const nextStepId = currentId + 1;
     if (steps.some(step => step.id === nextStepId)) {
       setCurrentStepId(nextStepId);

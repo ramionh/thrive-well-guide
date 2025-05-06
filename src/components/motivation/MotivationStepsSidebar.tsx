@@ -28,7 +28,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   // Define step ranges for each section based on visible steps
   const startingPointSteps = visibleSteps.filter(step => step.id < 18);
   const chartingPathSteps = visibleSteps.filter(step => step.id >= 18 && step.id < 62);
-  const activeChangeSteps = visibleSteps.filter(step => step.id >= 62);
+  // Updated range to include step 91
+  const activeChangeSteps = visibleSteps.filter(step => (step.id >= 62 && step.id <= 91));
   
   // Find the highest completed step ID to determine navigation permissions
   const highestCompletedStepId = steps
@@ -44,11 +45,22 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
     );
   };
   
+  // Check if the final step (91) is completed
+  const isFinalStepCompleted = steps.some(step => step.id === 91 && step.completed);
+  
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
       <Card className="bg-white shadow-md border border-purple-100">
         <CardContent className="p-4">
-          <h3 className="text-lg font-semibold mb-4 text-purple-800">Your Progress</h3>
+          <h3 className="text-lg font-semibold mb-4 text-purple-800">
+            {isFinalStepCompleted ? (
+              <span className="flex items-center">
+                Your Progress <CheckCircle className="ml-2 h-5 w-5 text-green-500" />
+              </span>
+            ) : (
+              "Your Progress"
+            )}
+          </h3>
           <Accordion type="single" collapsible defaultValue="active-change">
             <AccordionItem value="starting-point">
               <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">
@@ -150,7 +162,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
 
             <AccordionItem value="active-change">
               <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">
-                Active Change
+                Active Change {isFinalStepCompleted && <CheckCircle className="ml-1 h-4 w-4 text-green-500 inline" />}
               </AccordionTrigger>
               <AccordionContent>
                 {chartingPathSteps.some(step => step.completed) ? (
@@ -158,8 +170,8 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                     <ul className="space-y-3">
                       {activeChangeSteps.map((step) => {
                         const isActive = step.id === currentStepId;
-                        // Updated logic to include available flag
                         const isDisabled = !isStepEnabled(step);
+                        const isFinalStep = step.id === 91;
                         
                         return (
                           <li key={step.id}>
@@ -169,21 +181,25 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                               className={`flex items-center p-3 w-full rounded-lg transition-colors text-left
                                 ${isActive ? 'bg-purple-100 text-purple-800 font-medium' : ''}
                                 ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-50'}
+                                ${isFinalStep && step.completed ? 'border-2 border-green-300' : ''}
                               `}
                             >
                               <div className="mr-3 flex-shrink-0">
                                 {step.completed ? (
-                                  <CheckCircle className="h-5 w-5 text-green-500" />
+                                  <CheckCircle className={`h-5 w-5 ${isFinalStep ? 'text-green-600' : 'text-green-500'}`} />
                                 ) : (
                                   <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs
                                     ${isActive ? 'bg-purple-600 text-white' : 'bg-gray-300 text-gray-700'}
+                                    ${isFinalStep ? 'ring-2 ring-purple-300' : ''}
                                   `}>
                                     {step.id}
                                   </div>
                                 )}
                               </div>
                               <div>
-                                <div className="font-medium text-purple-900">{step.title}</div>
+                                <div className={`font-medium ${isFinalStep ? 'text-purple-900' : 'text-purple-900'}`}>
+                                  {step.title}
+                                </div>
                                 <div className="text-sm text-purple-600">{step.description}</div>
                               </div>
                             </button>
