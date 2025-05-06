@@ -248,7 +248,13 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                           const matchingStep = steps.find(s => s.id === expectedStep.id);
                           const isActive = expectedStep.id === currentStepId;
                           const isCompleted = matchingStep?.completed || false;
-                          const isDisabled = !isStepEnabled(matchingStep || { id: expectedStep.id, title: expectedStep.title, completed: false });
+                          const isDisabled = !isStepEnabled(matchingStep || {
+                            id: expectedStep.id,
+                            title: expectedStep.title,
+                            description: "",
+                            component: null,
+                            completed: false
+                          });
                           const isFinalStep = expectedStep.id === 91;
                           
                           return (
