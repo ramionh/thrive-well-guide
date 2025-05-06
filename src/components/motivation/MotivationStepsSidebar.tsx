@@ -28,7 +28,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   // Define step ranges for each section based on visible steps
   const startingPointSteps = visibleSteps.filter(step => step.id < 18);
   const chartingPathSteps = visibleSteps.filter(step => step.id >= 18 && step.id < 62);
-  // Make sure we include step 91 in the Active Change section
+  // Make sure we include step 91 (Final Word) in the Active Change section
   const activeChangeSteps = visibleSteps.filter(step => (step.id >= 62 && step.id <= 91));
   
   // Find the highest completed step ID to determine navigation permissions
@@ -47,6 +47,9 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   
   // Check if the final step (91) is completed
   const isFinalStepCompleted = steps.some(step => step.id === 91 && step.completed);
+
+  // Sort the activeChangeSteps to ensure they appear in the correct order
+  const sortedActiveChangeSteps = [...activeChangeSteps].sort((a, b) => a.id - b.id);
   
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
@@ -166,9 +169,9 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
               </AccordionTrigger>
               <AccordionContent>
                 {chartingPathSteps.some(step => step.completed) ? (
-                  <ScrollArea className="h-[250px] pr-4">
+                  <ScrollArea className="h-[350px] pr-4">
                     <ul className="space-y-3">
-                      {activeChangeSteps.map((step) => {
+                      {sortedActiveChangeSteps.map((step) => {
                         const isActive = step.id === currentStepId;
                         const isDisabled = !isStepEnabled(step);
                         const isFinalStep = step.id === 91;
