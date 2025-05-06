@@ -33,7 +33,7 @@ const MakingGoalMeasurable: React.FC<MakingGoalMeasurableProps> = ({ onComplete 
         .eq('user_id', user.id)
         .order('selected_date', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') {
         console.error("Error fetching current metrics:", error);
@@ -65,6 +65,13 @@ const MakingGoalMeasurable: React.FC<MakingGoalMeasurableProps> = ({ onComplete 
         measurable_goal: data.measurable_goal || "",
         goal_weight_lbs: data.goal_weight_lbs,
         goal_bodyfat_percentage: data.goal_bodyfat_percentage
+      };
+    },
+    transformData: (formData) => {
+      return {
+        measurable_goal: measurableGoal,
+        goal_weight_lbs: goalWeight ? parseFloat(goalWeight) : null,
+        goal_bodyfat_percentage: goalBodyfat ? parseFloat(goalBodyfat) : null
       };
     },
     onSuccess: onComplete,

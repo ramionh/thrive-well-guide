@@ -75,51 +75,43 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
         ...(transformData ? transformData(formData) : formData),
       };
       
-      // First, check if the table has step_name and step_number columns
-      // by sending a dummy query to retrieve the table structure
-      const { data: tableInfo, error: tableInfoError } = await supabase
+      console.log("Transformed data to submit:", baseData);
+      
+      // First, check if a record already exists for this user
+      const { data: existingData, error: findError } = await supabase
         .from(tableName as any)
-        .select('*')
-        .limit(1);
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
       
-      const hasStepColumns = tableInfoError 
-        ? false  // If there was an error, assume columns don't exist
-        : (tableInfo && tableInfo.length > 0 
-          ? 'step_name' in tableInfo[0] && 'step_number' in tableInfo[0] 
-          : false);
-      
-      // Only add step metadata if table has those columns and both values are provided
-      let dataToSubmit: Record<string, any> = { ...baseData };
-      
-      if (hasStepColumns && stepNumber !== undefined && stepName) {
-        dataToSubmit.step_number = stepNumber;
-        dataToSubmit.step_name = stepName;
+      if (findError && findError.code !== 'PGRST116') {
+        console.error(`Error checking for existing data:`, findError);
+        throw findError;
       }
       
-      console.log("Transformed data to submit:", dataToSubmit);
+      let result;
       
-      // Use 'as any' to bypass TypeScript's strict table name checking
-      const { error } = await supabase
-        .from(tableName as any)
-        .insert(dataToSubmit);
+      if (existingData) {
+        // If record exists, update it
+        console.log(`Found existing record for ${tableName}, updating...`);
+        result = await supabase
+          .from(tableName as any)
+          .update({
+            ...baseData,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id);
+      } else {
+        // If no record exists, insert a new one
+        console.log(`No existing record found for ${tableName}, inserting...`);
+        result = await supabase
+          .from(tableName as any)
+          .insert(baseData);
+      }
       
-      if (error) {
-        console.error(`Error inserting data:`, error);
-        
-        // If the error is related to column issues, try again without step tracking columns
-        if (error.message && (error.message.includes("step_name") || error.message.includes("step_number"))) {
-          console.log("Retrying without step_name and step_number columns");
-          delete dataToSubmit.step_name;
-          delete dataToSubmit.step_number;
-          
-          const retryResult = await supabase
-            .from(tableName as any)
-            .insert(dataToSubmit);
-            
-          if (retryResult.error) throw retryResult.error;
-        } else {
-          throw error;
-        }
+      if (result.error) {
+        console.error(`Error saving data:`, result.error);
+        throw result.error;
       }
       
       // Log progress to the steps_progress table to track completion
@@ -158,23 +150,50 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
     if (!user) return;
     
     try {
-      // Instead of insert, use upsert to handle the case where a record already exists
-      // This will ensure we update existing records rather than trying to create duplicates
-      const { error } = await supabase.from("motivation_steps_progress").upsert({
-        user_id: user.id,
-        step_number: stepNum,
-        step_name: name || `Step ${stepNum}`,
-        completed: true,
-        completed_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,step_number'  // Specify the columns that determine a unique record
-      });
+      console.log(`Marking step ${stepNum} (${name}) as completed and making next step available...`);
+      
+      // Mark current step as completed
+      const { error } = await supabase
+        .from("motivation_steps_progress")
+        .upsert({
+          user_id: user.id,
+          step_number: stepNum,
+          step_name: name || `Step ${stepNum}`,
+          completed: true,
+          available: true,
+          completed_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,step_number'
+        });
       
       if (error) {
-        console.error("Error logging step progress:", error);
-        // Don't throw the error to prevent breaking the form submission
+        console.error("Error marking step as completed:", error);
       } else {
         console.log(`Successfully marked step ${stepNum} (${name}) as completed`);
+      }
+      
+      // Make next step available if specified
+      if (nextStepNumber) {
+        console.log(`Making next step ${nextStepNumber} available...`);
+        
+        const { error: nextStepError } = await supabase
+          .from("motivation_steps_progress")
+          .upsert({
+            user_id: user.id,
+            step_number: nextStepNumber,
+            step_name: nextStepName || `Step ${nextStepNumber}`,
+            completed: false,
+            available: true,
+            completed_at: null
+          }, {
+            onConflict: 'user_id,step_number'
+          });
+        
+        if (nextStepError) {
+          console.error(`Error making step ${nextStepNumber} available:`, nextStepError);
+        } else {
+          console.log(`Successfully made step ${nextStepNumber} available`);
+        }
       }
     } catch (err) {
       console.error("Failed to log step progress:", err);

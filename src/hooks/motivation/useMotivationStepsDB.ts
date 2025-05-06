@@ -36,6 +36,7 @@ export const useMotivationStepsDB = () => {
         }
       }
 
+      console.log('Fetched step progress:', data);
       return { data, error: null };
     } catch (error) {
       console.error('Error in fetchStepProgress:', error);
@@ -81,6 +82,8 @@ export const useMotivationStepsDB = () => {
       
       // Look for the next step number in the configuration
       const currentStepConfig = stepsData.find(s => s.id === stepNumber);
+      
+      // First check if there's an explicitly defined next step in the step config
       const nextStepNumber = currentStepConfig && (currentStepConfig as any).nextStepNumber 
         ? (currentStepConfig as any).nextStepNumber 
         : stepNumber + 1;
