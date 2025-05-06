@@ -810,9 +810,11 @@ export type Database = {
         Row: {
           created_at: string
           emotion_focused: string[]
+          emotion_focused_other: string | null
           id: string
           implementation: string | null
           problem_focused: string[]
+          problem_focused_other: string | null
           stress_level: number
           updated_at: string
           user_id: string
@@ -820,9 +822,11 @@ export type Database = {
         Insert: {
           created_at?: string
           emotion_focused?: string[]
+          emotion_focused_other?: string | null
           id?: string
           implementation?: string | null
           problem_focused?: string[]
+          problem_focused_other?: string | null
           stress_level: number
           updated_at?: string
           user_id: string
@@ -830,9 +834,11 @@ export type Database = {
         Update: {
           created_at?: string
           emotion_focused?: string[]
+          emotion_focused_other?: string | null
           id?: string
           implementation?: string | null
           problem_focused?: string[]
+          problem_focused_other?: string | null
           stress_level?: number
           updated_at?: string
           user_id?: string

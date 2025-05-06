@@ -60,7 +60,8 @@ const DealingWithSetbacksStressCheck: React.FC<DealingWithSetbacksStressCheckPro
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    fetchData 
   } = useMotivationForm({
     tableName: "motivation_dealing_setbacks_stress_check",
     initialState: {
@@ -74,9 +75,31 @@ const DealingWithSetbacksStressCheck: React.FC<DealingWithSetbacksStressCheckPro
     onSuccess: onComplete
   });
 
-  // Track other input values
-  const [problemFocusedOther, setProblemFocusedOther] = useState<string>(formData.problem_focused_other || "");
-  const [emotionFocusedOther, setEmotionFocusedOther] = useState<string>(formData.emotion_focused_other || "");
+  // Initialize state from formData or empty values
+  const [problemFocusedOther, setProblemFocusedOther] = useState<string>(
+    formData.problem_focused_other || ""
+  );
+  
+  const [emotionFocusedOther, setEmotionFocusedOther] = useState<string>(
+    formData.emotion_focused_other || ""
+  );
+
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+  
+  React.useEffect(() => {
+    if (formData) {
+      // Update local state when formData changes
+      if (formData.problem_focused_other !== undefined) {
+        setProblemFocusedOther(formData.problem_focused_other);
+      }
+      
+      if (formData.emotion_focused_other !== undefined) {
+        setEmotionFocusedOther(formData.emotion_focused_other);
+      }
+    }
+  }, [formData]);
 
   const toggleProblemFocused = (mechanism: string) => {
     const currentMechanisms = formData.problem_focused || [];
@@ -111,6 +134,10 @@ const DealingWithSetbacksStressCheck: React.FC<DealingWithSetbacksStressCheckPro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Update form data with current "Other" values
+    updateForm("problem_focused_other", problemFocusedOther);
+    updateForm("emotion_focused_other", emotionFocusedOther);
+    
     // Add "Other" values to the respective arrays if they are filled
     const finalFormData = { ...formData };
     
@@ -119,6 +146,7 @@ const DealingWithSetbacksStressCheck: React.FC<DealingWithSetbacksStressCheckPro
       const currentProblemFocused = formData.problem_focused || [];
       if (!currentProblemFocused.includes(otherEntry)) {
         finalFormData.problem_focused = [...currentProblemFocused, otherEntry];
+        updateForm("problem_focused", finalFormData.problem_focused);
       }
     }
     
@@ -127,16 +155,9 @@ const DealingWithSetbacksStressCheck: React.FC<DealingWithSetbacksStressCheckPro
       const currentEmotionFocused = formData.emotion_focused || [];
       if (!currentEmotionFocused.includes(otherEntry)) {
         finalFormData.emotion_focused = [...currentEmotionFocused, otherEntry];
+        updateForm("emotion_focused", finalFormData.emotion_focused);
       }
     }
-    
-    // Update form data before submission
-    updateForm("problem_focused", finalFormData.problem_focused);
-    updateForm("emotion_focused", finalFormData.emotion_focused);
-    
-    // Store the other values separately for easier retrieval
-    updateForm("problem_focused_other", problemFocusedOther);
-    updateForm("emotion_focused_other", emotionFocusedOther);
     
     submitForm();
   };
