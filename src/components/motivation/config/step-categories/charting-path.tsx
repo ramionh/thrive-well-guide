@@ -47,7 +47,7 @@ import YouHaveWhatItTakes from "../../YouHaveWhatItTakes";
 
 import type { StepConfig } from "../../types/motivation";
 
-export const chartingPathSteps: StepConfig[] = [
+export const chartingYourPathSteps: StepConfig[] = [
   {
     id: 18,
     title: "Exploring Change",
