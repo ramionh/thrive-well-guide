@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -111,7 +110,7 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
     stepNumber: 65,
     nextStepNumber: 66,
     stepName: "Developing Objectives for Your Goal",
-    nextStepName: "Getting Ready for Change"
+    nextStepName: "Getting Ready for Change" // This is actually the next step in the navigation
   });
   
   useEffect(() => {

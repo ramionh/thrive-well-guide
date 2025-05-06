@@ -76,9 +76,9 @@ const MakingGoalMeasurable: React.FC<MakingGoalMeasurableProps> = ({ onComplete 
     },
     onSuccess: onComplete,
     stepNumber: 67,
-    nextStepNumber: 65,
+    nextStepNumber: 65,  // This points to the Developing Objectives step
     stepName: "Making Your Goal Measurable",
-    nextStepName: "Identifying the Steps to Reach Your Goal"
+    nextStepName: "Developing Objectives for Your Goal"
   });
   
   useEffect(() => {
