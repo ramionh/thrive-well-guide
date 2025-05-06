@@ -12,8 +12,8 @@ export const rewardsSteps: StepConfig[] = [
     title: "Rewards Create an Incentive to Change",
     description: "How rewards strengthen motivation",
     component: (onComplete) => <RewardsCreateIncentive onComplete={onComplete} />,
-    nextStepNumber: 69,
-    nextStepName: "Rewards from People Who Matter",
+    nextStepNumber: 67,
+    nextStepName: "Narrowing Down Rewards",
     stepName: "Rewards Create an Incentive to Change"
   },
   {
@@ -21,6 +21,8 @@ export const rewardsSteps: StepConfig[] = [
     title: "Narrowing Down Rewards",
     description: "Selecting your top motivating rewards",
     component: (onComplete) => <NarrowingDownRewards onComplete={onComplete} />,
+    nextStepNumber: 68,
+    nextStepName: "Rewards: Events and Activities",
     stepName: "Narrowing Down Rewards"
   },
   {
@@ -28,6 +30,8 @@ export const rewardsSteps: StepConfig[] = [
     title: "Rewards: Events and Activities",
     description: "Using activities as motivation",
     component: (onComplete) => <RewardsEventsActivities onComplete={onComplete} />,
+    nextStepNumber: 69,
+    nextStepName: "Rewards from People Who Matter", 
     stepName: "Rewards: Events and Activities"
   },
   {
@@ -35,6 +39,8 @@ export const rewardsSteps: StepConfig[] = [
     title: "Rewards from People Who Matter",
     description: "Social support as motivation",
     component: (onComplete) => <RewardsFromPeopleWhoMatter onComplete={onComplete} />,
+    nextStepNumber: 91,
+    nextStepName: "A Final Word: Your Fitness Journey Begins Now!",
     stepName: "Rewards from People Who Matter"
   },
   {
