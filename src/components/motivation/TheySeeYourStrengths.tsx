@@ -20,7 +20,9 @@ const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete 
   } = useMotivationForm({
     tableName: "motivation_strengths_feedback",
     initialState: {
-      feedback_entries: []
+      feedback_entries: [],
+      strengths_others_see: "",
+      leverage_strengths: ""
     },
     onSuccess: onComplete
   });
