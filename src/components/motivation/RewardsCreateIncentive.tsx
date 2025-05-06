@@ -34,7 +34,7 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
     },
     onSuccess: onComplete,
     stepNumber: 67,
-    nextStepNumber: 69,  // Set to 69 as the next available step
+    nextStepNumber: 69,  // Set to 69 as the next step (Rewards from People Who Matter)
     stepName: "Rewards Create an Incentive to Change",
     nextStepName: "Rewards from People Who Matter"
   });
