@@ -30,9 +30,26 @@ const WhereAreYouNow: React.FC<WhereAreYouNowProps> = ({ onComplete }) => {
     },
     parseData: (data) => {
       console.log("Raw data from Where Are You Now:", data);
+      // Ensure we properly extract the numeric readiness_rating
+      const readinessRating = typeof data.readiness_rating === 'number' 
+        ? data.readiness_rating 
+        : 5;
+      
+      // Ensure we properly extract the string progress_summary
+      const progressSummary = typeof data.progress_summary === 'string'
+        ? data.progress_summary
+        : "";
+        
       return {
-        readiness_rating: data.readiness_rating || 5,
-        progress_summary: data.progress_summary || ""
+        readiness_rating: readinessRating,
+        progress_summary: progressSummary
+      };
+    },
+    transformData: (formData) => {
+      // Convert form data to database format
+      return {
+        readiness_rating: readinessRating,
+        progress_summary: progressSummary
       };
     },
     onSuccess: onComplete,
@@ -48,15 +65,32 @@ const WhereAreYouNow: React.FC<WhereAreYouNowProps> = ({ onComplete }) => {
   
   useEffect(() => {
     if (formData) {
-      setReadinessRating(formData.readiness_rating || 5);
-      setProgressSummary(formData.progress_summary || "");
+      // Parse the readiness_rating properly, ensuring it's a number
+      if (typeof formData.readiness_rating === 'number') {
+        setReadinessRating(formData.readiness_rating);
+      } else if (formData.readiness_rating) {
+        // Try to parse it as a number if it's not already
+        const parsedRating = parseInt(formData.readiness_rating.toString(), 10);
+        if (!isNaN(parsedRating)) {
+          setReadinessRating(parsedRating);
+        }
+      }
+      
+      // Set the progress_summary
+      if (formData.progress_summary) {
+        setProgressSummary(formData.progress_summary);
+      }
     }
   }, [formData]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Update the form data with the current component state
     updateForm("readiness_rating", readinessRating);
     updateForm("progress_summary", progressSummary);
+    
+    // Submit the form to save to database
     submitForm();
   };
   
