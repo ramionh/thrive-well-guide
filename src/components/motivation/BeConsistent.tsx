@@ -51,15 +51,48 @@ const BeConsistent: React.FC<BeConsistentProps> = ({ onComplete }) => {
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    fetchData 
   } = useMotivationForm({
     tableName: "motivation_be_consistent",
     initialState: {
       consistent_activities: "",
       daily_schedule: {}
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      console.log("Raw data from motivation_be_consistent:", data);
+      
+      let parsedData = {
+        consistent_activities: data.consistent_activities || "",
+        daily_schedule: data.daily_schedule || {}
+      };
+      
+      return parsedData;
+    },
+    transformData: (formData) => {
+      // Convert time slots array to object for storage
+      const scheduleObject: Record<string, string> = {};
+      timeSlots.forEach(slot => {
+        if (slot.activity.trim() !== "") {
+          scheduleObject[slot.time] = slot.activity;
+        }
+      });
+      
+      return {
+        consistent_activities: consistentActivities,
+        daily_schedule: scheduleObject
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 72,
+    nextStepNumber: 73,
+    stepName: "Be Consistent",
+    nextStepName: "Get Organized"
   });
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     if (formData) {
@@ -68,6 +101,8 @@ const BeConsistent: React.FC<BeConsistentProps> = ({ onComplete }) => {
       }
       
       if (formData.daily_schedule && Object.keys(formData.daily_schedule).length > 0) {
+        console.log("Setting timeslots from daily_schedule:", formData.daily_schedule);
+        
         const savedTimeSlots = [...timeSlots];
         
         Object.entries(formData.daily_schedule).forEach(([time, activity]) => {
@@ -90,17 +125,6 @@ const BeConsistent: React.FC<BeConsistentProps> = ({ onComplete }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Convert time slots array to object for storage
-    const scheduleObject: Record<string, string> = {};
-    timeSlots.forEach(slot => {
-      if (slot.activity.trim() !== "") {
-        scheduleObject[slot.time] = slot.activity;
-      }
-    });
-    
-    updateForm("consistent_activities", consistentActivities);
-    updateForm("daily_schedule", scheduleObject);
     submitForm();
   };
 

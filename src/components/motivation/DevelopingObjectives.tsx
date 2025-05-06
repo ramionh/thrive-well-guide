@@ -83,8 +83,28 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
       objectives: Array(5).fill("")
     },
     parseData: (data) => {
+      console.log("Raw data from motivation_goal_objectives:", data);
+      
+      let parsedObjectives: string[];
+      
+      if (Array.isArray(data.objectives)) {
+        parsedObjectives = data.objectives;
+        // Ensure we have 5 items
+        if (parsedObjectives.length < 5) {
+          parsedObjectives = [...parsedObjectives, ...Array(5 - parsedObjectives.length).fill("")];
+        }
+      } else {
+        console.log("objectives is not an array or is missing, using default empty array");
+        parsedObjectives = Array(5).fill("");
+      }
+      
       return {
-        objectives: data.objectives || Array(5).fill("")
+        objectives: parsedObjectives
+      };
+    },
+    transformData: (formData) => {
+      return {
+        objectives: objectives
       };
     },
     onSuccess: onComplete,
@@ -93,6 +113,17 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
     stepName: "Developing Objectives for Your Goal",
     nextStepName: "Getting Ready for Change"
   });
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+  
+  useEffect(() => {
+    if (formData && Array.isArray(formData.objectives)) {
+      console.log("Setting objectives from formData:", formData.objectives);
+      setObjectives(formData.objectives);
+    }
+  }, [formData]);
   
   // Calculate weight loss goal and timeframe
   const calculateWeightLossGoal = () => {
@@ -112,27 +143,14 @@ const DevelopingObjectives: React.FC<DevelopingObjectivesProps> = ({ onComplete 
     }
   };
   
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-  
-  useEffect(() => {
-    if (formData) {
-      setObjectives(formData.objectives || Array(5).fill(""));
-    }
-  }, [formData]);
-  
   const handleObjectiveChange = (index: number, value: string) => {
-    setObjectives(prev => {
-      const updated = [...prev];
-      updated[index] = value;
-      return updated;
-    });
+    const updatedObjectives = [...objectives];
+    updatedObjectives[index] = value;
+    setObjectives(updatedObjectives);
   };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("objectives", objectives);
     submitForm();
   };
   

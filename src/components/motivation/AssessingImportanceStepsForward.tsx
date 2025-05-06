@@ -1,12 +1,12 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Star } from "lucide-react";
+import { useMotivationForm } from "@/hooks/useMotivationForm";
+import LoadingState from "./shared/LoadingState";
 
 interface Step {
   text: string;
@@ -18,73 +18,88 @@ interface AssessingImportanceStepsForwardProps {
 }
 
 const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardProps> = ({ onComplete }) => {
-  const { user } = useUser();
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [steps, setSteps] = useState<Step[]>(Array(5).fill({ text: "", rating: 0 }));
   const [selectedStep, setSelectedStep] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+
+  const { 
+    formData,
+    isLoading, 
+    isSaving, 
+    submitForm, 
+    fetchData 
+  } = useMotivationForm({
+    tableName: "motivation_step_assessments",
+    initialState: {
+      steps: Array(5).fill({ text: "", rating: 0 }),
+      selected_step: ""
+    },
+    parseData: (data) => {
+      console.log("Raw data from motivation_step_assessments:", data);
+      
+      let parsedSteps: Step[] = [];
+      
+      if (data.steps) {
+        if (typeof data.steps === 'string') {
+          try {
+            parsedSteps = JSON.parse(data.steps);
+          } catch (e) {
+            console.error("Error parsing steps JSON:", e);
+            parsedSteps = Array(5).fill({ text: "", rating: 0 });
+          }
+        } 
+        else if (Array.isArray(data.steps)) {
+          parsedSteps = data.steps.map(step => {
+            const jsonStep = step as unknown as { text?: string; rating?: number };
+            return {
+              text: typeof jsonStep.text === 'string' ? jsonStep.text : '',
+              rating: typeof jsonStep.rating === 'number' ? jsonStep.rating : 0
+            };
+          });
+        }
+      }
+      
+      // Make sure we have 5 steps
+      if (parsedSteps.length < 5) {
+        parsedSteps = [
+          ...parsedSteps,
+          ...Array(5 - parsedSteps.length).fill({ text: "", rating: 0 })
+        ];
+      }
+      
+      return {
+        steps: parsedSteps,
+        selected_step: data.selected_step || ""
+      };
+    },
+    transformData: (formData) => {
+      return {
+        steps: steps,
+        selected_step: selectedStep
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 13,
+    nextStepNumber: 14,
+    stepName: "Assessing the Importance of My Steps Forward",
+    nextStepName: "Defining Your Confidence Scale"
+  });
 
   useEffect(() => {
-    const fetchExistingData = async () => {
-      if (!user) return;
-      
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from("motivation_step_assessments")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        
-        if (error) throw error;
-        
-        if (data) {
-          let parsedSteps: Step[] = [];
-          
-          if (data.steps) {
-            if (typeof data.steps === 'string') {
-              try {
-                parsedSteps = JSON.parse(data.steps);
-              } catch (e) {
-                console.error("Error parsing steps JSON:", e);
-              }
-            } 
-            else if (Array.isArray(data.steps)) {
-              parsedSteps = data.steps.map(step => {
-                const jsonStep = step as unknown as { text?: string; rating?: number };
-                return {
-                  text: typeof jsonStep.text === 'string' ? jsonStep.text : '',
-                  rating: typeof jsonStep.rating === 'number' ? jsonStep.rating : 0
-                };
-              });
-            }
-          }
-          
-          if (parsedSteps.length > 0) {
-            setSteps(parsedSteps);
-          }
-          
-          if (data.selected_step) {
-            setSelectedStep(typeof data.selected_step === 'string' ? data.selected_step : '');
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load your previous responses",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    fetchData();
+  }, [fetchData]);
 
-    fetchExistingData();
-  }, [user, toast]);
+  useEffect(() => {
+    if (formData) {
+      if (Array.isArray(formData.steps) && formData.steps.length > 0) {
+        console.log("Setting steps from formData:", formData.steps);
+        setSteps(formData.steps);
+      }
+      
+      if (formData.selected_step) {
+        setSelectedStep(formData.selected_step);
+      }
+    }
+  }, [formData]);
 
   const getPlaceholder = (index: number) => {
     switch(index) {
@@ -112,49 +127,16 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
     setSteps(newSteps);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
-
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase
-        .from("motivation_step_assessments")
-        .insert({
-          user_id: user.id,
-          steps: JSON.stringify(steps),
-          selected_step: selectedStep
-        });
-
-      if (error) throw error;
-      
-      toast({
-        title: "Success",
-        description: "Your response has been saved",
-      });
-
-      if (onComplete) {
-        onComplete();
-      }
-    } catch (error) {
-      console.error("Error saving response:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save your response",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    submitForm();
   };
 
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
         {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin h-8 w-8 border-4 border-purple-500 rounded-full border-t-transparent"></div>
-          </div>
+          <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -209,10 +191,10 @@ const AssessingImportanceStepsForward: React.FC<AssessingImportanceStepsForwardP
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}
