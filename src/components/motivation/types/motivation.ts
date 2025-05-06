@@ -18,4 +18,5 @@ export interface StepConfig {
   component: (onComplete: () => void) => ReactNode;
   hideFromNavigation?: boolean;
   defaultCompleted?: boolean;
+  available?: boolean;  // Added this property to match our usage
 }
