@@ -1112,6 +1112,33 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_final_word: {
+        Row: {
+          completed: boolean | null
+          created_at: string
+          id: string
+          plan_adjustments: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          plan_adjustments?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          plan_adjustments?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       motivation_financial_resources: {
         Row: {
           build_resources: string | null

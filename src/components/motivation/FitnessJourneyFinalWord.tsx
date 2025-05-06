@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
+import { CheckCircle } from "lucide-react";
 
 interface FitnessJourneyFinalWordProps {
   onComplete?: () => void;
@@ -11,15 +12,25 @@ interface FitnessJourneyFinalWordProps {
 
 const FitnessJourneyFinalWord: React.FC<FitnessJourneyFinalWordProps> = ({ onComplete }) => {
   const { 
+    formData, 
     isLoading, 
     isSaving,
     submitForm 
   } = useMotivationForm({
     tableName: "motivation_final_word",
     initialState: {
+      plan_adjustments: "",
       completed: false
     },
-    onSuccess: onComplete
+    transformData: (formData) => {
+      return {
+        plan_adjustments: formData.plan_adjustments,
+        completed: true
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 91,
+    stepName: "A Final Word: Your Fitness Journey Begins Now!"
   });
 
   if (isLoading) {
