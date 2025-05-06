@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Step } from "@/components/motivation/types/motivation";
@@ -152,31 +153,29 @@ export const useMotivationStepsDB = () => {
         }
       }
       
-      // Updated: Also make the "People Who Matter" step (ID=69) available after completing 
-      // "Rewards Create an Incentive" (ID=66, not 67)
-      if (stepNumber === 66) {
-        console.log('Completed Rewards Create an Incentive, making Rewards from People Who Matter (69) available');
-        const peopleWhoMatterStep = stepsData.find(s => s.id === 69);
-        
-        if (peopleWhoMatterStep) {
-          const { error: peopleStepError } = await supabase
+      // Special handling: Make step 91 (Final Word) available after completing step 69 (Rewards from People Who Matter)
+      if (stepNumber === 69) {
+        const finalStep = stepsData.find(s => s.id === 91);
+        if (finalStep) {
+          console.log('Completed Rewards from People Who Matter, making Final Word step (91) available');
+          const { error: finalStepError } = await supabase
             .from('motivation_steps_progress')
             .upsert(
               {
                 user_id: userId,
-                step_number: 69,
-                step_name: peopleWhoMatterStep.title || 'Rewards from People Who Matter',
+                step_number: 91,
+                step_name: finalStep.title || 'A Final Word: Your Fitness Journey Begins Now!',
                 completed: false,
-                available: true, // Explicitly mark this step as available
+                available: true,
                 completed_at: null
               },
               { onConflict: "user_id,step_number" }
             );
-            
-          if (peopleStepError) {
-            console.error('Error making Rewards from People Who Matter step available:', peopleStepError);
+          
+          if (finalStepError) {
+            console.error('Error making Final Word step available:', finalStepError);
           } else {
-            console.log('Successfully made Rewards from People Who Matter step available');
+            console.log('Successfully made Final Word step available');
           }
         }
       }

@@ -28,7 +28,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   // Define step ranges for each section based on visible steps
   const startingPointSteps = visibleSteps.filter(step => step.id < 18);
   const chartingPathSteps = visibleSteps.filter(step => step.id >= 18 && step.id < 62);
-  // Updated range to include step 91
+  // Make sure we include step 91 in the Active Change section
   const activeChangeSteps = visibleSteps.filter(step => (step.id >= 62 && step.id <= 91));
   
   // Find the highest completed step ID to determine navigation permissions

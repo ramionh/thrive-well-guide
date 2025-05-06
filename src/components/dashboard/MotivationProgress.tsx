@@ -32,8 +32,8 @@ const MotivationProgress = () => {
   // Check if Step 91 (Final Word) has been completed
   const finalWordCompleted = motivationStepsProgress?.some(step => step.step_number === 91 && step.completed);
 
-  // Get the total number of steps from the motivationSteps configuration
-  const totalSteps = motivationSteps.length;
+  // Get the total number of steps from the motivationSteps configuration - there are 91 total steps
+  const totalSteps = 91;
   const completedSteps = motivationStepsProgress?.filter(step => step.completed)?.length || 0;
   const progressPercentage = Math.round((completedSteps / totalSteps) * 100);
   
