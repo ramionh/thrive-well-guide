@@ -118,12 +118,13 @@ export const useMotivationStepsDB = () => {
         return { error };
       }
       
-      // Look for the next step number in the configuration
-      const currentStepConfig = stepsData.find(s => s.id === stepNumber);
+      // Look for the next step based on the step config
+      const currentStep = stepsData.find(s => s.id === stepNumber);
+      const currentStepConfig = currentStep ? (currentStep as any) : null;
       
       // First check if there's an explicitly defined next step in the step config
-      const nextStepNumber = currentStepConfig && (currentStepConfig as any).nextStepNumber 
-        ? (currentStepConfig as any).nextStepNumber 
+      const nextStepNumber = currentStepConfig && currentStepConfig.nextStepNumber 
+        ? currentStepConfig.nextStepNumber 
         : stepNumber + 1;
       
       console.log('Making next step available:', nextStepNumber);
@@ -150,33 +151,6 @@ export const useMotivationStepsDB = () => {
           console.error('Error making next step available:', nextStepError);
         } else {
           console.log(`Successfully made step ${nextStepNumber} (${nextStep.title}) available`);
-        }
-      }
-      
-      // Special handling: Make step 91 (Final Word) available after completing step 69 (Rewards from People Who Matter)
-      if (stepNumber === 69) {
-        const finalStep = stepsData.find(s => s.id === 91);
-        if (finalStep) {
-          console.log('Completed Rewards from People Who Matter, making Final Word step (91) available');
-          const { error: finalStepError } = await supabase
-            .from('motivation_steps_progress')
-            .upsert(
-              {
-                user_id: userId,
-                step_number: 91,
-                step_name: finalStep.title || 'A Final Word: Your Fitness Journey Begins Now!',
-                completed: false,
-                available: true,
-                completed_at: null
-              },
-              { onConflict: "user_id,step_number" }
-            );
-          
-          if (finalStepError) {
-            console.error('Error making Final Word step available:', finalStepError);
-          } else {
-            console.log('Successfully made Final Word step available');
-          }
         }
       }
       
