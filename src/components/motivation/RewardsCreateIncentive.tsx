@@ -27,9 +27,32 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
       rewards: Array(5).fill("")
     },
     parseData: (data) => {
-      // Make sure we're properly parsing the rewards array from the database
+      console.log("Raw data from Rewards Create Incentive:", data);
+      
+      // Ensure we properly extract the rewards array
+      let parsedRewards: string[];
+      
+      if (Array.isArray(data.rewards)) {
+        parsedRewards = data.rewards;
+        // Make sure we have exactly 5 rewards
+        if (parsedRewards.length < 5) {
+          parsedRewards = [...parsedRewards, ...Array(5 - parsedRewards.length).fill("")];
+        } else if (parsedRewards.length > 5) {
+          parsedRewards = parsedRewards.slice(0, 5);
+        }
+      } else {
+        console.log("Rewards is not an array, using default empty array");
+        parsedRewards = Array(5).fill("");
+      }
+      
       return {
-        rewards: Array.isArray(data.rewards) ? data.rewards : Array(5).fill("")
+        rewards: parsedRewards
+      };
+    },
+    transformData: (formData) => {
+      // Make sure we're sending the rewards array properly to the database
+      return {
+        rewards: rewards
       };
     },
     onSuccess: onComplete,
@@ -45,6 +68,7 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
   
   useEffect(() => {
     if (formData && formData.rewards) {
+      console.log("Setting rewards from formData:", formData.rewards);
       setRewards(formData.rewards);
     }
   }, [formData]);
@@ -59,7 +83,9 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("rewards", rewards);
+    
+    // We don't need to update the form data separately since
+    // the transformData function will use the current rewards state
     submitForm();
   };
   
