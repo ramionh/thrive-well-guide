@@ -115,6 +115,34 @@ export const useMotivationStepsDB = () => {
         }
       }
       
+      // Also make the "People Who Matter" step (ID=69) available after completing "Rewards Create an Incentive" (ID=67)
+      if (stepNumber === 67) {
+        console.log('Completed Rewards Create an Incentive, making Rewards from People Who Matter (69) available');
+        const peopleWhoMatterStep = stepsData.find(s => s.id === 69);
+        
+        if (peopleWhoMatterStep) {
+          const { error: peopleStepError } = await supabase
+            .from('motivation_steps_progress')
+            .upsert(
+              {
+                user_id: userId,
+                step_number: 69,
+                step_name: peopleWhoMatterStep.title || 'Rewards from People Who Matter',
+                completed: false,
+                available: true, // Explicitly mark this step as available
+                completed_at: null
+              },
+              { onConflict: "user_id,step_number" }
+            );
+            
+          if (peopleStepError) {
+            console.error('Error making Rewards from People Who Matter step available:', peopleStepError);
+          } else {
+            console.log('Successfully made Rewards from People Who Matter step available');
+          }
+        }
+      }
+      
       return { error: null };
     } catch (error: any) {
       console.error('Error saving step progress:', error);

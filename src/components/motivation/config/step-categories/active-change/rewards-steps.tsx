@@ -36,7 +36,9 @@ export const rewardsSteps: StepConfig[] = [
     id: 69,
     title: "Rewards from People Who Matter",
     description: "Identify rewards involving praise from important people",
-    component: (onComplete) => <RewardsFromPeopleWhoMatter onComplete={onComplete} />
+    component: (onComplete) => <RewardsFromPeopleWhoMatter onComplete={onComplete} />,
+    // Make this step explicitly available in the step configuration
+    available: true
   },
   {
     id: 70,
