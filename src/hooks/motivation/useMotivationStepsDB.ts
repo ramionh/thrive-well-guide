@@ -79,8 +79,15 @@ export const useMotivationStepsDB = () => {
         return { error };
       }
       
-      // Automatically make the next step available when completing a step
-      const nextStepNumber = stepNumber + 1;
+      // Look for the next step number in the configuration
+      const currentStepConfig = stepsData.find(s => s.id === stepNumber);
+      const nextStepNumber = currentStepConfig && (currentStepConfig as any).nextStepNumber 
+        ? (currentStepConfig as any).nextStepNumber 
+        : stepNumber + 1;
+      
+      console.log('Making next step available:', nextStepNumber);
+      
+      // Make the next step available when completing a step
       const nextStep = stepsData.find(s => s.id === nextStepNumber);
       
       if (nextStep) {
@@ -100,6 +107,8 @@ export const useMotivationStepsDB = () => {
           
         if (nextStepError) {
           console.error('Error making next step available:', nextStepError);
+        } else {
+          console.log(`Successfully made step ${nextStepNumber} (${nextStep.title}) available`);
         }
       }
       

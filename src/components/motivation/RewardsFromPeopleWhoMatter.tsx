@@ -28,19 +28,58 @@ const RewardsFromPeopleWhoMatter: React.FC<RewardsFromPeopleWhoMatterProps> = ({
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    fetchData
   } = useMotivationForm({
     tableName: "motivation_people_rewards",
     initialState: {
       people_rewards: Array(5).fill({ name: "", relationship: "", affirmation: "" })
     },
-    onSuccess: onComplete
+    parseData: (data) => {
+      console.log("Raw data from Rewards From People Who Matter:", data);
+      
+      let parsedRewards: PeopleReward[];
+      
+      if (Array.isArray(data.people_rewards)) {
+        parsedRewards = data.people_rewards;
+        // Make sure we have at least 5 rows
+        if (parsedRewards.length < 5) {
+          parsedRewards = [
+            ...parsedRewards,
+            ...Array(5 - parsedRewards.length).fill({ name: "", relationship: "", affirmation: "" })
+          ];
+        }
+      } else {
+        console.log("people_rewards is not an array, using default empty array");
+        parsedRewards = Array(5).fill({ name: "", relationship: "", affirmation: "" });
+      }
+      
+      return {
+        people_rewards: parsedRewards
+      };
+    },
+    transformData: (formData) => {
+      // Make sure we're sending the rewards array properly to the database
+      return {
+        people_rewards: peopleRewards
+      };
+    },
+    onSuccess: onComplete,
+    stepNumber: 69,
+    nextStepNumber: 70,
+    stepName: "Rewards from People Who Matter",
+    nextStepName: "Rewards: Events and Activities"
   });
   
   useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+  
+  useEffect(() => {
     if (formData && formData.people_rewards) {
-      const savedRewards = formData.people_rewards;
+      console.log("Setting people rewards from formData:", formData.people_rewards);
       // Ensure we always have at least 5 rows
+      const savedRewards = formData.people_rewards;
       if (savedRewards.length < 5) {
         const filledRewards = [
           ...savedRewards,
@@ -66,20 +105,21 @@ const RewardsFromPeopleWhoMatter: React.FC<RewardsFromPeopleWhoMatterProps> = ({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("people_rewards", peopleRewards);
+    // We don't need to update the form data separately since
+    // the transformData function will use the current peopleRewards state
     submitForm();
   };
   
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
+        <h2 className="text-xl font-semibold text-purple-800 mb-4">Rewards from People Who Matter</h2>
+        
         {isLoading ? (
           <LoadingState />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-purple-800 mb-4">Rewards from People Who Matter</h2>
-              
               <p className="text-gray-600 mb-6">
                 Of course, things aren't the only kind of rewards that matter. Sometimes the best motivation is when another person recognizes your effort and gives you the proverbial pat on the back. Review your list of rewards from Step 67 and identify any that involve praise or recognition from someone who matters to you. List them below. We want at least five "people who matter" rewards, so feel free to make additions to the list.
               </p>
