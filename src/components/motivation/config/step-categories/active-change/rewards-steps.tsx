@@ -1,4 +1,3 @@
-
 import React from 'react';
 import RewardsCreateIncentive from "@/components/motivation/RewardsCreateIncentive";
 import RewardsFromPeopleWhoMatter from "@/components/motivation/RewardsFromPeopleWhoMatter";
@@ -27,7 +26,7 @@ import type { StepConfig } from "@/components/motivation/types/motivation";
 
 export const rewardsSteps: StepConfig[] = [
   {
-    id: 67,
+    id: 66,  // Changed from 67 to 66 to avoid conflict with Making Goal Measurable
     title: "Rewards Create an Incentive to Change",
     description: "Plan meaningful rewards for achieving your goals",
     component: (onComplete) => <RewardsCreateIncentive onComplete={onComplete} />
@@ -37,7 +36,6 @@ export const rewardsSteps: StepConfig[] = [
     title: "Rewards from People Who Matter",
     description: "Identify rewards involving praise from important people",
     component: (onComplete) => <RewardsFromPeopleWhoMatter onComplete={onComplete} />,
-    // Make this step explicitly available in the step configuration
     available: true
   },
   {

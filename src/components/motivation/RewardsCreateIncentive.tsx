@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,7 @@ const RewardsCreateIncentive: React.FC<RewardsCreateIncentiveProps> = ({ onCompl
       };
     },
     onSuccess: onComplete,
-    stepNumber: 67,
+    stepNumber: 66,  // Updated from 67 to 66
     nextStepNumber: 69,  // Make sure this points to the Rewards from People Who Matter step ID
     stepName: "Rewards Create an Incentive to Change",
     nextStepName: "Rewards from People Who Matter"

@@ -18,5 +18,8 @@ export interface StepConfig {
   component: (onComplete: () => void) => ReactNode;
   hideFromNavigation?: boolean;
   defaultCompleted?: boolean;
-  available?: boolean;  // Added this property to match our usage
+  available?: boolean;  // This property is already here, which is good
+  nextStepNumber?: number; // Add this property to support explicit next step navigation
+  nextStepName?: string;   // Add this property to support naming the next step
+  stepName?: string;       // Add this property for clarity
 }

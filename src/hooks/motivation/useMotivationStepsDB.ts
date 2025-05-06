@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Step } from "@/components/motivation/types/motivation";
@@ -41,6 +40,44 @@ export const useMotivationStepsDB = () => {
     } catch (error) {
       console.error('Error in fetchStepProgress:', error);
       return { data: null, error };
+    }
+  };
+
+  /**
+   * Handles step completion and shows toast notification
+   */
+  const markStepComplete = async (userId: string, stepId: number, steps: Step[], onSuccess?: () => void) => {
+    if (!userId || !stepId || typeof stepId !== 'number') {
+      console.error('Invalid parameters for markStepComplete:', { userId, stepId });
+      return;
+    }
+
+    try {
+      console.log('Marking step complete:', {
+        userId,
+        stepId,
+        stepName: steps.find(s => s.id === stepId)?.title || ''
+      });
+      
+      const { error } = await saveStepProgress(userId, stepId, steps);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Step completed",
+        description: "Your progress has been saved"
+      });
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error('Error marking step complete:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save progress",
+        variant: "destructive"
+      });
     }
   };
 
@@ -115,8 +152,9 @@ export const useMotivationStepsDB = () => {
         }
       }
       
-      // Also make the "People Who Matter" step (ID=69) available after completing "Rewards Create an Incentive" (ID=67)
-      if (stepNumber === 67) {
+      // Updated: Also make the "People Who Matter" step (ID=69) available after completing 
+      // "Rewards Create an Incentive" (ID=66, not 67)
+      if (stepNumber === 66) {
         console.log('Completed Rewards Create an Incentive, making Rewards from People Who Matter (69) available');
         const peopleWhoMatterStep = stepsData.find(s => s.id === 69);
         
@@ -147,44 +185,6 @@ export const useMotivationStepsDB = () => {
     } catch (error: any) {
       console.error('Error saving step progress:', error);
       return { error };
-    }
-  };
-
-  /**
-   * Handles step completion and shows toast notification
-   */
-  const markStepComplete = async (userId: string, stepId: number, steps: Step[], onSuccess?: () => void) => {
-    if (!userId || !stepId || typeof stepId !== 'number') {
-      console.error('Invalid parameters for markStepComplete:', { userId, stepId });
-      return;
-    }
-
-    try {
-      console.log('Marking step complete:', {
-        userId,
-        stepId,
-        stepName: steps.find(s => s.id === stepId)?.title || ''
-      });
-      
-      const { error } = await saveStepProgress(userId, stepId, steps);
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Step completed",
-        description: "Your progress has been saved"
-      });
-      
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error('Error marking step complete:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save progress",
-        variant: "destructive"
-      });
     }
   };
 
