@@ -4,7 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 import LoadingState from "./shared/LoadingState";
 
 interface ThinkAboutBigPictureProps {
@@ -13,31 +16,99 @@ interface ThinkAboutBigPictureProps {
 
 const ThinkAboutBigPicture: React.FC<ThinkAboutBigPictureProps> = ({ onComplete }) => {
   const [bigPictureWhy, setBigPictureWhy] = useState<string>("");
+  const { toast } = useToast();
+  const { user } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { 
     formData,
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    fetchData 
   } = useMotivationForm({
     tableName: "motivation_big_picture_why",
     initialState: {
       big_picture_why: ""
     },
-    onSuccess: onComplete
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Your big picture why has been saved!"
+      });
+      if (onComplete) {
+        onComplete();
+      }
+    },
+    stepNumber: 58,
+    nextStepNumber: 59,
+    stepName: "Think About Big Picture",
+    nextStepName: "Visualize Results"
   });
+  
+  // Load existing data when component mounts
+  useEffect(() => {
+    console.log("Component mounted, fetching big picture why data...");
+    fetchData();
+  }, [fetchData]);
   
   useEffect(() => {
     if (formData && formData.big_picture_why) {
+      console.log("FormData received:", formData);
       setBigPictureWhy(formData.big_picture_why);
     }
   }, [formData]);
   
-  const handleSubmit = (e: React.FormEvent) => {
+  // Direct database query to verify data
+  const verifyDataInDatabase = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('motivation_big_picture_why')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+        
+      if (error) {
+        console.error("Error verifying data:", error);
+        return;
+      }
+      
+      console.log("Big picture why data in database:", data);
+    } catch (err) {
+      console.error("Error in verification query:", err);
+    }
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateForm("big_picture_why", bigPictureWhy);
-    submitForm();
+    setIsSubmitting(true);
+    
+    try {
+      console.log("Submitting form with data:", { bigPictureWhy });
+      
+      // Update form data field
+      updateForm("big_picture_why", bigPictureWhy);
+      
+      // Submit the form
+      await submitForm();
+      
+      // Verify the data was saved correctly
+      setTimeout(() => {
+        verifyDataInDatabase();
+      }, 1000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Error",
+        description: "There was a problem saving your data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -74,10 +145,10 @@ const ThinkAboutBigPicture: React.FC<ThinkAboutBigPictureProps> = ({ onComplete 
             
             <Button
               type="submit"
-              disabled={isSaving}
+              disabled={isSaving || isSubmitting}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSaving ? "Saving..." : "Complete Step"}
+              {isSaving || isSubmitting ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}
