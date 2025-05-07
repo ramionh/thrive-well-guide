@@ -91,9 +91,9 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
       
       let result;
       
-      if (existingData) {
+      if (existingData?.id) {
         // If record exists, update it
-        console.log(`Found existing record for ${tableName}, updating...`);
+        console.log(`Found existing record for ${tableName} with ID ${existingData.id}, updating...`);
         result = await supabase
           .from(tableName as any)
           .update({
@@ -109,7 +109,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
           .insert(baseData);
       }
       
-      if (result.error) {
+      if (result?.error) {
         console.error(`Error saving data:`, result.error);
         throw result.error;
       }
