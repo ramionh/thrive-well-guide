@@ -46,6 +46,7 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     nextStepName: "They See Your Strengths"
   });
 
+  // Load existing data when it's available
   useEffect(() => {
     if (formData) {
       if (formData.three_months) {
@@ -60,20 +61,32 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     }
   }, [formData]);
 
+  // Fetch data when component mounts
   useEffect(() => {
+    console.log("Fetching visualization data...");
     fetchData();
   }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting visualization form with data:", { threeMonths, sixMonths, oneYear });
     
-    // Update the form data with the current state values
-    updateForm("three_months", threeMonths);
-    updateForm("six_months", sixMonths);
-    updateForm("one_year", oneYear);
+    // Create object with data to submit
+    const dataToSubmit = {
+      three_months: threeMonths,
+      six_months: sixMonths,
+      one_year: oneYear
+    };
     
-    // Submit the form with the updated data
-    submitForm();
+    // Update form data with current values
+    Object.entries(dataToSubmit).forEach(([key, value]) => {
+      updateForm(key as keyof typeof dataToSubmit, value);
+    });
+    
+    // Submit the form after updating all fields
+    setTimeout(() => {
+      submitForm();
+    }, 0);
   };
 
   return (
