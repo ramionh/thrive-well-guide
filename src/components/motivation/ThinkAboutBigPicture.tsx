@@ -30,6 +30,9 @@ const ThinkAboutBigPicture: React.FC<ThinkAboutBigPictureProps> = ({ onComplete 
     initialState: {
       big_picture_why: ""
     },
+    transformData: (data) => ({
+      big_picture_why: data.big_picture_why || ""
+    }),
     onSuccess: () => {
       toast({
         title: "Success",

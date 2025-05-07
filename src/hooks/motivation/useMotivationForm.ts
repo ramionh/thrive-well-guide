@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useMotivationData } from "./useMotivationData";
 import { useMotivationSubmit } from "./useMotivationSubmit";
@@ -38,7 +39,10 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
   useEffect(() => {
     if (fetchedData && !formDataSynced.current) {
       console.log(`useMotivationForm: Syncing fetched data for ${tableName}:`, fetchedData);
-      setLocalFormData(fetchedData);
+      setLocalFormData(prevState => ({
+        ...prevState,
+        ...fetchedData
+      }));
       formDataSynced.current = true;
     }
   }, [fetchedData, tableName]);

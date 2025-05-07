@@ -70,12 +70,17 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
 
     try {
       // Transform data if a transformer function is provided
-      const baseData = { 
-        user_id: user.id,
-        ...(transformData ? transformData(formData) : formData),
-      };
+      const dataToSubmit = transformData 
+        ? { 
+            user_id: user.id,
+            ...transformData(formData),
+          }
+        : { 
+            user_id: user.id,
+            ...formData,
+          };
       
-      console.log("Transformed data to submit:", baseData);
+      console.log("Transformed data to submit:", dataToSubmit);
       
       // First, check if a record already exists for this user
       const { data: existingData, error: findError } = await supabase
@@ -98,7 +103,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
         result = await supabase
           .from(tableName as any)
           .update({
-            ...baseData,
+            ...dataToSubmit,
             updated_at: new Date().toISOString()
           })
           .eq('id', existingData.id);
@@ -108,7 +113,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
         result = await supabase
           .from(tableName as any)
           .insert({
-            ...baseData,
+            ...dataToSubmit,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });

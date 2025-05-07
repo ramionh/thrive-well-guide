@@ -33,6 +33,11 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
       six_months: "",
       one_year: ""
     },
+    transformData: (data) => ({
+      three_months: data.three_months || "",
+      six_months: data.six_months || "",
+      one_year: data.one_year || ""
+    }),
     onSuccess: () => {
       toast({
         title: "Success",
@@ -63,15 +68,15 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
       console.log("VisualizeResults: FormData received:", formData);
       
       if (formData.three_months !== undefined) {
-        setThreeMonths(formData.three_months);
+        setThreeMonths(formData.three_months || "");
       }
       
       if (formData.six_months !== undefined) {
-        setSixMonths(formData.six_months);
+        setSixMonths(formData.six_months || "");
       }
       
       if (formData.one_year !== undefined) {
-        setOneYear(formData.one_year);
+        setOneYear(formData.one_year || "");
       }
     }
   }, [formData]);
@@ -84,7 +89,7 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     try {
       console.log("VisualizeResults: Updating form data with:", { threeMonths, sixMonths, oneYear });
       
-      // Update form data fields in the hook state
+      // Update form data fields
       updateForm("three_months", threeMonths);
       updateForm("six_months", sixMonths);
       updateForm("one_year", oneYear);
