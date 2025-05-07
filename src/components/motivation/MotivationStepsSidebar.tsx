@@ -37,6 +37,9 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   
   // Helper function to check if a step should be enabled
   const isStepEnabled = (step: Step) => {
+    // Step 1 is always enabled
+    if (step.id === 1) return true;
+    
     return (
       step.completed || // Step is completed
       step.id === highestCompletedStepId + 1 || // Next step after highest completed

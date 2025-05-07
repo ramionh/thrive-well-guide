@@ -9,6 +9,12 @@ export const useStepNavigation = (initialSteps: Step[]) => {
    * Handles clicking on a step in the navigation
    */
   const handleStepClick = useCallback((stepId: number, steps: Step[]) => {
+    // Special case for step 1 - always allow clicking on it
+    if (stepId === 1) {
+      setCurrentStepId(stepId);
+      return;
+    }
+    
     // Modified logic to allow clicking on any completed step or the next available step
     const isCompleted = steps.find(step => step.id === stepId)?.completed;
     const highestCompletedStepId = steps
