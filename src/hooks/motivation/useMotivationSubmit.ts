@@ -91,23 +91,27 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
       
       let result;
       
-      if (existingData && existingData?.id) { // Fix: Add optional chaining to prevent TypeScript error
+      // TypeScript fix: Check if existingData exists and has id property before accessing it
+      if (existingData && 'id' in existingData) {
         // If record exists, update it
-        const recordId = existingData.id;
-        console.log(`Found existing record for ${tableName} with ID ${recordId}, updating...`);
+        console.log(`Found existing record for ${tableName} with ID ${existingData.id}, updating...`);
         result = await supabase
           .from(tableName as any)
           .update({
             ...baseData,
             updated_at: new Date().toISOString()
           })
-          .eq('id', recordId);
+          .eq('id', existingData.id);
       } else {
         // If no record exists, insert a new one
         console.log(`No existing record found for ${tableName}, inserting...`);
         result = await supabase
           .from(tableName as any)
-          .insert(baseData);
+          .insert({
+            ...baseData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
       }
       
       if (result && result.error) {
