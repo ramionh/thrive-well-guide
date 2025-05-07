@@ -16,7 +16,8 @@ const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete 
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    error
   } = useMotivationForm({
     tableName: "motivation_strengths_feedback",
     initialState: {
@@ -26,11 +27,33 @@ const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete 
     },
     onSuccess: onComplete,
     stepNumber: 36,
-    stepName: "They See Your Strengths"
+    stepName: "They See Your Strengths",
+    transformData: (data) => ({
+      strengths_others_see: data.strengths_others_see || "",
+      leverage_strengths: data.leverage_strengths || ""
+    }),
+    parseData: (data) => ({
+      feedback_entries: data.feedback_entries || [],
+      strengths_others_see: data.strengths_others_see || "",
+      leverage_strengths: data.leverage_strengths || ""
+    })
   });
 
   if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="px-0">
+          <div className="p-6 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (

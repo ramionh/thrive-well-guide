@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -67,6 +67,7 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
     { characteristic: "", evidence: "" },
     { characteristic: "", evidence: "" },
   ]);
+  const initialFetchDone = useRef(false);
 
   const { 
     formData, 
@@ -90,22 +91,14 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
     }
   });
 
+  // Only fetch data once on component mount
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        await fetchData();
-      } catch (error) {
-        console.error("Error fetching feedback entries:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load feedback data",
-          variant: "destructive"
-        });
-      }
-    };
-    
-    loadData();
-  }, [fetchData, toast]);
+    if (!initialFetchDone.current) {
+      console.log("TheySeeTourStrengths: Fetching data on initial mount");
+      fetchData();
+      initialFetchDone.current = true;
+    }
+  }, [fetchData]);
 
   // Update local state when formData changes
   useEffect(() => {
@@ -136,64 +129,64 @@ const TheySeeTourStrengths: React.FC<TheySeeTourStrengthsProps> = ({ onComplete 
     submitForm();
   };
 
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
   return (
     <Card className="bg-white shadow-lg border border-purple-200">
       <CardContent className="p-6">
-        {isLoading ? (
-          <LoadingState />
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex items-center gap-3 mb-2">
-              <MessageSquare className="h-5 w-5 text-purple-600" />
-              <h2 className="text-xl font-semibold text-purple-800">They See Your Strengths</h2>
-            </div>
-            
-            <p className="text-gray-600 mb-6">
-              Ask a trusted friend or family member to look at the list from the previous step, 
-              choose a few of the strengths you listed, and fill out the following exercise.
-            </p>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex items-center gap-3 mb-2">
+            <MessageSquare className="h-5 w-5 text-purple-600" />
+            <h2 className="text-xl font-semibold text-purple-800">They See Your Strengths</h2>
+          </div>
+          
+          <p className="text-gray-600 mb-6">
+            Ask a trusted friend or family member to look at the list from the previous step, 
+            choose a few of the strengths you listed, and fill out the following exercise.
+          </p>
 
-            <div className="space-y-6">
-              {feedbackEntries.map((entry, index) => (
-                <div key={index} className="p-4 bg-purple-50 rounded-lg space-y-4">
-                  <div>
-                    <Label htmlFor={`characteristic-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
-                      Characteristic {index + 1}
-                    </Label>
-                    <Input
-                      id={`characteristic-${index}`}
-                      value={entry.characteristic}
-                      onChange={(e) => handleCharacteristicChange(index, e.target.value)}
-                      className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
-                      placeholder="Enter a characteristic"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor={`evidence-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
-                      What have you seen or heard me do that makes you think I have this characteristic?
-                    </Label>
-                    <Textarea
-                      id={`evidence-${index}`}
-                      value={entry.evidence}
-                      onChange={(e) => handleEvidenceChange(index, e.target.value)}
-                      className="min-h-[80px] border-purple-200 focus:border-purple-500 focus:ring-purple-500"
-                      placeholder="Enter evidence for this characteristic..."
-                    />
-                  </div>
+          <div className="space-y-6">
+            {feedbackEntries.map((entry, index) => (
+              <div key={index} className="p-4 bg-purple-50 rounded-lg space-y-4">
+                <div>
+                  <Label htmlFor={`characteristic-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+                    Characteristic {index + 1}
+                  </Label>
+                  <Input
+                    id={`characteristic-${index}`}
+                    value={entry.characteristic}
+                    onChange={(e) => handleCharacteristicChange(index, e.target.value)}
+                    className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
+                    placeholder="Enter a characteristic"
+                  />
                 </div>
-              ))}
-            </div>
 
-            <Button
-              type="submit"
-              disabled={isSaving}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              {isSaving ? "Saving..." : "Complete Step"}
-            </Button>
-          </form>
-        )}
+                <div>
+                  <Label htmlFor={`evidence-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+                    What have you seen or heard me do that makes you think I have this characteristic?
+                  </Label>
+                  <Textarea
+                    id={`evidence-${index}`}
+                    value={entry.evidence}
+                    onChange={(e) => handleEvidenceChange(index, e.target.value)}
+                    className="min-h-[80px] border-purple-200 focus:border-purple-500 focus:ring-purple-500"
+                    placeholder="Enter evidence for this characteristic..."
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isSaving}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {isSaving ? "Saving..." : "Complete Step"}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

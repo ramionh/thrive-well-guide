@@ -6,7 +6,7 @@ import FindingInspiration from "../../../FindingInspiration";
 import RevisitValues from "../../../RevisitValues";
 import ValuesConflict from "../../../ValuesConflict";
 import YouHaveWhatItTakes from "../../../YouHaveWhatItTakes";
-import TheySeeTourStrengths from "../../../TheySeeTourStrengths";
+import TheySeeYourStrengths from "../../../TheySeeYourStrengths";
 import BuildOnYourStrengths from "../../../BuildOnYourStrengths";
 import FamilyStrengths from "../../../FamilyStrengths";
 import type { StepConfig } from "../../../types/motivation";
@@ -52,7 +52,7 @@ export const strengthSteps: StepConfig[] = [
     id: 41,
     title: "They See Your Strengths",
     description: "Collect feedback on your strengths from others",
-    component: (onComplete) => <TheySeeTourStrengths onComplete={onComplete} />
+    component: (onComplete) => <TheySeeYourStrengths onComplete={onComplete} />
   },
   {
     id: 42,
