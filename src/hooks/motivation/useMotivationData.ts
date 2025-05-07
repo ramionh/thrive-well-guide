@@ -1,7 +1,6 @@
-
 import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/context/UserContext";
 
 /**
@@ -23,17 +22,6 @@ export const useMotivationData = <T extends Record<string, any>>(
 
   const fetchData = useCallback(async () => {
     // Only run once per component lifecycle
-    if (hasAttemptedFetch.current) {
-      console.log(`useMotivationData: Already attempted fetch for ${tableName}, using cached data`);
-      return;
-    }
-    
-    // Prevent multiple simultaneous fetches
-    if (fetchInProgress.current) {
-      console.log(`useMotivationData: Fetch already in progress for ${tableName}, skipping`);
-      return;
-    }
-
     if (!user) {
       console.log(`useMotivationData: No user found for ${tableName}`);
       setIsLoading(false);
@@ -43,7 +31,6 @@ export const useMotivationData = <T extends Record<string, any>>(
     console.log(`useMotivationData: Fetching data for ${tableName}, user ${user.id}`);
     setIsLoading(true);
     fetchInProgress.current = true;
-    hasAttemptedFetch.current = true;
     
     try {
       // Use 'as any' to bypass TypeScript's strict table name checking
@@ -77,15 +64,19 @@ export const useMotivationData = <T extends Record<string, any>>(
             console.log(`useMotivationData: Using default parser for ${tableName}`);
             parsedData = { ...initialState };
             Object.keys(data).forEach(key => {
+              // Convert snake_case to camelCase
               const camelKey = key.replace(/([-_][a-z])/g, group =>
                 group.toUpperCase().replace('-', '').replace('_', '')
               );
               
               // Only set if the key exists in initialState
               if (camelKey in parsedData) {
-                // Check if it's possibly JSON stored as string
+                // Convert any empty strings to meaningful values if appropriate
                 if (typeof data[key] === 'string') {
-                  if (data[key].startsWith('{') || data[key].startsWith('[')) {
+                  if (data[key] === '') {
+                    // Keep the empty string as is
+                    (parsedData[camelKey as keyof T] as any) = data[key];
+                  } else if (data[key].startsWith('{') || data[key].startsWith('[')) {
                     try {
                       (parsedData[camelKey as keyof T] as any) = JSON.parse(data[key]);
                     } catch (e) {
@@ -125,6 +116,7 @@ export const useMotivationData = <T extends Record<string, any>>(
         console.log(`useMotivationData: Finished loading for ${tableName}, isLoading set to false`);
       }
       fetchInProgress.current = false;
+      hasAttemptedFetch.current = true;
     }
   }, [user, tableName, initialState, parseData, toast]);
 

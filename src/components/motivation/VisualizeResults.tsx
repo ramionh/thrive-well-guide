@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 
 interface VisualizeResultsProps {
   onComplete?: () => void;
@@ -13,14 +15,16 @@ interface VisualizeResultsProps {
 
 const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
   const { toast } = useToast();
+  const { user } = useUser();
   const [threeMonths, setThreeMonths] = useState<string>("");
   const [sixMonths, setSixMonths] = useState<string>("");
   const [oneYear, setOneYear] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { 
     formData,
     isLoading, 
-    isSaving, 
+    isSaving,
     submitForm, 
     updateForm,
     fetchData 
@@ -46,9 +50,16 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     nextStepName: "They See Your Strengths"
   });
 
-  // Load existing data when it's available
+  // Load existing data when component mounts
+  useEffect(() => {
+    console.log("Component mounted, fetching visualization data...");
+    fetchData();
+  }, [fetchData]);
+
+  // Update state when formData changes
   useEffect(() => {
     if (formData) {
+      console.log("FormData received:", formData);
       if (formData.three_months) {
         setThreeMonths(formData.three_months);
       }
@@ -61,32 +72,58 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     }
   }, [formData]);
 
-  // Fetch data when component mounts
-  useEffect(() => {
-    console.log("Fetching visualization data...");
-    fetchData();
-  }, [fetchData]);
+  // Direct database query to verify data
+  const verifyDataInDatabase = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('motivation_visualize_results')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+        
+      if (error) {
+        console.error("Error verifying data:", error);
+        return;
+      }
+      
+      console.log("Data in database:", data);
+    } catch (err) {
+      console.error("Error in verification query:", err);
+    }
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting visualization form with data:", { threeMonths, sixMonths, oneYear });
+    setIsSubmitting(true);
     
-    // Create object with data to submit
-    const dataToSubmit = {
-      three_months: threeMonths,
-      six_months: sixMonths,
-      one_year: oneYear
-    };
-    
-    // Update form data with current values
-    Object.entries(dataToSubmit).forEach(([key, value]) => {
-      updateForm(key as keyof typeof dataToSubmit, value);
-    });
-    
-    // Submit the form after updating all fields
-    setTimeout(() => {
-      submitForm();
-    }, 0);
+    try {
+      console.log("Submitting form with data:", { threeMonths, sixMonths, oneYear });
+      
+      // Update form data fields individually
+      updateForm("three_months", threeMonths);
+      updateForm("six_months", sixMonths);
+      updateForm("one_year", oneYear);
+      
+      // Submit the form
+      await submitForm();
+      
+      // Verify the data was saved correctly
+      setTimeout(() => {
+        verifyDataInDatabase();
+      }, 1000);
+      
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Error",
+        description: "There was a problem saving your data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -162,10 +199,10 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
 
             <Button
               type="submit"
-              disabled={isSaving}
+              disabled={isSaving || isSubmitting}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSaving ? "Saving..." : "Complete Step"}
+              {isSaving || isSubmitting ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}

@@ -1,7 +1,7 @@
 
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@/context/UserContext";
 import { useNavigate } from "react-router-dom";
 
@@ -100,7 +100,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
             ...baseData,
             updated_at: new Date().toISOString()
           })
-          .eq('user_id', user.id);
+          .eq('id', existingData.id);
       } else {
         // If no record exists, insert a new one
         console.log(`No existing record found for ${tableName}, inserting...`);
@@ -113,6 +113,8 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
         console.error(`Error saving data:`, result.error);
         throw result.error;
       }
+      
+      console.log(`Data successfully saved to ${tableName}`);
       
       // Log progress to the steps_progress table to track completion
       if (stepNumber) {
@@ -134,7 +136,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
       console.error(`Error saving data to ${tableName}:`, err);
       toast({
         title: "Error",
-        description: "Failed to save your data",
+        description: "Failed to save your data: " + (err.message || "Unknown error"),
         variant: "destructive",
       });
     } finally {
