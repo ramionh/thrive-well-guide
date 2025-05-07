@@ -58,7 +58,7 @@ const ThinkAboutBigPicture: React.FC<ThinkAboutBigPictureProps> = ({ onComplete 
   useEffect(() => {
     if (formData && formData.big_picture_why !== undefined) {
       console.log("ThinkAboutBigPicture: FormData received, updating state:", formData);
-      setBigPictureWhy(formData.big_picture_why);
+      setBigPictureWhy(formData.big_picture_why || "");
     }
   }, [formData]);
   
@@ -73,7 +73,7 @@ const ThinkAboutBigPicture: React.FC<ThinkAboutBigPictureProps> = ({ onComplete 
       // Update form data field
       updateForm("big_picture_why", bigPictureWhy);
       
-      // Submit the form
+      // Submit the form with latest data
       await submitForm();
     } catch (error) {
       console.error("Error submitting ThinkAboutBigPicture form:", error);

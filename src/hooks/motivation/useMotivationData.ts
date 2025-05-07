@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -20,9 +21,9 @@ export const useMotivationData = <T extends Record<string, any>>(
   const fetchInProgress = useRef(false);
   const hasAttemptedFetch = useRef(false);
 
-  const fetchData = useCallback(async () => {
-    // Skip if no user, fetch is in progress, or we've already fetched
-    if (!user || fetchInProgress.current || hasAttemptedFetch.current) {
+  const fetchData = useCallback(async (force = false) => {
+    // Skip if no user, fetch is in progress, or we've already fetched (unless forced)
+    if (!user || fetchInProgress.current || (hasAttemptedFetch.current && !force)) {
       console.log(`useMotivationData: Skipping fetch for ${tableName}. No user: ${!user}, Fetch in progress: ${fetchInProgress.current}, Already attempted: ${hasAttemptedFetch.current}`);
       if (!user) {
         setIsLoading(false);
@@ -73,10 +74,9 @@ export const useMotivationData = <T extends Record<string, any>>(
               
               // Only set if the key exists in initialState
               if (camelKey in parsedData) {
-                // Convert any empty strings to meaningful values if appropriate
-                if (typeof data[key] === 'string') {
-                  // Keep the value as is (even if empty string)
-                  (parsedData[camelKey as keyof T] as any) = data[key];
+                // For string values, ensure empty strings are preserved
+                if (data[key] === null || data[key] === undefined) {
+                  (parsedData[camelKey as keyof T] as any) = '';
                 } else {
                   (parsedData[camelKey as keyof T] as any) = data[key];
                 }

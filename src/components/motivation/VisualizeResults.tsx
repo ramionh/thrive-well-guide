@@ -84,12 +84,12 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     try {
       console.log("VisualizeResults: Updating form data with:", { threeMonths, sixMonths, oneYear });
       
-      // Update form data fields individually
+      // Update form data fields in the hook state
       updateForm("three_months", threeMonths);
       updateForm("six_months", sixMonths);
       updateForm("one_year", oneYear);
       
-      // Submit the form
+      // Submit the form with latest state
       await submitForm();
     } catch (error) {
       console.error("Error submitting VisualizeResults form:", error);
