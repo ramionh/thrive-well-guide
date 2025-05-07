@@ -12,7 +12,17 @@ interface FindingInspirationProps {
   onComplete?: () => void;
 }
 
+interface InspirationFormData {
+  inspiration_sources: string;
+  inspirational_content: string;
+}
+
 const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) => {
+  const initialState = {
+    inspiration_sources: "",
+    inspirational_content: ""
+  };
+
   const { 
     formData, 
     isLoading, 
@@ -23,13 +33,13 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
     error
   } = useMotivationForm({
     tableName: "motivation_finding_inspiration",
-    initialState: {
-      inspiration_sources: "",
-      inspirational_content: ""
-    },
+    initialState,
     onSuccess: onComplete,
     stepNumber: 37,
+    nextStepNumber: 38,
     stepName: "Finding Inspiration",
+    nextStepName: "Building on Your Strengths",
+    transformData: (data) => data, // No transformation needed as form field names match DB columns
     parseData: (data) => {
       console.log("Raw data from finding inspiration:", data);
       return {
@@ -66,7 +76,7 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
             <>
               <FindingInspirationDescription />
               <FindingInspirationForm 
-                formData={formData}
+                formData={formData as InspirationFormData}
                 updateForm={updateForm}
                 isSaving={isSaving}
                 handleSubmit={handleSubmit}

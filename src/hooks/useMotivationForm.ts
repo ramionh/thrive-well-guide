@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -6,18 +7,20 @@ import { useProgress } from "@/hooks/motivation/useProgress";
 interface UseMotivationFormProps {
   tableName: string;
   initialState: Record<string, any>;
-  transformData: (data: any) => Record<string, any>;
+  transformData?: (data: any) => Record<string, any>;
+  parseData?: (data: any) => Record<string, any>;
   onSuccess?: () => void;
-  stepNumber: number;
-  nextStepNumber: number;
-  stepName: string;
-  nextStepName: string;
+  stepNumber?: number;
+  nextStepNumber?: number;
+  stepName?: string;
+  nextStepName?: string;
 }
 
 export const useMotivationForm = ({
   tableName,
   initialState,
-  transformData,
+  transformData = (data) => data,
+  parseData = (data) => data,
   onSuccess,
   stepNumber,
   nextStepNumber,
@@ -58,7 +61,7 @@ export const useMotivationForm = ({
 
       if (data) {
         console.log(`Data fetched successfully:`, data);
-        setFormData(transformData(data));
+        setFormData(parseData(data));
       } else {
         console.log(`No existing data found in ${tableName}`);
         setFormData(initialState);
@@ -69,7 +72,7 @@ export const useMotivationForm = ({
     } finally {
       setIsLoading(false);
     }
-  }, [user, tableName, transformData, initialState]);
+  }, [user, tableName, parseData, initialState]);
 
   // Update a specific field in the form data
   const updateForm = useCallback((field: string, value: any) => {
@@ -86,8 +89,9 @@ export const useMotivationForm = ({
     if (!user) return;
     
     const dataToSubmit = directData || formData;
+    const transformedData = transformData ? transformData(dataToSubmit) : dataToSubmit;
     
-    console.log(`Submitting data to ${tableName}:`, dataToSubmit);
+    console.log(`Submitting data to ${tableName}:`, transformedData);
     setIsSaving(true);
     setError(null);
 
@@ -97,7 +101,7 @@ export const useMotivationForm = ({
         .from(tableName)
         .insert({
           user_id: user.id,
-          ...dataToSubmit
+          ...transformedData
         });
 
       if (insertError) throw insertError;
@@ -105,7 +109,12 @@ export const useMotivationForm = ({
       console.log(`Data successfully saved to ${tableName}`);
       
       // Mark the step as complete in the progress tracker
-      await markStepComplete(stepNumber, nextStepNumber, stepName, nextStepName);
+      if (stepNumber && nextStepNumber && stepName && nextStepName) {
+        await markStepComplete(stepNumber, nextStepNumber, stepName, nextStepName);
+      } else if (stepNumber && stepName) {
+        // If no next step is provided, only mark current step as complete
+        await markStepComplete(stepNumber, stepNumber, stepName, stepName);
+      }
       
       // Call the success callback if provided
       if (onSuccess) {
@@ -120,7 +129,7 @@ export const useMotivationForm = ({
     } finally {
       setIsSaving(false);
     }
-  }, [user, formData, tableName, markStepComplete, stepNumber, nextStepNumber, stepName, nextStepName, onSuccess]);
+  }, [user, formData, tableName, transformData, markStepComplete, stepNumber, nextStepNumber, stepName, nextStepName, onSuccess]);
 
   // Load data on component mount
   useEffect(() => {
