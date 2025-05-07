@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
@@ -7,6 +7,7 @@ import FindingInspirationHeader from "./finding-inspiration/FindingInspirationHe
 import FindingInspirationDescription from "./finding-inspiration/FindingInspirationDescription";
 import FindingInspirationForm from "./finding-inspiration/FindingInspirationForm";
 import ErrorBoundary from "@/components/ui/error-boundary";
+import { useMotivationSafeData } from "@/hooks/motivation/useMotivationSafeData";
 
 interface FindingInspirationProps {
   onComplete?: () => void;
@@ -25,12 +26,21 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
 
   const { 
     formData, 
-    isLoading, 
-    isSaving, 
-    fetchData,
-    updateForm,
-    submitForm,
+    isLoading,
     error
+  } = useMotivationSafeData<InspirationFormData>(
+    "motivation_finding_inspiration",
+    initialState,
+    (data) => ({
+      inspiration_sources: typeof data.inspiration_sources === 'string' ? data.inspiration_sources : "",
+      inspirational_content: typeof data.inspirational_content === 'string' ? data.inspirational_content : ""
+    })
+  );
+  
+  const {
+    isSaving,
+    updateForm,
+    submitForm
   } = useMotivationForm({
     tableName: "motivation_finding_inspiration",
     initialState,
@@ -38,30 +48,27 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
     stepNumber: 37,
     nextStepNumber: 38,
     stepName: "Finding Inspiration",
-    nextStepName: "Building on Your Strengths",
-    transformData: (data) => data, // No transformation needed as form field names match DB columns
-    parseData: (data) => {
-      console.log("Raw data from finding inspiration:", data);
-      return {
-        inspiration_sources: typeof data.inspiration_sources === 'string' ? data.inspiration_sources : "",
-        inspirational_content: typeof data.inspirational_content === 'string' ? data.inspirational_content : ""
-      };
-    }
+    nextStepName: "Building on Your Strengths"
   });
-
-  useEffect(() => {
-    console.log("FindingInspiration: Fetching data");
-    fetchData();
-  }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("FindingInspiration: Submitting form", formData);
-    submitForm();
+    submitForm(formData);
   };
 
   if (error) {
     console.error("FindingInspiration: Error loading data", error);
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="px-0">
+          <div className="p-6 text-red-500">
+            <p>An error occurred while loading this component. Please try refreshing the page.</p>
+            <p className="text-sm mt-2">{error}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -76,7 +83,7 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
             <>
               <FindingInspirationDescription />
               <FindingInspirationForm 
-                formData={formData as InspirationFormData}
+                formData={formData}
                 updateForm={updateForm}
                 isSaving={isSaving}
                 handleSubmit={handleSubmit}

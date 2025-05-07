@@ -5,39 +5,53 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
+import { useMotivationSafeData } from "@/hooks/motivation/useMotivationSafeData";
 
 interface TheySeeYourStrengthsProps {
   onComplete?: () => void;
 }
 
 const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete }) => {
+  const initialState = {
+    strengths_others_see: "",
+    leverage_strengths: ""
+  };
+  
   const { 
     formData, 
-    isLoading, 
-    isSaving, 
-    submitForm, 
-    updateForm,
+    isLoading,
     error
-  } = useMotivationForm({
-    tableName: "motivation_strengths_feedback",
-    initialState: {
-      feedback_entries: [],
-      strengths_others_see: "",
-      leverage_strengths: ""
-    },
-    onSuccess: onComplete,
-    stepNumber: 36,
-    stepName: "They See Your Strengths",
-    transformData: (data) => ({
+  } = useMotivationSafeData(
+    "motivation_strengths_feedback",
+    initialState,
+    (data) => ({
       strengths_others_see: data.strengths_others_see || "",
       leverage_strengths: data.leverage_strengths || ""
-    }),
-    parseData: (data) => ({
-      feedback_entries: data.feedback_entries || [],
+    })
+  );
+
+  const {
+    isSaving,
+    updateForm,
+    submitForm
+  } = useMotivationForm({
+    tableName: "motivation_strengths_feedback",
+    initialState,
+    onSuccess: onComplete,
+    stepNumber: 41,
+    stepName: "They See Your Strengths",
+    nextStepNumber: 42,
+    nextStepName: "Build on Your Strengths",
+    transformData: (data) => ({
       strengths_others_see: data.strengths_others_see || "",
       leverage_strengths: data.leverage_strengths || ""
     })
   });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm(formData);
+  };
 
   if (isLoading) {
     return <LoadingState />;
@@ -67,17 +81,14 @@ const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete 
           to your fitness journey or ability to create positive change in your life.
         </p>
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          submitForm();
-        }}>
+        <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div className="form-group">
               <label className="block text-purple-700 font-medium mb-2">
                 What strengths do others see in you?
               </label>
               <Textarea
-                value={formData.strengths_others_see || ""}
+                value={formData.strengths_others_see}
                 onChange={(e) => updateForm("strengths_others_see", e.target.value)}
                 className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="Write about how others perceive your strengths..."
@@ -90,7 +101,7 @@ const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete 
                 How can you leverage these perceived strengths in your fitness journey?
               </label>
               <Textarea
-                value={formData.leverage_strengths || ""}
+                value={formData.leverage_strengths}
                 onChange={(e) => updateForm("leverage_strengths", e.target.value)}
                 className="w-full border-purple-200 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="Describe how you can use these strengths..."

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
 import { EyeIcon } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
+import { useMotivationSafeData } from "@/hooks/motivation/useMotivationSafeData";
 
 interface EnvisioningChangeProps {
   onComplete: () => void;
@@ -18,16 +19,23 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     howItWorked: ""
   };
   
-  const didInitialFetch = useRef(false);
-
   const { 
     formData, 
+    isLoading, 
+    error 
+  } = useMotivationSafeData(
+    "motivation_envisioning_change",
+    initialState,
+    (data) => ({
+      successfulChange: data?.successful_change || "",
+      howItWorked: data?.how_it_worked || ""
+    })
+  );
+
+  const { 
     updateForm, 
     submitForm, 
-    isLoading, 
-    isSaving, 
-    error,
-    fetchData 
+    isSaving
   } = useMotivationForm({
     tableName: "motivation_envisioning_change",
     initialState,
@@ -36,29 +44,11 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     nextStepNumber: 58,
     stepName: "Envisioning Change",
     nextStepName: "Realistic Change",
-    transformData: (data) => {
-      return {
-        successful_change: data.successfulChange,
-        how_it_worked: data.howItWorked
-      };
-    },
-    parseData: (data) => {
-      console.log("Raw data from Envisioning Change:", data);
-      return {
-        successfulChange: data?.successful_change || "",
-        howItWorked: data?.how_it_worked || ""
-      };
-    }
+    transformData: (data) => ({
+      successful_change: data.successfulChange,
+      how_it_worked: data.howItWorked
+    })
   });
-
-  // Only fetch data once on component mount
-  useEffect(() => {
-    if (!didInitialFetch.current) {
-      console.log("EnvisioningChange: Fetching data on mount");
-      fetchData();
-      didInitialFetch.current = true;
-    }
-  }, [fetchData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
