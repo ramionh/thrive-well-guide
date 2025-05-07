@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
-import LoadingState from "./shared/LoadingState";
 import { useToast } from "@/components/ui/use-toast";
+import LoadingState from "./shared/LoadingState";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
+import { useProgress } from "@/hooks/motivation/useProgress";
 
 interface VisualizeResultsProps {
   onComplete?: () => void;
@@ -12,106 +14,120 @@ interface VisualizeResultsProps {
 
 const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
   const { toast } = useToast();
+  const { user } = useUser();
+  const { markStepComplete } = useProgress();
   const [threeMonths, setThreeMonths] = useState<string>("");
   const [sixMonths, setSixMonths] = useState<string>("");
   const [oneYear, setOneYear] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const { 
-    formData,
-    isLoading, 
-    isSaving,
-    submitForm, 
-    updateForm,
-    fetchData 
-  } = useMotivationForm({
-    tableName: "motivation_visualize_results",
-    initialState: {
-      three_months: "",
-      six_months: "",
-      one_year: ""
-    },
-    transformData: (data) => ({
-      three_months: data.three_months || "",
-      six_months: data.six_months || "",
-      one_year: data.one_year || ""
-    }),
-    onSuccess: () => {
+  // Load existing data when component mounts
+  useEffect(() => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        console.log("VisualizeResults: Fetching data for user", user.id);
+        setIsLoading(true);
+        
+        const { data, error } = await supabase
+          .from("motivation_visualize_results")
+          .select("three_months, six_months, one_year")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error) {
+          // If the error is "No rows found", this is the first time the user is accessing this step
+          if (error.code === "PGRST116") {
+            console.log("VisualizeResults: No previous data found");
+            setThreeMonths("");
+            setSixMonths("");
+            setOneYear("");
+          } else {
+            console.error("VisualizeResults: Error fetching data:", error);
+            toast({
+              title: "Error",
+              description: "There was a problem loading your data. Please refresh and try again.",
+              variant: "destructive"
+            });
+          }
+        } else if (data) {
+          console.log("VisualizeResults: Data loaded successfully:", data);
+          setThreeMonths(data.three_months || "");
+          setSixMonths(data.six_months || "");
+          setOneYear(data.one_year || "");
+        }
+      } catch (error) {
+        console.error("VisualizeResults: Unexpected error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user, toast]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save your progress.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    console.log("VisualizeResults: Submitting form with data:", {
+      three_months: threeMonths,
+      six_months: sixMonths,
+      one_year: oneYear
+    });
+    
+    setIsSaving(true);
+    
+    try {
+      // Insert the data directly into the database
+      const { error } = await supabase
+        .from("motivation_visualize_results")
+        .insert({
+          user_id: user.id,
+          three_months: threeMonths,
+          six_months: sixMonths,
+          one_year: oneYear
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      // Mark step as complete
+      await markStepComplete(59, 60, "Visualize Results", "They See Your Strengths");
+      
       toast({
         title: "Success",
         description: "Your visualized results have been saved!"
       });
+      
       if (onComplete) {
         onComplete();
       }
-    },
-    stepNumber: 59,
-    nextStepNumber: 60,
-    stepName: "Visualize Results",
-    nextStepName: "They See Your Strengths"
-  });
-
-  // Load existing data when component mounts - only once
-  useEffect(() => {
-    if (!dataLoaded) {
-      console.log("VisualizeResults: Fetching data on mount");
-      fetchData();
-      setDataLoaded(true);
-    }
-  }, [fetchData, dataLoaded]);
-
-  // Update state when formData changes
-  useEffect(() => {
-    if (formData) {
-      console.log("VisualizeResults: FormData received:", formData);
-      
-      if (formData.three_months !== undefined) {
-        setThreeMonths(formData.three_months || "");
-      }
-      
-      if (formData.six_months !== undefined) {
-        setSixMonths(formData.six_months || "");
-      }
-      
-      if (formData.one_year !== undefined) {
-        setOneYear(formData.one_year || "");
-      }
-    }
-  }, [formData]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("VisualizeResults: Submitting form");
-    setIsSubmitting(true);
-    
-    try {
-      console.log("VisualizeResults: Preparing form data with:", { 
-        three_months: threeMonths, 
-        six_months: sixMonths, 
-        one_year: oneYear 
-      });
-      
-      // First update form with current state values
-      await updateForm("three_months", threeMonths);
-      await updateForm("six_months", sixMonths);
-      await updateForm("one_year", oneYear);
-      
-      // Then submit the form
-      await submitForm({
-        three_months: threeMonths,
-        six_months: sixMonths,
-        one_year: oneYear
-      });
-    } catch (error) {
-      console.error("Error submitting VisualizeResults form:", error);
+    } catch (error: any) {
+      console.error("VisualizeResults: Error submitting form:", error);
       toast({
         title: "Error",
         description: "There was a problem saving your data. Please try again.",
         variant: "destructive"
       });
     } finally {
-      setIsSubmitting(false);
+      setIsSaving(false);
     }
   };
 
@@ -188,10 +204,10 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
 
             <Button
               type="submit"
-              disabled={isSaving || isSubmitting}
+              disabled={isSaving}
               className="w-full bg-purple-600 hover:bg-purple-700"
             >
-              {isSaving || isSubmitting ? "Saving..." : "Complete Step"}
+              {isSaving ? "Saving..." : "Complete Step"}
             </Button>
           </form>
         )}
