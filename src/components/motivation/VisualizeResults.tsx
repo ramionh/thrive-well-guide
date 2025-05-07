@@ -3,14 +3,16 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
+import { useToast } from "@/components/ui/use-toast";
 
 interface VisualizeResultsProps {
   onComplete?: () => void;
 }
 
 const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
+  const { toast } = useToast();
   const [threeMonths, setThreeMonths] = useState<string>("");
   const [sixMonths, setSixMonths] = useState<string>("");
   const [oneYear, setOneYear] = useState<string>("");
@@ -20,7 +22,8 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     isLoading, 
     isSaving, 
     submitForm, 
-    updateForm 
+    updateForm,
+    fetchData 
   } = useMotivationForm({
     tableName: "motivation_visualize_results",
     initialState: {
@@ -28,7 +31,19 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
       six_months: "",
       one_year: ""
     },
-    onSuccess: onComplete
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Your visualized results have been saved!"
+      });
+      if (onComplete) {
+        onComplete();
+      }
+    },
+    stepNumber: 59,
+    nextStepNumber: 60,
+    stepName: "Visualize Results",
+    nextStepName: "They See Your Strengths"
   });
 
   useEffect(() => {
@@ -45,11 +60,19 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     }
   }, [formData]);
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Update the form data with the current state values
     updateForm("three_months", threeMonths);
     updateForm("six_months", sixMonths);
     updateForm("one_year", oneYear);
+    
+    // Submit the form with the updated data
     submitForm();
   };
 
