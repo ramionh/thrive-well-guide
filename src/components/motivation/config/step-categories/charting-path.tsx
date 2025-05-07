@@ -1,5 +1,6 @@
 
 import React from 'react';
+import ExploringChange from "../../ExploringChange";
 import FindingHope from "../../FindingHope";
 import RealisticChange from "../../RealisticChange";
 import PastSuccess from "../../PastSuccess";
@@ -52,7 +53,7 @@ export const chartingYourPathSteps: StepConfig[] = [
     id: 18,
     title: "Exploring Change",
     description: "Begin charting your path to transformation",
-    component: (onComplete) => <FindingHope onComplete={onComplete} />
+    component: (onComplete) => <ExploringChange onComplete={onComplete} />
   },
   {
     id: 19,
