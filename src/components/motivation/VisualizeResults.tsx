@@ -6,8 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
 import LoadingState from "./shared/LoadingState";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useUser } from "@/context/UserContext";
 
 interface VisualizeResultsProps {
   onComplete?: () => void;
@@ -15,11 +13,11 @@ interface VisualizeResultsProps {
 
 const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
   const { toast } = useToast();
-  const { user } = useUser();
   const [threeMonths, setThreeMonths] = useState<string>("");
   const [sixMonths, setSixMonths] = useState<string>("");
   const [oneYear, setOneYear] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const { 
     formData,
@@ -50,56 +48,41 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     nextStepName: "They See Your Strengths"
   });
 
-  // Load existing data when component mounts
+  // Load existing data when component mounts - only once
   useEffect(() => {
-    console.log("Component mounted, fetching visualization data...");
-    fetchData();
-  }, [fetchData]);
+    if (!dataLoaded) {
+      console.log("VisualizeResults: Fetching data on mount");
+      fetchData();
+      setDataLoaded(true);
+    }
+  }, [fetchData, dataLoaded]);
 
   // Update state when formData changes
   useEffect(() => {
     if (formData) {
-      console.log("FormData received:", formData);
-      if (formData.three_months) {
+      console.log("VisualizeResults: FormData received:", formData);
+      
+      if (formData.three_months !== undefined) {
         setThreeMonths(formData.three_months);
       }
-      if (formData.six_months) {
+      
+      if (formData.six_months !== undefined) {
         setSixMonths(formData.six_months);
       }
-      if (formData.one_year) {
+      
+      if (formData.one_year !== undefined) {
         setOneYear(formData.one_year);
       }
     }
   }, [formData]);
 
-  // Direct database query to verify data
-  const verifyDataInDatabase = async () => {
-    if (!user) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('motivation_visualize_results')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-        
-      if (error) {
-        console.error("Error verifying data:", error);
-        return;
-      }
-      
-      console.log("Data in database:", data);
-    } catch (err) {
-      console.error("Error in verification query:", err);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("VisualizeResults: Submitting form");
     setIsSubmitting(true);
     
     try {
-      console.log("Submitting form with data:", { threeMonths, sixMonths, oneYear });
+      console.log("VisualizeResults: Updating form data with:", { threeMonths, sixMonths, oneYear });
       
       // Update form data fields individually
       updateForm("three_months", threeMonths);
@@ -108,14 +91,8 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
       
       // Submit the form
       await submitForm();
-      
-      // Verify the data was saved correctly
-      setTimeout(() => {
-        verifyDataInDatabase();
-      }, 1000);
-      
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error submitting VisualizeResults form:", error);
       toast({
         title: "Error",
         description: "There was a problem saving your data. Please try again.",

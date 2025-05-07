@@ -51,6 +51,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
    * Update a specific field in the form data
    */
   const updateForm = (field: keyof T, value: any) => {
+    console.log(`useMotivationForm: Updating field ${String(field)} with value:`, value);
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -61,6 +62,7 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
    * Submit form data
    */
   const submitForm = () => {
+    console.log(`useMotivationForm: Submitting form data to ${tableName}:`, formData);
     submitFormToDb(formData);
   };
 

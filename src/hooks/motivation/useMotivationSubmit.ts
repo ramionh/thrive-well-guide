@@ -91,7 +91,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
       
       let result;
       
-      if (existingData && 'id' in existingData) {
+      if (existingData && existingData?.id) { // Fix: Add optional chaining to prevent TypeScript error
         // If record exists, update it
         const recordId = existingData.id;
         console.log(`Found existing record for ${tableName} with ID ${recordId}, updating...`);

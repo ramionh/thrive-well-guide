@@ -21,10 +21,12 @@ export const useMotivationData = <T extends Record<string, any>>(
   const hasAttemptedFetch = useRef(false);
 
   const fetchData = useCallback(async () => {
-    // Only run once per component lifecycle
-    if (!user) {
-      console.log(`useMotivationData: No user found for ${tableName}`);
-      setIsLoading(false);
+    // Skip if no user, fetch is in progress, or we've already fetched
+    if (!user || fetchInProgress.current || hasAttemptedFetch.current) {
+      console.log(`useMotivationData: Skipping fetch for ${tableName}. No user: ${!user}, Fetch in progress: ${fetchInProgress.current}, Already attempted: ${hasAttemptedFetch.current}`);
+      if (!user) {
+        setIsLoading(false);
+      }
       return;
     }
 
@@ -73,19 +75,8 @@ export const useMotivationData = <T extends Record<string, any>>(
               if (camelKey in parsedData) {
                 // Convert any empty strings to meaningful values if appropriate
                 if (typeof data[key] === 'string') {
-                  if (data[key] === '') {
-                    // Keep the empty string as is
-                    (parsedData[camelKey as keyof T] as any) = data[key];
-                  } else if (data[key].startsWith('{') || data[key].startsWith('[')) {
-                    try {
-                      (parsedData[camelKey as keyof T] as any) = JSON.parse(data[key]);
-                    } catch (e) {
-                      console.warn(`Failed to parse JSON for ${key}:`, e);
-                      (parsedData[camelKey as keyof T] as any) = data[key];
-                    }
-                  } else {
-                    (parsedData[camelKey as keyof T] as any) = data[key];
-                  }
+                  // Keep the value as is (even if empty string)
+                  (parsedData[camelKey as keyof T] as any) = data[key];
                 } else {
                   (parsedData[camelKey as keyof T] as any) = data[key];
                 }
@@ -122,7 +113,9 @@ export const useMotivationData = <T extends Record<string, any>>(
 
   // Reset hasAttemptedFetch when user changes
   useEffect(() => {
-    hasAttemptedFetch.current = false;
+    if (user) {
+      hasAttemptedFetch.current = false;
+    }
   }, [user?.id]);
 
   // Set up cleanup when component unmounts
@@ -131,6 +124,15 @@ export const useMotivationData = <T extends Record<string, any>>(
       isMounted.current = false;
     };
   }, []);
+
+  // Initial data fetch
+  useEffect(() => {
+    if (user && !hasAttemptedFetch.current && !fetchInProgress.current) {
+      fetchData();
+    } else if (!user) {
+      setIsLoading(false);
+    }
+  }, [user?.id, fetchData]);
 
   return {
     formData,

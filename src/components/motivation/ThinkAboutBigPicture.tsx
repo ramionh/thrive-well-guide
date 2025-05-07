@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useMotivationForm } from "@/hooks/motivation/useMotivationForm";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useUser } from "@/context/UserContext";
 import LoadingState from "./shared/LoadingState";
 
 interface ThinkAboutBigPictureProps {
@@ -17,8 +15,8 @@ interface ThinkAboutBigPictureProps {
 const ThinkAboutBigPicture: React.FC<ThinkAboutBigPictureProps> = ({ onComplete }) => {
   const [bigPictureWhy, setBigPictureWhy] = useState<string>("");
   const { toast } = useToast();
-  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
   
   const { 
     formData,
@@ -47,60 +45,38 @@ const ThinkAboutBigPicture: React.FC<ThinkAboutBigPictureProps> = ({ onComplete 
     nextStepName: "Visualize Results"
   });
   
-  // Load existing data when component mounts
+  // Load existing data when component mounts - only once
   useEffect(() => {
-    console.log("Component mounted, fetching big picture why data...");
-    fetchData();
-  }, [fetchData]);
+    if (!dataLoaded) {
+      console.log("ThinkAboutBigPicture: Fetching data on mount");
+      fetchData();
+      setDataLoaded(true);
+    }
+  }, [fetchData, dataLoaded]);
   
+  // Update state when formData changes
   useEffect(() => {
-    if (formData && formData.big_picture_why) {
-      console.log("FormData received:", formData);
+    if (formData && formData.big_picture_why !== undefined) {
+      console.log("ThinkAboutBigPicture: FormData received, updating state:", formData);
       setBigPictureWhy(formData.big_picture_why);
     }
   }, [formData]);
   
-  // Direct database query to verify data
-  const verifyDataInDatabase = async () => {
-    if (!user) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('motivation_big_picture_why')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-        
-      if (error) {
-        console.error("Error verifying data:", error);
-        return;
-      }
-      
-      console.log("Big picture why data in database:", data);
-    } catch (err) {
-      console.error("Error in verification query:", err);
-    }
-  };
-  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("ThinkAboutBigPicture: Submitting form");
     setIsSubmitting(true);
     
     try {
-      console.log("Submitting form with data:", { bigPictureWhy });
+      console.log("ThinkAboutBigPicture: Updating form data with:", { bigPictureWhy });
       
       // Update form data field
       updateForm("big_picture_why", bigPictureWhy);
       
       // Submit the form
       await submitForm();
-      
-      // Verify the data was saved correctly
-      setTimeout(() => {
-        verifyDataInDatabase();
-      }, 1000);
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error submitting ThinkAboutBigPicture form:", error);
       toast({
         title: "Error",
         description: "There was a problem saving your data. Please try again.",
