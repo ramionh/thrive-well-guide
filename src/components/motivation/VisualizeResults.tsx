@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -87,15 +86,23 @@ const VisualizeResults: React.FC<VisualizeResultsProps> = ({ onComplete }) => {
     setIsSubmitting(true);
     
     try {
-      console.log("VisualizeResults: Updating form data with:", { threeMonths, sixMonths, oneYear });
+      console.log("VisualizeResults: Preparing form data with:", { 
+        three_months: threeMonths, 
+        six_months: sixMonths, 
+        one_year: oneYear 
+      });
       
-      // Update form data fields
-      updateForm("three_months", threeMonths);
-      updateForm("six_months", sixMonths);
-      updateForm("one_year", oneYear);
+      // First update form with current state values
+      await updateForm("three_months", threeMonths);
+      await updateForm("six_months", sixMonths);
+      await updateForm("one_year", oneYear);
       
-      // Submit the form with latest state
-      await submitForm();
+      // Then submit the form
+      await submitForm({
+        three_months: threeMonths,
+        six_months: sixMonths,
+        one_year: oneYear
+      });
     } catch (error) {
       console.error("Error submitting VisualizeResults form:", error);
       toast({
