@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
+import { useMotivationSafeData } from "@/hooks/motivation/useMotivationSafeData";
+import { useMotivationSubmit } from "@/hooks/motivation/useMotivationSubmit";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -45,14 +46,14 @@ const MakingYourGoalMeasurable: React.FC<MakingYourGoalMeasurableProps> = ({ onC
     enabled: !!user
   });
   
+  // Use our safe data fetching hook
   const { 
     formData,
+    setFormData,
     isLoading, 
-    isSaving, 
-    fetchData,
-    submitForm, 
-    updateForm 
-  } = useMotivationForm({
+    error,
+    fetchData 
+  } = useMotivationSafeData({
     tableName: "motivation_measurable_goal",
     initialState: {
       measurable_goal: "",
@@ -66,16 +67,26 @@ const MakingYourGoalMeasurable: React.FC<MakingYourGoalMeasurableProps> = ({ onC
         goal_weight_lbs: data.goal_weight_lbs,
         goal_bodyfat_percentage: data.goal_bodyfat_percentage
       };
-    },
-    transformData: (formData) => {
+    }
+  });
+  
+  // Use our submit functionality
+  const { 
+    submitForm: submitFormToDb,
+    isSaving
+  } = useMotivationSubmit(
+    "motivation_measurable_goal",
+    (localFormData) => {
       return {
         measurable_goal: measurableGoal,
         goal_weight_lbs: goalWeight ? parseFloat(goalWeight) : null,
         goal_bodyfat_percentage: goalBodyfat ? parseFloat(goalBodyfat) : null
       };
     },
-    onSuccess: onComplete
-  });
+    { 
+      onSuccess: onComplete
+    }
+  );
   
   useEffect(() => {
     fetchData();
@@ -91,12 +102,11 @@ const MakingYourGoalMeasurable: React.FC<MakingYourGoalMeasurableProps> = ({ onC
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    updateForm("measurable_goal", measurableGoal);
-    updateForm("goal_weight_lbs", goalWeight ? parseFloat(goalWeight) : null);
-    updateForm("goal_bodyfat_percentage", goalBodyfat ? parseFloat(goalBodyfat) : null);
-    
-    submitForm();
+    submitFormToDb({
+      measurable_goal: measurableGoal,
+      goal_weight_lbs: goalWeight ? parseFloat(goalWeight) : null,
+      goal_bodyfat_percentage: goalBodyfat ? parseFloat(goalBodyfat) : null
+    });
   };
   
   return (

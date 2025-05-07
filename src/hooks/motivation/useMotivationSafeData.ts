@@ -4,17 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
 
+interface UseMotivationSafeDataOptions<T> {
+  tableName: string;
+  initialState: T;
+  parseData?: (data: any) => T;
+}
+
 /**
  * Safe data fetching hook to prevent fetch loops
- * @param tableName The Supabase table to fetch from
- * @param initialState Initial state for the data
- * @param parseData Optional function to parse the fetched data
+ * @param options Configuration options
  */
 export const useMotivationSafeData = <T extends Record<string, any>>(
-  tableName: string,
-  initialState: T,
-  parseData?: (data: any) => T
+  options: UseMotivationSafeDataOptions<T>
 ) => {
+  const { tableName, initialState, parseData } = options;
   const { user } = useUser();
   const { toast } = useToast();
   const [formData, setFormData] = useState<T>(initialState);
@@ -22,10 +25,12 @@ export const useMotivationSafeData = <T extends Record<string, any>>(
   const [error, setError] = useState<string | null>(null);
   const hasAttemptedFetch = useRef(false);
   const isMounted = useRef(true);
+  const fetchInProgress = useRef(false);
 
   const fetchData = useCallback(async (force: boolean = false) => {
-    // Skip if no user, or we've already fetched (unless forced)
-    if (!user || (hasAttemptedFetch.current && !force)) {
+    // Skip if no user, fetch is in progress, or we've already fetched (unless forced)
+    if (!user || fetchInProgress.current || (hasAttemptedFetch.current && !force)) {
+      console.log(`useMotivationSafeData: Skipping fetch for ${tableName}. No user: ${!user}, Fetch in progress: ${fetchInProgress.current}, Already attempted: ${hasAttemptedFetch.current}`);
       if (!user) {
         setIsLoading(false);
       }
@@ -34,7 +39,7 @@ export const useMotivationSafeData = <T extends Record<string, any>>(
 
     console.log(`useMotivationSafeData: Fetching data for ${tableName}, user ${user.id}`);
     setIsLoading(true);
-    hasAttemptedFetch.current = true;
+    fetchInProgress.current = true;
     
     try {
       const { data, error } = await supabase
@@ -84,8 +89,17 @@ export const useMotivationSafeData = <T extends Record<string, any>>(
       if (isMounted.current) {
         setIsLoading(false);
       }
+      fetchInProgress.current = false;
+      hasAttemptedFetch.current = true;
     }
   }, [user, tableName, parseData, toast]);
+
+  // Reset hasAttemptedFetch when user changes
+  useEffect(() => {
+    if (user) {
+      hasAttemptedFetch.current = false;
+    }
+  }, [user?.id]);
 
   // Set up cleanup when component unmounts
   useEffect(() => {
@@ -97,12 +111,12 @@ export const useMotivationSafeData = <T extends Record<string, any>>(
 
   // Only fetch data once when the component mounts and user is available
   useEffect(() => {
-    if (user && !hasAttemptedFetch.current) {
+    if (user && !hasAttemptedFetch.current && !fetchInProgress.current) {
       fetchData();
     } else if (!user) {
       setIsLoading(false);
     }
-  }, [user, fetchData]);
+  }, [user?.id, fetchData]);
 
   return {
     formData,
