@@ -74,7 +74,7 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
         <CardContent className="px-0">
           <div className="p-6 text-red-500">
             <p>An error occurred while loading this component. Please try refreshing the page.</p>
-            <p className="text-sm mt-2">{error.message}</p>
+            <p className="text-sm mt-2">{error}</p>
           </div>
         </CardContent>
       </Card>

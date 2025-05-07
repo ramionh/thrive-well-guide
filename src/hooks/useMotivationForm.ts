@@ -47,8 +47,9 @@ export const useMotivationForm = ({
       
       console.log(`Fetching data from ${tableName} for user ${user.id}`);
       
+      // Use type assertion to handle the dynamic table name
       const { data, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
@@ -97,8 +98,9 @@ export const useMotivationForm = ({
 
     try {
       // Insert the data into the database
+      // Use type assertion to handle the dynamic table name
       const { error: insertError } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .insert({
           user_id: user.id,
           ...transformedData
