@@ -34,175 +34,175 @@ import type { StepConfig } from "../../types/motivation";
 
 export const activeChangeSteps: StepConfig[] = [
   {
-    id: 63,
+    id: 66,
     title: "Getting Ready",
     description: "Prepare for active change implementation",
     component: (onComplete) => <GettingReady onComplete={onComplete} />
   },
   {
-    id: 64,
+    id: 67,
     title: "Where Are You Now",
     description: "Assess your current position",
     component: (onComplete) => <WhereAreYouNow onComplete={onComplete} />
   },
   {
-    id: 65,
+    id: 68,
     title: "Developing Objectives for Your Goal",
     description: "Create specific, measurable objectives",
     component: (onComplete) => <DevelopingObjectives onComplete={onComplete} />
   },
   {
-    id: 66,
+    id: 69,
     title: "Rewards Create an Incentive to Change",
     description: "Understand the power of rewards",
     component: (onComplete) => <RewardsCreateIncentive onComplete={onComplete} />
   },
   {
-    id: 67,
+    id: 70,
     title: "Narrowing Down Rewards",
     description: "Select effective personal rewards",
     component: (onComplete) => <NarrowingDownRewards onComplete={onComplete} />
   },
   {
-    id: 68,
+    id: 71,
     title: "Rewards: Events and Activities",
     description: "Plan rewarding events and activities",
     component: (onComplete) => <RewardsEventsActivities onComplete={onComplete} />
   },
   {
-    id: 69,
+    id: 72,
     title: "Rewards from People Who Matter",
     description: "Involve important people in your rewards",
     component: (onComplete) => <RewardsFromPeopleWhoMatter onComplete={onComplete} />
   },
   {
-    id: 70,
+    id: 73,
     title: "Dealing With Setbacks: Stress Check",
     description: "Monitor stress during setbacks",
     component: (onComplete) => <DealingWithSetbacksStressCheck onComplete={onComplete} />
   },
   {
-    id: 71,
+    id: 74,
     title: "Dealing With Setbacks: Self-Care",
     description: "Practice self-care during challenges",
     component: (onComplete) => <DealingWithSetbacksSelfCare onComplete={onComplete} />
   },
   {
-    id: 72,
+    id: 75,
     title: "Dealing With Setbacks: Recommit",
     description: "Renew your commitment after setbacks",
     component: (onComplete) => <DealingWithSetbacksRecommit onComplete={onComplete} />
   },
   {
-    id: 73,
+    id: 76,
     title: "Taking Another Step Toward Change",
     description: "Continue moving forward on your journey",
     component: (onComplete) => <TakingAnotherStepTowardChange onComplete={onComplete} />
   },
   {
-    id: 74,
+    id: 77,
     title: "Be Consistent",
     description: "Develop consistency in your habits",
     component: (onComplete) => <BeConsistent onComplete={onComplete} />
   },
   {
-    id: 75,
+    id: 78,
     title: "Get Organized",
     description: "Create systems to support your change",
     component: (onComplete) => <GetOrganized onComplete={onComplete} />
   },
   {
-    id: 76,
+    id: 79,
     title: "Seek Positive Information",
     description: "Find supportive knowledge and guidance",
     component: (onComplete) => <SeekPositiveInformation onComplete={onComplete} />
   },
   {
-    id: 77,
+    id: 80,
     title: "Small Steps",
     description: "Break changes into manageable actions",
     component: (onComplete) => <SmallSteps onComplete={onComplete} />
   },
   {
-    id: 78,
+    id: 81,
     title: "Setting Ceiling & Floor",
     description: "Establish realistic boundaries",
     component: (onComplete) => <SettingCeilingFloor onComplete={onComplete} />
   },
   {
-    id: 79,
+    id: 82,
     title: "Thinking Assertively",
     description: "Develop assertive thought patterns",
     component: (onComplete) => <ThinkingAssertively onComplete={onComplete} />
   },
   {
-    id: 80,
+    id: 83,
     title: "Helpful Ideas",
     description: "Generate supportive thoughts and concepts",
     component: (onComplete) => <HelpfulIdeas onComplete={onComplete} />
   },
   {
-    id: 81,
+    id: 84,
     title: "Exceptions to Rule",
     description: "Identify when change patterns are broken",
     component: (onComplete) => <ExceptionsToRule onComplete={onComplete} />
   },
   {
-    id: 82,
+    id: 85,
     title: "Monitoring Your Progress",
     description: "Track and assess your journey",
     component: (onComplete) => <MonitoringYourProgress onComplete={onComplete} />
   },
   {
-    id: 83,
+    id: 86,
     title: "Affirmations",
     description: "Create powerful positive statements",
     component: (onComplete) => <Affirmations onComplete={onComplete} />
   },
   {
-    id: 84,
+    id: 87,
     title: "Revisit Values",
     description: "Reconnect with your core values",
     component: (onComplete) => <RevisitValues onComplete={onComplete} />
   },
   {
-    id: 85,
+    id: 88,
     title: "Assessing Importance: Steps Forward",
     description: "Evaluate the importance of next steps",
     component: (onComplete) => <AssessingImportanceStepsForward onComplete={onComplete} />
   },
   {
-    id: 86,
+    id: 89,
     title: "Identifying Steps to Goal",
     description: "Map the path to your objectives",
     component: (onComplete) => <IdentifyingStepsToGoal onComplete={onComplete} />
   },
   {
-    id: 87,
+    id: 90,
     title: "Change Your Plan",
     description: "Adapt your approach as needed",
     component: (onComplete) => <ChangeYourPlan onComplete={onComplete} />
   },
   {
-    id: 88,
+    id: 91,
     title: "Prioritizing Change",
     description: "Focus on the most important changes",
     component: (onComplete) => <PrioritizingChange onComplete={onComplete} />
   },
   {
-    id: 89,
+    id: 92,
     title: "Making Your Goal Measurable",
     description: "Create trackable metrics for success",
     component: (onComplete) => <MakingYourGoalMeasurable onComplete={onComplete} />
   },
   {
-    id: 90,
+    id: 93,
     title: "Focused Habits Selector",
     description: "Choose key habits for transformation",
     component: (onComplete) => <FocusedHabitsSelector onComplete={onComplete} />
   },
   {
-    id: 91,
+    id: 94,
     title: "A Final Word: Your Fitness Journey Begins Now!",
     description: "Celebrate your progress and look forward",
     component: (onComplete) => <FitnessJourneyFinalWord onComplete={onComplete} />
