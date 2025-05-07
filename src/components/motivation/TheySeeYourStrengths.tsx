@@ -24,7 +24,9 @@ const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete 
       strengths_others_see: "",
       leverage_strengths: ""
     },
-    onSuccess: onComplete
+    onSuccess: onComplete,
+    stepNumber: 36,
+    stepName: "They See Your Strengths"
   });
 
   if (isLoading) {
