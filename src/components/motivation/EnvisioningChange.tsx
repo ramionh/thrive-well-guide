@@ -23,14 +23,14 @@ const EnvisioningChange: React.FC<EnvisioningChangeProps> = ({ onComplete }) => 
     formData, 
     isLoading, 
     error 
-  } = useMotivationSafeData(
-    "motivation_envisioning_change",
+  } = useMotivationSafeData({
+    tableName: "motivation_envisioning_change",
     initialState,
-    (data) => ({
+    parseData: (data) => ({
       successfulChange: data?.successful_change || "",
       howItWorked: data?.how_it_worked || ""
     })
-  );
+  });
 
   const { 
     updateForm, 

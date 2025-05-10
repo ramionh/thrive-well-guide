@@ -21,14 +21,14 @@ const TheySeeYourStrengths: React.FC<TheySeeYourStrengthsProps> = ({ onComplete 
     formData, 
     isLoading,
     error
-  } = useMotivationSafeData(
-    "motivation_strengths_feedback",
+  } = useMotivationSafeData({
+    tableName: "motivation_strengths_feedback",
     initialState,
-    (data) => ({
+    parseData: (data) => ({
       strengths_others_see: data.strengths_others_see || "",
       leverage_strengths: data.leverage_strengths || ""
     })
-  );
+  });
 
   const {
     isSaving,

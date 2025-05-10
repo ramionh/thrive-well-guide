@@ -28,14 +28,14 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
     formData, 
     isLoading,
     error
-  } = useMotivationSafeData<InspirationFormData>(
-    "motivation_finding_inspiration",
+  } = useMotivationSafeData<InspirationFormData>({
+    tableName: "motivation_finding_inspiration",
     initialState,
-    (data) => ({
+    parseData: (data) => ({
       inspiration_sources: typeof data.inspiration_sources === 'string' ? data.inspiration_sources : "",
       inspirational_content: typeof data.inspirational_content === 'string' ? data.inspirational_content : ""
     })
-  );
+  });
   
   const {
     isSaving,

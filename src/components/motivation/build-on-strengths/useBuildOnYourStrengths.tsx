@@ -16,11 +16,11 @@ export const useBuildOnYourStrengths = (onComplete?: () => void) => {
     formData, 
     isLoading,
     error
-  } = useMotivationSafeData(
-    "motivation_strength_applications",
-    { strength_applications: [] as StrengthApplication[] },
-    parseStrengthApplicationsData
-  );
+  } = useMotivationSafeData({
+    tableName: "motivation_strength_applications",
+    initialState: { strength_applications: [] as StrengthApplication[] },
+    parseData: parseStrengthApplicationsData
+  });
 
   const { 
     isSaving,
