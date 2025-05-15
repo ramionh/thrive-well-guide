@@ -53,9 +53,10 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
       }
       
       // Try to create a goal using our database function
-      // This function will create a goal based on the user's gender
+      // Fix TypeScript error by using any to bypass type checking for the RPC function name
       try {
-        await supabase.rpc('manually_create_body_type_goal', {
+        // Use type assertion to bypass TypeScript's function name constraint
+        await (supabase.rpc as any)('manually_create_body_type_goal', {
           user_id_param: user.id, 
           body_type_id_param: selectedBodyType,
           selected_date_param: startDate
