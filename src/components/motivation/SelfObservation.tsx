@@ -1,154 +1,202 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import LoadingState from "./shared/LoadingState";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { EyeIcon, PlusCircle, X } from "lucide-react";
 
 interface SelfObservationProps {
-  onComplete?: () => void;
+  onComplete: () => void;
 }
 
 interface Observation {
-  when: string;
-  happening: string;
+  date: string;
+  situation: string;
+  thoughts: string;
+  feelings: string;
+  behavior: string;
 }
 
 const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
-  const { user } = useUser();
-  const { toast } = useToast();
-  const [observations, setObservations] = useState<Observation[]>(Array(5).fill({ when: "", happening: "" }));
+  const [observations, setObservations] = useState<Observation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [hasLoadedData, setHasLoadedData] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useUser();
+  const { toast } = useToast();
+  const didInitialFetch = useRef(false);
 
-  // Load saved observations
   useEffect(() => {
     const fetchData = async () => {
-      if (!user || hasLoadedData) return;
-
+      if (!user || didInitialFetch.current) return;
+      
+      console.log("SelfObservation: Fetching data for user", user.id);
       setIsLoading(true);
+
       try {
         const { data, error } = await supabase
-          .from('motivation_self_observation')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .from("motivation_self_observation")
+          .select("observations")
+          .eq("user_id", user.id)
+          .single();
 
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
-
-        if (data && data.observations) {
-          const savedObservations = [...data.observations];
-          
-          while (savedObservations.length < 5) {
-            savedObservations.push({ when: "", happening: "" });
+        if (error && error.code !== "PGRST116") {
+          console.error("Error fetching self-observations:", error);
+          setError("Failed to load your observations. Please try again.");
+        } else {
+          console.log("Self-observation data loaded:", data);
+          if (data && Array.isArray(data.observations)) {
+            setObservations(data.observations);
+          } else {
+            // Initialize with one empty observation if none exist
+            setObservations([{
+              date: new Date().toISOString().split('T')[0],
+              situation: "",
+              thoughts: "",
+              feelings: "",
+              behavior: ""
+            }]);
           }
-          
-          setObservations(savedObservations);
         }
-      } catch (error: any) {
-        toast({
-          title: "Error",
-          description: `Failed to load your data: ${error.message}`,
-          variant: "destructive",
-        });
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        setError("An unexpected error occurred. Please try again.");
       } finally {
         setIsLoading(false);
-        setHasLoadedData(true);
+        didInitialFetch.current = true;
       }
     };
 
     fetchData();
-  }, [user, toast, hasLoadedData]);
+  }, [user]);
 
-  const handleInputChange = (index: number, field: keyof Observation, value: string) => {
+  const addObservation = () => {
+    setObservations([
+      ...observations,
+      {
+        date: new Date().toISOString().split('T')[0],
+        situation: "",
+        thoughts: "",
+        feelings: "",
+        behavior: ""
+      }
+    ]);
+  };
+
+  const updateObservation = (index: number, field: keyof Observation, value: string) => {
     const updatedObservations = [...observations];
-    updatedObservations[index] = { 
-      ...updatedObservations[index], 
-      [field]: value 
+    updatedObservations[index] = {
+      ...updatedObservations[index],
+      [field]: value
     };
     setObservations(updatedObservations);
   };
 
+  const removeObservation = (index: number) => {
+    setObservations(observations.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save your observations",
+        variant: "destructive"
+      });
+      return;
+    }
 
+    console.log("SelfObservation: Saving observations for user", user.id);
     setIsSaving(true);
+    
     try {
-      // Filter out empty observations
-      const filteredObservations = observations.filter(
-        obs => obs.when.trim() !== "" || obs.happening.trim() !== ""
-      );
-
-      // Check if there's an existing record
-      const { data: existingData } = await supabase
-        .from('motivation_self_observation')
-        .select('*')
-        .eq('user_id', user.id)
+      const { data: existingData, error: findError } = await supabase
+        .from("motivation_self_observation")
+        .select("id")
+        .eq("user_id", user.id)
         .maybeSingle();
 
+      if (findError && findError.code !== "PGRST116") {
+        throw findError;
+      }
+
       let result;
-      if (existingData) {
+      
+      const obsForSaving = JSON.parse(JSON.stringify(observations));
+
+      if (existingData?.id) {
         // Update existing record
         result = await supabase
-          .from('motivation_self_observation')
+          .from("motivation_self_observation")
           .update({
-            observations: filteredObservations,
+            observations: obsForSaving,
             updated_at: new Date().toISOString()
           })
-          .eq('id', existingData.id);
+          .eq("id", existingData.id);
       } else {
-        // Create new record
+        // Insert new record
         result = await supabase
-          .from('motivation_self_observation')
+          .from("motivation_self_observation")
           .insert({
             user_id: user.id,
-            observations: filteredObservations
+            observations: obsForSaving,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           });
       }
 
-      if (result.error) throw result.error;
-
-      // Mark step as complete
-      if (onComplete) {
-        // Update step completion status
-        await supabase
-          .from('motivation_steps_progress')
-          .upsert({
-            user_id: user.id,
-            step_number: 67, // Assuming this is the step number for Self Observation
-            step_name: 'Self Observation',
-            completed: true,
-            completed_at: new Date().toISOString()
-          });
-
-        onComplete();
+      if (result.error) {
+        throw result.error;
       }
+
+      // Log step progress
+      await supabase
+        .from("motivation_steps_progress")
+        .upsert({
+          user_id: user.id,
+          step_number: 26,
+          step_name: "Self Observation",
+          completed: true,
+          available: true,
+          completed_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,step_number'
+        });
+      
+      // Make next step available
+      await supabase
+        .from("motivation_steps_progress")
+        .upsert({
+          user_id: user.id,
+          step_number: 27,
+          step_name: "Defining Confidence",
+          completed: false,
+          available: true,
+          completed_at: null
+        }, {
+          onConflict: 'user_id,step_number'
+        });
 
       toast({
         title: "Success",
-        description: "Your self-observations have been saved.",
+        description: "Your self-observations have been saved!"
       });
-    } catch (error: any) {
+
+      onComplete();
+    } catch (err: any) {
+      console.error("Error saving self-observations:", err);
+      setError(err.message || "Failed to save your observations");
       toast({
         title: "Error",
-        description: `Failed to save your data: ${error.message}`,
-        variant: "destructive",
+        description: "Failed to save your observations. Please try again.",
+        variant: "destructive"
       });
     } finally {
       setIsSaving(false);
@@ -156,76 +204,125 @@ const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
   };
 
   if (isLoading) {
-    return (
-      <Card className="bg-white">
-        <CardContent className="flex items-center justify-center p-6 min-h-[200px]">
-          <div className="animate-spin h-8 w-8 border-4 border-purple-500 rounded-full border-t-transparent"></div>
-        </CardContent>
-      </Card>
-    );
+    return <LoadingState />;
   }
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-white shadow-md">
       <CardContent className="p-6">
-        <h2 className="text-xl font-semibold text-purple-800 mb-4">Self-Observation</h2>
-        
-        <div className="space-y-5">
-          <p className="text-gray-700">
-            As you are working on creating your own specific, detailed plan of action, for at least one week keep a daily journal of observations about the behavior you'd like to change. This is also helpful when you notice you are struggling to put your plan into action. It will give you greater insight into your lifestyle and habits, and you might find patterns you can alter. For example, you may notice that the later in the day it gets, the less motivated you feel to exercise.
-          </p>
-          
-          <p className="text-gray-700">
-            This activity can help you strengthen your plan by making you more aware of what is working in your current life and what is not.
-          </p>
-          
-          <p className="text-gray-700 mb-4">
-            Each day, write down some observations about your day, then answer these questions:
-          </p>
-
-          <form onSubmit={handleSubmit}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-semibold">WHEN DO YOU ENGAGE IN THE BEHAVIOR OR SITUATION?</TableHead>
-                  <TableHead className="font-semibold">WHAT IS HAPPENING AROUND YOU AND INSIDE YOU?</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {observations.map((observation, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="p-2">
-                      <Input
-                        value={observation.when}
-                        onChange={(e) => handleInputChange(index, "when", e.target.value)}
-                        placeholder={index === 0 ? "I find myself feeling tired and unmotivated to work out after work." : ""}
-                        className="border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                      />
-                    </TableCell>
-                    <TableCell className="p-2">
-                      <Input
-                        value={observation.happening}
-                        onChange={(e) => handleInputChange(index, "happening", e.target.value)}
-                        placeholder={index === 0 ? "Often I'm sitting down to 'rest for a minute' and end up scrolling through social media for an hour instead of changing into my workout clothes." : ""}
-                        className="border-purple-200 focus:ring-purple-500 focus:border-purple-500"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-            <div className="mt-6">
-              <Button
-                type="submit"
-                disabled={isSaving}
-                className="w-full bg-purple-600 hover:bg-purple-700"
-              >
-                {isSaving ? "Saving..." : "Complete Step"}
-              </Button>
-            </div>
-          </form>
+        <div className="flex items-center gap-3 mb-4">
+          <EyeIcon className="w-6 h-6 text-purple-600" />
+          <h2 className="text-xl font-bold text-purple-800">Self-Observation</h2>
         </div>
+
+        <p className="mb-6 text-gray-700">
+          Self-observation involves noticing your thoughts, feelings, and behaviors in different situations. 
+          This awareness is key to understanding your patterns and making meaningful changes.
+        </p>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-md">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {observations.map((observation, index) => (
+            <div key={index} className="p-4 border border-purple-200 rounded-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-purple-700">Observation #{index + 1}</h3>
+                {observations.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeObservation(index)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Remove observation"
+                  >
+                    <X size={20} />
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor={`date-${index}`}>Date</Label>
+                  <Input
+                    id={`date-${index}`}
+                    type="date"
+                    value={observation.date}
+                    onChange={(e) => updateObservation(index, "date", e.target.value)}
+                    className="mt-1"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor={`situation-${index}`}>Situation</Label>
+                  <Input
+                    id={`situation-${index}`}
+                    placeholder="Describe the situation"
+                    value={observation.situation}
+                    onChange={(e) => updateObservation(index, "situation", e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor={`thoughts-${index}`}>Thoughts</Label>
+                  <Input
+                    id={`thoughts-${index}`}
+                    placeholder="What were you thinking?"
+                    value={observation.thoughts}
+                    onChange={(e) => updateObservation(index, "thoughts", e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor={`feelings-${index}`}>Feelings</Label>
+                  <Input
+                    id={`feelings-${index}`}
+                    placeholder="How did you feel?"
+                    value={observation.feelings}
+                    onChange={(e) => updateObservation(index, "feelings", e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor={`behavior-${index}`}>Behavior</Label>
+                  <Input
+                    id={`behavior-${index}`}
+                    placeholder="What did you do?"
+                    value={observation.behavior}
+                    onChange={(e) => updateObservation(index, "behavior", e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div className="flex justify-center">
+            <Button 
+              type="button" 
+              onClick={addObservation}
+              variant="outline"
+              className="flex items-center gap-2 border-dashed"
+            >
+              <PlusCircle size={16} />
+              Add Another Observation
+            </Button>
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isSaving}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {isSaving ? "Saving..." : "Complete Step"}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

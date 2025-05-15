@@ -2,10 +2,11 @@
 import React, { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotivationForm } from "@/hooks/useMotivationForm";
-import { Award } from "lucide-react";
 import LoadingState from "./shared/LoadingState";
+import { HeartPulse } from "lucide-react";
 
 interface PartialChangeFeelingsProps {
   onComplete: () => void;
@@ -33,8 +34,8 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     onSuccess: onComplete,
     stepNumber: 59,
     stepName: "Feelings Around Partial Change",
-    nextStepNumber: 61, // Updated from 60 to 61 to match the Prioritizing Change step ID
-    nextStepName: "Prioritizing Change",
+    nextStepNumber: 60,
+    nextStepName: "Time Management",
     transformData: (data) => {
       return {
         progress_steps: data.progressSteps,
@@ -42,7 +43,6 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
       };
     },
     parseData: (data) => {
-      console.log("Raw data from Partial Change Feelings:", data);
       return {
         progressSteps: data?.progress_steps || "",
         rewardIdeas: data?.reward_ideas || ""
@@ -53,7 +53,6 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
   // Only fetch data once on component mount
   useEffect(() => {
     if (!didInitialFetch.current) {
-      console.log("PartialChangeFeelings: Fetching data on mount");
       fetchData();
       didInitialFetch.current = true;
     }
@@ -74,7 +73,7 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
         <CardContent className="px-0">
           <div className="p-6 text-red-500">
             <p>An error occurred while loading this component. Please try refreshing the page.</p>
-            <p className="text-sm mt-2">{error}</p>
+            <p className="text-sm mt-2">{error.toString()}</p>
           </div>
         </CardContent>
       </Card>
@@ -85,46 +84,52 @@ const PartialChangeFeelings: React.FC<PartialChangeFeelingsProps> = ({ onComplet
     <Card className="border-none shadow-none">
       <CardContent className="px-0">
         <div className="flex items-center gap-3 mb-4">
-          <Award className="w-6 h-6 text-purple-600" />
+          <HeartPulse className="w-6 h-6 text-purple-600" />
           <h2 className="text-xl font-bold text-purple-800">Feelings Around Partial Change</h2>
         </div>
 
-        <div className="space-y-4">
-          <p className="text-lg text-purple-800">
-            Now that you have a realistic, attainable goal, how will you feel if you don't quite meet it? 
-            Maybe you struggle to reach your target weight. Perhaps you only make it to the gym three times a week instead of five. 
-            Achieving only part of your goal is not as satisfying as fulfilling it completely, but you should be proud of the steps you have taken, 
-            and realize you are closer to achieving your goal than you were when you started.
+        <div className="mb-6 space-y-4">
+          <p>
+            Change is rarely all-or-nothing. Most often, it happens in small steps over time. 
+            It's important to recognize and celebrate partial progress rather than seeing change 
+            as only successful when we've reached our end goal.
           </p>
+          <div className="bg-purple-50 p-4 rounded-md">
+            <h3 className="font-semibold text-purple-800 mb-2">Embracing Progress</h3>
+            <p className="text-purple-700">
+              When we acknowledge the small victories along our journey, we build confidence, 
+              reinforce positive behaviors, and create momentum that propels us forward.
+            </p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="progress-steps" className="block text-sm font-medium text-purple-700 mb-2">
-              List some steps you have taken toward your goal, whether recently or in the past.
-            </label>
+            <Label htmlFor="progress-steps" className="text-purple-700">
+              What small steps of progress could you celebrate along your journey?
+            </Label>
             <Textarea
               id="progress-steps"
-              rows={4}
               value={formData.progressSteps}
               onChange={(e) => updateForm("progressSteps", e.target.value)}
-              className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-              placeholder="Examples: I started walking more, I cut back on sugary drinks..."
+              className="mt-2 border-purple-300 focus:border-purple-500"
+              rows={4}
+              placeholder="E.g., Going to the gym twice this week, preparing healthy meals for 3 days..."
               disabled={isSaving}
             />
           </div>
 
           <div>
-            <label htmlFor="reward-ideas" className="block text-sm font-medium text-purple-700 mb-2">
-              Celebrate these small victories! What are some ways you can reward yourself for your progress that won't break your bank or sabotage your success?
-            </label>
+            <Label htmlFor="reward-ideas" className="text-purple-700">
+              How might you reward yourself for these partial achievements?
+            </Label>
             <Textarea
               id="reward-ideas"
-              rows={4}
               value={formData.rewardIdeas}
               onChange={(e) => updateForm("rewardIdeas", e.target.value)}
-              className="w-full rounded-md border-purple-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-              placeholder="Examples: A relaxing bath, watching a favorite show..."
+              className="mt-2 border-purple-300 focus:border-purple-500"
+              rows={4}
+              placeholder="E.g., A relaxing bath, watching a favorite show, buying a small item you've wanted..."
               disabled={isSaving}
             />
           </div>

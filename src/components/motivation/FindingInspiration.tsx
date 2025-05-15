@@ -54,7 +54,7 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("FindingInspiration: Submitting form", formData);
-    submitForm(formData);
+    submitForm();
   };
 
   if (error) {
@@ -64,7 +64,7 @@ const FindingInspiration: React.FC<FindingInspirationProps> = ({ onComplete }) =
         <CardContent className="px-0">
           <div className="p-6 text-red-500">
             <p>An error occurred while loading this component. Please try refreshing the page.</p>
-            <p className="text-sm mt-2">{error}</p>
+            <p className="text-sm mt-2">{error.toString()}</p>
           </div>
         </CardContent>
       </Card>
