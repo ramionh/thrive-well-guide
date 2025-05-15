@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
 
 /**
@@ -24,14 +24,12 @@ export const useMotivationData = <T extends Record<string, any>>(
   const fetchData = useCallback(async (force = false) => {
     // Skip if no user, fetch is in progress, or we've already fetched (unless forced)
     if (!user || fetchInProgress.current || (hasAttemptedFetch.current && !force)) {
-      console.log(`useMotivationData: Skipping fetch for ${tableName}. No user: ${!user}, Fetch in progress: ${fetchInProgress.current}, Already attempted: ${hasAttemptedFetch.current}`);
       if (!user) {
         setIsLoading(false);
       }
       return;
     }
 
-    console.log(`useMotivationData: Fetching data for ${tableName}, user ${user.id}`);
     setIsLoading(true);
     fetchInProgress.current = true;
     
@@ -46,7 +44,6 @@ export const useMotivationData = <T extends Record<string, any>>(
         .maybeSingle();
 
       if (error) {
-        console.error(`useMotivationData: Error fetching ${tableName} data:`, error);
         if (error.code !== "PGRST116") {
           throw error;
         }
@@ -55,16 +52,13 @@ export const useMotivationData = <T extends Record<string, any>>(
       // Only update state if the component is still mounted
       if (isMounted.current) {
         if (data) {
-          console.log(`Raw ${tableName} data:`, data);
           let parsedData: T;
           
           if (parseData) {
             // Use the custom parser if provided
-            console.log(`useMotivationData: Using custom parser for ${tableName}`);
             parsedData = parseData(data);
           } else {
             // Default parsing logic: map column names to camelCase keys
-            console.log(`useMotivationData: Using default parser for ${tableName}`);
             parsedData = { ...initialState };
             Object.keys(data).forEach(key => {
               // Convert snake_case to camelCase
@@ -84,15 +78,11 @@ export const useMotivationData = <T extends Record<string, any>>(
             });
           }
           
-          console.log(`Parsed ${tableName} data:`, parsedData);
           setFormData(parsedData);
           setError(null);
-        } else {
-          console.log(`useMotivationData: No data found for ${tableName}`);
         }
       }
     } catch (err: any) {
-      console.error(`Error fetching ${tableName} data:`, err);
       if (isMounted.current) {
         setError(err);
         toast({
@@ -104,7 +94,6 @@ export const useMotivationData = <T extends Record<string, any>>(
     } finally {
       if (isMounted.current) {
         setIsLoading(false);
-        console.log(`useMotivationData: Finished loading for ${tableName}, isLoading set to false`);
       }
       fetchInProgress.current = false;
       hasAttemptedFetch.current = true;

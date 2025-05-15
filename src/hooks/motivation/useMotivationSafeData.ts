@@ -30,14 +30,12 @@ export const useMotivationSafeData = <T extends Record<string, any>>(
   const fetchData = useCallback(async (force: boolean = false) => {
     // Skip if no user, fetch is in progress, or we've already fetched (unless forced)
     if (!user || fetchInProgress.current || (hasAttemptedFetch.current && !force)) {
-      console.log(`useMotivationSafeData: Skipping fetch for ${tableName}. No user: ${!user}, Fetch in progress: ${fetchInProgress.current}, Already attempted: ${hasAttemptedFetch.current}`);
       if (!user) {
         setIsLoading(false);
       }
       return;
     }
 
-    console.log(`useMotivationSafeData: Fetching data for ${tableName}, user ${user.id}`);
     setIsLoading(true);
     fetchInProgress.current = true;
     
@@ -51,7 +49,6 @@ export const useMotivationSafeData = <T extends Record<string, any>>(
         .maybeSingle();
 
       if (error) {
-        console.error(`Error fetching ${tableName} data:`, error);
         if (error.code !== "PGRST116") {
           throw error;
         }
@@ -60,23 +57,17 @@ export const useMotivationSafeData = <T extends Record<string, any>>(
       // Only update state if the component is still mounted
       if (isMounted.current) {
         if (data) {
-          console.log(`Raw ${tableName} data:`, data);
-          
           if (parseData) {
             const parsedData = parseData(data);
-            console.log(`Parsed ${tableName} data:`, parsedData);
             setFormData(parsedData);
           } else {
             setFormData(data as unknown as T);
           }
           
           setError(null);
-        } else {
-          console.log(`No data found for ${tableName}`);
         }
       }
     } catch (err: any) {
-      console.error(`Error fetching ${tableName} data:`, err);
       if (isMounted.current) {
         setError(err.message || "Failed to load data");
         toast({

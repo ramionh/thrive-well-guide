@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useMotivationForm } from "@/hooks/useMotivationForm";
-import LoadingState from "./shared/LoadingState";
+import { useUser } from "@/context/UserContext";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Table,
   TableBody,
@@ -23,35 +25,55 @@ interface Observation {
 }
 
 const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
+  const { user } = useUser();
+  const { toast } = useToast();
   const [observations, setObservations] = useState<Observation[]>(Array(5).fill({ when: "", happening: "" }));
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasLoadedData, setHasLoadedData] = useState(false);
 
-  const { 
-    formData, 
-    isLoading, 
-    isSaving, 
-    submitForm, 
-    updateForm 
-  } = useMotivationForm({
-    tableName: "motivation_self_observation",
-    initialState: {
-      observations: []
-    },
-    onSuccess: onComplete
-  });
+  // Load saved observations
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user || hasLoadedData) return;
 
-  // Load saved observations when data is fetched
-  React.useEffect(() => {
-    if (formData && Array.isArray(formData.observations) && formData.observations.length > 0) {
-      // Keep at least 5 rows
-      const savedObservations = [...formData.observations];
-      
-      while (savedObservations.length < 5) {
-        savedObservations.push({ when: "", happening: "" });
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('motivation_self_observation')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+
+        if (data && data.observations) {
+          const savedObservations = [...data.observations];
+          
+          while (savedObservations.length < 5) {
+            savedObservations.push({ when: "", happening: "" });
+          }
+          
+          setObservations(savedObservations);
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: `Failed to load your data: ${error.message}`,
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+        setHasLoadedData(true);
       }
-      
-      setObservations(savedObservations);
-    }
-  }, [formData]);
+    };
+
+    fetchData();
+  }, [user, toast, hasLoadedData]);
 
   const handleInputChange = (index: number, field: keyof Observation, value: string) => {
     const updatedObservations = [...observations];
@@ -62,18 +84,85 @@ const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
     setObservations(updatedObservations);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Filter out empty observations
-    const filteredObservations = observations.filter(
-      obs => obs.when.trim() !== "" || obs.happening.trim() !== ""
-    );
-    updateForm("observations", filteredObservations);
-    submitForm();
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      // Filter out empty observations
+      const filteredObservations = observations.filter(
+        obs => obs.when.trim() !== "" || obs.happening.trim() !== ""
+      );
+
+      // Check if there's an existing record
+      const { data: existingData } = await supabase
+        .from('motivation_self_observation')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      let result;
+      if (existingData) {
+        // Update existing record
+        result = await supabase
+          .from('motivation_self_observation')
+          .update({
+            observations: filteredObservations,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingData.id);
+      } else {
+        // Create new record
+        result = await supabase
+          .from('motivation_self_observation')
+          .insert({
+            user_id: user.id,
+            observations: filteredObservations
+          });
+      }
+
+      if (result.error) throw result.error;
+
+      // Mark step as complete
+      if (onComplete) {
+        // Update step completion status
+        await supabase
+          .from('motivation_steps_progress')
+          .upsert({
+            user_id: user.id,
+            step_number: 67, // Assuming this is the step number for Self Observation
+            step_name: 'Self Observation',
+            completed: true,
+            completed_at: new Date().toISOString()
+          });
+
+        onComplete();
+      }
+
+      toast({
+        title: "Success",
+        description: "Your self-observations have been saved.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: `Failed to save your data: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading) {
-    return <LoadingState />;
+    return (
+      <Card className="bg-white">
+        <CardContent className="flex items-center justify-center p-6 min-h-[200px]">
+          <div className="animate-spin h-8 w-8 border-4 border-purple-500 rounded-full border-t-transparent"></div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
