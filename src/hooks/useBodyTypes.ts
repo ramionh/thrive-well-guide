@@ -46,33 +46,18 @@ export const useBodyTypes = () => {
       const userGender = user?.gender?.toLowerCase() || 'male';
       const imageMap: Record<string, string> = {};
       
-      // Fetch gender-specific image names from the table
-      const { data: genderSpecificData, error: genderError } = await supabase
-        .from('gender_body_type_ranges')
-        .select('body_type_id, image_name')
-        .eq('gender', userGender);
-      
-      if (genderError) {
-        throw genderError;
-      }
-
-      // Create a mapping of body_type_id to image_name
-      const imageNameMap: Record<string, string> = {};
-      if (genderSpecificData) {
-        genderSpecificData.forEach(item => {
-          imageNameMap[item.body_type_id] = item.image_name;
-        });
-      }
-      
-      // Get the public URLs for each image
+      // For each body type, construct image name based on gender
       for (const bodyType of bodyTypes) {
-        // Use the gender-specific image name from our mapping
-        const imageName = imageNameMap[bodyType.id];
+        let imageName = '';
         
-        if (!imageName) {
-          console.error(`No image name found for body type ${bodyType.name} and gender ${userGender}`);
-          continue;
+        // Use gender-specific image naming convention
+        if (userGender === 'female') {
+          imageName = `woman_${bodyType.name.toLowerCase()}.png`;
+        } else {
+          imageName = `${bodyType.name}.png`;
         }
+        
+        console.log(`Looking for image: ${imageName} for gender: ${userGender}, body type: ${bodyType.name}`);
         
         const { data } = supabase.storage
           .from('body-types')

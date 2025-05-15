@@ -64,6 +64,7 @@ const BodyTypeCard = ({ bodyType, imageUrl, isSelected, onSelect }: BodyTypeCard
             alt={bodyType.name} 
             className="w-full h-full object-cover"
             onError={(e) => {
+              console.error(`Failed to load image: ${imageUrl}`);
               (e.target as HTMLImageElement).src = '/placeholder.svg';
             }}
           />

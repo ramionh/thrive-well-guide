@@ -6,8 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface GoalInfo {
-  current_body_type: { name: string };
-  goal_body_type: { name: string };
+  current_body_type: { name: string; id: string };
+  goal_body_type: { name: string; id: string };
   target_date: string;
 }
 

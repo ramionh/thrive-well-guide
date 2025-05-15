@@ -148,6 +148,9 @@ const BodyTypeCarousel: React.FC = () => {
             // Use gender-specific body fat range if available
             const bodyfatRange = genderSpecificRanges[bodyType.id] || bodyType.bodyfat_range;
             
+            // Debug image URLs
+            console.log(`Body type ${bodyType.name}: image URL = ${bodyTypeImages[bodyType.id]}`);
+            
             return (
               <CarouselItem key={bodyType.id} className="flex justify-center">
                 <div
@@ -177,6 +180,7 @@ const BodyTypeCarousel: React.FC = () => {
                       alt={bodyType.name}
                       className="w-full h-full object-cover"
                       onError={e => {
+                        console.error(`Failed to load image: ${bodyTypeImages[bodyType.id]}`);
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
                       }}
                     />
