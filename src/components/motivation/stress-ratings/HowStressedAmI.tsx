@@ -250,9 +250,13 @@ const HowStressedAmI: React.FC<HowStressedAmIProps> = ({ onComplete }) => {
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <StressRatingTable 
-            ratings={ratings}
-            onSituationChange={handleSituationChange}
+            stressRatings={ratings.map(r => ({ 
+              stressor: r.situation,
+              rating: r.rating,
+              explanation: ""
+            }))}
             onRatingChange={handleRatingChange}
+            onExplanationChange={(index, _) => {/* We don't use explanations in this component */}}
           />
           
           <Button 

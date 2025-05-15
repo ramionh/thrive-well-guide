@@ -122,28 +122,34 @@ export const useStressTypes = ({ onComplete }: UseStressTypesOptions = {}) => {
       
       if (queryError) throw queryError;
       
-      let result;
+      // Convert to plain objects for JSON serialization
+      const stressTypesPlainObjects = validEntries.map(entry => ({
+        stressor: entry.stressor,
+        type: entry.type
+      }));
       
       if (existingData && existingData.id) {
         // Update existing record
-        result = await supabase
+        const { error } = await supabase
           .from("motivation_stress_types")
           .update({
-            stress_types: validEntries,
+            stress_types: stressTypesPlainObjects,
             updated_at: new Date().toISOString()
           })
           .eq("id", existingData.id);
+          
+        if (error) throw error;
       } else {
         // Insert new record
-        result = await supabase
+        const { error } = await supabase
           .from("motivation_stress_types")
           .insert({
             user_id: user.id,
-            stress_types: validEntries
+            stress_types: stressTypesPlainObjects
           });
+          
+        if (error) throw error;
       }
-      
-      if (result.error) throw result.error;
       
       toast({
         title: "Success",
