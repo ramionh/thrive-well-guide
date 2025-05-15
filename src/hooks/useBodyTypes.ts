@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BodyType } from "@/types/bodyType";
+import { useUser } from "@/context/UserContext";
 
 export const useBodyTypes = () => {
   const [bodyTypes, setBodyTypes] = useState<BodyType[]>([]);
   const [bodyTypeImages, setBodyTypeImages] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const { user } = useUser();
 
   const fetchBodyTypes = async () => {
     try {
@@ -37,16 +39,40 @@ export const useBodyTypes = () => {
     }
   };
 
-  const loadBodyTypeImages = () => {
+  const loadBodyTypeImages = async () => {
     try {
+      if (!bodyTypes.length) return;
+
+      const userGender = user?.gender || 'male';
       const imageMap: Record<string, string> = {};
       
+      // Fetch gender-specific image names from the new table
+      const { data: genderSpecificData, error: genderError } = await supabase
+        .from('gender_body_type_ranges')
+        .select('body_type_id, image_name')
+        .eq('gender', userGender.toLowerCase());
+      
+      if (genderError) {
+        throw genderError;
+      }
+
+      // Create a mapping of body_type_id to image_name
+      const imageNameMap: Record<string, string> = {};
+      if (genderSpecificData) {
+        genderSpecificData.forEach(item => {
+          imageNameMap[item.body_type_id] = item.image_name;
+        });
+      }
+      
+      // Get the public URLs for each image
       for (const bodyType of bodyTypes) {
-        const capitalizedName = bodyType.name.charAt(0).toUpperCase() + bodyType.name.slice(1).toLowerCase();
-        const imageName = capitalizedName.replace(/\s+/g, '-');
+        // Use the gender-specific image name if available
+        const imageName = imageNameMap[bodyType.id] || 
+          (bodyType.name.charAt(0).toUpperCase() + bodyType.name.slice(1).toLowerCase()).replace(/\s+/g, '-') + '.png';
+        
         const { data } = supabase.storage
           .from('body-types')
-          .getPublicUrl(`${imageName}.png`);
+          .getPublicUrl(imageName);
           
         imageMap[bodyType.id] = data.publicUrl;
       }
@@ -66,8 +92,7 @@ export const useBodyTypes = () => {
     if (bodyTypes.length > 0) {
       loadBodyTypeImages();
     }
-  }, [bodyTypes]);
+  }, [bodyTypes, user?.gender]);
 
   return { bodyTypes, bodyTypeImages, isLoading, error };
 };
-

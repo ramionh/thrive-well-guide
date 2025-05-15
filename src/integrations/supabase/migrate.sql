@@ -11,7 +11,14 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  user_gender TEXT;
 BEGIN
+  -- Get the user's gender
+  SELECT gender INTO user_gender 
+  FROM profiles 
+  WHERE id = user_id_param;
+
   -- Update any existing active goals for this user
   UPDATE goals
   SET updated_at = now()

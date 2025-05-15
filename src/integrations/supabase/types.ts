@@ -125,6 +125,41 @@ export type Database = {
           },
         ]
       }
+      gender_body_type_ranges: {
+        Row: {
+          body_type_id: string
+          bodyfat_range: string
+          created_at: string
+          gender: string
+          id: string
+          image_name: string
+        }
+        Insert: {
+          body_type_id: string
+          bodyfat_range: string
+          created_at?: string
+          gender: string
+          id?: string
+          image_name: string
+        }
+        Update: {
+          body_type_id?: string
+          bodyfat_range?: string
+          created_at?: string
+          gender?: string
+          id?: string
+          image_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gender_body_type_ranges_body_type_id_fkey"
+            columns: ["body_type_id"]
+            isOneToOne: false
+            referencedRelation: "body_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string | null
@@ -2807,6 +2842,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_gender_specific_body_fat_range: {
+        Args: { p_body_type_id: string; p_gender?: string }
+        Returns: string
+      }
       get_next_better_body_type: {
         Args: { current_body_type_id: string }
         Returns: string

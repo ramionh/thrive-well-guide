@@ -12,6 +12,11 @@ type BodyType = {
   population_percentage: string;
 };
 
+type GenderBodyTypeRange = {
+  body_type_id: string;
+  bodyfat_range: string;
+};
+
 const BODYTYPE_SCALE = [
   "Ripped",
   "Elite",
@@ -28,6 +33,38 @@ const BodyTypeCarousel: React.FC = () => {
   const [goalBodyTypeId, setGoalBodyTypeId] = useState<string | null>(null);
   const [defaultIndex, setDefaultIndex] = useState<number>(0);
   const carouselApiRef = useRef<CarouselApi | null>(null);
+  const [genderSpecificRanges, setGenderSpecificRanges] = useState<Record<string, string>>({});
+
+  // Fetch gender-specific body fat ranges
+  useEffect(() => {
+    const fetchGenderRanges = async () => {
+      if (!user?.gender || !bodyTypes.length) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('gender_body_type_ranges')
+          .select('body_type_id, bodyfat_range')
+          .eq('gender', user.gender.toLowerCase());
+          
+        if (error) {
+          console.error("Error fetching gender-specific ranges:", error);
+          return;
+        }
+        
+        if (data) {
+          const ranges: Record<string, string> = {};
+          data.forEach((item: GenderBodyTypeRange) => {
+            ranges[item.body_type_id] = item.bodyfat_range;
+          });
+          setGenderSpecificRanges(ranges);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    
+    fetchGenderRanges();
+  }, [bodyTypes, user?.gender]);
 
   // Fetch latest user body type and find current/goal indices
   useEffect(() => {
@@ -107,6 +144,10 @@ const BodyTypeCarousel: React.FC = () => {
             let highlightClass = "bg-white border";
             if (isCurrent) highlightClass = "border-2 border-yellow-200 bg-[#FEF7CD]";
             else if (isGoal) highlightClass = "border-2 border-green-200 bg-[#F2FCE2]";
+            
+            // Use gender-specific body fat range if available
+            const bodyfatRange = genderSpecificRanges[bodyType.id] || bodyType.bodyfat_range;
+            
             return (
               <CarouselItem key={bodyType.id} className="flex justify-center">
                 <div
@@ -143,7 +184,7 @@ const BodyTypeCarousel: React.FC = () => {
                   <div className="text-center w-full">
                     <div className="font-bold text-lg mb-1">{bodyType.name}</div>
                     <div className="text-sm text-muted-foreground mb-1">
-                      Body Fat: {bodyType.bodyfat_range}
+                      Body Fat: {bodyfatRange}
                     </div>
                     <div className="text-xs text-gray-500">
                       Population: {bodyType.population_percentage}

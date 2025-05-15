@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Check } from "lucide-react";
 import { BodyType } from "@/types/bodyType";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 
 interface BodyTypeCardProps {
   bodyType: BodyType;
@@ -11,6 +13,37 @@ interface BodyTypeCardProps {
 }
 
 const BodyTypeCard = ({ bodyType, imageUrl, isSelected, onSelect }: BodyTypeCardProps) => {
+  const { user } = useUser();
+  const [bodyfatRange, setBodyfatRange] = useState<string>(bodyType.bodyfat_range);
+  
+  useEffect(() => {
+    const fetchGenderSpecificRange = async () => {
+      if (!user?.gender) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('gender_body_type_ranges')
+          .select('bodyfat_range')
+          .eq('body_type_id', bodyType.id)
+          .eq('gender', user.gender.toLowerCase())
+          .single();
+        
+        if (error) {
+          console.error("Error fetching gender-specific range:", error);
+          return;
+        }
+        
+        if (data) {
+          setBodyfatRange(data.bodyfat_range);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    
+    fetchGenderSpecificRange();
+  }, [bodyType.id, user?.gender]);
+
   return (
     <div 
       className={`border rounded-lg p-4 cursor-pointer transition-all 
@@ -38,7 +71,7 @@ const BodyTypeCard = ({ bodyType, imageUrl, isSelected, onSelect }: BodyTypeCard
         <div className="text-center mt-2 w-full">
           <h3 className="font-semibold text-lg">{bodyType.name}</h3>
           <p className="text-sm text-muted-foreground">
-            Body Fat: {bodyType.bodyfat_range}
+            Body Fat: {bodyfatRange}
           </p>
           <p className="text-sm text-muted-foreground">
             Population: {bodyType.population_percentage}

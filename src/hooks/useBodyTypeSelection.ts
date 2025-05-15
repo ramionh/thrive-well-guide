@@ -51,6 +51,20 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
         toast.error('Failed to save body type: ' + bodyTypeError.message);
         return;
       }
+      
+      // Try to create a goal using our database function
+      // This function will create a goal based on the user's gender
+      try {
+        await supabase.rpc('manually_create_body_type_goal', {
+          user_id_param: user.id, 
+          body_type_id_param: selectedBodyType,
+          selected_date_param: startDate
+        });
+      } catch (goalError: any) {
+        console.error('Error creating goal:', goalError);
+        // We don't want to show this error to the user as the body type was saved successfully
+        // and goal creation is a secondary operation
+      }
 
       toast.success('Body type saved successfully!');
       fetchUserBodyType(); // Refresh the data after saving
@@ -74,4 +88,3 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
     handleSaveBodyType
   };
 };
-
