@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { useUser } from '@/context/UserContext';
 import { StrengthApplication } from './types';
 
@@ -10,7 +10,11 @@ interface UseBuildOnYourStrengthsProps {
 }
 
 export const useBuildOnYourStrengths = ({ onComplete }: UseBuildOnYourStrengthsProps) => {
-  const [applications, setApplications] = useState<StrengthApplication[]>([]);
+  const [applications, setApplications] = useState<StrengthApplication[]>([
+    { strength: '', application: '' },
+    { strength: '', application: '' },
+    { strength: '', application: '' }
+  ]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -38,9 +42,21 @@ export const useBuildOnYourStrengths = ({ onComplete }: UseBuildOnYourStrengthsP
         }
         
         if (data && data.strength_applications) {
-          setApplications(Array.isArray(data.strength_applications) ? data.strength_applications : []);
-        } else {
-          setApplications([{ strength: '', application: '' }]);
+          // Parse the data properly
+          const fetchedApps: StrengthApplication[] = Array.isArray(data.strength_applications) 
+            ? (data.strength_applications as any[]).map((app: any) => ({
+                strength: app.strength || '',
+                application: app.application || ''
+              }))
+            : [{ strength: '', application: '' }];
+            
+          // Ensure we have exactly 3 entries
+          let updatedApps = [...fetchedApps];
+          while (updatedApps.length < 3) {
+            updatedApps.push({ strength: '', application: '' });
+          }
+          
+          setApplications(updatedApps.slice(0, 3));
         }
       } catch (err: any) {
         console.error('Error fetching strength applications:', err);
@@ -59,21 +75,11 @@ export const useBuildOnYourStrengths = ({ onComplete }: UseBuildOnYourStrengthsP
     fetchData();
   }, [user, toast]);
   
-  // Add a new strength application
-  const addApplication = () => {
-    setApplications([...applications, { strength: '', application: '' }]);
-  };
-  
   // Update a strength application
   const updateApplication = (index: number, field: keyof StrengthApplication, value: string) => {
     const updated = [...applications];
     updated[index] = { ...updated[index], [field]: value };
     setApplications(updated);
-  };
-  
-  // Remove a strength application
-  const removeApplication = (index: number) => {
-    setApplications(applications.filter((_, i) => i !== index));
   };
   
   // Save all strength applications
@@ -103,12 +109,18 @@ export const useBuildOnYourStrengths = ({ onComplete }: UseBuildOnYourStrengthsP
       
       let result;
       
+      // Convert to JSON for Supabase
+      const jsonApps = applications.map(app => ({
+        strength: app.strength,
+        application: app.application
+      }));
+      
       if (existingData && existingData.id) {
         // Update existing record
         result = await supabase
           .from('motivation_strength_applications')
           .update({
-            strength_applications: applications,
+            strength_applications: jsonApps,
             updated_at: new Date().toISOString()
           })
           .eq('id', existingData.id);
@@ -118,7 +130,7 @@ export const useBuildOnYourStrengths = ({ onComplete }: UseBuildOnYourStrengthsP
           .from('motivation_strength_applications')
           .insert({
             user_id: user.id,
-            strength_applications: applications,
+            strength_applications: jsonApps,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
@@ -194,9 +206,7 @@ export const useBuildOnYourStrengths = ({ onComplete }: UseBuildOnYourStrengthsP
     isLoading,
     isSaving,
     error,
-    addApplication,
     updateApplication,
-    removeApplication,
     saveApplications
   };
 };

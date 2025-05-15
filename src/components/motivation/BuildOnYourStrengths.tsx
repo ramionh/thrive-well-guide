@@ -10,14 +10,13 @@ import { BuildOnYourStrengthsProps } from "./build-on-strengths/types";
 
 const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete }) => {
   const {
-    strengthApplications,
+    applications,
     isLoading,
     isSaving,
     error,
-    handleStrengthChange,
-    handleApplicationChange,
-    handleSubmit
-  } = useBuildOnYourStrengths(onComplete);
+    updateApplication,
+    saveApplications
+  } = useBuildOnYourStrengths({ onComplete });
 
   if (isLoading) {
     return <LoadingState />;
@@ -29,12 +28,25 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
         <CardContent className="px-0">
           <div className="p-6 text-red-500">
             <p>An error occurred while loading this component. Please try refreshing the page.</p>
-            <p className="text-sm mt-2">{error}</p>
+            <p className="text-sm mt-2">{error.message}</p>
           </div>
         </CardContent>
       </Card>
     );
   }
+
+  const handleStrengthChange = (index: number, value: string) => {
+    updateApplication(index, "strength", value);
+  };
+  
+  const handleApplicationChange = (index: number, value: string) => {
+    updateApplication(index, "application", value);
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveApplications();
+  };
 
   return (
     <Card className="bg-white shadow-lg border border-purple-200">
@@ -42,7 +54,7 @@ const BuildOnYourStrengths: React.FC<BuildOnYourStrengthsProps> = ({ onComplete 
         <BuildOnYourStrengthsHeader />
         <BuildOnYourStrengthsDescription />
         <BuildOnYourStrengthsForm
-          strengthApplications={strengthApplications}
+          strengthApplications={applications}
           handleStrengthChange={handleStrengthChange}
           handleApplicationChange={handleApplicationChange}
           handleSubmit={handleSubmit}

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import LoadingState from "./shared/LoadingState";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +37,7 @@ const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
       
       console.log("SelfObservation: Fetching data for user", user.id);
       setIsLoading(true);
+      didInitialFetch.current = true;
 
       try {
         const { data, error } = await supabase
@@ -51,7 +52,16 @@ const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
         } else {
           console.log("Self-observation data loaded:", data);
           if (data && Array.isArray(data.observations)) {
-            setObservations(data.observations);
+            // Convert to proper Observation type
+            const fetchedObservations: Observation[] = (data.observations as any[]).map(obs => ({
+              date: obs.date || new Date().toISOString().split('T')[0],
+              situation: obs.situation || "",
+              thoughts: obs.thoughts || "",
+              feelings: obs.feelings || "",
+              behavior: obs.behavior || ""
+            }));
+            
+            setObservations(fetchedObservations);
           } else {
             // Initialize with one empty observation if none exist
             setObservations([{
@@ -68,7 +78,6 @@ const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
         setError("An unexpected error occurred. Please try again.");
       } finally {
         setIsLoading(false);
-        didInitialFetch.current = true;
       }
     };
 
@@ -129,14 +138,21 @@ const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
 
       let result;
       
-      const obsForSaving = JSON.parse(JSON.stringify(observations));
+      // Convert observations to format suitable for JSON storage
+      const jsonObs = observations.map(obs => ({
+        date: obs.date,
+        situation: obs.situation,
+        thoughts: obs.thoughts,
+        feelings: obs.feelings, 
+        behavior: obs.behavior
+      }));
 
       if (existingData?.id) {
         // Update existing record
         result = await supabase
           .from("motivation_self_observation")
           .update({
-            observations: obsForSaving,
+            observations: jsonObs,
             updated_at: new Date().toISOString()
           })
           .eq("id", existingData.id);
@@ -146,7 +162,7 @@ const SelfObservation: React.FC<SelfObservationProps> = ({ onComplete }) => {
           .from("motivation_self_observation")
           .insert({
             user_id: user.id,
-            observations: obsForSaving,
+            observations: jsonObs,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
