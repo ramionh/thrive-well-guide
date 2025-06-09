@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -36,15 +37,25 @@ const HomePage = () => {
               {/* Left Column - Text Content */}
               <div className="space-y-6">
                 <div className="mb-6">
-                  <img 
-                    src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
-                    alt="Gen X Shred" 
-                    className="h-[576px] mb-4"
-                  />
+                  <table className="w-full">
+                    <tbody>
+                      <tr>
+                        <td className="w-1/2 pr-4">
+                          <img 
+                            src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
+                            alt="Gen X Shred" 
+                            className="h-[576px]"
+                          />
+                        </td>
+                        <td className="w-1/2 pl-4 align-middle">
+                          <h1 className="text-5xl lg:text-6xl font-bold tracking-tight">
+                            Built for <span className="text-blue-500">Gen X</span>. Proven for Every Generation.
+                          </h1>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                <h1 className="text-5xl lg:text-6xl font-bold tracking-tight">
-                  Built for <span className="text-blue-500">Gen X</span>. Proven for Every Generation.
-                </h1>
                 <p className="text-lg text-gray-600 max-w-md">
                   Personalized fitness tracking and wellness strategies designed specifically for those 40 and beyond.
                 </p>
