@@ -31,7 +31,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <AppSidebar />
         <main className="flex-1 p-4 md:p-6 overflow-auto">
           <div className="md:hidden flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold text-thrive-blue">40+Ripped</h1>
+            <h1 className="text-2xl font-bold text-thrive-blue">Gen X Shred</h1>
             <SidebarTrigger />
           </div>
           {children}
@@ -101,9 +101,9 @@ const AppSidebar = () => {
       <SidebarHeader className="p-4">
         <div className="flex items-center space-x-2">
           <div className="h-8 w-8 rounded-full bg-thrive-blue flex items-center justify-center">
-            <span className="text-white font-semibold">40+</span>
+            <span className="text-white font-semibold">GX</span>
           </div>
-          <h1 className="text-xl font-bold">40+Ripped</h1>
+          <h1 className="text-xl font-bold">Gen X Shred</h1>
         </div>
       </SidebarHeader>
       <SidebarContent>
