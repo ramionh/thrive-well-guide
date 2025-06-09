@@ -44,7 +44,7 @@ const HomePage = () => {
                           <img 
                             src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
                             alt="Gen X Shred" 
-                            className="h-[576px]"
+                            className="h-[700px]"
                           />
                         </td>
                         <td className="w-1/2 pl-4 align-middle">
