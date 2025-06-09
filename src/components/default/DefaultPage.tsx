@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,11 +24,11 @@ const DefaultPage = () => {
                   <img 
                     src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
                     alt="Gen X Shred" 
-                    className="h-16 mb-4"
+                    className="h-24 mb-4"
                   />
                 </div>
-                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight">
-                  Your prime is now
+                <h1 className="text-5xl lg:text-6xl font-bold tracking-tight">
+                  Built for <span className="text-blue-500">Gen X</span>. Proven for Every Generation.
                 </h1>
                 <p className="text-lg text-gray-600 max-w-md">
                   Personalized fitness tracking and wellness strategies designed specifically for those 40 and beyond.
