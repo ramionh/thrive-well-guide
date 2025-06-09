@@ -39,7 +39,7 @@ const HomePage = () => {
                   <img 
                     src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
                     alt="Gen X Shred" 
-                    className="h-36 mb-4"
+                    className="h-48 mb-4"
                   />
                 </div>
                 <h1 className="text-5xl lg:text-6xl font-bold tracking-tight">
