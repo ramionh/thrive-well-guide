@@ -1,4 +1,5 @@
 
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,7 @@ const HomePage = () => {
               {/* Left Column - Text Content */}
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold tracking-tight">
-                  Fitness <span className="text-blue-500">After 40</span> Starts Here
+                  Built for <span className="text-blue-500">Gen X</span>. Proven for Every Generation.
                 </h1>
                 <p className="text-lg text-gray-600 max-w-md">
                   Personalized fitness tracking and wellness strategies designed specifically for those 40 and beyond.
@@ -149,3 +150,4 @@ const BenefitCard = ({ icon, title, description }: {
 );
 
 export default HomePage;
+
