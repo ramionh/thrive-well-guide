@@ -31,7 +31,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <AppSidebar />
         <main className="flex-1 p-4 md:p-6 overflow-auto">
           <div className="md:hidden flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold text-thrive-blue">Gen X Shred</h1>
+            <img 
+              src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
+              alt="Gen X Shred" 
+              className="h-8"
+            />
             <SidebarTrigger />
           </div>
           {children}
@@ -100,10 +104,11 @@ const AppSidebar = () => {
     <Sidebar className="border-r">
       <SidebarHeader className="p-4">
         <div className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-full bg-thrive-blue flex items-center justify-center">
-            <span className="text-white font-semibold">GX</span>
-          </div>
-          <h1 className="text-xl font-bold">Gen X Shred</h1>
+          <img 
+            src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
+            alt="Gen X Shred" 
+            className="h-8"
+          />
         </div>
       </SidebarHeader>
       <SidebarContent>
