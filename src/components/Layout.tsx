@@ -33,7 +33,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <img 
               src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
               alt="Gen X Shred" 
-              className="h-16"
+              className="h-48"
             />
             <SidebarTrigger />
           </div>
@@ -106,7 +106,7 @@ const AppSidebar = () => {
           <img 
             src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
             alt="Gen X Shred" 
-            className="h-16"
+            className="h-48"
           />
         </div>
       </SidebarHeader>
