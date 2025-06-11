@@ -22,7 +22,7 @@ const CoreOptimalHabitAssessment = ({ onBackToOptions }: CoreOptimalHabitAssessm
         </Button>
       </div>
 
-      <HabitScoring />
+      <HabitScoring onSaveComplete={onBackToOptions} />
     </div>
   );
 };
