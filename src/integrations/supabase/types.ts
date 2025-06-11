@@ -343,6 +343,33 @@ export type Database = {
         }
         Relationships: []
       }
+      habit_repurpose_simple_if_then: {
+        Row: {
+          created_at: string
+          good_habit_phrase: string
+          id: string
+          trigger_phrase: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          good_habit_phrase: string
+          id?: string
+          trigger_phrase: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          good_habit_phrase?: string
+          id?: string
+          trigger_phrase?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       habit_repurpose_unwanted_habits: {
         Row: {
           created_at: string

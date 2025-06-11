@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 interface HabitRepurposeWizardProps {
   onBackToOptions: () => void;
@@ -27,6 +28,8 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const [makeGoodHabitEasier, setMakeGoodHabitEasier] = useState("");
   const [ifThenTrigger, setIfThenTrigger] = useState("");
   const [ifThenGoodHabit, setIfThenGoodHabit] = useState("");
+  const [simpleTriggerPhrase, setSimpleTriggerPhrase] = useState("");
+  const [simpleGoodHabitPhrase, setSimpleGoodHabitPhrase] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: goalInfo } = useCurrentGoal();
   const { user } = useUser();
@@ -288,6 +291,47 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       toast({
         title: "Error",
         description: "Failed to save your If-Then plan. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveSimpleIfThen = async () => {
+    if (!user || !simpleTriggerPhrase.trim() || !simpleGoodHabitPhrase.trim()) {
+      toast({
+        title: "Error",
+        description: "Please complete both trigger and good habit phrases before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('habit_repurpose_simple_if_then')
+        .insert({
+          user_id: user.id,
+          trigger_phrase: simpleTriggerPhrase.trim(),
+          good_habit_phrase: simpleGoodHabitPhrase.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your simple If-Then plan has been saved successfully!",
+      });
+
+      // Move to next step
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Error saving simple If-Then plan:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your simple If-Then plan. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -805,7 +849,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
-          <div className="text-blue-600 font-medium">Phase 2: Design Your Environment</div>
+          <div className="text-blue-600 font-medium">Phase 3: Simplify Your Plan</div>
           <div className="text-gray-500">Step 7 of 8</div>
         </div>
         
@@ -816,13 +860,82 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         <Card>
           <CardContent className="p-8 space-y-6">
             <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <Target className="h-8 w-8 text-green-600" />
+              </div>
+              
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Coming Soon
+                Create your simple trigger plan
               </h2>
               
               <p className="text-gray-600">
-                The next steps of the habit repurpose wizard are under development.
+                Simplify your If-Then plan into short, memorable phrases that you can easily remember and act on.
               </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4">Health & Wellness Examples:</h3>
+                <div className="space-y-3 text-sm text-blue-800">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">If</span>
+                    <span className="bg-white px-2 py-1 rounded">I feel stressed</span>
+                    <span className="font-medium">then I will</span>
+                    <span className="bg-white px-2 py-1 rounded">take 5 deep breaths</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">If</span>
+                    <span className="bg-white px-2 py-1 rounded">I crave junk food</span>
+                    <span className="font-medium">then I will</span>
+                    <span className="bg-white px-2 py-1 rounded">drink water first</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">If</span>
+                    <span className="bg-white px-2 py-1 rounded">I wake up</span>
+                    <span className="font-medium">then I will</span>
+                    <span className="bg-white px-2 py-1 rounded">do 10 pushups</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Simple If-Then Plan:</h3>
+                
+                <div className="flex items-center gap-3 mb-4 flex-wrap">
+                  <span className="text-lg font-medium text-gray-700">If</span>
+                  <Input
+                    value={simpleTriggerPhrase}
+                    onChange={(e) => setSimpleTriggerPhrase(e.target.value)}
+                    placeholder="my trigger"
+                    className="flex-1 min-w-48 text-center bg-yellow-50 border-yellow-300"
+                  />
+                  <span className="text-lg font-medium text-gray-700">then I will</span>
+                  <Input
+                    value={simpleGoodHabitPhrase}
+                    onChange={(e) => setSimpleGoodHabitPhrase(e.target.value)}
+                    placeholder="my good habit"
+                    className="flex-1 min-w-48 text-center bg-green-50 border-green-300"
+                  />
+                </div>
+
+                {simpleTriggerPhrase && simpleGoodHabitPhrase && (
+                  <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+                    <p className="text-center text-lg font-medium text-gray-800">
+                      <span className="text-blue-600">If</span> {simpleTriggerPhrase}, <span className="text-blue-600">then I will</span> {simpleGoodHabitPhrase}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
+                <p className="font-semibold">Tips for Simple If-Then Plans:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li><strong>Keep it short</strong> - Use 2-4 words for each phrase</li>
+                  <li><strong>Make it specific</strong> - Clear triggers and actions</li>
+                  <li><strong>Focus on health</strong> - Choose habits that support your wellness goals</li>
+                  <li><strong>Start small</strong> - Pick actions you can do consistently</li>
+                </ul>
+              </div>
             </div>
 
             <div className="flex justify-between pt-6">
@@ -836,10 +949,11 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </Button>
               
               <Button 
-                onClick={onBackToOptions}
+                onClick={handleSaveSimpleIfThen}
+                disabled={isSubmitting || !simpleTriggerPhrase.trim() || !simpleGoodHabitPhrase.trim()}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Back to Journey Options
+                {isSubmitting ? "Saving..." : "Save & Continue"}
               </Button>
             </div>
           </CardContent>
@@ -852,7 +966,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
-          <div className="text-blue-600 font-medium">Phase 2: Design Your Environment</div>
+          <div className="text-blue-600 font-medium">Phase 4: Complete</div>
           <div className="text-gray-500">Step 8 of 8</div>
         </div>
         
@@ -868,7 +982,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </h2>
               
               <p className="text-gray-600">
-                The next steps of the habit repurpose wizard are under development.
+                The final step of the habit repurpose wizard is under development.
               </p>
             </div>
 
@@ -930,3 +1044,5 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 };
 
 export default HabitRepurposeWizard;
+
+</edits_to_apply>
