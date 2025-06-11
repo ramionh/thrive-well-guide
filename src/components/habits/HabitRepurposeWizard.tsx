@@ -16,8 +16,6 @@ interface HabitRepurposeWizardProps {
 
 const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOptions }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [goalText, setGoalText] = useState("");
-  const [isLearningGoal, setIsLearningGoal] = useState(false);
   const [goalValuesText, setGoalValuesText] = useState("");
   const [habitDescription, setHabitDescription] = useState("");
   const [habitTrigger, setHabitTrigger] = useState("");
@@ -79,46 +77,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
-  };
-
-  const handleSaveGoal = async () => {
-    if (!user || !goalText.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a goal before continuing.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase
-        .from('habit_repurpose_goals')
-        .insert({
-          user_id: user.id,
-          goal_text: goalText.trim(),
-          is_learning_goal: isLearningGoal
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Your goal has been saved successfully!",
-      });
-
-      setCurrentStep(currentStep + 1);
-    } catch (error) {
-      console.error('Error saving goal:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your goal. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleSaveGoalValues = async () => {
@@ -423,37 +381,15 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="goal-text" className="block text-sm font-medium text-gray-700 mb-2">
-                  My goal is to...
+                <label htmlFor="goal-display" className="block text-sm font-medium text-gray-700 mb-2">
+                  Your current goal:
                 </label>
-                <Textarea
-                  id="goal-text"
-                  value={goalText}
-                  onChange={(e) => setGoalText(e.target.value)}
-                  placeholder="e.g., feel healthier and more energetic"
-                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="learning-goal"
-                  checked={isLearningGoal}
-                  onChange={(e) => setIsLearningGoal(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="learning-goal" className="text-sm text-gray-700">
-                  This is new to me. I'll start with a learning goal.
-                </label>
-              </div>
-
-              {isLearningGoal && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                  <p className="font-semibold">Learning Goal Tip:</p>
-                  <p>If you're new to this area, start with a Learning Goal (e.g., "Learn about nutrition") rather than a specific outcome. This builds long-term success.</p>
+                <div className="w-full p-3 bg-gray-50 border border-gray-300 rounded-md min-h-[96px] flex items-center">
+                  <p className="text-gray-800">
+                    {goalInfo ? `${goalInfo.goal_description || 'No goal description available'}` : 'Loading your goal...'}
+                  </p>
                 </div>
-              )}
+              </div>
             </div>
 
             <div className="flex justify-between pt-6">
@@ -467,11 +403,10 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </Button>
               
               <Button 
-                onClick={handleSaveGoal}
-                disabled={isSubmitting || !goalText.trim()}
+                onClick={handleNext}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {isSubmitting ? "Saving..." : "Next"}
+                Next
               </Button>
             </div>
           </CardContent>
@@ -1104,7 +1039,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               <div className="space-y-3">
                 <div className="flex flex-col space-y-1">
                   <span className="font-semibold text-gray-700">My Goal:</span>
-                  <span className="text-gray-600">{habitRepurposeData?.values?.goal_values_text || "N/A"}</span>
+                  <span className="text-gray-600">{habitRepurposeData?.goal?.goal_text || "N/A"}</span>
                 </div>
 
                 <div className="flex flex-col space-y-1">
