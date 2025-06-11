@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MotivationSplash from "./MotivationSplash";
 import MotivationStepsSidebar from "./MotivationStepsSidebar";
 import MotivationStepContent from "./MotivationStepContent";
@@ -10,6 +10,14 @@ import ErrorBoundary from "@/components/ui/error-boundary";
 
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
+  
+  // Check if user has chosen to hide the splash screen
+  useEffect(() => {
+    const hideMotivationSplash = localStorage.getItem('hideMotivationSplash');
+    if (hideMotivationSplash === 'true') {
+      setShowSplash(false);
+    }
+  }, []);
   
   const { 
     steps, 

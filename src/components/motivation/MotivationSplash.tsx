@@ -1,13 +1,22 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface MotivationSplashProps {
   onContinue: () => void;
 }
 
 const MotivationSplash: React.FC<MotivationSplashProps> = ({ onContinue }) => {
+  const [hideNextTime, setHideNextTime] = useState(false);
+
+  const handleContinue = () => {
+    if (hideNextTime) {
+      localStorage.setItem('hideMotivationSplash', 'true');
+    }
+    onContinue();
+  };
+
   return (
     <Card className="bg-white shadow-lg border-2 border-purple-300">
       <CardContent className="p-6 md:p-8">
@@ -48,10 +57,24 @@ const MotivationSplash: React.FC<MotivationSplashProps> = ({ onContinue }) => {
             reasons, and needs for change before you begin pursuing a plan.
           </p>
           
-          <div className="flex justify-center mt-8">
+          <div className="flex flex-col items-center mt-8 space-y-4">
+            <div className="flex items-center gap-2">
+              <Checkbox 
+                id="hide-motivation-splash"
+                checked={hideNextTime}
+                onCheckedChange={(checked) => setHideNextTime(checked as boolean)}
+              />
+              <label 
+                htmlFor="hide-motivation-splash" 
+                className="text-sm text-gray-600 cursor-pointer"
+              >
+                Hide this screen next time
+              </label>
+            </div>
+            
             <Button 
               className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6"
-              onClick={onContinue}
+              onClick={handleContinue}
             >
               Continue Your Motivation Journey
             </Button>
