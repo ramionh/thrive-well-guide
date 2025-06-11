@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, ArrowLeft, Target, Heart, XCircle, RefreshCw, Wrench } from "lucide-react";
+import { RotateCcw, ArrowLeft, Target, Heart, XCircle, RefreshCw, Wrench, FileText } from "lucide-react";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -25,6 +25,8 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const [actionRoutine, setActionRoutine] = useState("");
   const [makeBadHabitHarder, setMakeBadHabitHarder] = useState("");
   const [makeGoodHabitEasier, setMakeGoodHabitEasier] = useState("");
+  const [ifThenTrigger, setIfThenTrigger] = useState("");
+  const [ifThenGoodHabit, setIfThenGoodHabit] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: goalInfo } = useCurrentGoal();
   const { user } = useUser();
@@ -245,6 +247,47 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       toast({
         title: "Error",
         description: "Failed to save your environment engineering plan. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveIfThenPlan = async () => {
+    if (!user || !ifThenTrigger.trim() || !ifThenGoodHabit.trim()) {
+      toast({
+        title: "Error",
+        description: "Please complete both If-Then planning fields before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('habit_repurpose_if_then_plans')
+        .insert({
+          user_id: user.id,
+          trigger_text: ifThenTrigger.trim(),
+          good_habit_text: ifThenGoodHabit.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your If-Then plan has been saved successfully!",
+      });
+
+      // Move to next step
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Error saving If-Then plan:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your If-Then plan. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -657,8 +700,160 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
-          <div className="text-blue-600 font-medium">Phase 2: Design Your Environment</div>
+          <div className="text-blue-600 font-medium">Phase 3: Create Your Plan</div>
           <div className="text-gray-500">Step 6 of 8</div>
+        </div>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <FileText className="h-8 w-8 text-green-600" />
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Create your "If-Then" plan
+              </h2>
+              
+              <p className="text-gray-600">
+                Plan exactly when and how you'll implement your new habit by creating specific if-then statements.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="if-then-trigger" className="block text-sm font-medium text-gray-700 mb-2">
+                  If I notice this trigger...
+                </label>
+                <Textarea
+                  id="if-then-trigger"
+                  value={ifThenTrigger}
+                  onChange={(e) => setIfThenTrigger(e.target.value)}
+                  placeholder="Example: If I feel stressed about work deadlines..."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="if-then-good-habit" className="block text-sm font-medium text-gray-700 mb-2">
+                  Then I will do this good habit...
+                </label>
+                <Textarea
+                  id="if-then-good-habit"
+                  value={ifThenGoodHabit}
+                  onChange={(e) => setIfThenGoodHabit(e.target.value)}
+                  placeholder="Example: Then I will take 5 deep breaths and drink a glass of water while thinking about my goal."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
+                <p className="font-semibold">Why If-Then Planning Works:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li><strong>Creates automatic responses</strong> - Your brain prepares for the situation</li>
+                  <li><strong>Reduces decision fatigue</strong> - You've already decided what to do</li>
+                  <li><strong>Increases follow-through</strong> - Research shows 2-3x higher success rates</li>
+                  <li><strong>Links trigger to action</strong> - Creates a mental pathway for the new habit</li>
+                </ul>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Your complete If-Then statement:</strong>
+                </p>
+                <div className="mt-2 p-3 bg-white rounded border border-blue-200 text-blue-900 font-medium">
+                  {ifThenTrigger && ifThenGoodHabit ? (
+                    <>
+                      <span className="text-blue-600">If</span> {ifThenTrigger}, <span className="text-blue-600">then</span> {ifThenGoodHabit}
+                    </>
+                  ) : (
+                    <span className="text-gray-500 italic">Complete both fields above to see your full If-Then statement</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button 
+                onClick={handleBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              
+              <Button 
+                onClick={handleSaveIfThenPlan}
+                disabled={isSubmitting || !ifThenTrigger.trim() || !ifThenGoodHabit.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isSubmitting ? "Saving..." : "Save & Continue"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentStep === 7) {
+    return (
+      <div className="container mx-auto py-6 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-blue-600 font-medium">Phase 2: Design Your Environment</div>
+          <div className="text-gray-500">Step 7 of 8</div>
+        </div>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Coming Soon
+              </h2>
+              
+              <p className="text-gray-600">
+                The next steps of the habit repurpose wizard are under development.
+              </p>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button 
+                onClick={handleBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              
+              <Button 
+                onClick={onBackToOptions}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Back to Journey Options
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentStep === 8) {
+    return (
+      <div className="container mx-auto py-6 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-blue-600 font-medium">Phase 2: Design Your Environment</div>
+          <div className="text-gray-500">Step 8 of 8</div>
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
@@ -735,3 +930,5 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 };
 
 export default HabitRepurposeWizard;
+
+}
