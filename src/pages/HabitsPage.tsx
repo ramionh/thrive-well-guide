@@ -9,6 +9,7 @@ import HabitCategorySection from "@/components/habits/HabitCategorySection";
 import HabitsSplash from "@/components/habits/HabitsSplash";
 import HabitsJourneyOptions from "@/components/habits/HabitsJourneyOptions";
 import HabitRepurposeWizard from "@/components/habits/HabitRepurposeWizard";
+import HabitScoring from "@/components/habits/HabitScoring";
 
 type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose-wizard' | 'core';
 
@@ -60,7 +61,12 @@ const HabitsPage = () => {
   }
 
   if (currentView === 'options') {
-    return <HabitsJourneyOptions onSelectOption={handleSelectOption} />;
+    return (
+      <div className="container mx-auto py-6 space-y-8">
+        <HabitsJourneyOptions onSelectOption={handleSelectOption} />
+        <HabitScoring />
+      </div>
+    );
   }
 
   if (currentView === 'repurpose-wizard') {
