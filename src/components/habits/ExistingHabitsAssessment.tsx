@@ -175,9 +175,11 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
   };
 
   const isAnswersComplete = () => {
-    if (currentCategory === 'protein') {
-      return answers.q1 && answers.q2; // Only 2 questions for protein
+    // Categories that only have 2 questions
+    if (currentCategory === 'protein' || currentCategory === 'training' || currentCategory === 'lifestyle') {
+      return answers.q1 && answers.q2;
     }
+    // Categories with 3 questions (sleep, calories)
     return answers.q1 && answers.q2 && answers.q3;
   };
 
