@@ -8,8 +8,9 @@ import { Habit } from "@/types/habit";
 import HabitCategorySection from "@/components/habits/HabitCategorySection";
 import HabitsSplash from "@/components/habits/HabitsSplash";
 import HabitsJourneyOptions from "@/components/habits/HabitsJourneyOptions";
+import HabitRepurposeSplash from "@/components/habits/HabitRepurposeSplash";
 
-type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose' | 'core';
+type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose' | 'repurpose-content' | 'core';
 
 const HabitsPage = () => {
   const [currentView, setCurrentView] = useState<HabitsView>('splash');
@@ -45,11 +46,17 @@ const HabitsPage = () => {
   const handleSelectOption = (option: 'existing' | 'repurpose' | 'core') => {
     if (option === 'core') {
       setCurrentView('core');
+    } else if (option === 'repurpose') {
+      setCurrentView('repurpose');
     } else {
-      // For now, we'll just set to core for existing and repurpose
-      // These can be implemented later with different content
+      // For now, we'll just set to core for existing
+      // This can be implemented later with different content
       setCurrentView('core');
     }
+  };
+
+  const handleRepurposeGetStarted = () => {
+    setCurrentView('repurpose-content');
   };
 
   if (currentView === 'splash') {
@@ -58,6 +65,32 @@ const HabitsPage = () => {
 
   if (currentView === 'options') {
     return <HabitsJourneyOptions onSelectOption={handleSelectOption} />;
+  }
+
+  if (currentView === 'repurpose') {
+    return <HabitRepurposeSplash onGetStarted={handleRepurposeGetStarted} />;
+  }
+
+  if (currentView === 'repurpose-content') {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <ListChecks className="h-6 w-6" />
+            <h1 className="text-2xl font-bold">Habit Repurpose Content</h1>
+          </div>
+          <Button 
+            onClick={() => setCurrentView('options')}
+            variant="outline"
+          >
+            Back to Journey Options
+          </Button>
+        </div>
+        <p className="text-lg text-gray-600">
+          This is where the habit repurpose content will go. Coming soon!
+        </p>
+      </div>
+    );
   }
 
   // Show the core habits (existing habits list)
@@ -81,7 +114,7 @@ const HabitsPage = () => {
           <h1 className="text-2xl font-bold">Core Habits for Getting to 10% Body Fat</h1>
         </div>
         <Button 
-          onClick={() => setCurrentView('splash')}
+          onClick={() => setCurrentView('options')}
           variant="outline"
         >
           Back to Journey Options
