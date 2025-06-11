@@ -96,6 +96,42 @@ export type Database = {
         }
         Relationships: []
       }
+      existing_habits_assessment: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          identified_habit: string
+          question_1_answer: string
+          question_2_answer: string
+          question_3_answer: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          identified_habit: string
+          question_1_answer: string
+          question_2_answer: string
+          question_3_answer?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          identified_habit?: string
+          question_1_answer?: string
+          question_2_answer?: string
+          question_3_answer?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       focused_habits: {
         Row: {
           created_at: string

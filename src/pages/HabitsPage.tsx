@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ListChecks } from "lucide-react";
@@ -9,6 +10,7 @@ import HabitsSplash from "@/components/habits/HabitsSplash";
 import HabitsJourneyOptions from "@/components/habits/HabitsJourneyOptions";
 import HabitRepurposeWizard from "@/components/habits/HabitRepurposeWizard";
 import CoreOptimalHabitAssessment from "@/components/habits/CoreOptimalHabitAssessment";
+import ExistingHabitsAssessment from "@/components/habits/ExistingHabitsAssessment";
 
 type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose-wizard' | 'core' | 'assessment';
 
@@ -48,6 +50,8 @@ const HabitsPage = () => {
       setCurrentView('repurpose-wizard');
     } else if (option === 'assessment') {
       setCurrentView('assessment');
+    } else if (option === 'existing') {
+      setCurrentView('existing');
     } else {
       // For now, we'll just set to core for existing
       // This can be implemented later with different content
@@ -69,6 +73,10 @@ const HabitsPage = () => {
 
   if (currentView === 'assessment') {
     return <CoreOptimalHabitAssessment onBackToOptions={() => setCurrentView('options')} />;
+  }
+
+  if (currentView === 'existing') {
+    return <ExistingHabitsAssessment onBackToOptions={() => setCurrentView('options')} />;
   }
 
   if (currentView === 'repurpose-wizard') {
