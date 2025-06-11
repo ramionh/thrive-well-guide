@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, ArrowLeft, Target } from "lucide-react";
+import { RotateCcw, ArrowLeft, Target, Heart } from "lucide-react";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 interface HabitRepurposeWizardProps {
   onBackToOptions: () => void;
@@ -16,6 +17,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const [currentStep, setCurrentStep] = useState(1);
   const [goalText, setGoalText] = useState("");
   const [isLearningGoal, setIsLearningGoal] = useState(false);
+  const [goalValuesText, setGoalValuesText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: goalInfo } = useCurrentGoal();
   const { user } = useUser();
@@ -78,6 +80,46 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     }
   };
 
+  const handleSaveGoalValues = async () => {
+    if (!user || !goalValuesText.trim()) {
+      toast({
+        title: "Error",
+        description: "Please explain why your goal is important to you before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('habit_repurpose_goal_values')
+        .insert({
+          user_id: user.id,
+          goal_values_text: goalValuesText.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your values explanation has been saved successfully!",
+      });
+
+      // Move to next step
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Error saving goal values:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your values explanation. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (currentStep === 1) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
@@ -114,50 +156,58 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
           <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
-          <div className="text-gray-500">Step 1 of 8</div>
+          <div className="text-gray-500">Step 2 of 8</div>
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '12.5%' }}></div>
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '25%' }}></div>
         </div>
 
         <Card>
           <CardContent className="p-8 space-y-6">
             <div className="text-center mb-6">
               <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Target className="h-8 w-8 text-blue-600" />
+                <Heart className="h-8 w-8 text-blue-600" />
               </div>
               
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Step 1: What is your ultimate goal?
+                Why is your goal important to your values?
               </h2>
               
               <p className="text-gray-600">
-                Having a specific goal builds long-term success.
+                Connecting your goal to your personal values increases motivation and commitment.
               </p>
             </div>
 
-            {goalInfo && (
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
-                <h3 className="text-lg font-semibold text-purple-800 mb-2">Your Current Goal</h3>
-                <p className="text-purple-700">
-                  Transform from {goalInfo.current_body_type?.name} to {goalInfo.goal_body_type?.name}
-                </p>
-                {goalInfo.target_date && (
-                  <p className="text-sm text-purple-600 mt-2">
-                    Target Date: {new Date(goalInfo.target_date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
-                )}
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="value-text" className="block text-sm font-medium text-gray-700 mb-2">
+                  Explain why this goal matters to you
+                </label>
+                <Textarea
+                  id="value-text"
+                  value={goalValuesText}
+                  onChange={(e) => setGoalValuesText(e.target.value)}
+                  placeholder="This goal is important to me because..."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-32"
+                />
               </div>
-            )}
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                <p className="font-semibold">Tip:</p>
+                <p>Consider how your goal connects to your personal values like:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li>Health and well-being</li>
+                  <li>Family relationships</li>
+                  <li>Personal growth</li>
+                  <li>Community contribution</li>
+                </ul>
+              </div>
+            </div>
 
             <div className="flex justify-between pt-6">
               <Button 
-                onClick={handleBackToStart}
+                onClick={handleBack}
                 variant="outline"
                 className="flex items-center gap-2"
               >
@@ -166,10 +216,11 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </Button>
               
               <Button 
-                onClick={handleNext}
+                onClick={handleSaveGoalValues}
+                disabled={isSubmitting || !goalValuesText.trim()}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Next
+                {isSubmitting ? "Saving..." : "Save & Continue"}
               </Button>
             </div>
           </CardContent>
@@ -183,11 +234,11 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
           <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
-          <div className="text-gray-500">Step 2 of 8</div>
+          <div className="text-gray-500">Step 3 of 8</div>
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '25%' }}></div>
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '37.5%' }}></div>
         </div>
 
         <Card>
@@ -198,7 +249,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </div>
               
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Step 2: What is your ultimate goal?
+                Step 3: What is your ultimate goal?
               </h2>
               
               <p className="text-gray-600">
@@ -211,12 +262,12 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
                 <label htmlFor="goal-text" className="block text-sm font-medium text-gray-700 mb-2">
                   Your Goal
                 </label>
-                <textarea
+                <Textarea
                   id="goal-text"
                   value={goalText}
                   onChange={(e) => setGoalText(e.target.value)}
                   placeholder="Describe your ultimate goal in detail..."
-                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-32 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-32"
                 />
               </div>
 

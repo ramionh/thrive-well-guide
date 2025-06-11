@@ -208,6 +208,30 @@ export type Database = {
           },
         ]
       }
+      habit_repurpose_goal_values: {
+        Row: {
+          created_at: string
+          goal_values_text: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal_values_text: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal_values_text?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       habit_repurpose_goals: {
         Row: {
           created_at: string
