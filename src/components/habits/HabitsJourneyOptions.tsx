@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -134,12 +133,18 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CategoryScoresDisplay />
-        <ExistingHabitsAssessmentSummary />
+      {/* Updated layout for summary cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <CategoryScoresDisplay />
+        </div>
+        <div className="lg:col-span-1">
+          <ExistingHabitsAssessmentSummary />
+        </div>
+        <div className="lg:col-span-1">
+          <HabitRepurposeSummary />
+        </div>
       </div>
-
-      <HabitRepurposeSummary />
     </div>
   );
 };

@@ -79,7 +79,16 @@ const ExistingHabitsAssessmentSummary = () => {
     );
   }
 
-  const completedCategories = [...new Set(assessments.map(a => a.category))];
+  // Get the most recent assessment for each category (should only be one per category)
+  const categoryAssessments = Object.keys(categoryNames).reduce((acc, category) => {
+    const categoryAssessment = assessments.find(a => a.category === category);
+    if (categoryAssessment) {
+      acc[category] = categoryAssessment;
+    }
+    return acc;
+  }, {} as Record<string, any>);
+
+  const completedCategories = Object.keys(categoryAssessments);
   const totalCategories = Object.keys(categoryNames).length;
 
   return (
@@ -96,36 +105,43 @@ const ExistingHabitsAssessmentSummary = () => {
           <span className="font-medium">{completedCategories.length}/{totalCategories}</span>
         </div>
 
-        <div className="space-y-3">
-          {assessments.slice(0, 3).map((assessment) => {
-            const IconComponent = categoryIcons[assessment.category as keyof typeof categoryIcons];
-            const categoryName = categoryNames[assessment.category as keyof typeof categoryNames];
+        <div className="grid grid-cols-1 gap-2">
+          {Object.keys(categoryNames).map((category) => {
+            const assessment = categoryAssessments[category];
+            const IconComponent = categoryIcons[category as keyof typeof categoryIcons];
+            const categoryName = categoryNames[category as keyof typeof categoryNames];
             
             return (
-              <div key={assessment.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                <IconComponent className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div key={category} className={`flex items-start gap-3 p-2 rounded-lg ${
+                assessment ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'
+              }`}>
+                <IconComponent className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
+                  assessment ? 'text-green-600' : 'text-gray-400'
+                }`} />
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm">{categoryName}</div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {assessment.identified_habit}
-                  </p>
+                  <div className={`font-medium text-sm ${assessment ? 'text-green-800' : 'text-gray-500'}`}>
+                    {categoryName}
+                  </div>
+                  {assessment ? (
+                    <p className="text-xs text-green-700 line-clamp-2">
+                      {assessment.identified_habit}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500">Not assessed yet</p>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
 
-        {assessments.length > 3 && (
-          <p className="text-xs text-muted-foreground text-center">
-            +{assessments.length - 3} more assessment{assessments.length - 3 > 1 ? 's' : ''}
-          </p>
+        {completedCategories.length > 0 && (
+          <div className="pt-2 border-t">
+            <p className="text-xs text-muted-foreground">
+              Last assessment: {new Date(Math.max(...assessments.map(a => new Date(a.created_at).getTime()))).toLocaleDateString()}
+            </p>
+          </div>
         )}
-
-        <div className="pt-2 border-t">
-          <p className="text-xs text-muted-foreground">
-            Last assessment: {new Date(assessments[0].created_at).toLocaleDateString()}
-          </p>
-        </div>
       </CardContent>
     </Card>
   );

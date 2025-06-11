@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Moon, Calculator, Drumstick, Dumbbell, Shield, Lightbulb } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
@@ -23,37 +27,49 @@ interface QuestionAnswers {
 const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentProps) => {
   const { user } = useUser();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [currentScreen, setCurrentScreen] = useState<Screen>('categories');
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [answers, setAnswers] = useState<QuestionAnswers>({ q1: '', q2: '', q3: '' });
   const [identifiedHabit, setIdentifiedHabit] = useState<string>('');
+  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
+  const [showCompletion, setShowCompletion] = useState(false);
 
   const saveAssessmentMutation = useMutation({
-    mutationFn: async (data: {
-      category: Category;
-      answers: QuestionAnswers;
-      habit: string;
-    }) => {
+    mutationFn: async (assessmentData: any) => {
       if (!user) throw new Error('User not authenticated');
 
+      // Use upsert to overwrite existing data for this category
       const { error } = await supabase
         .from('existing_habits_assessment')
-        .insert({
+        .upsert({
           user_id: user.id,
-          category: data.category,
-          question_1_answer: data.answers.q1,
-          question_2_answer: data.answers.q2,
-          question_3_answer: data.answers.q3 || null,
-          identified_habit: data.habit
+          category: assessmentData.category,
+          question_1_answer: assessmentData.question_1_answer,
+          question_2_answer: assessmentData.question_2_answer,
+          question_3_answer: assessmentData.question_3_answer,
+          identified_habit: assessmentData.identified_habit
+        }, {
+          onConflict: 'user_id,category'
         });
 
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['existing-habits-assessments', user?.id] });
       toast({
         title: "Assessment Saved",
         description: "Your habit assessment has been saved successfully!"
       });
+      
+      // Move to next category or show completion
+      if (currentCategoryIndex < categories.length - 1) {
+        setCurrentCategoryIndex(currentCategoryIndex + 1);
+        setAnswers({});
+        setIdentifiedHabit('');
+      } else {
+        setShowCompletion(true);
+      }
     },
     onError: (error) => {
       console.error('Error saving assessment:', error);
