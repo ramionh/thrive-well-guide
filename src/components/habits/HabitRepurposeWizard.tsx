@@ -810,7 +810,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '87.5%' }}></div>
         </div>
 
         <Card>
@@ -857,7 +857,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
         </div>
 
         <Card>
@@ -895,7 +895,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  // Placeholder for subsequent wizard steps
+  // Default fallback for any other steps
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center gap-4 mb-6">
@@ -930,5 +930,3 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 };
 
 export default HabitRepurposeWizard;
-
-}
