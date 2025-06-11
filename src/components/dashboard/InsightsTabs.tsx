@@ -2,11 +2,13 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, Target, Activity, Utensils } from "lucide-react";
+import { TrendingUp, Target, Activity, Utensils, ListChecks, Dumbbell } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { format } from "date-fns";
+import GoalProgress from "./GoalProgress";
+import FocusedHabits from "./FocusedHabits";
 
 const InsightsTabs: React.FC = () => {
   const { user } = useUser();
@@ -25,6 +27,23 @@ const InsightsTabs: React.FC = () => {
 
       if (error) throw error;
       return data || [];
+    },
+    enabled: !!user
+  });
+
+  // Fetch focused habits with their details
+  const { data: focusedHabits } = useQuery({
+    queryKey: ['focused-habits', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('focused_habits')
+        .select('habit_id(id, name, description, category)')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      return data?.map(item => item.habit_id) || [];
     },
     enabled: !!user
   });
@@ -54,6 +73,14 @@ const InsightsTabs: React.FC = () => {
           <TabsTrigger value="progress">
             <TrendingUp className="mr-2 h-4 w-4" />
             Recent Progress
+          </TabsTrigger>
+          <TabsTrigger value="goals">
+            <Target className="mr-2 h-4 w-4" />
+            Goals
+          </TabsTrigger>
+          <TabsTrigger value="habits">
+            <ListChecks className="mr-2 h-4 w-4" />
+            Habits
           </TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
         </TabsList>
@@ -108,6 +135,14 @@ const InsightsTabs: React.FC = () => {
               </div>
             )}
           </Card>
+        </TabsContent>
+
+        <TabsContent value="goals" className="mt-4">
+          <GoalProgress />
+        </TabsContent>
+
+        <TabsContent value="habits" className="mt-4">
+          <FocusedHabits habits={focusedHabits || []} />
         </TabsContent>
         
         <TabsContent value="insights" className="mt-4">
