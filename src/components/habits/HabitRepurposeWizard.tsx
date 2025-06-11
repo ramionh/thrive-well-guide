@@ -60,7 +60,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         simpleIfThen: simpleIfThenRes.data?.[0] || null
       };
     },
-    enabled: !!user?.id && currentStep === 9
+    enabled: !!user?.id && currentStep === 10
   });
 
   const handleGetStarted = () => {
@@ -386,7 +386,11 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
                 </label>
                 <div className="w-full p-3 bg-gray-50 border border-gray-300 rounded-md min-h-[96px] flex items-center">
                   <p className="text-gray-800">
-                    {goalInfo ? `${goalInfo.goal_description || 'No goal description available'}` : 'Loading your goal...'}
+                    {goalInfo ? (
+                      goalInfo.goal_body_type?.name 
+                        ? `Transform from ${goalInfo.current_body_type?.name || 'current body type'} to ${goalInfo.goal_body_type.name}`
+                        : 'Achieve your fitness transformation goal'
+                    ) : 'Loading your goal...'}
                   </p>
                 </div>
               </div>
