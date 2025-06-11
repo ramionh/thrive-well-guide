@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, ArrowLeft, Target, Heart } from "lucide-react";
+import { RotateCcw, ArrowLeft, Target, Heart, XCircle } from "lucide-react";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -18,6 +17,9 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const [goalText, setGoalText] = useState("");
   const [isLearningGoal, setIsLearningGoal] = useState(false);
   const [goalValuesText, setGoalValuesText] = useState("");
+  const [habitDescription, setHabitDescription] = useState("");
+  const [habitTrigger, setHabitTrigger] = useState("");
+  const [habitFeeling, setHabitFeeling] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: goalInfo } = useCurrentGoal();
   const { user } = useUser();
@@ -113,6 +115,48 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       toast({
         title: "Error",
         description: "Failed to save your values explanation. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveUnwantedHabit = async () => {
+    if (!user || !habitDescription.trim() || !habitTrigger.trim() || !habitFeeling.trim()) {
+      toast({
+        title: "Error",
+        description: "Please complete all fields about your unwanted habit before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('habit_repurpose_unwanted_habits')
+        .insert({
+          user_id: user.id,
+          habit_description: habitDescription.trim(),
+          habit_trigger: habitTrigger.trim(),
+          habit_feeling: habitFeeling.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your unwanted habit information has been saved successfully!",
+      });
+
+      // Move to next step
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Error saving unwanted habit:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your unwanted habit information. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -244,44 +288,62 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         <Card>
           <CardContent className="p-8 space-y-6">
             <div className="text-center mb-6">
-              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Target className="h-8 w-8 text-blue-600" />
+              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <XCircle className="h-8 w-8 text-red-600" />
               </div>
               
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Step 3: What is your ultimate goal?
+                What is the unwanted habit you want to change?
               </h2>
               
               <p className="text-gray-600">
-                Be as specific as possible. What exactly do you want to achieve?
+                Understanding the habit you want to change is critical to creating your repurposing plan
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="goal-text" className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Goal
+                <label htmlFor="habit-description" className="block text-sm font-medium text-gray-700 mb-2">
+                  Describe the unwanted habit in detail
                 </label>
                 <Textarea
-                  id="goal-text"
-                  value={goalText}
-                  onChange={(e) => setGoalText(e.target.value)}
-                  placeholder="Describe your ultimate goal in detail..."
-                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-32"
+                  id="habit-description"
+                  value={habitDescription}
+                  onChange={(e) => setHabitDescription(e.target.value)}
+                  placeholder="Example: I eat junk food when I'm stressed at work"
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="learning-goal"
-                  checked={isLearningGoal}
-                  onChange={(e) => setIsLearningGoal(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="learning-goal" className="text-sm text-gray-700">
-                  This is a learning goal (I want to learn something new)
+              <div>
+                <label htmlFor="habit-trigger" className="block text-sm font-medium text-gray-700 mb-2">
+                  What triggers this habit?
                 </label>
+                <Textarea
+                  id="habit-trigger"
+                  value={habitTrigger}
+                  onChange={(e) => setHabitTrigger(e.target.value)}
+                  placeholder="Example: Feeling stressed about a deadline or difficult project"
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="habit-feeling" className="block text-sm font-medium text-gray-700 mb-2">
+                  How do you feel during and after this habit?
+                </label>
+                <Textarea
+                  id="habit-feeling"
+                  value={habitFeeling}
+                  onChange={(e) => setHabitFeeling(e.target.value)}
+                  placeholder="Example: During: Relief and temporary comfort. After: Guilty and disappointed in myself."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                <p className="font-semibold">Tip:</p>
+                <p>Be as specific as possible. Understanding the exact triggers and feelings will help you develop effective replacement strategies.</p>
               </div>
             </div>
 
@@ -296,11 +358,58 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </Button>
               
               <Button 
-                onClick={handleSaveGoal}
-                disabled={isSubmitting || !goalText.trim()}
+                onClick={handleSaveUnwantedHabit}
+                disabled={isSubmitting || !habitDescription.trim() || !habitTrigger.trim() || !habitFeeling.trim()}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {isSubmitting ? "Saving..." : "Save & Continue"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentStep === 4) {
+    return (
+      <div className="container mx-auto py-6 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
+          <div className="text-gray-500">Step 4 of 8</div>
+        </div>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '50%' }}></div>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Coming Soon
+              </h2>
+              
+              <p className="text-gray-600">
+                The next steps of the habit repurpose wizard are under development.
+              </p>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button 
+                onClick={handleBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              
+              <Button 
+                onClick={onBackToOptions}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Back to Journey Options
               </Button>
             </div>
           </CardContent>

@@ -259,6 +259,36 @@ export type Database = {
         }
         Relationships: []
       }
+      habit_repurpose_unwanted_habits: {
+        Row: {
+          created_at: string
+          habit_description: string
+          habit_feeling: string
+          habit_trigger: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          habit_description: string
+          habit_feeling: string
+          habit_trigger: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          habit_description?: string
+          habit_feeling?: string
+          habit_trigger?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       habits: {
         Row: {
           category: Database["public"]["Enums"]["habit_category"]
