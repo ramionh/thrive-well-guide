@@ -12,9 +12,9 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
   return (
     <div className="container mx-auto py-6 max-w-6xl">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-4">Choose Your Habit Journey Path</h1>
+        <h1 className="text-3xl font-bold mb-4">Your Habit Journey Path</h1>
         <p className="text-lg text-gray-600">
-          Select the approach that best fits your current needs and goals
+          Start with the Core Optimal Habits survey, move to Learn your existing habits and finish with Repurpose your habits
         </p>
       </div>
 
