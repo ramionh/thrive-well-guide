@@ -6,6 +6,7 @@ import { Brain, RefreshCw, CheckCircle, Lock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
+import CategoryScoresDisplay from "./CategoryScoresDisplay";
 
 interface HabitsJourneyOptionsProps {
   onSelectOption: (option: 'existing' | 'repurpose' | 'assessment') => void;
@@ -35,7 +36,7 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
   const isAssessmentCompleted = !isLoading && hasCompletedAssessment;
 
   return (
-    <div className="container mx-auto py-6 max-w-6xl">
+    <div className="container mx-auto py-6 max-w-6xl space-y-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-4">Your Habit Journey Path</h1>
         <p className="text-lg text-gray-600">
@@ -130,6 +131,8 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
           </CardContent>
         </Card>
       </div>
+
+      <CategoryScoresDisplay />
     </div>
   );
 };
