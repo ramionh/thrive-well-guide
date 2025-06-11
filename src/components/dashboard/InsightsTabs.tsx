@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import GoalProgress from "./GoalProgress";
 import FocusedHabits from "./FocusedHabits";
 import CategoryScoresDisplay from "../habits/CategoryScoresDisplay";
+import HabitRepurposeSummary from "./HabitRepurposeSummary";
 
 const InsightsTabs: React.FC = () => {
   const { user } = useUser();
@@ -144,6 +145,7 @@ const InsightsTabs: React.FC = () => {
         <TabsContent value="habits" className="mt-4">
           <div className="space-y-6">
             <CategoryScoresDisplay />
+            <HabitRepurposeSummary />
             <FocusedHabits habits={focusedHabits || []} />
           </div>
         </TabsContent>
