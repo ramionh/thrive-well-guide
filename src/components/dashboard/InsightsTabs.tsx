@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { useUser } from "@/context/UserContext";
 import { format } from "date-fns";
 import GoalProgress from "./GoalProgress";
 import FocusedHabits from "./FocusedHabits";
+import CategoryScoresDisplay from "../habits/CategoryScoresDisplay";
 
 const InsightsTabs: React.FC = () => {
   const { user } = useUser();
@@ -142,7 +142,10 @@ const InsightsTabs: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="habits" className="mt-4">
-          <FocusedHabits habits={focusedHabits || []} />
+          <div className="space-y-6">
+            <CategoryScoresDisplay />
+            <FocusedHabits habits={focusedHabits || []} />
+          </div>
         </TabsContent>
         
         <TabsContent value="insights" className="mt-4">
