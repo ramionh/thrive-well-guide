@@ -78,7 +78,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         description: "Your goal has been saved successfully!",
       });
 
-      // Move to next step
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error('Error saving goal:', error);
@@ -118,7 +117,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         description: "Your values explanation has been saved successfully!",
       });
 
-      // Move to next step
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error('Error saving goal values:', error);
@@ -160,7 +158,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         description: "Your unwanted habit information has been saved successfully!",
       });
 
-      // Move to next step
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error('Error saving unwanted habit:', error);
@@ -202,7 +199,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         description: "Your replacement habit strategy has been saved successfully!",
       });
 
-      // Move to next step
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error('Error saving replacement habit:', error);
@@ -243,7 +239,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         description: "Your environment engineering plan has been saved successfully!",
       });
 
-      // Move to next step
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error('Error saving environment plan:', error);
@@ -284,7 +279,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         description: "Your If-Then plan has been saved successfully!",
       });
 
-      // Move to next step
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error('Error saving If-Then plan:', error);
@@ -325,7 +319,6 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         description: "Your simple If-Then plan has been saved successfully!",
       });
 
-      // Move to next step
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error('Error saving simple If-Then plan:', error);
@@ -1044,5 +1037,3 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 };
 
 export default HabitRepurposeWizard;
-
-</edits_to_apply>
