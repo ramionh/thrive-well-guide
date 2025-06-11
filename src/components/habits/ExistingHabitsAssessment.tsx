@@ -39,45 +39,39 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
     mutationFn: async (assessmentData: any) => {
       if (!user) throw new Error('User not authenticated');
 
-      // First, check if a record exists for this user and category
-      const { data: existingRecord, error: selectError } = await supabase
+      // First, check if any records exist for this user and category
+      const { data: existingRecords, error: selectError } = await supabase
         .from('existing_habits_assessment')
         .select('id')
         .eq('user_id', user.id)
-        .eq('category', assessmentData.category)
-        .maybeSingle();
+        .eq('category', assessmentData.category);
 
       if (selectError) throw selectError;
 
-      if (existingRecord) {
-        // Update existing record
-        const { error } = await supabase
+      if (existingRecords && existingRecords.length > 0) {
+        // Delete all existing records for this category first
+        const { error: deleteError } = await supabase
           .from('existing_habits_assessment')
-          .update({
-            question_1_answer: assessmentData.question_1_answer,
-            question_2_answer: assessmentData.question_2_answer,
-            question_3_answer: assessmentData.question_3_answer,
-            identified_habit: assessmentData.identified_habit,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingRecord.id);
+          .delete()
+          .eq('user_id', user.id)
+          .eq('category', assessmentData.category);
 
-        if (error) throw error;
-      } else {
-        // Insert new record
-        const { error } = await supabase
-          .from('existing_habits_assessment')
-          .insert({
-            user_id: user.id,
-            category: assessmentData.category,
-            question_1_answer: assessmentData.question_1_answer,
-            question_2_answer: assessmentData.question_2_answer,
-            question_3_answer: assessmentData.question_3_answer,
-            identified_habit: assessmentData.identified_habit
-          });
-
-        if (error) throw error;
+        if (deleteError) throw deleteError;
       }
+
+      // Insert new record
+      const { error } = await supabase
+        .from('existing_habits_assessment')
+        .insert({
+          user_id: user.id,
+          category: assessmentData.category,
+          question_1_answer: assessmentData.question_1_answer,
+          question_2_answer: assessmentData.question_2_answer,
+          question_3_answer: assessmentData.question_3_answer,
+          identified_habit: assessmentData.identified_habit
+        });
+
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['existing-habits-assessments', user?.id] });
