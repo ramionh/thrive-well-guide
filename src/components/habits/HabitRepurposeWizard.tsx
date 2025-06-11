@@ -62,7 +62,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         simpleIfThen: simpleIfThenRes.data?.[0] || null
       };
     },
-    enabled: !!user?.id && currentStep === 8
+    enabled: !!user?.id && currentStep === 9
   });
 
   const handleGetStarted = () => {
@@ -398,6 +398,93 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
           <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
+          <div className="text-gray-500">Step 1 of 8</div>
+        </div>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '12.5%' }}></div>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <Target className="h-8 w-8 text-blue-600" />
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Step 1: What is your ultimate goal?
+              </h2>
+              
+              <p className="text-gray-600">
+                Having a specific goal builds long-term success.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="goal-text" className="block text-sm font-medium text-gray-700 mb-2">
+                  My goal is to...
+                </label>
+                <Textarea
+                  id="goal-text"
+                  value={goalText}
+                  onChange={(e) => setGoalText(e.target.value)}
+                  placeholder="e.g., feel healthier and more energetic"
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="learning-goal"
+                  checked={isLearningGoal}
+                  onChange={(e) => setIsLearningGoal(e.target.checked)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="learning-goal" className="text-sm text-gray-700">
+                  This is new to me. I'll start with a learning goal.
+                </label>
+              </div>
+
+              {isLearningGoal && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                  <p className="font-semibold">Learning Goal Tip:</p>
+                  <p>If you're new to this area, start with a Learning Goal (e.g., "Learn about nutrition") rather than a specific outcome. This builds long-term success.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button 
+                onClick={handleBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              
+              <Button 
+                onClick={handleSaveGoal}
+                disabled={isSubmitting || !goalText.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isSubmitting ? "Saving..." : "Next"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentStep === 3) {
+    return (
+      <div className="container mx-auto py-6 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
           <div className="text-gray-500">Step 2 of 8</div>
         </div>
         
@@ -471,7 +558,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 3) {
+  if (currentStep === 4) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -569,7 +656,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 4) {
+  if (currentStep === 5) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -673,7 +760,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 5) {
+  if (currentStep === 6) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -763,7 +850,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 6) {
+  if (currentStep === 7) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -868,7 +955,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 7) {
+  if (currentStep === 8) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -985,7 +1072,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 8) {
+  if (currentStep === 9) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
