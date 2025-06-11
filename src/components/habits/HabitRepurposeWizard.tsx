@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, ArrowLeft, Target, Heart, XCircle } from "lucide-react";
+import { RotateCcw, ArrowLeft, Target, Heart, XCircle, RefreshCw } from "lucide-react";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -20,6 +20,9 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const [habitDescription, setHabitDescription] = useState("");
   const [habitTrigger, setHabitTrigger] = useState("");
   const [habitFeeling, setHabitFeeling] = useState("");
+  const [replacementHabit, setReplacementHabit] = useState("");
+  const [triggerRoutine, setTriggerRoutine] = useState("");
+  const [actionRoutine, setActionRoutine] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: goalInfo } = useCurrentGoal();
   const { user } = useUser();
@@ -157,6 +160,48 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       toast({
         title: "Error",
         description: "Failed to save your unwanted habit information. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveReplacementHabit = async () => {
+    if (!user || !replacementHabit.trim() || !triggerRoutine.trim() || !actionRoutine.trim()) {
+      toast({
+        title: "Error",
+        description: "Please complete all fields for your replacement habit before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('habit_repurpose_replacements')
+        .insert({
+          user_id: user.id,
+          replacement_habit: replacementHabit.trim(),
+          trigger_routine: triggerRoutine.trim(),
+          action_routine: actionRoutine.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your replacement habit strategy has been saved successfully!",
+      });
+
+      // Move to next step
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Error saving replacement habit:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your replacement habit strategy. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -386,6 +431,110 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
         <Card>
           <CardContent className="p-8 space-y-6">
             <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <RefreshCw className="h-8 w-8 text-green-600" />
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                What habit will you use to replace the unwanted one?
+              </h2>
+              
+              <p className="text-gray-600">
+                Create a specific plan for your replacement habit that uses the same trigger
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="replacement-habit" className="block text-sm font-medium text-gray-700 mb-2">
+                  Describe your replacement habit
+                </label>
+                <Textarea
+                  id="replacement-habit"
+                  value={replacementHabit}
+                  onChange={(e) => setReplacementHabit(e.target.value)}
+                  placeholder="Example: Take 5 deep breaths and drink a glass of water"
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="trigger-routine" className="block text-sm font-medium text-gray-700 mb-2">
+                  When I notice this trigger...
+                </label>
+                <Textarea
+                  id="trigger-routine"
+                  value={triggerRoutine}
+                  onChange={(e) => setTriggerRoutine(e.target.value)}
+                  placeholder="Example: When I feel stressed about work deadlines"
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="action-routine" className="block text-sm font-medium text-gray-700 mb-2">
+                  I will do this action instead...
+                </label>
+                <Textarea
+                  id="action-routine"
+                  value={actionRoutine}
+                  onChange={(e) => setActionRoutine(e.target.value)}
+                  placeholder="Example: I will stop what I'm doing, take 5 deep breaths, and drink a full glass of water while thinking about my goal"
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-24"
+                />
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
+                <p className="font-semibold">Tip:</p>
+                <p>Make your replacement habit:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li>Specific and easy to do</li>
+                  <li>Triggered by the same cue as your old habit</li>
+                  <li>Something that moves you toward your goal</li>
+                  <li>Immediately rewarding in some way</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button 
+                onClick={handleBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              
+              <Button 
+                onClick={handleSaveReplacementHabit}
+                disabled={isSubmitting || !replacementHabit.trim() || !triggerRoutine.trim() || !actionRoutine.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isSubmitting ? "Saving..." : "Save & Continue"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentStep === 5) {
+    return (
+      <div className="container mx-auto py-6 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
+          <div className="text-gray-500">Step 5 of 8</div>
+        </div>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '62.5%' }}></div>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
                 Coming Soon
               </h2>
@@ -453,3 +602,5 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 };
 
 export default HabitRepurposeWizard;
+
+</edits_to_apply>
