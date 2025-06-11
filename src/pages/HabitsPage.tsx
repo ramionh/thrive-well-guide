@@ -9,9 +9,9 @@ import HabitCategorySection from "@/components/habits/HabitCategorySection";
 import HabitsSplash from "@/components/habits/HabitsSplash";
 import HabitsJourneyOptions from "@/components/habits/HabitsJourneyOptions";
 import HabitRepurposeWizard from "@/components/habits/HabitRepurposeWizard";
-import HabitScoring from "@/components/habits/HabitScoring";
+import CoreOptimalHabitAssessment from "@/components/habits/CoreOptimalHabitAssessment";
 
-type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose-wizard' | 'core';
+type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose-wizard' | 'core' | 'assessment';
 
 const HabitsPage = () => {
   const [currentView, setCurrentView] = useState<HabitsView>('splash');
@@ -44,11 +44,13 @@ const HabitsPage = () => {
     setCurrentView('options');
   };
 
-  const handleSelectOption = (option: 'existing' | 'repurpose' | 'core') => {
+  const handleSelectOption = (option: 'existing' | 'repurpose' | 'core' | 'assessment') => {
     if (option === 'core') {
       setCurrentView('core');
     } else if (option === 'repurpose') {
       setCurrentView('repurpose-wizard');
+    } else if (option === 'assessment') {
+      setCurrentView('assessment');
     } else {
       // For now, we'll just set to core for existing
       // This can be implemented later with different content
@@ -64,9 +66,12 @@ const HabitsPage = () => {
     return (
       <div className="container mx-auto py-6 space-y-8">
         <HabitsJourneyOptions onSelectOption={handleSelectOption} />
-        <HabitScoring />
       </div>
     );
+  }
+
+  if (currentView === 'assessment') {
+    return <CoreOptimalHabitAssessment onBackToOptions={() => setCurrentView('options')} />;
   }
 
   if (currentView === 'repurpose-wizard') {

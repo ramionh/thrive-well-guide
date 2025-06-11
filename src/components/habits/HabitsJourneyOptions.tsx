@@ -2,10 +2,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, RefreshCw, Target } from "lucide-react";
+import { Brain, RefreshCw, Target, CheckCircle } from "lucide-react";
 
 interface HabitsJourneyOptionsProps {
-  onSelectOption: (option: 'existing' | 'repurpose' | 'core') => void;
+  onSelectOption: (option: 'existing' | 'repurpose' | 'core' | 'assessment') => void;
 }
 
 const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOption }) => {
@@ -35,6 +35,26 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               Core Optimal Habits
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-6 w-6 text-green-600" />
+            </div>
+            <CardTitle>Core Optimal Habit Assessment</CardTitle>
+            <CardDescription>
+              Rate yourself on each core habit and get a score for each category
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => onSelectOption('assessment')}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              Take Assessment
             </Button>
           </CardContent>
         </Card>
