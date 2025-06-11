@@ -59,17 +59,24 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
         if (deleteError) throw deleteError;
       }
 
+      // Prepare the insert data, only including question_3_answer if it has a valid value
+      const insertData: any = {
+        user_id: user.id,
+        category: assessmentData.category,
+        question_1_answer: assessmentData.question_1_answer,
+        question_2_answer: assessmentData.question_2_answer,
+        identified_habit: assessmentData.identified_habit
+      };
+
+      // Only include question_3_answer if it's not empty and is a valid option
+      if (assessmentData.question_3_answer && ['a', 'b', 'c'].includes(assessmentData.question_3_answer)) {
+        insertData.question_3_answer = assessmentData.question_3_answer;
+      }
+
       // Insert new record
       const { error } = await supabase
         .from('existing_habits_assessment')
-        .insert({
-          user_id: user.id,
-          category: assessmentData.category,
-          question_1_answer: assessmentData.question_1_answer,
-          question_2_answer: assessmentData.question_2_answer,
-          question_3_answer: assessmentData.question_3_answer,
-          identified_habit: assessmentData.identified_habit
-        });
+        .insert(insertData);
 
       if (error) throw error;
     },
@@ -199,14 +206,20 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
     setIdentifiedHabit(habit);
     setCurrentScreen('result');
     
-    // Save to database
-    saveAssessmentMutation.mutate({
+    // Save to database - only pass question_3_answer if it exists and is valid
+    const assessmentData = {
       category: currentCategory,
       question_1_answer: answers.q1,
       question_2_answer: answers.q2,
-      question_3_answer: answers.q3,
       identified_habit: habit
-    });
+    };
+
+    // Only add question_3_answer if it has a valid value
+    if (answers.q3 && ['a', 'b', 'c'].includes(answers.q3)) {
+      assessmentData.question_3_answer = answers.q3;
+    }
+
+    saveAssessmentMutation.mutate(assessmentData);
   };
 
   const isAnswersComplete = () => {
