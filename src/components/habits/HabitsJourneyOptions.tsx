@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import CategoryScoresDisplay from "./CategoryScoresDisplay";
 import ExistingHabitsAssessmentSummary from "./ExistingHabitsAssessmentSummary";
+import HabitRepurposeSummary from "../dashboard/HabitRepurposeSummary";
 
 interface HabitsJourneyOptionsProps {
   onSelectOption: (option: 'existing' | 'repurpose' | 'assessment') => void;
@@ -137,6 +138,8 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
         <CategoryScoresDisplay />
         <ExistingHabitsAssessmentSummary />
       </div>
+
+      <HabitRepurposeSummary />
     </div>
   );
 };
