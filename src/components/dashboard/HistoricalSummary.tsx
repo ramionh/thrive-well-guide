@@ -14,18 +14,26 @@ type HistoricalSummaryProps = {
 };
 
 const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onClose }) => {
-  const { data: healthData, isLoading } = useQuery({
+  const { data: healthData, isLoading, error } = useQuery({
     queryKey: ['healthData', date],
     queryFn: async () => {
       if (!date) return null;
       
+      const formattedDate = format(date, 'yyyy-MM-dd');
+      console.log('Querying for date:', formattedDate);
+      
       const { data, error } = await supabase
         .from('daily_health_tracking')
         .select('*')
-        .eq('date', format(date, 'yyyy-MM-dd'))
+        .eq('date', formattedDate)
         .maybeSingle();
         
-      if (error) throw error;
+      if (error) {
+        console.error('Query error:', error);
+        throw error;
+      }
+      
+      console.log('Query result:', data);
       return data;
     },
     enabled: !!date,
@@ -42,6 +50,10 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
 
         {isLoading ? (
           <div>Loading...</div>
+        ) : error ? (
+          <div className="text-center text-red-600 py-8">
+            Error loading data: {error.message}
+          </div>
         ) : !healthData ? (
           <div className="text-center text-muted-foreground py-8">
             No data recorded for this date
