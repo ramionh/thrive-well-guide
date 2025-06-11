@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Moon, Calculator, Drumstick, Dumbbell, Shield, Plus, Lightbulb } from "lucide-react";
+import { ArrowLeft, Moon, Calculator, Drumstick, Dumbbell, Shield, Lightbulb } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -219,14 +218,6 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
               </Card>
             );
           })}
-          
-          <Card className="bg-gray-50 border-dashed border-2 border-gray-300 cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <Plus className="h-10 w-10 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-lg font-semibold text-gray-600 mb-2">More Categories</h2>
-              <p className="text-sm text-gray-500">New assessments coming soon.</p>
-            </CardContent>
-          </Card>
         </div>
       </div>
     );
