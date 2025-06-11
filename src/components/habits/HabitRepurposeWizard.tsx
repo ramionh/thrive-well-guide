@@ -34,6 +34,28 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const { user } = useUser();
   const { toast } = useToast();
 
+  // Query to fetch user profile data for additional details
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('weight_lbs, height_feet, height_inches')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return null;
+      }
+      
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
   // Query to fetch user's habit repurpose data for the summary
   const { data: habitRepurposeData } = useQuery({
     queryKey: ['habitRepurposeData', user?.id],
@@ -320,38 +342,19 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     }
   };
 
-  if (currentStep === 1) {
-    return (
-      <div className="container mx-auto py-6 max-w-2xl">
-        <Card className="text-center">
-          <CardContent className="p-12 space-y-6">
-            <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-              <RotateCcw className="h-8 w-8 text-blue-600" />
-            </div>
-            
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">
-              Welcome to Habit Repurpose
-            </h1>
-            
-            <p className="text-lg text-gray-600 leading-relaxed max-w-md mx-auto">
-              Lasting change is a skill. This short guide will walk you through an evidence-based plan to understand your old habits and build new ones that stick.
-            </p>
-            
-            <div className="pt-6">
-              <Button 
-                onClick={handleGetStarted}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg w-full max-w-xs"
-              >
-                Let's Get Started
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const formatHeight = (feet: number, inches: number) => {
+    return `${feet}'${inches}"`;
+  };
 
-  if (currentStep === 2) {
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (currentStep === 1) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -371,7 +374,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </div>
               
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Step 1: What is your ultimate goal?
+                What is your ultimate goal?
               </h2>
               
               <p className="text-gray-600">
@@ -384,26 +387,50 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
                 <label htmlFor="goal-display" className="block text-sm font-medium text-gray-700 mb-2">
                   Your current goal:
                 </label>
-                <div className="w-full p-3 bg-gray-50 border border-gray-300 rounded-md min-h-[96px] flex items-center">
-                  <p className="text-gray-800">
-                    {goalInfo ? (
-                      goalInfo.goal_body_type?.name 
-                        ? `Transform from ${goalInfo.current_body_type?.name || 'current body type'} to ${goalInfo.goal_body_type.name}`
-                        : 'Achieve your fitness transformation goal'
-                    ) : 'Loading your goal...'}
-                  </p>
+                <div className="w-full p-4 bg-gray-50 border border-gray-300 rounded-md min-h-[120px] space-y-3">
+                  <div className="text-gray-800">
+                    <div className="font-semibold text-lg mb-2">
+                      {goalInfo ? (
+                        goalInfo.goal_body_type?.name 
+                          ? `Transform from ${goalInfo.current_body_type?.name || 'current body type'} to ${goalInfo.goal_body_type.name}`
+                          : 'Achieve your fitness transformation goal'
+                      ) : 'Loading your goal...'}
+                    </div>
+                    
+                    {userProfile && (
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
+                        <div>
+                          <span className="font-medium">Current Weight:</span> {userProfile.weight_lbs ? `${userProfile.weight_lbs} lbs` : 'Not specified'}
+                        </div>
+                        <div>
+                          <span className="font-medium">Height:</span> {userProfile.height_feet && userProfile.height_inches ? formatHeight(userProfile.height_feet, userProfile.height_inches) : 'Not specified'}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {goalInfo && (
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                          <span className="font-medium">Start Date:</span> {formatDate(goalInfo.started_date)}
+                        </div>
+                        <div>
+                          <span className="font-medium">Target Date:</span> {formatDate(goalInfo.target_date)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="flex justify-between pt-6">
               <Button 
-                onClick={handleBack}
+                onClick={onBackToOptions}
                 variant="outline"
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                Back to Options
               </Button>
               
               <Button 
@@ -419,7 +446,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 3) {
+  if (currentStep === 2) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -497,7 +524,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 4) {
+  if (currentStep === 3) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -595,7 +622,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 5) {
+  if (currentStep === 4) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -699,7 +726,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 6) {
+  if (currentStep === 5) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -789,7 +816,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 7) {
+  if (currentStep === 6) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -894,7 +921,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 8) {
+  if (currentStep === 7) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -1011,7 +1038,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
-  if (currentStep === 9) {
+  if (currentStep === 8) {
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
