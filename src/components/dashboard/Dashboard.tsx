@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +15,6 @@ import CoreValues from "./CoreValues";
 import FocusedHabits from "./FocusedHabits";
 import HistoryButton from "./HistoryButton";
 import MotivationProgress from "./MotivationProgress";
-import HabitRepurposeSummary from "./HabitRepurposeSummary";
 
 const Dashboard: React.FC = () => {
   const { user, isLoading } = useAuthCheck();
@@ -125,7 +125,6 @@ const Dashboard: React.FC = () => {
       
       <InsightsTabs />
       {coreValues && <CoreValues values={coreValues} />}
-      <HabitRepurposeSummary />
       <FocusedHabits habits={focusedHabits || []} />
     </div>
   );
