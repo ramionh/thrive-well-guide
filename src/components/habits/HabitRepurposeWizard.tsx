@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RotateCcw, ArrowLeft, Target } from "lucide-react";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface HabitRepurposeWizardProps {
   onBackToOptions: () => void;
@@ -11,10 +14,14 @@ interface HabitRepurposeWizardProps {
 
 const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOptions }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [goalText, setGoalText] = useState("");
+  const [isLearningGoal, setIsLearningGoal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: goalInfo } = useCurrentGoal();
+  const { user } = useUser();
+  const { toast } = useToast();
 
   const handleGetStarted = () => {
-    // Move to the next step of the wizard
     setCurrentStep(2);
   };
 
@@ -23,8 +30,52 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   };
 
   const handleNext = () => {
-    // Move to next step (step 3 when implemented)
     setCurrentStep(currentStep + 1);
+  };
+
+  const handleBack = () => {
+    setCurrentStep(currentStep - 1);
+  };
+
+  const handleSaveGoal = async () => {
+    if (!user || !goalText.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a goal before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('habit_repurpose_goals')
+        .insert({
+          user_id: user.id,
+          goal_text: goalText.trim(),
+          is_learning_goal: isLearningGoal
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your goal has been saved successfully!",
+      });
+
+      // Move to next step
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Error saving goal:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your goal. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (currentStep === 1) {
@@ -127,12 +178,92 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     );
   }
 
+  if (currentStep === 3) {
+    return (
+      <div className="container mx-auto py-6 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
+          <div className="text-gray-500">Step 2 of 8</div>
+        </div>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '25%' }}></div>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <Target className="h-8 w-8 text-blue-600" />
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Step 2: What is your ultimate goal?
+              </h2>
+              
+              <p className="text-gray-600">
+                Be as specific as possible. What exactly do you want to achieve?
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="goal-text" className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Goal
+                </label>
+                <textarea
+                  id="goal-text"
+                  value={goalText}
+                  onChange={(e) => setGoalText(e.target.value)}
+                  placeholder="Describe your ultimate goal in detail..."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-32 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="learning-goal"
+                  checked={isLearningGoal}
+                  onChange={(e) => setIsLearningGoal(e.target.checked)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="learning-goal" className="text-sm text-gray-700">
+                  This is a learning goal (I want to learn something new)
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button 
+                onClick={handleBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              
+              <Button 
+                onClick={handleSaveGoal}
+                disabled={isSubmitting || !goalText.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isSubmitting ? "Saving..." : "Save & Continue"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Placeholder for subsequent wizard steps
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center gap-4 mb-6">
         <Button 
-          onClick={handleBackToStart}
+          onClick={handleBack}
           variant="ghost"
           size="sm"
           className="flex items-center gap-2"

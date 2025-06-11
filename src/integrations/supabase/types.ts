@@ -208,6 +208,33 @@ export type Database = {
           },
         ]
       }
+      habit_repurpose_goals: {
+        Row: {
+          created_at: string
+          goal_text: string
+          id: string
+          is_learning_goal: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal_text: string
+          id?: string
+          is_learning_goal?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal_text?: string
+          id?: string
+          is_learning_goal?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       habits: {
         Row: {
           category: Database["public"]["Enums"]["habit_category"]
