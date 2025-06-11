@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Moon, Calculator, Drumstick, Dumbbell, Shield, Lightbulb } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -65,7 +65,7 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
       // Move to next category or show completion
       if (currentCategoryIndex < categories.length - 1) {
         setCurrentCategoryIndex(currentCategoryIndex + 1);
-        setAnswers({});
+        setAnswers({ q1: '', q2: '', q3: '' });
         setIdentifiedHabit('');
       } else {
         setShowCompletion(true);
@@ -184,8 +184,10 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
     // Save to database
     saveAssessmentMutation.mutate({
       category: currentCategory,
-      answers,
-      habit
+      question_1_answer: answers.q1,
+      question_2_answer: answers.q2,
+      question_3_answer: answers.q3,
+      identified_habit: habit
     });
   };
 
