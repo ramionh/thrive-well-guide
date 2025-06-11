@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, ArrowLeft, Target, Heart, XCircle, RefreshCw, Wrench, FileText } from "lucide-react";
+import { RotateCcw, ArrowLeft, Target, Heart, XCircle, RefreshCw, Wrench, FileText, CheckCircle } from "lucide-react";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
 
 interface HabitRepurposeWizardProps {
   onBackToOptions: () => void;
@@ -34,6 +35,35 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const { data: goalInfo } = useCurrentGoal();
   const { user } = useUser();
   const { toast } = useToast();
+
+  // Query to fetch user's habit repurpose data for the summary
+  const { data: habitRepurposeData } = useQuery({
+    queryKey: ['habitRepurposeData', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const [goalsRes, valuesRes, unwantedRes, replacementRes, environmentRes, ifThenRes, simpleIfThenRes] = await Promise.all([
+        supabase.from('habit_repurpose_goals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('habit_repurpose_goal_values').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('habit_repurpose_unwanted_habits').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('habit_repurpose_replacements').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('habit_repurpose_environment').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('habit_repurpose_if_then_plans').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('habit_repurpose_simple_if_then').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1)
+      ]);
+
+      return {
+        goal: goalsRes.data?.[0] || null,
+        values: valuesRes.data?.[0] || null,
+        unwantedHabit: unwantedRes.data?.[0] || null,
+        replacement: replacementRes.data?.[0] || null,
+        environment: environmentRes.data?.[0] || null,
+        ifThen: ifThenRes.data?.[0] || null,
+        simpleIfThen: simpleIfThenRes.data?.[0] || null
+      };
+    },
+    enabled: !!user?.id && currentStep === 8
+  });
 
   const handleGetStarted = () => {
     setCurrentStep(2);
@@ -959,24 +989,75 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
-          <div className="text-blue-600 font-medium">Phase 4: Complete</div>
+          <div className="text-green-600 font-medium">Complete</div>
           <div className="text-gray-500">Step 8 of 8</div>
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+          <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }}></div>
         </div>
 
         <Card>
           <CardContent className="p-8 space-y-6">
             <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Coming Soon
+                Your Habit Repurpose Plan
               </h2>
               
               <p className="text-gray-600">
-                The final step of the habit repurpose wizard is under development.
+                Review your self-contract. Revisit this plan when you need a reminder of your commitment.
               </p>
+            </div>
+
+            <div className="space-y-4 bg-gray-50 rounded-lg p-6">
+              <div className="space-y-3">
+                <div className="flex flex-col space-y-1">
+                  <span className="font-semibold text-gray-700">My Goal:</span>
+                  <span className="text-gray-600">{habitRepurposeData?.values?.goal_values_text || "N/A"}</span>
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <span className="font-semibold text-gray-700">My "Why":</span>
+                  <span className="text-gray-600">{habitRepurposeData?.values?.goal_values_text || "N/A"}</span>
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <span className="font-semibold text-gray-700">Unwanted Habit:</span>
+                  <span className="text-gray-600">{habitRepurposeData?.unwantedHabit?.habit_description || "N/A"}</span>
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <span className="font-semibold text-gray-700">Replacement Habit:</span>
+                  <span className="text-gray-600">{habitRepurposeData?.replacement?.replacement_habit || "N/A"}</span>
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <span className="font-semibold text-gray-700">Environmental Design:</span>
+                  <span className="text-gray-600">
+                    I will make my bad habit harder by "{habitRepurposeData?.environment?.make_bad_habit_harder || "..."}". 
+                    I will make my good habit easier by "{habitRepurposeData?.environment?.make_good_habit_easier || "..."}".
+                  </span>
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <span className="font-semibold text-gray-700">My "If-Then" Plan:</span>
+                  <span className="text-gray-600">
+                    If "{habitRepurposeData?.simpleIfThen?.trigger_phrase || "my trigger"}", then I will "{habitRepurposeData?.simpleIfThen?.good_habit_phrase || "my good habit"}".
+                  </span>
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <span className="font-semibold text-gray-700">My Backup Plan:</span>
+                  <span className="text-gray-600">
+                    When I face the obstacle of "{habitRepurposeData?.unwantedHabit?.habit_trigger || "..."}", 
+                    my backup plan is to "{habitRepurposeData?.replacement?.action_routine || "..."}".
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-between pt-6">
@@ -993,7 +1074,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
                 onClick={onBackToOptions}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Back to Journey Options
+                Start Over
               </Button>
             </div>
           </CardContent>
