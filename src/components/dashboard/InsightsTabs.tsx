@@ -84,7 +84,7 @@ const InsightsTabs = () => {
                       <span className="text-sm">{new Date(log.date).toLocaleDateString()}</span>
                       <div className="flex gap-2 text-xs">
                         {log.exercise_adherence && <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">Exercise: {log.exercise_adherence}</span>}
-                        {log.sleep && <span className="bg-green-100 text-green-800 px-2 py-1 rounded">Sleep: {log.sleep}h</span>}
+                        {log.sleep_hours && <span className="bg-green-100 text-green-800 px-2 py-1 rounded">Sleep: {log.sleep_hours}h</span>}
                       </div>
                     </div>
                   ))}
