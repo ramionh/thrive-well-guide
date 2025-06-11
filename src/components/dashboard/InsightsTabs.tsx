@@ -17,10 +17,10 @@ const InsightsTabs = () => {
       if (!user) return null;
       
       const { data, error } = await supabase
-        .from('daily_health_logs')
+        .from('daily_health_tracking')
         .select('*')
         .eq('user_id', user.id)
-        .order('log_date', { ascending: false })
+        .order('date', { ascending: false })
         .limit(7);
 
       if (error) throw error;
@@ -81,10 +81,10 @@ const InsightsTabs = () => {
                 <div className="space-y-2">
                   {progressData.slice(0, 5).map((log) => (
                     <div key={log.id} className="flex justify-between items-center p-2 bg-muted rounded">
-                      <span className="text-sm">{new Date(log.log_date).toLocaleDateString()}</span>
+                      <span className="text-sm">{new Date(log.date).toLocaleDateString()}</span>
                       <div className="flex gap-2 text-xs">
-                        {log.exercise_duration && <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">Exercise: {log.exercise_duration}min</span>}
-                        {log.sleep_hours && <span className="bg-green-100 text-green-800 px-2 py-1 rounded">Sleep: {log.sleep_hours}h</span>}
+                        {log.exercise_adherence && <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">Exercise: {log.exercise_adherence}</span>}
+                        {log.sleep && <span className="bg-green-100 text-green-800 px-2 py-1 rounded">Sleep: {log.sleep}h</span>}
                       </div>
                     </div>
                   ))}
@@ -109,11 +109,11 @@ const InsightsTabs = () => {
                 <div className="space-y-3">
                   {goalsData.slice(0, 3).map((goal) => (
                     <div key={goal.id} className="p-3 border rounded-lg">
-                      <h4 className="font-medium">{goal.title}</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{goal.description}</p>
+                      <h4 className="font-medium">Body Transformation Goal</h4>
+                      <p className="text-sm text-muted-foreground mt-1">Working towards your target body type</p>
                       <div className="flex justify-between items-center mt-2">
                         <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          {goal.category}
+                          Fitness
                         </span>
                         <span className="text-xs text-muted-foreground">
                           Target: {new Date(goal.target_date).toLocaleDateString()}
