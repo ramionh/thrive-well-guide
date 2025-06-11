@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, ArrowLeft, Target, Heart, XCircle, RefreshCw } from "lucide-react";
+import { RotateCcw, ArrowLeft, Target, Heart, XCircle, RefreshCw, Wrench } from "lucide-react";
 import { useCurrentGoal } from "@/hooks/useCurrentGoal";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -24,6 +23,8 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
   const [replacementHabit, setReplacementHabit] = useState("");
   const [triggerRoutine, setTriggerRoutine] = useState("");
   const [actionRoutine, setActionRoutine] = useState("");
+  const [makeBadHabitHarder, setMakeBadHabitHarder] = useState("");
+  const [makeGoodHabitEasier, setMakeGoodHabitEasier] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: goalInfo } = useCurrentGoal();
   const { user } = useUser();
@@ -203,6 +204,47 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
       toast({
         title: "Error",
         description: "Failed to save your replacement habit strategy. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveEnvironment = async () => {
+    if (!user || !makeBadHabitHarder.trim() || !makeGoodHabitEasier.trim()) {
+      toast({
+        title: "Error",
+        description: "Please complete both environment engineering fields before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('habit_repurpose_environment')
+        .insert({
+          user_id: user.id,
+          make_bad_habit_harder: makeBadHabitHarder.trim(),
+          make_good_habit_easier: makeGoodHabitEasier.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your environment engineering plan has been saved successfully!",
+      });
+
+      // Move to next step
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Error saving environment plan:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your environment engineering plan. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -525,12 +567,102 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
     return (
       <div className="container mx-auto py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
-          <div className="text-blue-600 font-medium">Phase 1: Prepare</div>
+          <div className="text-blue-600 font-medium">Phase 2: Design Your Environment</div>
           <div className="text-gray-500">Step 5 of 8</div>
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
           <div className="bg-blue-600 h-2 rounded-full" style={{ width: '62.5%' }}></div>
+        </div>
+
+        <Card>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                <Wrench className="h-8 w-8 text-purple-600" />
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Engineer your environment for success
+              </h2>
+              
+              <p className="text-gray-600">
+                Your environment plays a huge role in your habits. Design it to make good habits easier and bad habits harder.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="make-bad-harder" className="block text-sm font-medium text-gray-700 mb-2">
+                  How will you make your bad habit harder to do?
+                </label>
+                <Textarea
+                  id="make-bad-harder"
+                  value={makeBadHabitHarder}
+                  onChange={(e) => setMakeBadHabitHarder(e.target.value)}
+                  placeholder="Example: I'll keep junk food out of my house and office. I'll put my phone in another room when I'm working."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-32"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="make-good-easier" className="block text-sm font-medium text-gray-700 mb-2">
+                  How will you make your good habit easier to do?
+                </label>
+                <Textarea
+                  id="make-good-easier"
+                  value={makeGoodHabitEasier}
+                  onChange={(e) => setMakeGoodHabitEasier(e.target.value)}
+                  placeholder="Example: I'll keep a water bottle on my desk and set reminders. I'll prepare healthy snacks in advance and keep them visible."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none h-32"
+                />
+              </div>
+
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm text-purple-800">
+                <p className="font-semibold">Environment Design Principles:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li><strong>Remove friction</strong> for good habits - make them obvious and easy</li>
+                  <li><strong>Add friction</strong> for bad habits - make them invisible and difficult</li>
+                  <li><strong>Use visual cues</strong> to remind you of your good habits</li>
+                  <li><strong>Prepare in advance</strong> so good choices require less willpower</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button 
+                onClick={handleBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              
+              <Button 
+                onClick={handleSaveEnvironment}
+                disabled={isSubmitting || !makeBadHabitHarder.trim() || !makeGoodHabitEasier.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isSubmitting ? "Saving..." : "Save & Continue"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentStep === 6) {
+    return (
+      <div className="container mx-auto py-6 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-blue-600 font-medium">Phase 2: Design Your Environment</div>
+          <div className="text-gray-500">Step 6 of 8</div>
+        </div>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '75%' }}></div>
         </div>
 
         <Card>

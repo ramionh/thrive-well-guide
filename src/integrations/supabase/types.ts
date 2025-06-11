@@ -208,6 +208,33 @@ export type Database = {
           },
         ]
       }
+      habit_repurpose_environment: {
+        Row: {
+          created_at: string
+          id: string
+          make_bad_habit_harder: string
+          make_good_habit_easier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          make_bad_habit_harder: string
+          make_good_habit_easier: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          make_bad_habit_harder?: string
+          make_good_habit_easier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       habit_repurpose_goal_values: {
         Row: {
           created_at: string
