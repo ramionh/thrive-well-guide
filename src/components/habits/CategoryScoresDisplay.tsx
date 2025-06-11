@@ -110,7 +110,7 @@ const CategoryScoresDisplay = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Award className="h-6 w-6 text-yellow-600" />
-          Your Category Scores
+          Your Habit Assessment Category Scores
         </CardTitle>
       </CardHeader>
       <CardContent>
