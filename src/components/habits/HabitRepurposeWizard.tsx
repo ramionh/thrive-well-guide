@@ -1066,49 +1066,94 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
               </p>
             </div>
 
-            <div className="space-y-4 bg-gray-50 rounded-lg p-6">
-              <div className="space-y-3">
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-gray-700">My Goal:</span>
-                  <span className="text-gray-600">{habitRepurposeData?.goal?.goal_text || "N/A"}</span>
+            <div className="space-y-6 bg-gray-50 rounded-lg p-6">
+              <div className="space-y-4">
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">My Goal:</h3>
+                  <div className="text-gray-700">
+                    {goalInfo ? (
+                      <div className="space-y-2">
+                        <div className="font-medium">
+                          {goalInfo.goal_body_type?.name 
+                            ? `Transform from ${goalInfo.current_body_type?.name || 'current body type'} to ${goalInfo.goal_body_type.name}`
+                            : 'Achieve your fitness transformation goal'
+                          }
+                        </div>
+                        {userProfile && (
+                          <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                            <div>Current Weight: {userProfile.weight_lbs ? `${userProfile.weight_lbs} lbs` : 'Not specified'}</div>
+                            <div>Height: {userProfile.height_feet && userProfile.height_inches ? formatHeight(userProfile.height_feet, userProfile.height_inches) : 'Not specified'}</div>
+                            <div>Start Date: {formatDate(goalInfo.started_date)}</div>
+                            <div>Target Date: {formatDate(goalInfo.target_date)}</div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-gray-500 italic">Loading goal information...</span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-gray-700">My "Why":</span>
-                  <span className="text-gray-600">{habitRepurposeData?.values?.goal_values_text || "N/A"}</span>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">My "Why" (Values):</h3>
+                  <div className="text-gray-700">
+                    {habitRepurposeData?.values?.goal_values_text || (
+                      <span className="text-gray-500 italic">No values explanation provided</span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-gray-700">Unwanted Habit:</span>
-                  <span className="text-gray-600">{habitRepurposeData?.unwantedHabit?.habit_description || "N/A"}</span>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">Unwanted Habit:</h3>
+                  <div className="text-gray-700 space-y-2">
+                    <div><strong>Description:</strong> {habitRepurposeData?.unwantedHabit?.habit_description || 'Not specified'}</div>
+                    <div><strong>Trigger:</strong> {habitRepurposeData?.unwantedHabit?.habit_trigger || 'Not specified'}</div>
+                    <div><strong>Feelings:</strong> {habitRepurposeData?.unwantedHabit?.habit_feeling || 'Not specified'}</div>
+                  </div>
                 </div>
 
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-gray-700">Replacement Habit:</span>
-                  <span className="text-gray-600">{habitRepurposeData?.replacement?.replacement_habit || "N/A"}</span>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">Replacement Habit:</h3>
+                  <div className="text-gray-700 space-y-2">
+                    <div><strong>New Habit:</strong> {habitRepurposeData?.replacement?.replacement_habit || 'Not specified'}</div>
+                    <div><strong>When I notice:</strong> {habitRepurposeData?.replacement?.trigger_routine || 'Not specified'}</div>
+                    <div><strong>I will do:</strong> {habitRepurposeData?.replacement?.action_routine || 'Not specified'}</div>
+                  </div>
                 </div>
 
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-gray-700">Environmental Design:</span>
-                  <span className="text-gray-600">
-                    I will make my bad habit harder by "{habitRepurposeData?.environment?.make_bad_habit_harder || "..."}". 
-                    I will make my good habit easier by "{habitRepurposeData?.environment?.make_good_habit_easier || "..."}".
-                  </span>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">Environment Engineering:</h3>
+                  <div className="text-gray-700 space-y-2">
+                    <div><strong>Make bad habit harder:</strong> {habitRepurposeData?.environment?.make_bad_habit_harder || 'Not specified'}</div>
+                    <div><strong>Make good habit easier:</strong> {habitRepurposeData?.environment?.make_good_habit_easier || 'Not specified'}</div>
+                  </div>
                 </div>
 
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-gray-700">My "If-Then" Plan:</span>
-                  <span className="text-gray-600">
-                    If "{habitRepurposeData?.simpleIfThen?.trigger_phrase || "my trigger"}", then I will "{habitRepurposeData?.simpleIfThen?.good_habit_phrase || "my good habit"}".
-                  </span>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">Detailed If-Then Plan:</h3>
+                  <div className="text-gray-700">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <strong>If</strong> {habitRepurposeData?.ifThen?.trigger_text || 'my trigger'}, <strong>then</strong> {habitRepurposeData?.ifThen?.good_habit_text || 'my good habit'}.
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-gray-700">My Backup Plan:</span>
-                  <span className="text-gray-600">
-                    When I face the obstacle of "{habitRepurposeData?.unwantedHabit?.habit_trigger || "..."}", 
-                    my backup plan is to "{habitRepurposeData?.replacement?.action_routine || "..."}".
-                  </span>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">Simple If-Then Plan:</h3>
+                  <div className="text-gray-700">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <strong>If</strong> {habitRepurposeData?.simpleIfThen?.trigger_phrase || 'my trigger'}, <strong>then I will</strong> {habitRepurposeData?.simpleIfThen?.good_habit_phrase || 'my good habit'}.
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-800 mb-2">My Commitment:</h3>
+                  <div className="text-gray-700 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    I commit to using this plan when I face the challenge of "{habitRepurposeData?.unwantedHabit?.habit_trigger || 'my unwanted habit trigger'}". 
+                    Instead of "{habitRepurposeData?.unwantedHabit?.habit_description || 'my old habit'}", I will "{habitRepurposeData?.simpleIfThen?.good_habit_phrase || 'my new good habit'}" 
+                    because it aligns with my values and helps me achieve my goal of {goalInfo?.goal_body_type?.name ? `becoming ${goalInfo.goal_body_type.name}` : 'my fitness transformation'}.
+                  </div>
                 </div>
               </div>
             </div>
@@ -1127,7 +1172,7 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
                 onClick={onBackToOptions}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Start Over
+                Complete Journey
               </Button>
             </div>
           </CardContent>
@@ -1171,3 +1216,5 @@ const HabitRepurposeWizard: React.FC<HabitRepurposeWizardProps> = ({ onBackToOpt
 };
 
 export default HabitRepurposeWizard;
+
+}
