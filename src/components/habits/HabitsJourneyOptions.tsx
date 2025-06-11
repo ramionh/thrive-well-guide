@@ -2,10 +2,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, RefreshCw, Target, CheckCircle } from "lucide-react";
+import { Brain, RefreshCw, CheckCircle } from "lucide-react";
 
 interface HabitsJourneyOptionsProps {
-  onSelectOption: (option: 'existing' | 'repurpose' | 'core' | 'assessment') => void;
+  onSelectOption: (option: 'existing' | 'repurpose' | 'assessment') => void;
 }
 
 const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOption }) => {
@@ -19,26 +19,6 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-blue-500">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-              <Target className="h-6 w-6 text-orange-600" />
-            </div>
-            <CardTitle>Core Optimal Habits</CardTitle>
-            <CardDescription>
-              Learn the essential habits for achieving optimal fitness and health
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={() => onSelectOption('core')}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Core Optimal Habits
-            </Button>
-          </CardContent>
-        </Card>
-
         <Card className="hover:shadow-lg transition-shadow cursor-pointer">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">

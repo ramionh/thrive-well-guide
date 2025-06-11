@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ListChecks } from "lucide-react";
@@ -44,10 +43,8 @@ const HabitsPage = () => {
     setCurrentView('options');
   };
 
-  const handleSelectOption = (option: 'existing' | 'repurpose' | 'core' | 'assessment') => {
-    if (option === 'core') {
-      setCurrentView('core');
-    } else if (option === 'repurpose') {
+  const handleSelectOption = (option: 'existing' | 'repurpose' | 'assessment') => {
+    if (option === 'repurpose') {
       setCurrentView('repurpose-wizard');
     } else if (option === 'assessment') {
       setCurrentView('assessment');
