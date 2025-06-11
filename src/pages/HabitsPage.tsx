@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ListChecks } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +16,14 @@ type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose-wizard' | 'core
 
 const HabitsPage = () => {
   const [currentView, setCurrentView] = useState<HabitsView>('splash');
+
+  // Check if user has chosen to hide the splash screen
+  useEffect(() => {
+    const hideHabitsSplash = localStorage.getItem('hideHabitsSplash');
+    if (hideHabitsSplash === 'true') {
+      setCurrentView('options');
+    }
+  }, []);
 
   const { data: habits, isLoading } = useQuery({
     queryKey: ['habits'],

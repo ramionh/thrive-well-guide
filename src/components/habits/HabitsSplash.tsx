@@ -1,7 +1,8 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ListChecks } from "lucide-react";
 
 interface HabitsSplashProps {
@@ -9,6 +10,15 @@ interface HabitsSplashProps {
 }
 
 const HabitsSplash: React.FC<HabitsSplashProps> = ({ onStartJourney }) => {
+  const [hideNextTime, setHideNextTime] = useState(false);
+
+  const handleStartJourney = () => {
+    if (hideNextTime) {
+      localStorage.setItem('hideHabitsSplash', 'true');
+    }
+    onStartJourney();
+  };
+
   return (
     <div className="container mx-auto py-6 max-w-4xl">
       <div className="flex items-center gap-2 mb-6">
@@ -40,9 +50,23 @@ const HabitsSplash: React.FC<HabitsSplashProps> = ({ onStartJourney }) => {
         </CardContent>
       </Card>
 
-      <div className="text-center">
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <Checkbox 
+            id="hide-splash"
+            checked={hideNextTime}
+            onCheckedChange={(checked) => setHideNextTime(checked as boolean)}
+          />
+          <label 
+            htmlFor="hide-splash" 
+            className="text-sm text-gray-600 cursor-pointer"
+          >
+            Hide this screen next time
+          </label>
+        </div>
+        
         <Button 
-          onClick={onStartJourney}
+          onClick={handleStartJourney}
           className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
         >
           Start your Habit Journey
