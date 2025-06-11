@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import CategoryScoresDisplay from "./CategoryScoresDisplay";
+import ExistingHabitsAssessmentSummary from "./ExistingHabitsAssessmentSummary";
 
 interface HabitsJourneyOptionsProps {
   onSelectOption: (option: 'existing' | 'repurpose' | 'assessment') => void;
@@ -132,7 +133,10 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
         </Card>
       </div>
 
-      <CategoryScoresDisplay />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CategoryScoresDisplay />
+        <ExistingHabitsAssessmentSummary />
+      </div>
     </div>
   );
 };
