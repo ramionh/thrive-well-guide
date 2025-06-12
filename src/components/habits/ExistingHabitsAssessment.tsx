@@ -206,8 +206,14 @@ const ExistingHabitsAssessment = ({ onBackToOptions }: ExistingHabitsAssessmentP
     setIdentifiedHabit(habit);
     setCurrentScreen('result');
     
-    // Save to database - only pass question_3_answer if it exists and is valid
-    const assessmentData = {
+    // Save to database - properly type the assessment data object
+    const assessmentData: {
+      category: Category;
+      question_1_answer: string;
+      question_2_answer: string;
+      identified_habit: string;
+      question_3_answer?: string;
+    } = {
       category: currentCategory,
       question_1_answer: answers.q1,
       question_2_answer: answers.q2,
