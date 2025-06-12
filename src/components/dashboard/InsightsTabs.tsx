@@ -10,6 +10,7 @@ import GoalProgress from "./GoalProgress";
 import FocusedHabits from "./FocusedHabits";
 import CategoryScoresDisplay from "../habits/CategoryScoresDisplay";
 import HabitRepurposeSummary from "./HabitRepurposeSummary";
+import PersonalizedInsights from "./PersonalizedInsights";
 
 const InsightsTabs: React.FC = () => {
   const { user } = useUser();
@@ -137,11 +138,7 @@ const InsightsTabs: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="insights" className="mt-4">
-          <Card className="p-6 text-center">
-            <p className="text-muted-foreground">
-              As you continue to track your progress, personalized insights will appear here.
-            </p>
-          </Card>
+          <PersonalizedInsights />
         </TabsContent>
       </Tabs>
     </div>
