@@ -27,7 +27,7 @@ const PersonalizedInsights: React.FC = () => {
     enabled: !!user
   });
 
-  // Fetch habit assessment scores
+  // Fetch habit assessment scores with habit details
   const { data: habitScores } = useQuery({
     queryKey: ['habit-scores', user?.id],
     queryFn: async () => {
@@ -35,7 +35,14 @@ const PersonalizedInsights: React.FC = () => {
 
       const { data, error } = await supabase
         .from('user_habit_scoring')
-        .select('*')
+        .select(`
+          *,
+          habit_id (
+            id,
+            name,
+            category
+          )
+        `)
         .eq('user_id', user.id);
 
       if (error) throw error;
@@ -126,26 +133,60 @@ const PersonalizedInsights: React.FC = () => {
 
     // Habit scores insights
     if (habitScores && habitScores.length > 0) {
-      const lowScoreCategories = habitScores.filter(score => score.score < 7);
-      const highScoreCategories = habitScores.filter(score => score.score >= 8);
+      // Convert responses to numeric scores and group by category
+      const categoryScores = habitScores.reduce((acc, item) => {
+        if (!item.habit_id || typeof item.habit_id !== 'object') return acc;
+        
+        const habit = item.habit_id as any;
+        const category = habit.category;
+        const score = item.response === 'green' ? 3 : item.response === 'yellow' ? 2 : 1;
+        
+        if (!acc[category]) {
+          acc[category] = { total: 0, count: 0 };
+        }
+        acc[category].total += score;
+        acc[category].count += 1;
+        
+        return acc;
+      }, {} as Record<string, { total: number; count: number }>);
+
+      // Find categories with low average scores
+      const lowScoreCategories = Object.entries(categoryScores)
+        .map(([category, data]) => ({
+          category,
+          avgScore: data.total / data.count
+        }))
+        .filter(item => item.avgScore < 2.3); // Less than 2.3 out of 3 (equivalent to less than 7/10)
+
+      const highScoreCategories = Object.entries(categoryScores)
+        .map(([category, data]) => ({
+          category,
+          avgScore: data.total / data.count
+        }))
+        .filter(item => item.avgScore >= 2.7); // 2.7 out of 3 (equivalent to 8+/10)
       
       if (lowScoreCategories.length > 0) {
         const category = lowScoreCategories[0];
+        const categoryName = category.category.toLowerCase().replace('_', ' ');
+        const scoreOutOf10 = Math.round((category.avgScore / 3) * 10);
         insights.push({
           type: 'improvement',
           icon: TrendingUp,
           title: 'Focus Area Identified',
-          message: `Your ${category.category.toLowerCase().replace('_', ' ')} score is ${category.score}/10. This could be a great area to focus on for maximum impact.`,
+          message: `Your ${categoryName} score is ${scoreOutOf10}/10. This could be a great area to focus on for maximum impact.`,
           color: 'text-blue-600'
         });
       }
       
       if (highScoreCategories.length > 0) {
+        const categoryNames = highScoreCategories
+          .map(h => h.category.toLowerCase().replace('_', ' '))
+          .join(', ');
         insights.push({
           type: 'strength',
           icon: CheckCircle,
           title: 'Your Strength Areas',
-          message: `You're doing great with ${highScoreCategories.map(h => h.category.toLowerCase().replace('_', ' ')).join(', ')}. Use these as a foundation for building other habits.`,
+          message: `You're doing great with ${categoryNames}. Use these as a foundation for building other habits.`,
           color: 'text-green-600'
         });
       }
