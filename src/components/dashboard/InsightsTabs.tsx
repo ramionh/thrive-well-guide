@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, Target, Activity, Utensils, ListChecks, Dumbbell } from "lucide-react";
+import { TrendingUp, Target, Activity, ListChecks } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -110,20 +110,6 @@ const InsightsTabs: React.FC = () => {
                         <span>Sleep:</span>
                         <span className={getAdherenceColor(entry.sleep_adherence)}>
                           {entry.sleep_hours}h
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Target className="h-4 w-4 text-purple-600" />
-                        <span>Goals:</span>
-                        <span className={getAdherenceColor(entry.goals_adherence)}>
-                          {getAdherenceText(entry.goals_adherence)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Utensils className="h-4 w-4 text-orange-600" />
-                        <span>Nutrition:</span>
-                        <span className={getAdherenceColor(entry.nutrition_adherence)}>
-                          {getAdherenceText(entry.nutrition_adherence)}
                         </span>
                       </div>
                     </div>
