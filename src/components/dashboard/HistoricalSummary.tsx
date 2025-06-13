@@ -18,10 +18,11 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
   const { user } = useUser();
 
   const { data: healthData, isLoading, error } = useQuery({
-    queryKey: ['healthData', date, user?.id],
+    queryKey: ['healthData', date?.toISOString(), user?.id],
     queryFn: async () => {
       if (!date || !user) return null;
       
+      // Format date to match database format (YYYY-MM-DD)
       const formattedDate = format(date, 'yyyy-MM-dd');
       console.log('Querying for date:', formattedDate, 'user:', user.id);
       
@@ -30,17 +31,21 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
         .select('*')
         .eq('date', formattedDate)
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
         
       if (error) {
         console.error('Query error:', error);
+        // If no data found, return null instead of throwing
+        if (error.code === 'PGRST116') {
+          return null;
+        }
         throw error;
       }
       
       console.log('Query result:', data);
       return data;
     },
-    enabled: !!date && !!user,
+    enabled: !!date && !!user && isOpen,
   });
 
   return (

@@ -22,20 +22,29 @@ const HistoryButton: React.FC = () => {
     queryFn: async () => {
       if (!user) return [];
 
+      console.log('Fetching available dates for user:', user.id);
       const { data, error } = await supabase
         .from('daily_health_tracking')
         .select('date')
         .eq('user_id', user.id)
         .order('date', { ascending: false });
 
-      if (error) throw error;
-      return data?.map(item => new Date(item.date)) || [];
+      if (error) {
+        console.error('Error fetching available dates:', error);
+        throw error;
+      }
+      
+      console.log('Available dates from DB:', data);
+      const dates = data?.map(item => new Date(item.date + 'T00:00:00')) || [];
+      console.log('Processed available dates:', dates);
+      return dates;
     },
     enabled: !!user
   });
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
+      console.log('Date selected:', date);
       setSelectedDate(date);
       setCalendarOpen(false);
       setSummaryOpen(true);
@@ -84,7 +93,7 @@ const HistoryButton: React.FC = () => {
             />
             {availableDates && availableDates.length > 0 && (
               <div className="text-xs text-muted-foreground mt-2 p-2 bg-muted rounded">
-                📅 Highlighted dates have recorded data
+                📅 Highlighted dates have recorded data ({availableDates.length} entries found)
               </div>
             )}
           </div>
