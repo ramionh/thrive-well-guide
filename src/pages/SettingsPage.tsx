@@ -10,7 +10,6 @@ const SettingsPage: React.FC = () => {
   const { toast } = useToast();
   
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-  const [darkMode, setDarkMode] = React.useState(false);
   const [privacyMode, setPrivacyMode] = React.useState(false);
   
   const handleSaveSettings = () => {
@@ -52,28 +51,6 @@ const SettingsPage: React.FC = () => {
                 id="notifications" 
                 checked={notificationsEnabled} 
                 onCheckedChange={setNotificationsEnabled} 
-              />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Display</CardTitle>
-            <CardDescription>Customize your app experience</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="darkMode" className="flex flex-col gap-1">
-                <span>Dark Mode</span>
-                <span className="font-normal text-sm text-muted-foreground">
-                  Switch between light and dark themes
-                </span>
-              </Label>
-              <Switch 
-                id="darkMode" 
-                checked={darkMode} 
-                onCheckedChange={setDarkMode} 
               />
             </div>
           </CardContent>
