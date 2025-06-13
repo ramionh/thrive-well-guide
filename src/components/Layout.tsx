@@ -3,7 +3,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/compone
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, LineChart, Settings, Sun, User, Target, ListChecks, Battery, Star } from "lucide-react";
+import { BarChart3, LineChart, Settings, User, Target, ListChecks, Battery, Star } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 
 interface LayoutProps {
@@ -126,10 +126,7 @@ const AppSidebar = () => {
         </div>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <Button variant="outline" className="w-full">
-          <Sun className="h-4 w-4 mr-2" />
-          Light Mode
-        </Button>
+        {/* Light Mode button removed */}
       </SidebarFooter>
     </Sidebar>
   );
