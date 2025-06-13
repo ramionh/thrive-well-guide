@@ -5,12 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 
 const SettingsPage: React.FC = () => {
   const { toast } = useToast();
+  const { user } = useUser();
   
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [privacyMode, setPrivacyMode] = React.useState(false);
+  const [isSubmittingReset, setIsSubmittingReset] = React.useState(false);
   
   const handleSaveSettings = () => {
     toast({
@@ -19,14 +23,50 @@ const SettingsPage: React.FC = () => {
     });
   };
   
-  const handleResetApp = () => {
-    // In a real app, this would clear the user's data after confirmation
-    localStorage.clear();
-    toast({
-      title: "App reset",
-      description: "All app data has been cleared. Please refresh the page.",
-      variant: "destructive",
-    });
+  const handleResetApp = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to request an app reset.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmittingReset(true);
+    
+    try {
+      console.log('Submitting reset request for user:', user.id, user.email);
+      
+      const { data, error } = await supabase.functions.invoke('request-app-reset', {
+        body: {
+          userId: user.id,
+          userEmail: user.email
+        }
+      });
+
+      if (error) {
+        console.error('Reset request error:', error);
+        throw error;
+      }
+
+      console.log('Reset request response:', data);
+
+      toast({
+        title: "Request Submitted",
+        description: "A request to reset your application has been made. You will be contacted soon.",
+      });
+
+    } catch (error: any) {
+      console.error('Error submitting reset request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit reset request. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmittingReset(false);
+    }
   };
   
   return (
@@ -80,11 +120,12 @@ const SettingsPage: React.FC = () => {
               <Button 
                 variant="destructive" 
                 onClick={handleResetApp}
+                disabled={isSubmittingReset}
               >
-                Reset Application Data
+                {isSubmittingReset ? "Submitting Request..." : "Reset Application Data"}
               </Button>
               <p className="text-xs text-muted-foreground mt-2">
-                This will delete all your data and reset the app to its initial state.
+                This will submit a request to reset your app data. You will be contacted to confirm this action.
               </p>
             </div>
           </CardContent>

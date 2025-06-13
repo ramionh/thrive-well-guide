@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      application_reset_requests: {
+        Row: {
+          created_at: string
+          id: string
+          requested_at: string
+          status: string
+          updated_at: string
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          requested_at?: string
+          status?: string
+          updated_at?: string
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          requested_at?: string
+          status?: string
+          updated_at?: string
+          user_email?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       body_types: {
         Row: {
           bodyfat_range: string
