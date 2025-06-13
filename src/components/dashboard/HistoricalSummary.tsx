@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StoplightControl } from "@/components/ui/stoplight-control";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 
 type HistoricalSummaryProps = {
   date: Date | undefined;
@@ -14,18 +15,21 @@ type HistoricalSummaryProps = {
 };
 
 const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onClose }) => {
+  const { user } = useUser();
+
   const { data: healthData, isLoading, error } = useQuery({
-    queryKey: ['healthData', date],
+    queryKey: ['healthData', date, user?.id],
     queryFn: async () => {
-      if (!date) return null;
+      if (!date || !user) return null;
       
       const formattedDate = format(date, 'yyyy-MM-dd');
-      console.log('Querying for date:', formattedDate);
+      console.log('Querying for date:', formattedDate, 'user:', user.id);
       
       const { data, error } = await supabase
         .from('daily_health_tracking')
         .select('*')
         .eq('date', formattedDate)
+        .eq('user_id', user.id)
         .maybeSingle();
         
       if (error) {
@@ -36,7 +40,7 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
       console.log('Query result:', data);
       return data;
     },
-    enabled: !!date,
+    enabled: !!date && !!user,
   });
 
   return (
@@ -49,7 +53,7 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
         </DialogHeader>
 
         {isLoading ? (
-          <div>Loading...</div>
+          <div className="text-center py-8">Loading...</div>
         ) : error ? (
           <div className="text-center text-red-600 py-8">
             Error loading data: {error.message}
@@ -83,6 +87,9 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{healthData.exercise_minutes}m</div>
+                {healthData.steps && (
+                  <div className="text-sm text-muted-foreground">{healthData.steps} steps</div>
+                )}
               </CardContent>
             </Card>
 
@@ -96,8 +103,9 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  <div>Calories: {healthData.calories}</div>
-                  <div>Protein: {healthData.protein}g</div>
+                  {healthData.calories && <div>Calories: {healthData.calories}</div>}
+                  {healthData.protein && <div>Protein: {healthData.protein}g</div>}
+                  {healthData.water && <div>Water: {healthData.water} glasses</div>}
                 </div>
               </CardContent>
             </Card>
@@ -116,6 +124,18 @@ const HistoricalSummary: React.FC<HistoricalSummaryProps> = ({ date, isOpen, onC
                 </div>
               </CardContent>
             </Card>
+
+            {/* Additional metrics if available */}
+            {healthData.mood && (
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-sm font-medium">Mood</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{healthData.mood}/10</div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </DialogContent>
