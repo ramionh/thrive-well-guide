@@ -1,11 +1,10 @@
 
 import React from 'react';
-import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 interface RegisterFormProps {
   email: string;
@@ -16,37 +15,15 @@ interface RegisterFormProps {
 }
 
 const RegisterForm = ({ email, setEmail, password, setPassword, loading }: RegisterFormProps) => {
-  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleEmailSignUp = async (e: React.FormEvent) => {
+  const handleRegisterRedirect = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-      
-      toast({
-        title: "Success!",
-        description: "Please check your email to verify your account.",
-      });
-
-      // After successful registration, redirect will be handled by AuthPage useEffect
-      
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
+    navigate('/coaching');
   };
 
   return (
-    <form onSubmit={handleEmailSignUp} className="space-y-4">
+    <form onSubmit={handleRegisterRedirect} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="signup-email">Email</Label>
         <Input
