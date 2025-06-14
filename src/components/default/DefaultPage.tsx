@@ -191,7 +191,7 @@ const DefaultPage = () => {
                 className="border-2 border-white text-white hover:bg-blue-700 px-8 py-4 text-lg rounded-lg"
                 onClick={handleStartJourney}
               >
-                Get Your Personal Coach
+                Join Now
               </Button>
             </div>
           </div>

@@ -270,7 +270,7 @@ const CoachingPage = () => {
             onClick={handlePurchase}
             className="bg-white text-blue-600 hover:bg-blue-50 px-12 py-6 text-xl rounded-lg shadow-lg"
           >
-            Start Your Transformation Today
+            Existing Customers
             <ArrowRight className="ml-3 h-6 w-6" />
           </Button>
         </div>
