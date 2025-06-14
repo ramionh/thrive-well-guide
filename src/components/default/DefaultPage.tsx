@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -48,9 +47,9 @@ const DefaultPage = () => {
                     <Button
                       variant="outline"
                       className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg rounded-lg"
-                      onClick={() => navigate("/auth")}
+                      onClick={() => navigate("/coaching")}
                     >
-                      Learn More
+                      Personal Coaching
                     </Button>
                   </div>
                 </div>
@@ -179,13 +178,22 @@ const DefaultPage = () => {
               Every client is assigned a professionally trained motivational interviewing health coach. 
               Daily check-ins, habit building exercises, and personalized motivation strategies.
             </p>
-            <Button
-              className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg rounded-lg shadow-lg"
-              onClick={handleStartJourney}
-            >
-              Get Your Personal Coach
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg rounded-lg shadow-lg"
+                onClick={() => navigate("/coaching")}
+              >
+                Learn About Personal Coaching
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button
+                variant="outline"
+                className="border-2 border-white text-white hover:bg-blue-700 px-8 py-4 text-lg rounded-lg"
+                onClick={handleStartJourney}
+              >
+                Get Your Personal Coach
+              </Button>
+            </div>
           </div>
         </div>
       </section>
