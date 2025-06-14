@@ -17,9 +17,15 @@ interface KnowledgeProps {
 }
 
 const Knowledge: React.FC<KnowledgeProps> = ({ onComplete }) => {
-  const { knowledgeQuestions, handleQuestionsChange, saveKnowledgeMutation } = useKnowledge(onComplete);
+  const { knowledgeQuestions, handleQuestionsChange, saveKnowledgeMutation } = useKnowledge(() => {
+    console.log("Knowledge: Form submitted successfully, calling onComplete");
+    if (onComplete) {
+      onComplete();
+    }
+  });
 
   const handleSave = () => {
+    console.log("Knowledge: Submitting form with questions:", knowledgeQuestions);
     saveKnowledgeMutation.mutate(knowledgeQuestions);
   };
 

@@ -38,7 +38,12 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
     solution2Attitude,
     setSolution2Attitude,
     saveExternalObstaclesMutation
-  } = useExternalObstacles(onComplete);
+  } = useExternalObstacles(() => {
+    console.log("ExternalObstacles: Form submitted successfully, calling onComplete");
+    if (onComplete) {
+      onComplete();
+    }
+  });
 
   const handleSolutionChange = (index: number, value: string) => {
     const newSolutions = [...solutions];
@@ -47,6 +52,14 @@ const ExternalObstacles: React.FC<ExternalObstaclesProps> = ({ onComplete }) => 
   };
 
   const handleSave = () => {
+    console.log("ExternalObstacles: Submitting form with data:", {
+      obstacle,
+      solutions,
+      solution1,
+      solution1Attitude,
+      solution2,
+      solution2Attitude
+    });
     saveExternalObstaclesMutation.mutate();
   };
 
