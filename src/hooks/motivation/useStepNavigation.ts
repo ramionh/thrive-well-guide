@@ -50,40 +50,31 @@ export const useStepNavigation = (initialSteps: Step[]) => {
       ...defaultCompletedSteps
     ];
     
-    // Check if the final step (91) is completed
-    const isFinalStepCompleted = progressData.some(p => p.step_number === 91 && p.completed);
+    // Check if the final step (94) is completed
+    const isFinalStepCompleted = progressData.some(p => p.step_number === 94 && p.completed);
     
     // If final step is completed, set to that step
     if (isFinalStepCompleted) {
-      return 91;
+      return 94;
     }
     
-    // Normal progression logic - set to last completed + 1 or first step
+    // Find the first incomplete step after the last completed step
     if (completedSteps.length > 0) {
       const maxCompletedStep = Math.max(...completedSteps);
-      const nextStepId = maxCompletedStep + 1;
       
-      // Check if next step is explicitly marked as available
-      const availableSteps = progressData
-        .filter(p => p.available === true && !p.completed)
-        .map(p => p.step_number);
+      // Find the next incomplete step
+      const nextIncompleteStep = steps.find(step => 
+        step.id > maxCompletedStep && !completedSteps.includes(step.id)
+      );
       
-      if (availableSteps.length > 0) {
-        // If there are available steps, use the lowest one
-        const lowestAvailableStep = Math.min(...availableSteps);
-        if (lowestAvailableStep < nextStepId) {
-          return lowestAvailableStep;
-        }
-      }
-      
-      if (steps.some(s => s.id === nextStepId)) {
-        return nextStepId;
+      if (nextIncompleteStep) {
+        return nextIncompleteStep.id;
       } else {
-        // If next step doesn't exist, stay at the highest completed step
+        // If no incomplete step found after max completed, stay at max completed
         return maxCompletedStep;
       }
     } else {
-      return 1;  // Start at the beginning
+      return 1;  // Start at the beginning if no steps completed
     }
   }, []);
 
@@ -91,8 +82,8 @@ export const useStepNavigation = (initialSteps: Step[]) => {
    * Moves to the next step if available
    */
   const moveToNextStep = useCallback((currentId: number, steps: Step[]) => {
-    // Check if current step is the final step (91)
-    if (currentId === 91) {
+    // Check if current step is the final step (94)
+    if (currentId === 94) {
       // No next step after final step, stay on the same step
       return false;
     }
