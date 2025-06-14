@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, CheckCircle, Users, Clock, Star, MessageCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, Users, Clock, Star, MessageCircle, Phone, Target, Heart, Zap, Shield } from "lucide-react";
 
 const CoachingPage = () => {
   const navigate = useNavigate();
@@ -16,12 +16,12 @@ const CoachingPage = () => {
   };
 
   const benefits = [
-    "Weekly 1-on-1 video coaching sessions",
-    "Personalized motivational interviewing techniques", 
-    "Custom habit building strategies",
-    "24/7 text support and accountability",
-    "Progress tracking and goal adjustment",
-    "Access to exclusive coaching resources"
+    "Daily 1-on-1 motivational coaching via text/SMS",
+    "Weekly strategy & accountability phone calls", 
+    "Expert guidance on the 5 Core Principles",
+    "Personalized habit formation strategies",
+    "Focus on YOUR lifestyle, not generic plans",
+    "Certified motivational interviewing coaches"
   ];
 
   const testimonials = [
@@ -52,41 +52,130 @@ const CoachingPage = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl font-bold mb-6">
-              Personal <span className="text-blue-600">Motivational Interviewing</span> Coach
+              Gen X Shred <span className="text-blue-600">Motivational Coaching Program</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Work one-on-one with a professionally trained motivational interviewing health coach. 
-              We don't just tell you what to do - we help you discover your internal motivation for lasting change.
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Stop focusing on the "HOW" and start discovering your personal "WHY" with our revolutionary 
+              one-on-one motivational interviewing coaching program.
             </p>
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-blue-600" />
-                <span className="text-gray-700">1:1 Personal Coaching</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-blue-600" />
-                <span className="text-gray-700">Weekly Sessions</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-blue-600" />
-                <span className="text-gray-700">24/7 Support</span>
-              </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Introduction Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-6">Are You Tired of Starting Over?</h2>
+            </div>
+            
+            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
+              <p>
+                Are you tired of the endless cycle of starting a fitness plan, only to fall off track weeks later? 
+                You've been given the meal plans and the workout routines, but they never seem to stick. That's 
+                because they all focus on the "how," without ever addressing your personal "why."
+              </p>
+              
+              <p>
+                The Gen X Shred Motivational Coaching Program is different. We're not just a fitness service; 
+                we're your daily partner in motivation. We use the power of one-on-one Motivational Interviewing 
+                to help you uncover your deep-seated drive, conquer ambivalence, and finally build the sustainable 
+                habits that lead to profound, lasting change.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What You Get Section */}
+      <section className="py-16 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">What You Get: Your Personal Motivation Toolkit</h2>
+              <p className="text-xl text-gray-600">
+                For one monthly price, you get constant, personalized support designed to make your health goals second nature.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <FeatureCard
+                icon={<MessageCircle className="h-8 w-8 text-blue-500" />}
+                title="Daily 1-on-1 Motivational Coaching"
+                description="Every day, connect with your dedicated, certified coach via text/SMS. These aren't just 'check-in' messages; they are skilled, empathetic conversations designed to reinforce your 'why,' celebrate your wins, and keep your motivation burning bright."
+              />
+              
+              <FeatureCard
+                icon={<Phone className="h-8 w-8 text-green-500" />}
+                title="Weekly Strategy & Accountability Calls"
+                description="Dedicated phone calls to dive deeper, review progress, set powerful goals for the week ahead, and work through roadblocks in a supportive, non-judgmental space."
+              />
+              
+              <FeatureCard
+                icon={<Target className="h-8 w-8 text-purple-500" />}
+                title="A Focus on YOU, Not Just a Plan"
+                description="Master the 5 Core Principles of lasting fitness (Sleep, Calories, Protein, Adaptation, Guardrails) in a way that works for YOUR lifestyle. No rigid, one-size-fits-all plans here."
+              />
+              
+              <FeatureCard
+                icon={<Zap className="h-8 w-8 text-orange-500" />}
+                title="Expert Guidance on Habit Formation"
+                description="Learn how to codify new behaviors until they become automatic. We provide exercises and strategies to strengthen both your habits and your resolve."
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why It Works Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Why It Works: The Power of the "Why"</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <WhyItWorksCard
+                icon={<Heart className="h-6 w-6 text-red-500" />}
+                title="Build Intrinsic Motivation"
+                description="Discover a desire for health that comes from within, making you unstoppable."
+              />
+              
+              <WhyItWorksCard
+                icon={<Shield className="h-6 w-6 text-blue-500" />}
+                title="Overcome Mental Hurdles"
+                description="Your coach is trained to help you work through the ambivalence and self-doubt that have held you back."
+              />
+              
+              <WhyItWorksCard
+                icon={<Users className="h-6 w-6 text-green-500" />}
+                title="Accountability Meets Empathy"
+                description="Get the perfect blend of support and accountability, without shame or judgment."
+              />
+              
+              <WhyItWorksCard
+                icon={<Star className="h-6 w-6 text-yellow-500" />}
+                title="Achieve Lasting Transformation"
+                description="Stop renting your results and start owning them. Build a system for health that you won't want to quit because it's built entirely around you."
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* Pricing Card */}
-      <section className="py-12">
+      <section className="py-16 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto">
             <Card className="border-2 border-blue-500 shadow-xl">
               <CardHeader className="text-center bg-blue-50">
-                <CardTitle className="text-2xl text-blue-800">Personal Coaching Package</CardTitle>
+                <CardTitle className="text-2xl text-blue-800">Motivational Coaching Program</CardTitle>
                 <div className="text-4xl font-bold text-blue-600 mt-4">
                   $297<span className="text-lg text-gray-600">/month</span>
                 </div>
-                <p className="text-gray-600 mt-2">Complete transformation program</p>
+                <p className="text-gray-600 mt-2">Your daily partner in motivation</p>
               </CardHeader>
               <CardContent className="p-6">
                 <ul className="space-y-3 mb-6">
@@ -101,7 +190,7 @@ const CoachingPage = () => {
                   onClick={handlePurchase}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg rounded-lg shadow-lg"
                 >
-                  Start Your Transformation
+                  Ready to Stop Starting Over?
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <p className="text-sm text-gray-500 text-center mt-4">
@@ -113,44 +202,8 @@ const CoachingPage = () => {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">How Personal Coaching Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">1</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Discovery Session</h3>
-              <p className="text-gray-600">
-                We start with a deep dive into your motivations, barriers, and goals using proven motivational interviewing techniques.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">2</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Weekly Coaching</h3>
-              <p className="text-gray-600">
-                Regular 45-minute sessions focused on building sustainable habits and overcoming internal obstacles.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">3</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Ongoing Support</h3>
-              <p className="text-gray-600">
-                24/7 text support, progress tracking, and plan adjustments to keep you on track between sessions.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials */}
-      <section className="py-16">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">What Our Clients Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -174,7 +227,7 @@ const CoachingPage = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-slate-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
           <div className="max-w-3xl mx-auto space-y-6">
@@ -182,15 +235,15 @@ const CoachingPage = () => {
               <CardContent className="p-6">
                 <h3 className="font-semibold text-lg mb-2">What makes this different from other coaching?</h3>
                 <p className="text-gray-600">
-                  We use motivational interviewing techniques to help you discover your internal motivation rather than just telling you what to do. This creates lasting change from within.
+                  We use motivational interviewing techniques to help you discover your internal motivation rather than just telling you what to do. This creates lasting change from within, focusing on your personal "why" instead of generic "how" instructions.
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-2">How long are the coaching sessions?</h3>
+                <h3 className="font-semibold text-lg mb-2">How does the daily coaching work?</h3>
                 <p className="text-gray-600">
-                  Each session is 45 minutes, conducted weekly via video call at a time that works for your schedule.
+                  You'll receive personalized text messages from your certified coach every day. These aren't automated messages - they're real conversations designed to reinforce your motivation, celebrate wins, and help navigate challenges.
                 </p>
               </CardContent>
             </Card>
@@ -209,15 +262,15 @@ const CoachingPage = () => {
       {/* Final CTA */}
       <section className="py-16 bg-blue-600 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Transform Your WHY?</h2>
+          <h2 className="text-4xl font-bold mb-6">Ready to Find Your "Why"?</h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join hundreds of Gen X individuals who have discovered their internal motivation and achieved lasting results.
+            If you're ready to make a change that truly lasts, the Motivational Coaching Program is for you.
           </p>
           <Button 
             onClick={handlePurchase}
             className="bg-white text-blue-600 hover:bg-blue-50 px-12 py-6 text-xl rounded-lg shadow-lg"
           >
-            Start Your Personal Coaching Journey
+            Start Your Transformation Today
             <ArrowRight className="ml-3 h-6 w-6" />
           </Button>
         </div>
@@ -225,5 +278,41 @@ const CoachingPage = () => {
     </div>
   );
 };
+
+const FeatureCard = ({ 
+  icon, 
+  title, 
+  description 
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) => (
+  <Card className="shadow-lg hover:shadow-xl transition-shadow">
+    <CardContent className="p-6">
+      <div className="mb-4">{icon}</div>
+      <h3 className="text-xl font-bold mb-3">{title}</h3>
+      <p className="text-gray-600 leading-relaxed">{description}</p>
+    </CardContent>
+  </Card>
+);
+
+const WhyItWorksCard = ({ 
+  icon, 
+  title, 
+  description 
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) => (
+  <div className="flex gap-4">
+    <div className="flex-shrink-0 mt-1">{icon}</div>
+    <div>
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </div>
+  </div>
+);
 
 export default CoachingPage;
