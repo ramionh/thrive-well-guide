@@ -1,18 +1,42 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, Users, Clock, Star, MessageCircle, Phone, Target, Heart, Zap, Shield } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
+import { toast } from "sonner";
 
 const CoachingPage = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handlePurchase = () => {
-    // This will be implemented when we add payment functionality
-    console.log("Purchase coaching package");
-    // For now, redirect to auth page
-    navigate("/auth");
+  const handlePurchase = async () => {
+    if (!user) {
+      // Redirect to auth page if not logged in
+      navigate("/auth");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout');
+      
+      if (error) throw error;
+      
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+      toast.error('Failed to start checkout process. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const benefits = [
@@ -188,10 +212,11 @@ const CoachingPage = () => {
                 </ul>
                 <Button 
                   onClick={handlePurchase}
+                  disabled={isLoading}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg rounded-lg shadow-lg"
                 >
-                  Ready to Stop Starting Over?
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  {isLoading ? "Processing..." : "Ready to Stop Starting Over?"}
+                  {!isLoading && <ArrowRight className="ml-2 h-5 w-5" />}
                 </Button>
                 <p className="text-sm text-gray-500 text-center mt-4">
                   30-day money-back guarantee
@@ -268,10 +293,11 @@ const CoachingPage = () => {
           </p>
           <Button 
             onClick={handlePurchase}
+            disabled={isLoading}
             className="bg-white text-blue-600 hover:bg-blue-50 px-12 py-6 text-xl rounded-lg shadow-lg"
           >
-            Existing Customers
-            <ArrowRight className="ml-3 h-6 w-6" />
+            {isLoading ? "Processing..." : "Start Your Coaching Journey"}
+            {!isLoading && <ArrowRight className="ml-3 h-6 w-6" />}
           </Button>
         </div>
       </section>
