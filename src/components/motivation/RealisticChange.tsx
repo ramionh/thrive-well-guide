@@ -29,7 +29,10 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
   } = useMotivationForm({
     tableName: "motivation_realistic_change",
     initialState,
-    onSuccess: onComplete,
+    onSuccess: () => {
+      console.log("RealisticChange: Form submitted successfully, calling onComplete");
+      onComplete();
+    },
     stepNumber: 58,
     stepName: "Realistic Change",
     nextStepNumber: 59,
@@ -58,6 +61,7 @@ const RealisticChange: React.FC<RealisticChangeProps> = ({ onComplete }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("RealisticChange: Submitting form with data:", formData);
     submitForm();
   };
 
