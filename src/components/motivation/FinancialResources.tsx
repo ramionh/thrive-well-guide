@@ -75,9 +75,16 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
   // Debug log to see current form data
   useEffect(() => {
     console.log("FinancialResources: Current form data state:", formData);
-    console.log("FinancialResources: Is loading:", isLoading);
-    console.log("FinancialResources: Is saving:", isSaving);
-  }, [formData, isLoading, isSaving]);
+    console.log("FinancialResources: Form data values:", {
+      income: formData.income,
+      job_stability: formData.job_stability,
+      workplace_benefits: formData.workplace_benefits,
+      flexible_schedule: formData.flexible_schedule,
+      job_satisfaction: formData.job_satisfaction,
+      financial_feelings: formData.financial_feelings,
+      build_resources: formData.build_resources
+    });
+  }, [formData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

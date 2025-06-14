@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useMotivationData } from "./useMotivationData";
 import { useMotivationSubmit } from "./useMotivationSubmit";
@@ -35,17 +34,28 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
     fetchData 
   } = useMotivationData<T>(tableName, initialState, parseData);
 
-  // Sync fetched data to local state
+  // Sync fetched data to local state - Fixed logic
   useEffect(() => {
     if (fetchedData && !formDataSynced.current) {
       console.log(`useMotivationForm: Syncing fetched data for ${tableName}:`, fetchedData);
-      setLocalFormData(prevState => ({
-        ...prevState,
-        ...fetchedData
-      }));
-      formDataSynced.current = true;
+      
+      // Check if fetchedData has any non-empty values (not just initial state)
+      const hasRealData = Object.values(fetchedData).some(value => 
+        value !== "" && value !== null && value !== undefined
+      );
+      
+      if (hasRealData) {
+        console.log(`useMotivationForm: Found real data, syncing to local state`);
+        setLocalFormData(fetchedData);
+        formDataSynced.current = true;
+      }
     }
   }, [fetchedData, tableName]);
+
+  // Reset sync flag when data is refetched
+  useEffect(() => {
+    formDataSynced.current = false;
+  }, [fetchedData]);
 
   // Get submit functionality from useMotivationSubmit hook
   const { 
@@ -68,15 +78,15 @@ export const useMotivationForm = <T extends Record<string, any>, U extends Recor
    */
   const updateForm = (field: keyof T, value: any) => {
     console.log(`useMotivationForm: Updating field ${String(field)} with value:`, value);
-    setLocalFormData(prev => {
-      const updatedData = {
-        ...prev,
-        [field]: value
-      };
-      // Also update the fetched data to keep everything in sync
-      setFetchedData(updatedData);
-      return updatedData;
-    });
+    
+    const updatedData = {
+      ...localFormData,
+      [field]: value
+    };
+    
+    setLocalFormData(updatedData);
+    // Also update the fetched data to keep everything in sync
+    setFetchedData(updatedData);
   };
 
   /**
