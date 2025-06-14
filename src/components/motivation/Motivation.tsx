@@ -91,7 +91,7 @@ const Motivation = () => {
                 <Checkbox 
                   id="show-components"
                   checked={showComponentsWhenComplete}
-                  onCheckedChange={setShowComponentsWhenComplete}
+                  onCheckedChange={(checked) => setShowComponentsWhenComplete(checked === true)}
                 />
                 <label 
                   htmlFor="show-components" 
