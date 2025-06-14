@@ -62,7 +62,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
     nextStepName: "Social Support and Social Competence"
   });
 
-  // Only fetch data once on component mount
+  // Fetch data on component mount
   useEffect(() => {
     if (!didInitialFetch.current) {
       console.log("FinancialResources: Fetching data on mount");
@@ -70,6 +70,11 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
       didInitialFetch.current = true;
     }
   }, [fetchData]);
+
+  // Debug log to see current form data
+  useEffect(() => {
+    console.log("FinancialResources: Current form data:", formData);
+  }, [formData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +120,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
             <Textarea
               id="income"
               rows={2}
-              value={formData.income}
+              value={formData.income || ""}
               onChange={(e) => updateForm("income", e.target.value)}
               className="w-full resize-none"
             />
@@ -128,7 +133,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
             <Textarea
               id="job_stability" 
               rows={2}
-              value={formData.job_stability}
+              value={formData.job_stability || ""}
               onChange={(e) => updateForm("job_stability", e.target.value)}
               className="w-full resize-none"
             />
@@ -141,7 +146,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
             <Textarea
               id="workplace_benefits"
               rows={2}
-              value={formData.workplace_benefits}
+              value={formData.workplace_benefits || ""}
               onChange={(e) => updateForm("workplace_benefits", e.target.value)}
               className="w-full resize-none"
             />
@@ -154,7 +159,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
             <Textarea
               id="flexible_schedule"
               rows={2}
-              value={formData.flexible_schedule}
+              value={formData.flexible_schedule || ""}
               onChange={(e) => updateForm("flexible_schedule", e.target.value)}
               className="w-full resize-none"
             />
@@ -167,7 +172,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
             <Textarea
               id="job_satisfaction"
               rows={2}
-              value={formData.job_satisfaction}
+              value={formData.job_satisfaction || ""}
               onChange={(e) => updateForm("job_satisfaction", e.target.value)}
               className="w-full resize-none"
             />
@@ -180,7 +185,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
             <Textarea
               id="financial_feelings"
               rows={2}
-              value={formData.financial_feelings}
+              value={formData.financial_feelings || ""}
               onChange={(e) => updateForm("financial_feelings", e.target.value)}
               className="w-full resize-none"
             />
@@ -193,7 +198,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
             <Textarea
               id="build_resources"
               rows={3}
-              value={formData.build_resources}
+              value={formData.build_resources || ""}
               onChange={(e) => updateForm("build_resources", e.target.value)}
               className="w-full resize-none"
             />
