@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,7 @@ const DefaultPage = () => {
                       className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-lg shadow-lg"
                       onClick={handleStartJourney}
                     >
-                      Start Your Transformation
+                      Existing Customer Log In
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                     <Button
