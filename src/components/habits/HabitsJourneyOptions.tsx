@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, RefreshCw, CheckCircle, Lock, Zap } from "lucide-react";
+import { Brain, RefreshCw, CheckCircle, Lock, Zap, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -10,6 +10,8 @@ import CategoryScoresDisplay from "./CategoryScoresDisplay";
 import ExistingHabitsAssessmentSummary from "./ExistingHabitsAssessmentSummary";
 import HabitRepurposeSummary from "../dashboard/HabitRepurposeSummary";
 import StreamlinedHabitAssessment from "./StreamlinedHabitAssessment";
+import HabitProgressTracker from "./HabitProgressTracker";
+import { useHabitJourneyProgress } from "@/hooks/useHabitJourneyProgress";
 
 interface HabitsJourneyOptionsProps {
   onSelectOption: (option: 'existing' | 'repurpose' | 'assessment') => void;
@@ -18,6 +20,11 @@ interface HabitsJourneyOptionsProps {
 const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOption }) => {
   const { user } = useUser();
   const [showQuickAssessment, setShowQuickAssessment] = useState(false);
+  const { 
+    currentStep, 
+    progressSteps, 
+    nextStepGuidance 
+  } = useHabitJourneyProgress();
 
   // Check if user has completed any habit assessment
   const { data: hasCompletedAssessment, isLoading } = useQuery({
@@ -48,7 +55,7 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
             onClick={() => setShowQuickAssessment(false)}
             className="mb-4"
           >
-            ← Back to Options
+            ← Back to Journey Overview
           </Button>
         </div>
         <StreamlinedHabitAssessment 
@@ -64,50 +71,69 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
   return (
     <div className="container mx-auto py-6 max-w-6xl space-y-8">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-4">Your Habit Journey Path</h1>
+        <h1 className="text-3xl font-bold mb-4">Your Habit Transformation Journey</h1>
         <p className="text-lg text-gray-600">
-          Start with a quick assessment to get immediate insights, then explore deeper analysis
+          Follow our guided process to build lasting habits that support your fitness goals
         </p>
       </div>
 
-      {/* Quick Start Option */}
-      <Card className="border-2 border-blue-200 bg-blue-50">
+      {/* Progress Tracker */}
+      <HabitProgressTracker 
+        steps={progressSteps} 
+        currentStepId={currentStep}
+      />
+
+      {/* Next Step Guidance Card */}
+      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
             <Zap className="h-6 w-6 text-blue-600" />
           </div>
-          <CardTitle className="text-blue-800">Quick Start (2 minutes)</CardTitle>
-          <CardDescription>
-            Get immediate insights by rating your most critical habits first
+          <CardTitle className="text-blue-800">{nextStepGuidance.title}</CardTitle>
+          <CardDescription className="text-blue-700">
+            {nextStepGuidance.description}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
           <Button 
-            onClick={() => setShowQuickAssessment(true)}
+            onClick={() => {
+              if (currentStep === 'quick-start') {
+                setShowQuickAssessment(true);
+              } else if (currentStep === 'full-assessment') {
+                onSelectOption('assessment');
+              } else if (currentStep === 'existing-habits') {
+                onSelectOption('existing');
+              } else if (currentStep === 'repurpose') {
+                onSelectOption('repurpose');
+              }
+            }}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            Start Quick Assessment
+            {nextStepGuidance.action}
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </CardContent>
       </Card>
 
+      {/* Alternative Options */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="hover:shadow-lg transition-shadow cursor-pointer">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
-            <CardTitle>Full Habit Assessment</CardTitle>
+            <CardTitle>Full Assessment</CardTitle>
             <CardDescription>
-              Complete assessment of all core habits with detailed scoring
+              Complete evaluation of all core habits
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button 
               onClick={() => onSelectOption('assessment')}
               className="w-full bg-green-600 hover:bg-green-700 text-white"
+              disabled={currentStep === 'quick-start'}
             >
-              Full Assessment
+              {currentStep === 'quick-start' ? 'Complete Quick Start First' : 'Full Assessment'}
             </Button>
           </CardContent>
         </Card>
@@ -124,12 +150,12 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
               )}
             </div>
             <CardTitle className={isAssessmentCompleted ? '' : 'text-gray-500'}>
-              Learn Your Existing Habits
+              Existing Habits
             </CardTitle>
             <CardDescription className={isAssessmentCompleted ? '' : 'text-gray-400'}>
               {isAssessmentCompleted 
-                ? "Discover and understand the habits you already have"
-                : "Complete an assessment first to unlock this section"
+                ? "Discover habits you already have"
+                : "Complete assessment first"
               }
             </CardDescription>
           </CardHeader>
@@ -157,12 +183,12 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
               )}
             </div>
             <CardTitle className={isAssessmentCompleted ? '' : 'text-gray-500'}>
-              Repurpose Your Habits
+              Repurpose Habits
             </CardTitle>
             <CardDescription className={isAssessmentCompleted ? '' : 'text-gray-400'}>
               {isAssessmentCompleted 
-                ? "Transform existing habits to align with your fitness goals"
-                : "Complete an assessment first to unlock this section"
+                ? "Transform habits for fitness goals"
+                : "Complete assessment first"
               }
             </CardDescription>
           </CardHeader>
@@ -179,18 +205,20 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
         </Card>
       </div>
 
-      {/* Updated layout for summary cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <CategoryScoresDisplay />
+      {/* Summary cards - only show if user has some progress */}
+      {isAssessmentCompleted && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <CategoryScoresDisplay />
+          </div>
+          <div className="lg:col-span-1">
+            <ExistingHabitsAssessmentSummary />
+          </div>
+          <div className="lg:col-span-1">
+            <HabitRepurposeSummary />
+          </div>
         </div>
-        <div className="lg:col-span-1">
-          <ExistingHabitsAssessmentSummary />
-        </div>
-        <div className="lg:col-span-1">
-          <HabitRepurposeSummary />
-        </div>
-      </div>
+      )}
     </div>
   );
 };
