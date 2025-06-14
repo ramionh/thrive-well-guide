@@ -11,14 +11,6 @@ import ErrorBoundary from "@/components/ui/error-boundary";
 const Motivation = () => {
   const [showSplash, setShowSplash] = useState(true);
   
-  // Check if user has chosen to hide the splash screen
-  useEffect(() => {
-    const hideMotivationSplash = localStorage.getItem('hideMotivationSplash');
-    if (hideMotivationSplash === 'true') {
-      setShowSplash(false);
-    }
-  }, []);
-  
   const { 
     steps, 
     currentStepId, 
@@ -40,6 +32,17 @@ const Motivation = () => {
       completed: false
     }))
   );
+
+  // Check if user has completed any steps and whether to show splash screen
+  useEffect(() => {
+    const hideMotivationSplash = localStorage.getItem('hideMotivationSplash');
+    const hasCompletedAnyStep = steps.some(step => step.completed);
+    
+    // Don't show splash if user has chosen to hide it OR if they've completed any step
+    if (hideMotivationSplash === 'true' || hasCompletedAnyStep) {
+      setShowSplash(false);
+    }
+  }, [steps]);
 
   // Check if final step is completed (step 94)
   const isFinalStepCompleted = steps.some(step => step.id === 94 && step.completed);
