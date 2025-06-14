@@ -50,7 +50,12 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
     initialState,
     parseData: parseFinancialResourcesData,
     transformData,
-    onSuccess: onComplete,
+    onSuccess: () => {
+      console.log("FinancialResources: Form submitted successfully, calling onComplete");
+      if (onComplete) {
+        onComplete();
+      }
+    },
     stepNumber: 50,
     nextStepNumber: 51,
     stepName: "Financial and Economic Resources",
@@ -68,6 +73,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("FinancialResources: Submitting form with data:", formData);
     submitForm();
   };
 
