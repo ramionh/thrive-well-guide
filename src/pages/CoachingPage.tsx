@@ -173,7 +173,7 @@ const CoachingPage = () => {
               <CardHeader className="text-center bg-blue-50">
                 <CardTitle className="text-2xl text-blue-800">Motivational Coaching Program</CardTitle>
                 <div className="text-4xl font-bold text-blue-600 mt-4">
-                  $297<span className="text-lg text-gray-600">/month</span>
+                  $189<span className="text-lg text-gray-600">/month</span>
                 </div>
                 <p className="text-gray-600 mt-2">Your daily partner in motivation</p>
               </CardHeader>
