@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -98,6 +97,96 @@ const CoachingPage = () => {
               Stop focusing on the "HOW" and start discovering your personal "WHY" with our revolutionary 
               one-on-one motivational interviewing coaching program.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Card - Moved to second position */}
+      <section className="py-16 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto">
+            <Card className="border-2 border-blue-500 shadow-xl">
+              <CardHeader className="text-center bg-blue-50">
+                <CardTitle className="text-2xl text-blue-800">Motivational Coaching Program</CardTitle>
+                <div className="text-4xl font-bold text-blue-600 mt-4">
+                  $189<span className="text-lg text-gray-600">/month</span>
+                </div>
+                <p className="text-gray-600 mt-2">Your daily partner in motivation</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <ul className="space-y-3 mb-6">
+                  {benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <Dialog open={showSignupDialog} onOpenChange={setShowSignupDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg rounded-lg shadow-lg">
+                      Ready to Stop Starting Over?
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Create Your Account</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handlePurchase} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Create a password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="Confirm your password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      <Button 
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg rounded-lg shadow-lg"
+                      >
+                        {isLoading ? "Processing..." : "Continue to Payment"}
+                        {!isLoading && <ArrowRight className="ml-2 h-5 w-5" />}
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+                
+                <p className="text-sm text-gray-500 text-center mt-4">
+                  30-day money-back guarantee
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -205,98 +294,8 @@ const CoachingPage = () => {
         </div>
       </section>
 
-      {/* Pricing Card */}
-      <section className="py-16 bg-slate-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-md mx-auto">
-            <Card className="border-2 border-blue-500 shadow-xl">
-              <CardHeader className="text-center bg-blue-50">
-                <CardTitle className="text-2xl text-blue-800">Motivational Coaching Program</CardTitle>
-                <div className="text-4xl font-bold text-blue-600 mt-4">
-                  $189<span className="text-lg text-gray-600">/month</span>
-                </div>
-                <p className="text-gray-600 mt-2">Your daily partner in motivation</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ul className="space-y-3 mb-6">
-                  {benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Dialog open={showSignupDialog} onOpenChange={setShowSignupDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg rounded-lg shadow-lg">
-                      Ready to Stop Starting Over?
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Create Your Account</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handlePurchase} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="Create a password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          minLength={6}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirm Password</Label>
-                        <Input
-                          id="confirmPassword"
-                          type="password"
-                          placeholder="Confirm your password"
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          required
-                          minLength={6}
-                        />
-                      </div>
-                      <Button 
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg rounded-lg shadow-lg"
-                      >
-                        {isLoading ? "Processing..." : "Continue to Payment"}
-                        {!isLoading && <ArrowRight className="ml-2 h-5 w-5" />}
-                      </Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-                
-                <p className="text-sm text-gray-500 text-center mt-4">
-                  30-day money-back guarantee
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-slate-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">What Our Clients Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -320,7 +319,7 @@ const CoachingPage = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-slate-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
           <div className="max-w-3xl mx-auto space-y-6">
