@@ -106,40 +106,55 @@ const DealingWithSetbacksSelfCare: React.FC<SelfCareProps> = ({ onComplete }) =>
     }
 
     try {
+      console.log("Fetching self-care data for user:", user.id);
+      
       const { data, error } = await supabase
         .from("motivation_dealing_setbacks_self_care")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching self-care data:", error);
+        // Don't throw error if it's just "no data found"
+        if (error.code !== "PGRST116") {
+          throw error;
+        }
+      }
+
+      console.log("Self-care data fetched:", data);
 
       if (data) {
-        setPhysicalItems(data.physical || []);
-        setPsychologicalItems(data.psychological || []);
-        setSpiritualItems(data.spiritual || []);
-        setInterpersonalItems(data.interpersonal || []);
+        setPhysicalItems(Array.isArray(data.physical) ? data.physical : []);
+        setPsychologicalItems(Array.isArray(data.psychological) ? data.psychological : []);
+        setSpiritualItems(Array.isArray(data.spiritual) ? data.spiritual : []);
+        setInterpersonalItems(Array.isArray(data.interpersonal) ? data.interpersonal : []);
 
-        // Extract custom inputs
-        const customPhysicalEntries = data.physical.filter(item => 
+        // Extract custom inputs safely
+        const physicalArray = Array.isArray(data.physical) ? data.physical : [];
+        const psychologicalArray = Array.isArray(data.psychological) ? data.psychological : [];
+        const spiritualArray = Array.isArray(data.spiritual) ? data.spiritual : [];
+        const interpersonalArray = Array.isArray(data.interpersonal) ? data.interpersonal : [];
+        
+        const customPhysicalEntries = physicalArray.filter(item => 
           !selfCareCategories[0].options.some(opt => 
             typeof opt === 'string' && opt === item
           )
         );
         
-        const customPsychologicalEntries = data.psychological.filter(item => 
+        const customPsychologicalEntries = psychologicalArray.filter(item => 
           !selfCareCategories[1].options.some(opt => 
             typeof opt === 'string' && opt === item
           )
         );
         
-        const customSpiritualEntries = data.spiritual.filter(item => 
+        const customSpiritualEntries = spiritualArray.filter(item => 
           !selfCareCategories[2].options.some(opt => 
             typeof opt === 'string' && opt === item
           )
         );
         
-        const customInterpersonalEntries = data.interpersonal.filter(item => 
+        const customInterpersonalEntries = interpersonalArray.filter(item => 
           !selfCareCategories[3].options.some(opt => 
             typeof opt === 'string' && opt === item
           )
@@ -272,6 +287,8 @@ const DealingWithSetbacksSelfCare: React.FC<SelfCareProps> = ({ onComplete }) =>
     });
 
     try {
+      console.log("Saving self-care data for user:", user.id);
+      
       const { error } = await supabase
         .from("motivation_dealing_setbacks_self_care")
         .upsert({
@@ -285,12 +302,12 @@ const DealingWithSetbacksSelfCare: React.FC<SelfCareProps> = ({ onComplete }) =>
 
       if (error) throw error;
 
-      // Mark step as complete
+      // Mark step as complete - using step 74 which is the correct step number for self-care
       await supabase
         .from("motivation_steps_progress")
         .upsert({
           user_id: user.id,
-          step_number: 89,
+          step_number: 74,
           step_name: "Dealing with Setbacks: Self-Care",
           completed: true,
           completed_at: new Date().toISOString(),
@@ -302,8 +319,8 @@ const DealingWithSetbacksSelfCare: React.FC<SelfCareProps> = ({ onComplete }) =>
         .from("motivation_steps_progress")
         .upsert({
           user_id: user.id,
-          step_number: 90,
-          step_name: "Change Your Plan",
+          step_number: 75,
+          step_name: "Dealing with Setbacks: Recommit",
           completed: false,
           available: true,
           completed_at: null
