@@ -26,6 +26,7 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
   };
 
   const transformData = (formData: FinancialResourcesFormData) => {
+    console.log("FinancialResources: Transforming data for database:", formData);
     return {
       income: formData.income,
       job_stability: formData.job_stability,
@@ -73,8 +74,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
 
   // Debug log to see current form data
   useEffect(() => {
-    console.log("FinancialResources: Current form data:", formData);
-  }, [formData]);
+    console.log("FinancialResources: Current form data state:", formData);
+    console.log("FinancialResources: Is loading:", isLoading);
+    console.log("FinancialResources: Is saving:", isSaving);
+  }, [formData, isLoading, isSaving]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,7 +124,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="income"
               rows={2}
               value={formData.income || ""}
-              onChange={(e) => updateForm("income", e.target.value)}
+              onChange={(e) => {
+                console.log("FinancialResources: Updating income field:", e.target.value);
+                updateForm("income", e.target.value);
+              }}
               className="w-full resize-none"
             />
           </div>
@@ -134,7 +140,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="job_stability" 
               rows={2}
               value={formData.job_stability || ""}
-              onChange={(e) => updateForm("job_stability", e.target.value)}
+              onChange={(e) => {
+                console.log("FinancialResources: Updating job_stability field:", e.target.value);
+                updateForm("job_stability", e.target.value);
+              }}
               className="w-full resize-none"
             />
           </div>
@@ -147,7 +156,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="workplace_benefits"
               rows={2}
               value={formData.workplace_benefits || ""}
-              onChange={(e) => updateForm("workplace_benefits", e.target.value)}
+              onChange={(e) => {
+                console.log("FinancialResources: Updating workplace_benefits field:", e.target.value);
+                updateForm("workplace_benefits", e.target.value);
+              }}
               className="w-full resize-none"
             />
           </div>
@@ -160,7 +172,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="flexible_schedule"
               rows={2}
               value={formData.flexible_schedule || ""}
-              onChange={(e) => updateForm("flexible_schedule", e.target.value)}
+              onChange={(e) => {
+                console.log("FinancialResources: Updating flexible_schedule field:", e.target.value);
+                updateForm("flexible_schedule", e.target.value);
+              }}
               className="w-full resize-none"
             />
           </div>
@@ -173,7 +188,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="job_satisfaction"
               rows={2}
               value={formData.job_satisfaction || ""}
-              onChange={(e) => updateForm("job_satisfaction", e.target.value)}
+              onChange={(e) => {
+                console.log("FinancialResources: Updating job_satisfaction field:", e.target.value);
+                updateForm("job_satisfaction", e.target.value);
+              }}
               className="w-full resize-none"
             />
           </div>
@@ -186,7 +204,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="financial_feelings"
               rows={2}
               value={formData.financial_feelings || ""}
-              onChange={(e) => updateForm("financial_feelings", e.target.value)}
+              onChange={(e) => {
+                console.log("FinancialResources: Updating financial_feelings field:", e.target.value);
+                updateForm("financial_feelings", e.target.value);
+              }}
               className="w-full resize-none"
             />
           </div>
@@ -199,7 +220,10 @@ const FinancialResources: React.FC<FinancialResourcesProps> = ({ onComplete }) =
               id="build_resources"
               rows={3}
               value={formData.build_resources || ""}
-              onChange={(e) => updateForm("build_resources", e.target.value)}
+              onChange={(e) => {
+                console.log("FinancialResources: Updating build_resources field:", e.target.value);
+                updateForm("build_resources", e.target.value);
+              }}
               className="w-full resize-none"
             />
           </div>

@@ -44,7 +44,7 @@ export interface FinancialResourcesFormData {
  */
 export const parseFinancialResourcesData = (data: any): FinancialResourcesFormData => {
   if (!data) {
-    console.log("No financial resources data to parse");
+    console.log("parseFinancialResourcesData: No data to parse");
     return {
       income: "",
       job_stability: "",
@@ -57,7 +57,7 @@ export const parseFinancialResourcesData = (data: any): FinancialResourcesFormDa
   }
 
   try {
-    console.log("Parsing financial resources data:", data);
+    console.log("parseFinancialResourcesData: Raw data received:", data);
 
     // Create a clean data object with safer parsing
     const cleanData: FinancialResourcesFormData = {
@@ -70,10 +70,10 @@ export const parseFinancialResourcesData = (data: any): FinancialResourcesFormDa
       build_resources: parseStringField(data.build_resources)
     };
 
-    console.log("Parsed financial resources data:", cleanData);
+    console.log("parseFinancialResourcesData: Parsed data:", cleanData);
     return cleanData;
   } catch (parseError) {
-    console.error("Error parsing financial resources data:", parseError);
+    console.error("parseFinancialResourcesData: Error parsing data:", parseError);
     return {
       income: "",
       job_stability: "",
