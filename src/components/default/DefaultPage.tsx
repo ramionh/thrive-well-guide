@@ -49,7 +49,7 @@ const DefaultPage = () => {
                       className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg rounded-lg"
                       onClick={() => navigate("/coaching")}
                     >
-                      Personal Coaching
+                      Join Now!
                     </Button>
                   </div>
                 </div>
