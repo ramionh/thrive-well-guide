@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowRight, CheckCircle, Users, Clock, Star, MessageCircle, Phone, Target, Heart, Zap, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
@@ -11,23 +14,35 @@ const CoachingPage = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [showSignupDialog, setShowSignupDialog] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handlePurchase = async () => {
-    if (!user) {
-      // Redirect to auth page if not logged in
-      navigate("/auth");
+  const handlePurchase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
       return;
     }
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout');
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { email, password }
+      });
       
       if (error) throw error;
       
       if (data?.url) {
-        // Open Stripe checkout in a new tab
-        window.open(data.url, '_blank');
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');
       }
@@ -210,14 +225,66 @@ const CoachingPage = () => {
                     </li>
                   ))}
                 </ul>
-                <Button 
-                  onClick={handlePurchase}
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg rounded-lg shadow-lg"
-                >
-                  {isLoading ? "Processing..." : "Ready to Stop Starting Over?"}
-                  {!isLoading && <ArrowRight className="ml-2 h-5 w-5" />}
-                </Button>
+                
+                <Dialog open={showSignupDialog} onOpenChange={setShowSignupDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg rounded-lg shadow-lg">
+                      Ready to Stop Starting Over?
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Create Your Account</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handlePurchase} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Create a password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="Confirm your password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      <Button 
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg rounded-lg shadow-lg"
+                      >
+                        {isLoading ? "Processing..." : "Continue to Payment"}
+                        {!isLoading && <ArrowRight className="ml-2 h-5 w-5" />}
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+                
                 <p className="text-sm text-gray-500 text-center mt-4">
                   30-day money-back guarantee
                 </p>
@@ -292,12 +359,11 @@ const CoachingPage = () => {
             If you're ready to make a change that truly lasts, the Motivational Coaching Program is for you.
           </p>
           <Button 
-            onClick={handlePurchase}
-            disabled={isLoading}
+            onClick={() => setShowSignupDialog(true)}
             className="bg-white text-blue-600 hover:bg-blue-50 px-12 py-6 text-xl rounded-lg shadow-lg"
           >
-            {isLoading ? "Processing..." : "Start Your Coaching Journey"}
-            {!isLoading && <ArrowRight className="ml-3 h-6 w-6" />}
+            Start Your Coaching Journey
+            <ArrowRight className="ml-3 h-6 w-6" />
           </Button>
         </div>
       </section>
