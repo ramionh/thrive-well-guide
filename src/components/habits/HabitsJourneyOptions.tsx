@@ -1,13 +1,15 @@
-import React from "react";
+
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, RefreshCw, CheckCircle, Lock } from "lucide-react";
+import { Brain, RefreshCw, CheckCircle, Lock, Zap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import CategoryScoresDisplay from "./CategoryScoresDisplay";
 import ExistingHabitsAssessmentSummary from "./ExistingHabitsAssessmentSummary";
 import HabitRepurposeSummary from "../dashboard/HabitRepurposeSummary";
+import StreamlinedHabitAssessment from "./StreamlinedHabitAssessment";
 
 interface HabitsJourneyOptionsProps {
   onSelectOption: (option: 'existing' | 'repurpose' | 'assessment') => void;
@@ -15,8 +17,9 @@ interface HabitsJourneyOptionsProps {
 
 const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOption }) => {
   const { user } = useUser();
+  const [showQuickAssessment, setShowQuickAssessment] = useState(false);
 
-  // Check if user has completed the habit assessment
+  // Check if user has completed any habit assessment
   const { data: hasCompletedAssessment, isLoading } = useQuery({
     queryKey: ['user-habit-assessment-status', user?.id],
     queryFn: async () => {
@@ -36,14 +39,57 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
 
   const isAssessmentCompleted = !isLoading && hasCompletedAssessment;
 
+  if (showQuickAssessment) {
+    return (
+      <div className="container mx-auto py-6 max-w-4xl">
+        <div className="mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => setShowQuickAssessment(false)}
+            className="mb-4"
+          >
+            ← Back to Options
+          </Button>
+        </div>
+        <StreamlinedHabitAssessment 
+          onContinueToFull={() => {
+            setShowQuickAssessment(false);
+            onSelectOption('assessment');
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-6 max-w-6xl space-y-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-4">Your Habit Journey Path</h1>
         <p className="text-lg text-gray-600">
-          Start with the Core Optimal Habits survey, move to Learn your existing habits and finish with Repurpose your habits
+          Start with a quick assessment to get immediate insights, then explore deeper analysis
         </p>
       </div>
+
+      {/* Quick Start Option */}
+      <Card className="border-2 border-blue-200 bg-blue-50">
+        <CardHeader className="text-center">
+          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+            <Zap className="h-6 w-6 text-blue-600" />
+          </div>
+          <CardTitle className="text-blue-800">Quick Start (2 minutes)</CardTitle>
+          <CardDescription>
+            Get immediate insights by rating your most critical habits first
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+          <Button 
+            onClick={() => setShowQuickAssessment(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Start Quick Assessment
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="hover:shadow-lg transition-shadow cursor-pointer">
@@ -51,9 +97,9 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
             <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
-            <CardTitle>Core Optimal Habit Assessment</CardTitle>
+            <CardTitle>Full Habit Assessment</CardTitle>
             <CardDescription>
-              Rate yourself on each core habit and get a score for each category
+              Complete assessment of all core habits with detailed scoring
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -61,7 +107,7 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
               onClick={() => onSelectOption('assessment')}
               className="w-full bg-green-600 hover:bg-green-700 text-white"
             >
-              Take Assessment
+              Full Assessment
             </Button>
           </CardContent>
         </Card>
@@ -82,8 +128,8 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
             </CardTitle>
             <CardDescription className={isAssessmentCompleted ? '' : 'text-gray-400'}>
               {isAssessmentCompleted 
-                ? "Discover and understand the habits you already have in your daily routine"
-                : "Complete the assessment first to unlock this section"
+                ? "Discover and understand the habits you already have"
+                : "Complete an assessment first to unlock this section"
               }
             </CardDescription>
           </CardHeader>
@@ -115,8 +161,8 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
             </CardTitle>
             <CardDescription className={isAssessmentCompleted ? '' : 'text-gray-400'}>
               {isAssessmentCompleted 
-                ? "Transform existing habits to better align with your fitness goals"
-                : "Complete the assessment first to unlock this section"
+                ? "Transform existing habits to align with your fitness goals"
+                : "Complete an assessment first to unlock this section"
               }
             </CardDescription>
           </CardHeader>
