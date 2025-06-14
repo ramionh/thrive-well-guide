@@ -185,9 +185,9 @@ export const activeChangeSteps: StepConfig[] = [
   },
   {
     id: 91,
-    title: "Prioritizing Change",
-    description: "Focus on the most important changes",
-    component: (onComplete) => <PrioritizingChange onComplete={onComplete} />
+    title: "A Final Word: Your Fitness Journey Begins Now!",
+    description: "Celebrate your progress and look forward",
+    component: (onComplete) => <FitnessJourneyFinalWord onComplete={onComplete} />
   },
   {
     id: 92,
@@ -203,8 +203,8 @@ export const activeChangeSteps: StepConfig[] = [
   },
   {
     id: 94,
-    title: "A Final Word: Your Fitness Journey Begins Now!",
-    description: "Celebrate your progress and look forward",
-    component: (onComplete) => <FitnessJourneyFinalWord onComplete={onComplete} />
+    title: "Prioritizing Change",
+    description: "Focus on the most important changes",
+    component: (onComplete) => <PrioritizingChange onComplete={onComplete} />
   }
 ];

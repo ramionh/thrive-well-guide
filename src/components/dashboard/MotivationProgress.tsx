@@ -29,16 +29,16 @@ const MotivationProgress = () => {
     enabled: !!user
   });
 
-  // Check if Step 91 (Final Word) has been completed
-  const finalWordCompleted = motivationStepsProgress?.some(step => step.step_number === 91 && step.completed);
+  // Check if Step 94 (Final step) has been completed
+  const finalStepCompleted = motivationStepsProgress?.some(step => step.step_number === 94 && step.completed);
 
-  // Set the total number of steps to 91 as there are 91 total steps in the journey
-  const totalSteps = 91;
+  // Set the total number of steps to 94 as there are 94 total steps in the journey
+  const totalSteps = 94;
   const completedSteps = motivationStepsProgress?.filter(step => step.completed)?.length || 0;
   const progressPercentage = Math.round((completedSteps / totalSteps) * 100);
   
-  // Journey is complete when the final step (91) is completed
-  const isJourneyComplete = finalWordCompleted;
+  // Journey is complete when the final step (94) is completed
+  const isJourneyComplete = finalStepCompleted;
 
   return (
     <Card className="card-shadow">

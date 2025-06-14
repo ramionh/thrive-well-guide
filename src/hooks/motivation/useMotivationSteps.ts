@@ -26,6 +26,18 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
     moveToNextStep
   } = useStepNavigation(initialSteps);
 
+  // Check if charting path section is complete
+  const isChartingPathComplete = (progressData: any[]) => {
+    // Charting path steps are from 18 to 65
+    const chartingPathSteps = Array.from({length: 48}, (_, i) => i + 18); // 18-65
+    const completedChartingSteps = progressData.filter(p => 
+      chartingPathSteps.includes(p.step_number) && p.completed
+    );
+    
+    // Consider charting path complete if at least 80% of steps are done
+    return completedChartingSteps.length >= Math.floor(chartingPathSteps.length * 0.8);
+  };
+
   // Fetch step progress from the database when component mounts
   useEffect(() => {
     // Only fetch data if we haven't already and user is available
@@ -42,15 +54,26 @@ export const useMotivationSteps = (initialSteps: Step[]) => {
             .filter(step => (step as any).defaultCompleted)
             .map(step => step.id);
 
+          // Check if charting path is complete
+          const chartingComplete = isChartingPathComplete(data);
+
           // Update steps with completion data, available flags, and default completed steps
           setSteps(prevSteps => 
-            prevSteps.map(step => ({
-              ...step,
-              completed: data.some(p => p.step_number === step.id && p.completed) || 
-                        defaultCompletedSteps.includes(step.id),
-              // Also track if a step is explicitly marked as available
-              available: data.some(p => p.step_number === step.id && p.available === true)
-            }))
+            prevSteps.map(step => {
+              const isCompleted = data.some(p => p.step_number === step.id && p.completed) || 
+                                defaultCompletedSteps.includes(step.id);
+              const isAvailable = data.some(p => p.step_number === step.id && p.available === true);
+              
+              // Lock Active Change steps (66+) if charting path isn't complete
+              const isActiveChangeStep = step.id >= 66;
+              const shouldBeLocked = isActiveChangeStep && !chartingComplete && !isCompleted;
+              
+              return {
+                ...step,
+                completed: isCompleted,
+                available: shouldBeLocked ? false : isAvailable
+              };
+            })
           );
 
           // Set the current step ID based on progress data

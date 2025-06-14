@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Lock } from "lucide-react";
 import type { Step } from "@/hooks/useMotivationSteps";
 import {
   Accordion,
@@ -27,18 +27,25 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
   
   // Define step ranges for each section based on visible steps
   const startingPointSteps = visibleSteps.filter(step => step.id < 18);
-  const chartingPathSteps = visibleSteps.filter(step => step.id >= 18 && step.id < 62);
-  const activeChangeSteps = visibleSteps.filter(step => step.id >= 62);
+  const chartingPathSteps = visibleSteps.filter(step => step.id >= 18 && step.id < 66);
+  const activeChangeSteps = visibleSteps.filter(step => step.id >= 66);
   
   // Find the highest completed step ID to determine navigation permissions
   const highestCompletedStepId = steps
     .filter(step => step.completed)
     .reduce((max, step) => Math.max(max, step.id), 0);
   
+  // Check if charting path is complete
+  const chartingPathComplete = chartingPathSteps.some(step => step.completed) && 
+    chartingPathSteps.filter(step => step.completed).length >= Math.floor(chartingPathSteps.length * 0.6);
+  
   // Helper function to check if a step should be enabled
   const isStepEnabled = (step: Step) => {
     // Step 1 is always enabled
     if (step.id === 1) return true;
+    
+    // Active Change steps (66+) require charting path completion
+    if (step.id >= 66 && !chartingPathComplete) return false;
     
     return (
       step.completed || // Step is completed
@@ -47,15 +54,12 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
     );
   };
   
-  // Check if the final step (91) is completed
-  const isFinalStepCompleted = steps.some(step => step.id === 91 && step.completed);
+  // Check if the final step (94) is completed
+  const isFinalStepCompleted = steps.some(step => step.id === 94 && step.completed);
 
   // Make sure activeChangeSteps are sorted by ID
   const sortedActiveChangeSteps = [...activeChangeSteps].sort((a, b) => a.id - b.id);
-  
-  // Log the steps to help with debugging
-  console.log("Active Change Steps:", sortedActiveChangeSteps.map(s => `${s.id}: ${s.title}`));
-  
+
   return (
     <div className="md:w-1/4 mb-6 md:mb-0">
       <Card className="bg-white shadow-md border border-purple-100">
@@ -117,7 +121,7 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
 
             <AccordionItem value="charting-path">
               <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">
-                Charting Your Path
+                Charting Your Path {chartingPathComplete && <CheckCircle className="ml-1 h-4 w-4 text-green-500 inline" />}
               </AccordionTrigger>
               <AccordionContent>
                 {startingPointSteps.some(step => step.completed) ? (
@@ -169,15 +173,16 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
             <AccordionItem value="active-change">
               <AccordionTrigger className="text-left text-purple-700 hover:text-purple-900">
                 Active Change {isFinalStepCompleted && <CheckCircle className="ml-1 h-4 w-4 text-green-500 inline" />}
+                {!chartingPathComplete && <Lock className="ml-1 h-4 w-4 text-gray-400 inline" />}
               </AccordionTrigger>
               <AccordionContent>
-                {chartingPathSteps.some(step => step.completed) ? (
+                {chartingPathComplete ? (
                   <ScrollArea className="h-[350px] pr-4">
                     <ul className="space-y-3">
                       {sortedActiveChangeSteps.map((step) => {
                         const isActive = step.id === currentStepId;
                         const isDisabled = !isStepEnabled(step);
-                        const isFinalStep = step.id === 91;
+                        const isFinalStep = step.id === 94;
                         
                         return (
                           <li key={step.id}>
@@ -215,9 +220,15 @@ const MotivationStepsSidebar: React.FC<MotivationStepsSidebarProps> = ({
                     </ul>
                   </ScrollArea>
                 ) : (
-                  <p className="text-purple-600 italic text-sm p-4">
-                    Complete the previous sections to unlock this section
-                  </p>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lock className="h-4 w-4 text-gray-500" />
+                      <p className="text-purple-600 font-medium text-sm">Section Locked</p>
+                    </div>
+                    <p className="text-purple-600 italic text-sm">
+                      Complete more steps in "Charting Your Path" to unlock Active Change
+                    </p>
+                  </div>
                 )}
               </AccordionContent>
             </AccordionItem>
