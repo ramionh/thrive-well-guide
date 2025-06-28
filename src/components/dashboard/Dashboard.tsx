@@ -8,12 +8,11 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import WelcomeHeader from "./WelcomeHeader";
-import MetricsOverview from "./MetricsOverview";
-import InsightsTabs from "./InsightsTabs";
-import CoreValues from "./CoreValues";
-import FocusedHabits from "./FocusedHabits";
-import HistoryButton from "./HistoryButton";
+import DashboardHeader from "./DashboardHeader";
+import HealthOverview from "./HealthOverview";
+import MetricsGrid from "./MetricsGrid";
+import ActivityTracker from "./ActivityTracker";
+import RecentProgress from "./RecentProgress";
 import MotivationProgress from "./MotivationProgress";
 
 const Dashboard: React.FC = () => {
@@ -24,23 +23,6 @@ const Dashboard: React.FC = () => {
 
   // Get the first name or default to "User"
   const firstName = user?.name?.split(' ')[0] || "User";
-
-  // Fetch focused habits with their details
-  const { data: focusedHabits } = useQuery({
-    queryKey: ['focused-habits', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('focused_habits')
-        .select('habit_id(id, name, description, category)')
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-      return data?.map(item => item.habit_id) || [];
-    },
-    enabled: !!user
-  });
 
   // Add this query for core values
   const { data: coreValues } = useQuery({
@@ -100,32 +82,55 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      <WelcomeHeader firstName={firstName} />
-      
-      <div className="flex gap-3 mb-6">
-        <HistoryButton />
-        <Button
-          className="bg-blue-500 hover:bg-blue-600 text-white"
-          onClick={() => navigate("/add-progress")}
-        >
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Record Progress
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="container mx-auto p-6 max-w-7xl">
+        <DashboardHeader firstName={firstName} />
+        
+        <div className="flex gap-3 mb-8">
+          <Button
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+            onClick={() => navigate("/add-progress")}
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Record Progress
+          </Button>
+          <Button
+            variant="outline"
+            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            onClick={() => navigate("/progress")}
+          >
+            View History
+          </Button>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-        <div className="lg:col-span-3">
-          <MetricsOverview />
+        {/* Main Dashboard Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+          {/* Health Overview - Large card on left */}
+          <div className="lg:col-span-8">
+            <HealthOverview />
+          </div>
+          
+          {/* Motivation Progress - Right sidebar */}
+          <div className="lg:col-span-4">
+            <MotivationProgress />
+          </div>
         </div>
-        <div className="lg:col-span-1">
-          <MotivationProgress />
+
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <MetricsGrid />
+        </div>
+
+        {/* Activity and Progress Tracking */}
+        <div className="grid grid-cols-1 lg:grid-cols-8 gap-6">
+          <div className="lg:col-span-5">
+            <ActivityTracker />
+          </div>
+          <div className="lg:col-span-3">
+            <RecentProgress />
+          </div>
         </div>
       </div>
-      
-      <InsightsTabs />
-      {coreValues && <CoreValues values={coreValues} />}
-      <FocusedHabits habits={focusedHabits || []} />
     </div>
   );
 };
