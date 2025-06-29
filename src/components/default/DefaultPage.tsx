@@ -2,7 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, Star, Users, Target, Zap, Shield, Award } from "lucide-react";
+import { ArrowRight, CheckCircle, Star, Users, Target, Zap, Shield, Award, Play } from "lucide-react";
 
 const DefaultPage = () => {
   const navigate = useNavigate();
@@ -25,19 +25,12 @@ const DefaultPage = () => {
               />
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
-              <a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">Reviews</a>
-              <Button
-                variant="outline"
-                onClick={handleStartJourney}
-                className="border-blue-600 text-blue-600 hover:bg-blue-50"
-              >
-                Sign In
-              </Button>
+              <a href="#about" className="text-gray-600 hover:text-gray-900 transition-colors font-medium">About</a>
+              <a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors font-medium">Success Stories</a>
+              <a href="#coaching" className="text-gray-600 hover:text-gray-900 transition-colors font-medium">Coaching</a>
               <Button
                 onClick={() => navigate("/coaching")}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-semibold"
               >
                 Get Started
               </Button>
@@ -47,113 +40,171 @@ const DefaultPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-24 pb-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="pt-24 pb-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-8">
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Transform Your Body
                 <br />
-                <span className="text-blue-600">After 40</span>
+                <span className="text-red-600">After 40</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Personalized coaching that focuses on your "WHY" - not just another workout plan. 
-                Built for Gen X, proven for every generation.
+              <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Join thousands of men over 40 who've discovered the secret to sustainable fat loss, 
+                muscle building, and peak energy - without endless hours in the gym.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Button
-                  onClick={() => navigate("/coaching")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-lg"
-                  size="lg"
-                >
-                  Start Your Transformation
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("#demo")}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg rounded-lg"
-                  size="lg"
-                >
-                  Watch Demo
-                </Button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <Button
+                onClick={() => navigate("/coaching")}
+                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 text-lg rounded-full font-semibold shadow-lg"
+                size="lg"
+              >
+                Start Your Transformation
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button
+                variant="outline"
+                className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg rounded-full font-semibold flex items-center"
+                size="lg"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Watch Success Stories
+              </Button>
+            </div>
+            
+            {/* Social Proof */}
+            <div className="flex items-center justify-center space-x-8 text-sm text-gray-600 mb-12">
+              <div className="flex items-center space-x-2">
+                <div className="flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <span className="font-medium">4.9/5 from 2,000+ clients</span>
               </div>
-              
-              {/* Social Proof */}
-              <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
-                <div className="flex items-center space-x-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <span>4.9/5 from 500+ clients</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-blue-600" />
-                  <span>2,000+ transformations</span>
-                </div>
+              <div className="flex items-center space-x-2">
+                <Users className="h-4 w-4 text-red-600" />
+                <span className="font-medium">89% Success Rate</span>
               </div>
             </div>
 
-            {/* Hero Image/Stats */}
-            <div className="relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-4xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <StatCard number="89%" label="Client Success Rate" />
-                  <StatCard number="6-12" label="Months to Transform" />
-                  <StatCard number="24/7" label="Personal Support" />
-                </div>
+            {/* Hero Image Placeholder */}
+            <div className="bg-gradient-to-r from-red-100 to-gray-100 rounded-2xl p-12 mb-8 shadow-xl">
+              <div className="text-gray-500 text-center">
+                <div className="text-6xl mb-4">💪</div>
+                <p className="text-lg font-medium">Real Transformation Results</p>
+                <p className="text-sm">Before & After Photos Coming Soon</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      {/* Problems Section */}
+      <section className="py-20 bg-gray-900 text-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-bold mb-8">
+              Tired of Programs That Don't Work for Men Over 40?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <ProblemCard
+                title="Generic Workouts"
+                description="Cookie-cutter programs that ignore your body's changing needs after 40"
+              />
+              <ProblemCard
+                title="Slow Recovery"
+                description="Feeling sore for days and struggling to bounce back like you used to"
+              />
+              <ProblemCard
+                title="Stubborn Fat"
+                description="Diet and exercise aren't working like they did in your 20s and 30s"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solution Section */}
+      <section id="about" className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Why We Focus on <span className="text-gray-400">WHY</span>, Not <span className="text-blue-600">HOW</span>
+                The GenX Shred Method
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Every fitness program teaches the same methods. We help you discover your internal motivation 
-                and build lasting habits that become second nature.
+                A science-based approach designed specifically for men over 40, focusing on 
+                sustainable results that fit your busy lifestyle.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <FeatureCard
-                icon={<Target className="h-8 w-8 text-blue-600" />}
-                title="Personal Motivation Discovery"
-                description="Uncover your deepest reasons for change through proven motivational interviewing techniques."
+              <SolutionCard
+                icon={<Target className="h-8 w-8 text-red-600" />}
+                title="Personalized Programming"
+                description="Workouts tailored to your age, fitness level, and recovery capacity"
               />
-              <FeatureCard
-                icon={<Zap className="h-8 w-8 text-purple-600" />}
-                title="Habit Formation Science"
-                description="Build unshakeable habits using behavioral psychology and personalized strategies."
+              <SolutionCard
+                icon={<Zap className="h-8 w-8 text-blue-600" />}
+                title="Metabolic Optimization"
+                description="Boost your metabolism and energy levels naturally"
               />
-              <FeatureCard
+              <SolutionCard
                 icon={<Shield className="h-8 w-8 text-green-600" />}
-                title="Age-Appropriate Training"
-                description="Fitness strategies designed specifically for those 40+ with recovery and sustainability in mind."
+                title="Injury Prevention"
+                description="Safe, effective training that protects your joints and mobility"
               />
-              <FeatureCard
-                icon={<Users className="h-8 w-8 text-orange-600" />}
-                title="1-on-1 Personal Coaching"
-                description="Daily support from certified motivational interviewing coaches who understand your journey."
+              <SolutionCard
+                icon={<Users className="h-8 w-8 text-purple-600" />}
+                title="Expert Coaching"
+                description="Personal guidance from certified trainers who understand your challenges"
               />
-              <FeatureCard
-                icon={<Award className="h-8 w-8 text-red-600" />}
+              <SolutionCard
+                icon={<Award className="h-8 w-8 text-orange-600" />}
                 title="Proven Results"
-                description="Join thousands who've achieved lasting transformation through our unique approach."
+                description="Thousands of success stories from men just like you"
               />
-              <FeatureCard
+              <SolutionCard
                 icon={<CheckCircle className="h-8 w-8 text-teal-600" />}
-                title="Lifetime Support"
-                description="Access to our community and resources to maintain your transformation for life."
+                title="Lifestyle Integration"
+                description="Fits seamlessly into your work and family commitments"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                Real Men, Real Results
+              </h2>
+              <p className="text-xl text-gray-600">
+                See what's possible when you have the right system
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <TestimonialCard
+                name="Mike, 45"
+                result="Lost 35 lbs in 4 months"
+                quote="Finally found a program that works with my schedule. Down 3 pant sizes and feeling better than I have in years."
+              />
+              <TestimonialCard
+                name="David, 52"
+                result="Gained 15 lbs of muscle"
+                quote="Stronger than I was in my 30s. The personalized approach made all the difference."
+              />
+              <TestimonialCard
+                name="Tom, 48"
+                result="Improved energy & sleep"
+                quote="No more afternoon crashes. My wife says I'm like a new person."
               />
             </div>
           </div>
@@ -161,34 +212,37 @@ const DefaultPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <section className="py-20 bg-gradient-to-r from-red-600 to-red-700 text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Discover Your Why?</h2>
+          <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Life?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Join thousands who've transformed their lives by focusing on sustainable motivation, not quick fixes.
+            Join the thousands of men over 40 who've reclaimed their strength, energy, and confidence.
           </p>
-          <Button
-            onClick={() => navigate("/coaching")}
-            className="bg-white text-blue-600 hover:bg-gray-100 px-12 py-6 text-xl rounded-lg shadow-lg"
-            size="lg"
-          >
-            Start Your Journey Today
-            <ArrowRight className="ml-3 h-6 w-6" />
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              onClick={() => navigate("/coaching")}
+              className="bg-white text-red-600 hover:bg-gray-100 px-12 py-6 text-xl rounded-full shadow-lg font-semibold"
+              size="lg"
+            >
+              Start Your Transformation Today
+              <ArrowRight className="ml-3 h-6 w-6" />
+            </Button>
+            <p className="text-sm opacity-75">30-day money-back guarantee</p>
+          </div>
         </div>
       </section>
     </div>
   );
 };
 
-const StatCard = ({ number, label }: { number: string; label: string }) => (
+const ProblemCard = ({ title, description }: { title: string; description: string }) => (
   <div className="text-center">
-    <div className="text-3xl font-bold text-blue-600 mb-2">{number}</div>
-    <div className="text-gray-600 font-medium">{label}</div>
+    <h3 className="text-xl font-bold mb-3 text-red-400">{title}</h3>
+    <p className="text-gray-300">{description}</p>
   </div>
 );
 
-const FeatureCard = ({ 
+const SolutionCard = ({ 
   icon, 
   title, 
   description 
@@ -197,10 +251,35 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => (
-  <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
+  <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-red-200">
     <div className="mb-4">{icon}</div>
     <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
     <p className="text-gray-600 leading-relaxed">{description}</p>
+  </div>
+);
+
+const TestimonialCard = ({ 
+  name, 
+  result, 
+  quote 
+}: {
+  name: string;
+  result: string;
+  quote: string;
+}) => (
+  <div className="bg-white p-8 rounded-xl shadow-lg">
+    <div className="mb-4">
+      <div className="flex">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+        ))}
+      </div>
+    </div>
+    <p className="text-gray-600 mb-6 italic">"{quote}"</p>
+    <div>
+      <p className="font-bold text-gray-900">{name}</p>
+      <p className="text-red-600 font-semibold">{result}</p>
+    </div>
   </div>
 );
 
