@@ -2995,12 +2995,16 @@ export type Database = {
           created_at: string | null
           date_of_birth: string | null
           email: string | null
+          first_name: string | null
           full_name: string | null
           gender: string | null
           height_feet: number | null
           height_inches: number | null
           id: string
+          last_name: string | null
           onboarding_completed: boolean | null
+          phone_number: string | null
+          preferred_name: string | null
           updated_at: string | null
           weight_lbs: number | null
         }
@@ -3009,12 +3013,16 @@ export type Database = {
           created_at?: string | null
           date_of_birth?: string | null
           email?: string | null
+          first_name?: string | null
           full_name?: string | null
           gender?: string | null
           height_feet?: number | null
           height_inches?: number | null
           id: string
+          last_name?: string | null
           onboarding_completed?: boolean | null
+          phone_number?: string | null
+          preferred_name?: string | null
           updated_at?: string | null
           weight_lbs?: number | null
         }
@@ -3023,12 +3031,16 @@ export type Database = {
           created_at?: string | null
           date_of_birth?: string | null
           email?: string | null
+          first_name?: string | null
           full_name?: string | null
           gender?: string | null
           height_feet?: number | null
           height_inches?: number | null
           id?: string
+          last_name?: string | null
           onboarding_completed?: boolean | null
+          phone_number?: string | null
+          preferred_name?: string | null
           updated_at?: string | null
           weight_lbs?: number | null
         }

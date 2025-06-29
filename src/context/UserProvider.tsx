@@ -66,9 +66,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             category: "other"
           })) : [];
 
+          // Use preferred_name if available, otherwise fall back to first_name or full_name
+          const displayName = profileData.preferred_name || 
+                              profileData.first_name || 
+                              profileData.full_name || 
+                              '';
+
           setUser({
             id: session.user.id,
-            name: profileData.full_name || '',
+            name: displayName,
             email: session.user.email || '',
             onboardingCompleted: profileData.onboarding_completed || false,
             goals: transformedGoals,
@@ -124,6 +130,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { error } = await supabase
           .from('profiles')
           .update({
+            first_name: onboardingData.firstName,
+            last_name: onboardingData.lastName,
             full_name: `${onboardingData.firstName} ${onboardingData.lastName}`,
             email: onboardingData.email,
             date_of_birth: onboardingData.dateOfBirth,

@@ -19,6 +19,8 @@ interface ProfileFormProps {
     heightInches: number;
     weightLbs: number;
     gender: string;
+    preferredName: string;
+    phoneNumber: string;
   };
   setProfileData: React.Dispatch<React.SetStateAction<{
     firstName: string;
@@ -29,6 +31,8 @@ interface ProfileFormProps {
     heightInches: number;
     weightLbs: number;
     gender: string;
+    preferredName: string;
+    phoneNumber: string;
   }>>;
   avatarUrl: string | null;
   isLoading: boolean;
@@ -45,8 +49,43 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 }) => {
   const { toast } = useToast();
 
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digits
+    const phoneNumber = value.replace(/\D/g, '');
+    
+    // Format as (XXX) XXX-XXXX
+    if (phoneNumber.length >= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    } else if (phoneNumber.length >= 3) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    } else {
+      return phoneNumber;
+    }
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setProfileData(prev => ({ ...prev, phoneNumber: formatted }));
+  };
+
+  const validatePhoneNumber = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    return digits.length === 10;
+  };
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate phone number if provided
+    if (profileData.phoneNumber && !validatePhoneNumber(profileData.phoneNumber)) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Please enter a valid 10-digit phone number.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -54,7 +93,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
         .from('profiles')
         .update({ 
           avatar_url: avatarUrl,
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
           full_name: `${profileData.firstName} ${profileData.lastName}`,
+          preferred_name: profileData.preferredName,
+          phone_number: profileData.phoneNumber,
           email: profileData.email,
           date_of_birth: profileData.dateOfBirth,
           gender: profileData.gender,
@@ -96,6 +139,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
               value={profileData.firstName} 
               onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
               placeholder="Enter your first name"
+              required
             />
           </div>
           
@@ -106,8 +150,20 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
               value={profileData.lastName} 
               onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
               placeholder="Enter your last name"
+              required
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="preferredName">What should we call you?</Label>
+          <Input 
+            id="preferredName" 
+            value={profileData.preferredName} 
+            onChange={(e) => setProfileData(prev => ({ ...prev, preferredName: e.target.value }))}
+            placeholder="How would you like to be addressed?"
+          />
+          <p className="text-sm text-gray-500">This is how we'll address you in the app (optional)</p>
         </div>
         
         <div className="space-y-2">
@@ -118,7 +174,21 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             value={profileData.email} 
             onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
             placeholder="Enter your email"
+            required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phoneNumber">Phone Number</Label>
+          <Input 
+            id="phoneNumber" 
+            type="tel"
+            value={profileData.phoneNumber} 
+            onChange={handlePhoneChange}
+            placeholder="(555) 123-4567"
+            maxLength={14}
+          />
+          <p className="text-sm text-gray-500">10-digit US phone number (optional)</p>
         </div>
 
         <div className="space-y-2">
@@ -164,6 +234,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                 value={profileData.heightFeet} 
                 onChange={(e) => setProfileData(prev => ({ ...prev, heightFeet: Number(e.target.value) }))}
                 placeholder="ft"
+                min="3"
+                max="8"
               />
             </div>
             <div>
@@ -174,6 +246,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                 value={profileData.heightInches} 
                 onChange={(e) => setProfileData(prev => ({ ...prev, heightInches: Number(e.target.value) }))}
                 placeholder="in"
+                min="0"
+                max="11"
               />
             </div>
           </div>
@@ -187,6 +261,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             value={profileData.weightLbs} 
             onChange={(e) => setProfileData(prev => ({ ...prev, weightLbs: Number(e.target.value) }))}
             placeholder="Enter weight in pounds"
+            min="50"
+            max="500"
           />
         </div>
         

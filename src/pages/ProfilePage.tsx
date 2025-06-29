@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -20,14 +21,16 @@ const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatar_url || null);
   const [profileData, setProfileData] = useState({
-    firstName: user?.name?.split(' ')[0] || '',
-    lastName: user?.name?.split(' ')[1] || '',
+    firstName: '',
+    lastName: '',
     email: user?.email || '',
     dateOfBirth: '',
     gender: user?.gender || '',
     heightFeet: 0,
     heightInches: 0,
-    weightLbs: 0
+    weightLbs: 0,
+    preferredName: '',
+    phoneNumber: ''
   });
 
   useEffect(() => {
@@ -43,14 +46,16 @@ const ProfilePage: React.FC = () => {
           if (error) throw error;
 
           setProfileData({
-            firstName: data.full_name?.split(' ')[0] || '',
-            lastName: data.full_name?.split(' ')[1] || '',
+            firstName: data.first_name || '',
+            lastName: data.last_name || '',
             email: data.email || '',
             dateOfBirth: data.date_of_birth || '',
             gender: data.gender || '',
             heightFeet: data.height_feet || 0,
             heightInches: data.height_inches || 0,
-            weightLbs: data.weight_lbs || 0
+            weightLbs: data.weight_lbs || 0,
+            preferredName: data.preferred_name || '',
+            phoneNumber: data.phone_number || ''
           });
         } catch (error) {
           console.error("Error fetching profile data:", error);
@@ -106,6 +111,8 @@ const ProfilePage: React.FC = () => {
   if (!user) {
     return null;
   }
+
+  const displayName = profileData.preferredName || profileData.firstName || user.name || "User";
   
   return (
     <div className="container mx-auto max-w-4xl animate-fade-in">
@@ -136,11 +143,11 @@ const ProfilePage: React.FC = () => {
                 <AvatarUploader
                   userId={user.id}
                   currentAvatarUrl={avatarUrl}
-                  userName={user.name}
+                  userName={displayName}
                   onAvatarUpdate={handleAvatarUpdate}
                 />
                 <div>
-                  <CardTitle>{user.name || "User"}</CardTitle>
+                  <CardTitle>{displayName}</CardTitle>
                   <CardDescription>{user.email || "No email provided"}</CardDescription>
                 </div>
               </div>
