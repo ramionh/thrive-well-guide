@@ -24,8 +24,8 @@ import GoalsPage from "./pages/GoalsPage";
 import HabitsPage from "./pages/HabitsPage";
 import BodyTypeSelector from "./components/BodyTypeSelector";
 import MotivationPage from "./pages/MotivationPage";
-import CoachingPage from "./pages/CoachingPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import Index from "./pages/Index";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -57,9 +57,8 @@ const App = () => (
         <BrowserRouter>
           <Layout>
             <Routes>
-              <Route path="/" element={<DefaultPage />} />
+              <Route path="/" element={<Index />} />
               <Route path="/home" element={<HomePage />} />
-              <Route path="/coaching" element={<CoachingPage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
