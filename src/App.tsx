@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { queryClient } from "@/lib/queryClient";
 
 import AuthPage from "./pages/AuthPage";
+import InitialSignupPage from "./pages/InitialSignupPage";
 import Dashboard from "./components/dashboard/Dashboard";
 import OnboardingWizard from "./components/onboarding/OnboardingWizard";
 import ProgressPage from "./pages/ProgressPage";
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/home" element={<HomePage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/initial-signup" element={<InitialSignupPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
               <Route
                 path="/dashboard"

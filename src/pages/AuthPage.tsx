@@ -204,6 +204,15 @@ const AuthPage = () => {
                   Get Started with Coaching
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
+                <div className="text-sm text-gray-600">
+                  Or{' '}
+                  <button 
+                    onClick={() => navigate('/initial-signup')}
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    use your authorization code
+                  </button>
+                </div>
               </div>
             </TabsContent>
           </Tabs>

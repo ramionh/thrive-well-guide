@@ -71,6 +71,45 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_submissions: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: number
+          ip_address: unknown | null
+          message: string
+          name: string
+          subject: string | null
+          submitted_at: string | null
+          updated_at: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: number
+          ip_address?: unknown | null
+          message: string
+          name: string
+          subject?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: number
+          ip_address?: unknown | null
+          message?: string
+          name?: string
+          subject?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       daily_health_tracking: {
         Row: {
           calories: number | null
@@ -2994,6 +3033,45 @@ export type Database = {
         }
         Relationships: []
       }
+      opt_in_submissions: {
+        Row: {
+          created_at: string | null
+          email: string
+          first_name: string
+          id: string
+          ip_address: unknown | null
+          last_name: string
+          opted_in: boolean | null
+          phone_number: string
+          submitted_at: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          first_name: string
+          id?: string
+          ip_address?: unknown | null
+          last_name: string
+          opted_in?: boolean | null
+          phone_number: string
+          submitted_at?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          ip_address?: unknown | null
+          last_name?: string
+          opted_in?: boolean | null
+          phone_number?: string
+          submitted_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -3077,6 +3155,7 @@ export type Database = {
       }
       subscribers: {
         Row: {
+          auth_code: string | null
           created_at: string
           email: string
           id: string
@@ -3089,6 +3168,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          auth_code?: string | null
           created_at?: string
           email: string
           id?: string
@@ -3101,6 +3181,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          auth_code?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -3227,7 +3308,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      marketing_subscribers: {
+        Row: {
+          email: string | null
+          first_name: string | null
+          id: string | null
+          last_name: string | null
+          opted_in: boolean | null
+          submitted_at: string | null
+        }
+        Insert: {
+          email?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+          opted_in?: boolean | null
+          submitted_at?: string | null
+        }
+        Update: {
+          email?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+          opted_in?: boolean | null
+          submitted_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       binary_quantize: {
