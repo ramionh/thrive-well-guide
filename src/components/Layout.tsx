@@ -31,7 +31,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <main className="flex-1 p-4 md:p-6 overflow-auto">
           <div className="md:hidden flex justify-between items-center mb-4">
             <img 
-              src="/lovable-uploads/537dc682-8562-4ab2-a289-d9a206cc4f33.png" 
+              src="/lovable-uploads/1c8df1c3-d192-44d0-ab53-ea9fe40a017c.png" 
               alt="Gen X Shred" 
               className="h-12 w-auto"
             />
@@ -104,7 +104,7 @@ const AppSidebar = () => {
       <SidebarHeader className="p-4">
         <div className="flex items-center space-x-2">
           <img 
-            src="/lovable-uploads/537dc682-8562-4ab2-a289-d9a206cc4f33.png" 
+            src="/lovable-uploads/1c8df1c3-d192-44d0-ab53-ea9fe40a017c.png" 
             alt="Gen X Shred" 
             className="h-16 w-auto"
           />
