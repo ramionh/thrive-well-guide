@@ -123,11 +123,11 @@ const Index = () => {
     }
   };
 
-  // Handle tab change to show modal for register
+  // Handle tab change to redirect for register
   const handleTabChange = (value: 'login' | 'register') => {
     setActiveTab(value);
     if (value === 'register') {
-      setShowSignupDialog(true);
+      window.location.href = 'https://genxshred.com/coaching';
     }
   };
 
