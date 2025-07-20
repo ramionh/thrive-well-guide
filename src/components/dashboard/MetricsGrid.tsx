@@ -6,6 +6,24 @@ import { TrendingUp, Target, Zap, Calendar } from "lucide-react";
 const MetricsGrid: React.FC = () => {
   const metrics = [
     {
+      title: "Sleep Quality",
+      value: "7.5",
+      unit: "hours",
+      change: "+0.5h",
+      trend: "up",
+      icon: Calendar,
+      color: "blue"
+    },
+    {
+      title: "Nutrition",
+      value: "2,458",
+      unit: "kcal",
+      change: "+5%",
+      trend: "up", 
+      icon: Target,
+      color: "orange"
+    },
+    {
       title: "Exercise",
       value: "14:00",
       unit: "minutes",
@@ -15,28 +33,10 @@ const MetricsGrid: React.FC = () => {
       color: "green"
     },
     {
-      title: "Calories",
-      value: "2,458",
-      unit: "kcal",
-      change: "+5%",
-      trend: "up", 
-      icon: Target,
-      color: "orange"
-    },
-    {
-      title: "Weekly Streak",
-      value: "6",
-      unit: "days",
-      change: "Perfect!",
-      trend: "up",
-      icon: Calendar,
-      color: "blue"
-    },
-    {
-      title: "Body Progress",
-      value: "96.7%",
-      unit: "goal",
-      change: "+2.1%",
+      title: "Goals",
+      value: "3/5",
+      unit: "complete",
+      change: "+1",
       trend: "up",
       icon: TrendingUp,
       color: "purple"
