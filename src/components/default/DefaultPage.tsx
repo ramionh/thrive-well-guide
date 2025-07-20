@@ -19,7 +19,7 @@ const DefaultPage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <img 
-                src="/lovable-uploads/7bcf9ab6-a729-4686-8b02-57e3e77ec2b1.png" 
+                src="/lovable-uploads/cbd8cfd2-7a33-4843-bc1e-a8c55c2b2939.png" 
                 alt="Gen X Shred" 
                 className="h-10"
               />
