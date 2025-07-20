@@ -41,7 +41,7 @@ const HomePage = () => {
                       <tr>
                         <td className="w-1/2 pr-4">
                           <img 
-                            src="/lovable-uploads/cbd8cfd2-7a33-4843-bc1e-a8c55c2b2939.png" 
+                            src="/lovable-uploads/7d7b8c91-cb21-4fdb-845f-9b7594d4a358.png" 
                             alt="Gen X Shred" 
                             className="h-[700px]"
                           />
