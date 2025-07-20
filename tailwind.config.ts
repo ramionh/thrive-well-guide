@@ -63,16 +63,14 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// ThriveWell custom colors
-				thrive: {
-					blue: '#3a86ff',
-					lightblue: '#8ecae6',
-					teal: '#4d908e',
-					orange: '#f77f00',
-					green: '#38b000',
-					red: '#d62828',
-					purple: '#9b5de5',
-				}
+				// ThriveWell custom colors - using semantic tokens
+				'thrive-blue': 'hsl(var(--primary))',
+				'thrive-lightblue': 'hsl(var(--secondary))',
+				'thrive-teal': 'hsl(var(--accent))',
+				'thrive-orange': 'hsl(var(--destructive))',
+				'thrive-green': 'hsl(var(--thrive-green))',
+				'thrive-red': 'hsl(var(--destructive))',
+				'thrive-purple': 'hsl(var(--thrive-purple))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
