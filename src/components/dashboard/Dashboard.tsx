@@ -85,7 +85,7 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-background flex">
       <DashboardSidebar />
       
-      <div className="flex-1 ml-56">
+      <div className="flex-1 ml-48">
         <div className="p-4">
           {/* Header */}
           <div className="mb-8">

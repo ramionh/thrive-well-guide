@@ -59,7 +59,7 @@ const DashboardSidebar: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="w-56 bg-card border-r border-border h-screen fixed left-0 top-0 overflow-y-auto">
+    <div className="w-48 bg-card border-r border-border h-screen fixed left-0 top-0 overflow-y-auto">
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center space-x-3">
