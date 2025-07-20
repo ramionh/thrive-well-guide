@@ -77,9 +77,9 @@ const MetricsGrid: React.FC = () => {
               </div>
               
               <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">{metric.title}</p>
                 <p className="text-3xl font-bold text-foreground">{metric.value}</p>
                 <p className="text-sm text-muted-foreground">{metric.unit}</p>
-                <p className="text-xs text-muted-foreground">{metric.title}</p>
               </div>
             </div>
           </Card>
