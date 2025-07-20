@@ -55,7 +55,7 @@ const InsightsTabs: React.FC = () => {
       case 'green': return 'text-green-600';
       case 'yellow': return 'text-yellow-600';
       case 'red': return 'text-red-600';
-      default: return 'text-gray-600';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -94,8 +94,8 @@ const InsightsTabs: React.FC = () => {
             ) : recentProgress && recentProgress.length > 0 ? (
               <div className="space-y-3">
                 {recentProgress.map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                    <div className="font-medium">
+                  <div key={entry.id} className="flex items-center justify-between py-2 border-b border-muted last:border-b-0">
+                    <div className="font-medium text-foreground">
                       {format(new Date(entry.date), 'M/d/yyyy')}
                     </div>
                     <div className="flex items-center gap-6 text-sm">

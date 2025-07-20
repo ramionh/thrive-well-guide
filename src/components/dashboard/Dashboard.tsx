@@ -11,9 +11,7 @@ import { useAuthCheck } from "@/hooks/useAuthCheck";
 import DashboardSidebar from "./DashboardSidebar";
 
 import MetricsGrid from "./MetricsGrid";
-import HabitRepurposePlan from "./HabitRepurposePlan";
-import FocusedHabits from "./FocusedHabits";
-import RecentProgress from "./RecentProgress";
+import InsightsTabs from "./InsightsTabs";
 import MotivationProgress from "./MotivationProgress";
 
 const Dashboard: React.FC = () => {
@@ -43,22 +41,6 @@ const Dashboard: React.FC = () => {
     enabled: !!user
   });
 
-  // Query for focused habits
-  const { data: focusedHabits } = useQuery({
-    queryKey: ['focused-habits', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-      
-      const { data, error } = await supabase
-        .from('focused_habits')
-        .select('habit_id(id, name, description, category)')
-        .eq('user_id', user.id);
-      
-      if (error) throw error;
-      return data?.map(item => item.habit_id) || [];
-    },
-    enabled: !!user
-  });
 
   // Show loading state if we're still loading user data
   if (isLoading) {
@@ -146,10 +128,8 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Bottom Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <HabitRepurposePlan />
-            <FocusedHabits habits={focusedHabits || []} />
-            <RecentProgress />
+          <div className="mb-8">
+            <InsightsTabs />
           </div>
         </div>
       </div>
