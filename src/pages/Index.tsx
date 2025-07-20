@@ -161,9 +161,9 @@ const Index = () => {
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <img 
-              src="/lovable-uploads/7d7b8c91-cb21-4fdb-845f-9b7594d4a358.png" 
+              src="/lovable-uploads/3eb10a06-1634-4104-a1ca-b65133c9e0fa.png" 
               alt="Gen X Shred" 
-              className="h-48"
+              className="h-32 w-auto"
             />
           </div>
           <CardDescription>
