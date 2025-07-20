@@ -198,7 +198,7 @@ const AuthPage = () => {
                   Ready to start your motivational coaching journey?
                 </p>
                 <Button 
-                  onClick={() => setShowSignupDialog(true)}
+                  onClick={() => window.location.href = 'https://genxshred.com/coaching'}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   Get Started with Coaching
