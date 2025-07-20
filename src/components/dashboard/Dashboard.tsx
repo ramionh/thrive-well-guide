@@ -82,7 +82,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 max-w-7xl">
         <DashboardHeader firstName={firstName} />
         
@@ -96,7 +96,6 @@ const Dashboard: React.FC = () => {
           </Button>
           <Button
             variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
             onClick={() => navigate("/progress")}
           >
             View History
