@@ -85,8 +85,8 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-background flex">
       <DashboardSidebar />
       
-      <div className="flex-1 ml-64">
-        <div className="p-6">
+      <div className="flex-1 ml-56">
+        <div className="p-4">
           {/* Header */}
           <div className="mb-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
