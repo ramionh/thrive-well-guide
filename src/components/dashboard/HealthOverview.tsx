@@ -20,7 +20,7 @@ const HealthOverview: React.FC = () => {
           <h2 className="text-2xl font-bold text-foreground">Health Overview</h2>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-slate-400 text-sm">All systems normal</span>
+            <span className="text-muted-foreground text-sm">All systems normal</span>
           </div>
         </div>
         
@@ -32,9 +32,9 @@ const HealthOverview: React.FC = () => {
                 <Heart className="h-5 w-5 text-red-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Heart Rate</p>
-                <p className="text-2xl font-bold text-white">{healthData.heartRate.current}</p>
-                <p className="text-xs text-slate-500">BPM</p>
+                <p className="text-sm text-muted-foreground">Heart Rate</p>
+                <p className="text-2xl font-bold text-foreground">{healthData.heartRate.current}</p>
+                <p className="text-xs text-muted-foreground">BPM</p>
               </div>
             </div>
           </div>
@@ -46,11 +46,11 @@ const HealthOverview: React.FC = () => {
                 <Activity className="h-5 w-5 text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Blood Pressure</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-sm text-muted-foreground">Blood Pressure</p>
+                <p className="text-2xl font-bold text-foreground">
                   {healthData.bloodPressure.systolic}/{healthData.bloodPressure.diastolic}
                 </p>
-                <p className="text-xs text-slate-500">mmHg</p>
+                <p className="text-xs text-muted-foreground">mmHg</p>
               </div>
             </div>
           </div>
@@ -62,8 +62,8 @@ const HealthOverview: React.FC = () => {
                 <Moon className="h-5 w-5 text-indigo-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Sleep Duration</p>
-                <p className="text-2xl font-bold text-white">{healthData.sleepHours.current}h</p>
+                <p className="text-sm text-muted-foreground">Sleep Duration</p>
+                <p className="text-2xl font-bold text-foreground">{healthData.sleepHours.current}h</p>
                 <Progress value={healthData.sleepHours.percentage} className="h-1 mt-2" />
               </div>
             </div>
@@ -76,8 +76,8 @@ const HealthOverview: React.FC = () => {
                 <Apple className="h-5 w-5 text-orange-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Calories</p>
-                <p className="text-2xl font-bold text-white">{healthData.calories.consumed}</p>
+                <p className="text-sm text-muted-foreground">Calories</p>
+                <p className="text-2xl font-bold text-foreground">{healthData.calories.consumed}</p>
                 <Progress value={healthData.calories.percentage} className="h-1 mt-2" />
               </div>
             </div>

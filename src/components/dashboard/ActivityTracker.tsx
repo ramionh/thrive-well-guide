@@ -15,18 +15,18 @@ const ActivityTracker: React.FC = () => {
   ];
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+    <Card>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white">Activity Tracking</h3>
+          <h3 className="text-xl font-bold text-foreground">Activity Tracking</h3>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-slate-400">Steps</span>
+              <span className="text-muted-foreground">Steps</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-              <span className="text-slate-400">Active Minutes</span>
+              <span className="text-muted-foreground">Active Minutes</span>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ const ActivityTracker: React.FC = () => {
                 dataKey="day" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#94a3b8', fontSize: 12 }}
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
               />
               <YAxis hide />
               <Area
@@ -72,16 +72,16 @@ const ActivityTracker: React.FC = () => {
         
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <p className="text-2xl font-bold text-white">9.2K</p>
-            <p className="text-sm text-slate-400">Avg Steps</p>
+            <p className="text-2xl font-bold text-foreground">9.2K</p>
+            <p className="text-sm text-muted-foreground">Avg Steps</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-white">51</p>
-            <p className="text-sm text-slate-400">Avg Active Min</p>
+            <p className="text-2xl font-bold text-foreground">51</p>
+            <p className="text-sm text-muted-foreground">Avg Active Min</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-white">2,139</p>
-            <p className="text-sm text-slate-400">Avg Calories</p>
+            <p className="text-2xl font-bold text-foreground">2,139</p>
+            <p className="text-sm text-muted-foreground">Avg Calories</p>
           </div>
         </div>
       </div>
