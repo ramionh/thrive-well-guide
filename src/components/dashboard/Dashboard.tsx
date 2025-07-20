@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import DashboardSidebar from "./DashboardSidebar";
-import HealthOverview from "./HealthOverview";
+
 import MetricsGrid from "./MetricsGrid";
 import ActivityTracker from "./ActivityTracker";
 import RecentProgress from "./RecentProgress";
@@ -123,13 +123,8 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
-              <HealthOverview />
-            </div>
-            <div>
-              <MotivationProgress />
-            </div>
+          <div className="mb-8">
+            <MotivationProgress />
           </div>
 
           {/* Bottom Section */}
