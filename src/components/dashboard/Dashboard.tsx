@@ -3,12 +3,12 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, History } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import DashboardHeader from "./DashboardHeader";
+import DashboardSidebar from "./DashboardSidebar";
 import HealthOverview from "./HealthOverview";
 import MetricsGrid from "./MetricsGrid";
 import ActivityTracker from "./ActivityTracker";
@@ -82,50 +82,59 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 max-w-7xl">
-        <DashboardHeader firstName={firstName} />
-        
-        <div className="flex gap-3 mb-8">
-          <Button
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={() => navigate("/add-progress")}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Record Progress
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate("/progress")}
-          >
-            View History
-          </Button>
-        </div>
-
-        {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-          {/* Health Overview - Large card on left */}
-          <div className="lg:col-span-8">
-            <HealthOverview />
+    <div className="min-h-screen bg-background flex">
+      <DashboardSidebar />
+      
+      <div className="flex-1 ml-64">
+        <div className="p-6">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground mb-2">
+                  Welcome back, {firstName}
+                </h1>
+                <p className="text-muted-foreground">
+                  Here's an overview of your wellness journey
+                </p>
+              </div>
+              <div className="mt-4 md:mt-0">
+                <Button
+                  className="mr-3"
+                  onClick={() => navigate("/add-progress")}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Record Progress
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/progress")}
+                >
+                  <History className="mr-2 h-4 w-4" />
+                  History
+                </Button>
+              </div>
+            </div>
           </div>
-          
-          {/* Motivation Progress - Right sidebar */}
-          <div className="lg:col-span-4">
-            <MotivationProgress />
+
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <MetricsGrid />
           </div>
-        </div>
 
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricsGrid />
-        </div>
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="lg:col-span-2">
+              <HealthOverview />
+            </div>
+            <div>
+              <MotivationProgress />
+            </div>
+          </div>
 
-        {/* Activity and Progress Tracking */}
-        <div className="grid grid-cols-1 lg:grid-cols-8 gap-6">
-          <div className="lg:col-span-5">
+          {/* Bottom Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <ActivityTracker />
-          </div>
-          <div className="lg:col-span-3">
             <RecentProgress />
           </div>
         </div>

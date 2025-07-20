@@ -14,10 +14,10 @@ const HealthOverview: React.FC = () => {
   };
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+    <Card>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white">Health Overview</h2>
+          <h2 className="text-2xl font-bold text-foreground">Health Overview</h2>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             <span className="text-slate-400 text-sm">All systems normal</span>

@@ -65,7 +65,7 @@ const MetricsGrid: React.FC = () => {
         const Icon = metric.icon;
         
         return (
-          <Card key={index} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+          <Card key={index}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-2 ${colors.bg} rounded-lg`}>
