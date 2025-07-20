@@ -17,9 +17,12 @@ export const useBodyTypes = () => {
       setIsLoading(true);
       setError(null);
       
+      const userGender = user?.gender?.toLowerCase() || 'male';
+      
       const { data, error: fetchError } = await supabase
         .from('body_types')
         .select('*')
+        .eq('gender', userGender)
         .order('bodyfat_range', { ascending: true });
 
       if (fetchError) {
@@ -74,8 +77,10 @@ export const useBodyTypes = () => {
   };
 
   useEffect(() => {
-    fetchBodyTypes();
-  }, []);
+    if (user) {
+      fetchBodyTypes();
+    }
+  }, [user?.gender]);
 
   useEffect(() => {
     if (bodyTypes.length > 0) {

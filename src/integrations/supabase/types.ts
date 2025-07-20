@@ -48,6 +48,7 @@ export type Database = {
         Row: {
           bodyfat_range: string
           created_at: string
+          gender: string
           id: string
           image_url: string
           name: string
@@ -56,6 +57,7 @@ export type Database = {
         Insert: {
           bodyfat_range: string
           created_at?: string
+          gender?: string
           id?: string
           image_url: string
           name: string
@@ -64,6 +66,7 @@ export type Database = {
         Update: {
           bodyfat_range?: string
           created_at?: string
+          gender?: string
           id?: string
           image_url?: string
           name?: string
