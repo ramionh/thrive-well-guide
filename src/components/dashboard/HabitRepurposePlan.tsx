@@ -67,7 +67,7 @@ const HabitRepurposePlan = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-600">No habit repurpose plan found. Complete the Habit Repurpose wizard to see your plan here.</p>
+          <p className="text-muted-foreground">No habit repurpose plan found. Complete the Habit Repurpose wizard to see your plan here.</p>
         </CardContent>
       </Card>
     );
@@ -84,23 +84,23 @@ const HabitRepurposePlan = () => {
       <CardContent className="space-y-4">
         <div className="grid gap-3 text-sm">
           <div className="flex flex-col space-y-1">
-            <span className="font-semibold text-gray-700">My Goal:</span>
-            <span className="text-gray-600">{habitRepurposeData.goal?.goal_text || "N/A"}</span>
+            <span className="font-semibold text-foreground">My Goal:</span>
+            <span className="text-muted-foreground">{habitRepurposeData.goal?.goal_text || "N/A"}</span>
           </div>
 
           <div className="flex flex-col space-y-1">
-            <span className="font-semibold text-gray-700">My "Why":</span>
-            <span className="text-gray-600">{habitRepurposeData.values?.goal_values_text || "N/A"}</span>
+            <span className="font-semibold text-foreground">My "Why":</span>
+            <span className="text-muted-foreground">{habitRepurposeData.values?.goal_values_text || "N/A"}</span>
           </div>
 
           <div className="flex flex-col space-y-1">
-            <span className="font-semibold text-gray-700">Unwanted Habit:</span>
-            <span className="text-gray-600">{habitRepurposeData.unwantedHabit?.habit_description || "N/A"}</span>
+            <span className="font-semibold text-foreground">Unwanted Habit:</span>
+            <span className="text-muted-foreground">{habitRepurposeData.unwantedHabit?.habit_description || "N/A"}</span>
           </div>
 
           <div className="flex flex-col space-y-1">
-            <span className="font-semibold text-gray-700">Replacement Habit:</span>
-            <span className="text-gray-600">{habitRepurposeData.replacement?.replacement_habit || "N/A"}</span>
+            <span className="font-semibold text-foreground">Replacement Habit:</span>
+            <span className="text-muted-foreground">{habitRepurposeData.replacement?.replacement_habit || "N/A"}</span>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -112,7 +112,7 @@ const HabitRepurposePlan = () => {
             </div>
           </div>
 
-          <div className="text-xs text-gray-500 mt-4">
+          <div className="text-xs text-muted-foreground mt-4">
             Plan created: {habitRepurposeData.simpleIfThen?.created_at ? 
               new Date(habitRepurposeData.simpleIfThen.created_at).toLocaleDateString() : 
               'Unknown'
