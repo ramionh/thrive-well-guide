@@ -3203,6 +3203,7 @@ export type Database = {
           body_type_id: string
           bodyfat_percentage: number | null
           created_at: string
+          height_inches: string | null
           id: string
           selected_date: string
           user_id: string
@@ -3212,6 +3213,7 @@ export type Database = {
           body_type_id: string
           bodyfat_percentage?: number | null
           created_at?: string
+          height_inches?: string | null
           id?: string
           selected_date: string
           user_id: string
@@ -3221,6 +3223,7 @@ export type Database = {
           body_type_id?: string
           bodyfat_percentage?: number | null
           created_at?: string
+          height_inches?: string | null
           id?: string
           selected_date?: string
           user_id?: string

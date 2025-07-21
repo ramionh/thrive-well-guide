@@ -48,7 +48,8 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
           body_type_id: selectedBodyType,
           selected_date: startDate,
           weight_lbs: weight,
-          bodyfat_percentage: bodyfat || null
+          bodyfat_percentage: bodyfat || null,
+          height_inches: height
         })
         .select();
 

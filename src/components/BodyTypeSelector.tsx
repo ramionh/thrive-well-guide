@@ -37,6 +37,7 @@ const BodyTypeSelector: React.FC = () => {
         setSelectedBodyType(latestData[0].body_type_id);
         setWeight(latestData[0].weight_lbs);
         setBodyfat(latestData[0].bodyfat_percentage || '');
+        setHeight(latestData[0].height_inches || '');
       } else {
         console.log('No body type data found for user');
       }
