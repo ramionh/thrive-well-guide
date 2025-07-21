@@ -15,6 +15,12 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
   };
 
   const handleSaveBodyType = async () => {
+    console.log('=== SAVE BUTTON CLICKED ===');
+    console.log('selectedBodyType:', selectedBodyType);
+    console.log('weight:', weight);
+    console.log('height:', height);
+    console.log('bodyfat:', bodyfat);
+    console.log('user:', user);
     if (!selectedBodyType || !user) {
       toast.error('Please select a body type');
       return;
@@ -40,18 +46,24 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
     try {
       const startDate = new Date().toISOString().split('T')[0];
       
+      console.log('=== ATTEMPTING TO SAVE TO DATABASE ===');
       // Save user body type
-      const { error: bodyTypeError } = await supabase
+      const insertData = {
+        user_id: user.id,
+        body_type_id: selectedBodyType,
+        selected_date: startDate,
+        weight_lbs: weight,
+        bodyfat_percentage: bodyfat || null,
+        height_inches: height
+      };
+      console.log('Insert data:', insertData);
+      
+      const { data, error: bodyTypeError } = await supabase
         .from('user_body_types')
-        .insert({
-          user_id: user.id,
-          body_type_id: selectedBodyType,
-          selected_date: startDate,
-          weight_lbs: weight,
-          bodyfat_percentage: bodyfat || null,
-          height_inches: height
-        })
+        .insert(insertData)
         .select();
+
+      console.log('Database response:', { data, error: bodyTypeError });
 
       if (bodyTypeError) {
         console.error('Error saving body type:', bodyTypeError);
@@ -59,21 +71,7 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
         return;
       }
       
-      // Try to create a goal using our database function
-      // Fix TypeScript error by using any to bypass type checking for the RPC function name
-      try {
-        // Use type assertion to bypass TypeScript's function name constraint
-        await (supabase.rpc as any)('manually_create_body_type_goal', {
-          user_id_param: user.id, 
-          body_type_id_param: selectedBodyType,
-          selected_date_param: startDate
-        });
-      } catch (goalError: any) {
-        console.error('Error creating goal:', goalError);
-        // We don't want to show this error to the user as the body type was saved successfully
-        // and goal creation is a secondary operation
-      }
-
+      console.log('=== BODY TYPE SAVED SUCCESSFULLY ===');
       toast.success('Body type saved successfully!');
       fetchUserBodyType(); // Refresh the data after saving
     } catch (error: any) {
