@@ -7,6 +7,7 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
   const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
   const [weight, setWeight] = useState<number | ''>('');
   const [bodyfat, setBodyfat] = useState<number | ''>('');
+  const [height, setHeight] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
 
   const handleBodyTypeSelect = (bodyTypeId: string) => {
@@ -21,6 +22,11 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
 
     if (!weight || weight < 50 || weight > 1000) {
       toast.error('Please enter a valid weight between 50 and 1000 lbs');
+      return;
+    }
+
+    if (!height) {
+      toast.error('Please select your height');
       return;
     }
 
@@ -84,6 +90,8 @@ export const useBodyTypeSelection = (user: any, fetchUserBodyType: () => void) =
     setWeight,
     bodyfat,
     setBodyfat,
+    height,
+    setHeight,
     isSaving,
     handleBodyTypeSelect,
     handleSaveBodyType

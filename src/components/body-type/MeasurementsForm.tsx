@@ -11,6 +11,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -23,6 +30,7 @@ const measurementsSchema = z.object({
     .max(100, "Body fat must be less than 100%")
     .optional()
     .nullable(),
+  height: z.string().min(1, "Height is required"),
 });
 
 type FormValues = z.infer<typeof measurementsSchema>;
@@ -32,25 +40,43 @@ interface MeasurementsFormProps {
   setWeight: (value: number | '') => void;
   bodyfat: number | '';
   setBodyfat: (value: number | '') => void;
+  height: string;
+  setHeight: (value: string) => void;
 }
 
-const MeasurementsForm = ({ weight, setWeight, bodyfat, setBodyfat }: MeasurementsFormProps) => {
+const MeasurementsForm = ({ weight, setWeight, bodyfat, setBodyfat, height, setHeight }: MeasurementsFormProps) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(measurementsSchema),
     defaultValues: {
       weight: typeof weight === 'number' ? weight : undefined,
       bodyfat: typeof bodyfat === 'number' ? bodyfat : undefined,
+      height: height || '',
     },
   });
 
-  const onValueChange = (field: 'weight' | 'bodyfat', value: string) => {
-    const numValue = value ? Number(value) : '';
-    if (field === 'weight') {
-      setWeight(numValue);
+  const onValueChange = (field: 'weight' | 'bodyfat' | 'height', value: string) => {
+    if (field === 'height') {
+      setHeight(value);
     } else {
-      setBodyfat(numValue);
+      const numValue = value ? Number(value) : '';
+      if (field === 'weight') {
+        setWeight(numValue);
+      } else {
+        setBodyfat(numValue);
+      }
     }
   };
+
+  // Generate height options from 4'6" to 7'0"
+  const heightOptions = [];
+  for (let feet = 4; feet <= 7; feet++) {
+    const maxInches = feet === 7 ? 0 : 11; // Stop at 7'0"
+    const minInches = feet === 4 ? 6 : 0; // Start at 4'6"
+    for (let inches = minInches; inches <= maxInches; inches++) {
+      const value = `${feet}'${inches}"`;
+      heightOptions.push(value);
+    }
+  }
 
   return (
     <Form {...form}>
@@ -72,6 +98,37 @@ const MeasurementsForm = ({ weight, setWeight, bodyfat, setBodyfat }: Measuremen
                   }}
                   value={field.value || ''}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="height"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Height *</FormLabel>
+              <FormControl>
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    onValueChange('height', value);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your height" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {heightOptions.map((heightOption) => (
+                      <SelectItem key={heightOption} value={heightOption}>
+                        {heightOption}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>

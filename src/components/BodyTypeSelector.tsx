@@ -52,6 +52,8 @@ const BodyTypeSelector: React.FC = () => {
     setWeight,
     bodyfat,
     setBodyfat,
+    height,
+    setHeight,
     isSaving,
     handleBodyTypeSelect,
     handleSaveBodyType
@@ -101,13 +103,15 @@ const BodyTypeSelector: React.FC = () => {
                     setWeight={setWeight}
                     bodyfat={bodyfat}
                     setBodyfat={setBodyfat}
+                    height={height}
+                    setHeight={setHeight}
                   />
                 )}
                 
                 <Button 
                   onClick={handleSaveBodyType} 
                   className="mt-8 w-full bg-blue-500 hover:bg-blue-600 text-white"
-                  disabled={!selectedBodyType || !weight || isLoading || isSaving}
+                  disabled={!selectedBodyType || !weight || !height || isLoading || isSaving}
                 >
                   {isSaving ? 'Saving...' : 'Save Body Type'}
                 </Button>
