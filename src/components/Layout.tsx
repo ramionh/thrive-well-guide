@@ -106,7 +106,7 @@ const AppSidebar = () => {
           <img 
             src="/lovable-uploads/b90fd493-4d3d-4058-b0cc-3827c75b4e03.png" 
             alt="Gen X Shred" 
-            className="h-16 w-auto"
+            className="h-48 w-auto"
           />
         </div>
       </SidebarHeader>
