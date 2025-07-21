@@ -28,7 +28,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
-        <main className="flex-1 pr-4 pt-4 pb-4 pl-2 md:pr-6 md:pt-6 md:pb-6 md:pl-4 overflow-auto">
+        <main className="flex-1 pr-4 pt-4 pb-4 pl-1 md:pr-6 md:pt-6 md:pb-6 md:pl-2 overflow-auto">
           <div className="md:hidden flex justify-between items-center mb-4">
             <img 
               src="/lovable-uploads/1c8df1c3-d192-44d0-ab53-ea9fe40a017c.png" 
