@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ResetPasswordDialog from './ResetPasswordDialog';
 
 interface LoginFormProps {
   email: string;
@@ -19,6 +20,7 @@ interface LoginFormProps {
 const LoginForm = ({ email, setEmail, password, setPassword, loading: parentLoading }: LoginFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showResetDialog, setShowResetDialog] = useState(false);
   const navigate = useNavigate();
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
@@ -73,37 +75,54 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading: parentLoad
   };
 
   return (
-    <form onSubmit={handleEmailSignIn} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
-      <Button 
-        type="submit" 
-        className="w-full bg-thrive-blue"
-        disabled={loading || parentLoading}
-      >
-        <Mail className="mr-2 h-4 w-4" />
-        {loading ? "Signing in..." : "Sign In with Email"}
-      </Button>
-    </form>
+    <>
+      <form onSubmit={handleEmailSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <Button 
+          type="submit" 
+          className="w-full bg-thrive-blue"
+          disabled={loading || parentLoading}
+        >
+          <Mail className="mr-2 h-4 w-4" />
+          {loading ? "Signing in..." : "Sign In with Email"}
+        </Button>
+        
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => setShowResetDialog(true)}
+            className="text-sm text-primary hover:underline"
+          >
+            Forgot your password?
+          </button>
+        </div>
+      </form>
+      
+      <ResetPasswordDialog 
+        open={showResetDialog} 
+        onOpenChange={setShowResetDialog} 
+      />
+    </>
   );
 };
 
