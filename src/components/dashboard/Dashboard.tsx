@@ -99,22 +99,15 @@ const Dashboard: React.FC = () => {
                   Here's an overview of your wellness journey
                 </p>
               </div>
-              <div className="mt-4 md:mt-0">
+              <div className="mt-4 md:mt-0 flex gap-3">
                 <Button
-                  className="mr-3"
+                  className="bg-thrive-blue hover:bg-thrive-blue/90"
                   onClick={() => navigate("/add-progress")}
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Record Progress
                 </Button>
-                 <WeeklyCheckIn />
-          <Button 
-            className="bg-thrive-blue hover:bg-thrive-blue/90"
-            onClick={() => navigate("/add-progress")}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Record Progress
-          </Button>
+                <WeeklyCheckIn />
                 <Button
                   variant="outline"
                   onClick={() => navigate("/progress")}
