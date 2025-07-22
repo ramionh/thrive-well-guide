@@ -106,6 +106,14 @@ const Dashboard: React.FC = () => {
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Record Progress
                 </Button>
+                 <WeeklyCheckIn />
+          <Button 
+            className="bg-thrive-blue hover:bg-thrive-blue/90"
+            onClick={() => navigate("/add-progress")}
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Record Progress
+          </Button>
                 <Button
                   variant="outline"
                   onClick={() => navigate("/progress")}
