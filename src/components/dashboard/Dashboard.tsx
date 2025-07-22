@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import DashboardSidebar from "./DashboardSidebar";
+import WeeklyCheckIn from "./WeeklyCheckIn";
 
 import MetricsGrid from "./MetricsGrid";
 import InsightsTabs from "./InsightsTabs";
