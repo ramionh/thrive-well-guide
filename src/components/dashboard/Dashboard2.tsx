@@ -14,6 +14,7 @@ import NutritionMetrics from "./NutritionMetrics";
 import ExerciseMetrics from "./ExerciseMetrics";
 import GoalProgress from "./GoalProgress";
 import HistoryButton from "./HistoryButton";
+import WeeklyCheckIn from "./WeeklyCheckIn";
 import MotivationProgress from "./MotivationProgress";
 import CoreValues from "./CoreValues";
 
@@ -70,6 +71,7 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex gap-3 mt-4 md:mt-0">
           <HistoryButton />
+          <WeeklyCheckIn />
           <Button 
             className="bg-thrive-blue hover:bg-thrive-blue/90"
             onClick={() => navigate("/add-progress")}
