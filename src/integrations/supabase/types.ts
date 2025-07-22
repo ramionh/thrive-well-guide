@@ -3312,6 +3312,42 @@ export type Database = {
           },
         ]
       }
+      weekly_checkins: {
+        Row: {
+          back_photo_url: string | null
+          created_at: string
+          estimated_bodyfat_percentage: number | null
+          front_photo_url: string | null
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          weight_lbs: number
+        }
+        Insert: {
+          back_photo_url?: string | null
+          created_at?: string
+          estimated_bodyfat_percentage?: number | null
+          front_photo_url?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          weight_lbs: number
+        }
+        Update: {
+          back_photo_url?: string | null
+          created_at?: string
+          estimated_bodyfat_percentage?: number | null
+          front_photo_url?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          weight_lbs?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       marketing_subscribers: {
