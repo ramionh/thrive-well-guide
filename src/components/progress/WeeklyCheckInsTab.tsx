@@ -137,12 +137,33 @@ const WeeklyCheckInsTab: React.FC = () => {
                   )}
 
                   {(checkIn.front_photo_url || checkIn.back_photo_url) && (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Camera className="h-4 w-4" />
-                      <span className="text-sm">
-                        {checkIn.front_photo_url && checkIn.back_photo_url ? 'Front & Back photos' :
-                         checkIn.front_photo_url ? 'Front photo' : 'Back photo'}
-                      </span>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Camera className="h-4 w-4" />
+                        <span className="text-sm">Progress Photos</span>
+                      </div>
+                      <div className="flex gap-2">
+                        {checkIn.front_photo_url && (
+                          <div className="text-center">
+                            <img 
+                              src={checkIn.front_photo_url} 
+                              alt="Front progress photo" 
+                              className="w-16 h-20 object-cover rounded border"
+                            />
+                            <span className="text-xs text-muted-foreground">Front</span>
+                          </div>
+                        )}
+                        {checkIn.back_photo_url && (
+                          <div className="text-center">
+                            <img 
+                              src={checkIn.back_photo_url} 
+                              alt="Back progress photo" 
+                              className="w-16 h-20 object-cover rounded border"
+                            />
+                            <span className="text-xs text-muted-foreground">Back</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
