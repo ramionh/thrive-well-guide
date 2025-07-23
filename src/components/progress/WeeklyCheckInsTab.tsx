@@ -61,6 +61,48 @@ const WeeklyCheckInsTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Summary Stats */}
+      {checkIns.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Progress Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {checkIns.length}
+                </div>
+                <div className="text-sm text-muted-foreground">Check-ins</div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {(checkIns[0].weight_lbs - checkIns[checkIns.length - 1].weight_lbs).toFixed(1)}
+                </div>
+                <div className="text-sm text-muted-foreground">lbs change</div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {checkIns[0].weight_lbs.toFixed(1)}
+                </div>
+                <div className="text-sm text-muted-foreground">Current weight</div>
+              </div>
+
+              {checkIns[0].estimated_bodyfat_percentage && (
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">
+                    {checkIns[0].estimated_bodyfat_percentage.toFixed(1)}%
+                  </div>
+                  <div className="text-sm text-muted-foreground">Current body fat</div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Weekly Check-ins</CardTitle>
@@ -115,48 +157,6 @@ const WeeklyCheckInsTab: React.FC = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Summary Stats */}
-      {checkIns.length > 1 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Progress Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {checkIns.length}
-                </div>
-                <div className="text-sm text-muted-foreground">Check-ins</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {(checkIns[0].weight_lbs - checkIns[checkIns.length - 1].weight_lbs).toFixed(1)}
-                </div>
-                <div className="text-sm text-muted-foreground">lbs change</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {checkIns[0].weight_lbs.toFixed(1)}
-                </div>
-                <div className="text-sm text-muted-foreground">Current weight</div>
-              </div>
-
-              {checkIns[0].estimated_bodyfat_percentage && (
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
-                    {checkIns[0].estimated_bodyfat_percentage.toFixed(1)}%
-                  </div>
-                  <div className="text-sm text-muted-foreground">Current body fat</div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
