@@ -1,10 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
 import { format } from "date-fns";
 import { Scale, Camera } from "lucide-react";
+
+// Helper component for displaying signed URL images
+const PhotoThumbnail: React.FC<{ url: string; alt: string; label: string }> = ({ url, alt, label }) => {
+  const [signedUrl, setSignedUrl] = useState<string>('');
+
+  useEffect(() => {
+    const getSignedUrl = async () => {
+      if (!url) return;
+      
+      // Extract path from the full URL
+      const urlParts = url.split('/object/public/weekly-checkins/');
+      if (urlParts.length < 2) return;
+      
+      const filePath = urlParts[1];
+      
+      const { data, error } = await supabase.storage
+        .from('weekly-checkins')
+        .createSignedUrl(filePath, 3600); // 1 hour expiration
+      
+      if (data && !error) {
+        setSignedUrl(data.signedUrl);
+      }
+    };
+
+    getSignedUrl();
+  }, [url]);
+
+  if (!signedUrl) {
+    return (
+      <div className="w-16 h-20 rounded border bg-muted animate-pulse flex items-center justify-center">
+        <Camera className="h-4 w-4 text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-center">
+      <img 
+        src={signedUrl} 
+        alt={alt}
+        className="w-16 h-20 object-cover rounded border"
+      />
+      <span className="text-xs text-muted-foreground">{label}</span>
+    </div>
+  );
+};
 
 const WeeklyCheckInsTab: React.FC = () => {
   const { user } = useUser();
@@ -142,28 +188,22 @@ const WeeklyCheckInsTab: React.FC = () => {
                         <Camera className="h-4 w-4" />
                         <span className="text-sm">Progress Photos</span>
                       </div>
-                      <div className="flex gap-2">
-                        {checkIn.front_photo_url && (
-                          <div className="text-center">
-                            <img 
-                              src={checkIn.front_photo_url} 
-                              alt="Front progress photo" 
-                              className="w-16 h-20 object-cover rounded border"
-                            />
-                            <span className="text-xs text-muted-foreground">Front</span>
-                          </div>
-                        )}
-                        {checkIn.back_photo_url && (
-                          <div className="text-center">
-                            <img 
-                              src={checkIn.back_photo_url} 
-                              alt="Back progress photo" 
-                              className="w-16 h-20 object-cover rounded border"
-                            />
-                            <span className="text-xs text-muted-foreground">Back</span>
-                          </div>
-                        )}
-                      </div>
+                       <div className="flex gap-2">
+                         {checkIn.front_photo_url && (
+                           <PhotoThumbnail 
+                             url={checkIn.front_photo_url}
+                             alt="Front progress photo"
+                             label="Front"
+                           />
+                         )}
+                         {checkIn.back_photo_url && (
+                           <PhotoThumbnail 
+                             url={checkIn.back_photo_url}
+                             alt="Back progress photo"
+                             label="Back"
+                           />
+                         )}
+                       </div>
                     </div>
                   )}
 
