@@ -26,6 +26,7 @@ import HabitsPage from "./pages/HabitsPage";
 import BodyTypeSelector from "./components/BodyTypeSelector";
 import MotivationPage from "./pages/MotivationPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import Index from "./pages/Index";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/initial-signup" element={<InitialSignupPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
               <Route
                 path="/dashboard"
