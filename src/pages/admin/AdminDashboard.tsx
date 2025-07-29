@@ -16,12 +16,6 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { role, loading, isAdmin, isCoach } = useUserRole();
 
-  // Redirect if not authorized
-  useEffect(() => {
-    if (!loading && role && !isAdmin && !isCoach) {
-      navigate('/admin/auth');
-    }
-  }, [role, loading, isAdmin, isCoach, navigate]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -39,26 +33,6 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!isAdmin && !isCoach) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Shield className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>
-              You don't have permission to access this area.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/admin/auth')} className="w-full">
-              Return to Login
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
