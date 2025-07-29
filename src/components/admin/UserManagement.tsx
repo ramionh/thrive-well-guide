@@ -35,10 +35,29 @@ interface Coach {
 }
 
 const UserManagement = () => {
-  const { isAdmin } = useUserRole();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const [users, setUsers] = useState<User[]>([]);
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Restrict access to admins only
+  if (!roleLoading && !isAdmin) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-destructive">
+            <Shield className="h-5 w-5 mr-2" />
+            Access Denied
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            You don't have permission to access user management. This feature is restricted to administrators only.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -267,7 +286,7 @@ const UserManagement = () => {
   };
 
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
       <Card>
         <CardHeader>

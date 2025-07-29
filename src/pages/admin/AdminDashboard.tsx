@@ -69,33 +69,35 @@ const AdminDashboard = () => {
           <Tabs defaultValue="overview" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="users">User Management</TabsTrigger>
+              {isAdmin && <TabsTrigger value="users">User Management</TabsTrigger>}
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               {isAdmin && <TabsTrigger value="settings">Settings</TabsTrigger>}
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* User Management */}
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Users className="h-5 w-5 mr-2" />
-                      User Management
-                    </CardTitle>
-                    <CardDescription>
-                      Manage user accounts, roles, and permissions
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button className="w-full" onClick={() => {
-                      const tabsTrigger = document.querySelector('[value="users"]') as HTMLElement;
-                      tabsTrigger?.click();
-                    }}>
-                      Manage Users
-                    </Button>
-                  </CardContent>
-                </Card>
+                {/* User Management - Admin Only */}
+                {isAdmin && (
+                  <Card className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <Users className="h-5 w-5 mr-2" />
+                        User Management
+                      </CardTitle>
+                      <CardDescription>
+                        Manage user accounts, roles, and permissions
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full" onClick={() => {
+                        const tabsTrigger = document.querySelector('[value="users"]') as HTMLElement;
+                        tabsTrigger?.click();
+                      }}>
+                        Manage Users
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Analytics */}
                 <Card className="hover:shadow-lg transition-shadow">
@@ -170,12 +172,14 @@ const AdminDashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="users">
-              <div className="space-y-6">
-                <CreateCoachesAction />
-                <UserManagement />
-              </div>
-            </TabsContent>
+            {isAdmin && (
+              <TabsContent value="users">
+                <div className="space-y-6">
+                  <CreateCoachesAction />
+                  <UserManagement />
+                </div>
+              </TabsContent>
+            )}
 
             <TabsContent value="analytics">
               <Card>
