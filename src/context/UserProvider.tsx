@@ -119,6 +119,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     firstName: string;
     lastName: string;
     email: string;
+    phoneNumber: string;
     dateOfBirth: string;
     gender: string;
     heightFeet: number;
@@ -134,6 +135,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             last_name: onboardingData.lastName,
             full_name: `${onboardingData.firstName} ${onboardingData.lastName}`,
             email: onboardingData.email,
+            phone_number: onboardingData.phoneNumber,
             date_of_birth: onboardingData.dateOfBirth,
             gender: onboardingData.gender,
             height_feet: onboardingData.heightFeet,

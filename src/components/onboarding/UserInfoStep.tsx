@@ -8,6 +8,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useBodyTypes } from "@/hooks/useBodyTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { BodyType } from "@/types/bodyType";
+import PhoneInput, { type Value as PhoneInputValue } from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 interface UserInfoStepProps {
   onNext: () => void;
@@ -19,6 +21,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   const [firstName, setFirstName] = useState(user?.name?.split(' ')[0] || "");
   const [lastName, setLastName] = useState(user?.name?.split(' ')[1] || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [phoneNumber, setPhoneNumber] = useState<PhoneInputValue>();
   const [gender, setGender] = useState<string>("");
   const [dob, setDob] = useState("");
   const [feet, setFeet] = useState("");
@@ -64,10 +67,10 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
       description: "Please wait while we set up your profile...",
     });
     
-    if (!firstName || !lastName || !email || !dob || !feet || !weightLbs || !gender || !selectedBodyType) {
+    if (!firstName || !lastName || !email || !phoneNumber || !dob || !feet || !weightLbs || !gender || !selectedBodyType) {
       toast({
         title: "Missing information",
-        description: "Please fill in all required fields including your body type to continue.",
+        description: "Please fill in all required fields including your phone number and body type to continue.",
         variant: "destructive"
       });
       return;
@@ -130,6 +133,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
         firstName,
         lastName,
         email,
+        phoneNumber: phoneNumber || "",
         dateOfBirth: dob,
         gender,
         heightFeet: Number(feet),
@@ -184,6 +188,18 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
           placeholder="Enter your email" 
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone Number</Label>
+        <PhoneInput
+          id="phone"
+          placeholder="Enter your phone number"
+          value={phoneNumber}
+          onChange={setPhoneNumber}
+          defaultCountry="US"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
         />
       </div>
 
