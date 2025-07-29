@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { useBodyTypes } from "@/hooks/useBodyTypes";
 import { supabase } from "@/integrations/supabase/client";
+import { BodyType } from "@/types/bodyType";
 
 interface UserInfoStepProps {
   onNext: () => void;
@@ -25,6 +26,36 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
   const [weightLbs, setWeightLbs] = useState("");
   const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
   const { bodyTypes, bodyTypeImages, isLoading: isLoadingBodyTypes } = useBodyTypes();
+  const [genderSpecificImages, setGenderSpecificImages] = useState<Record<string, string>>({});
+  
+  // Load gender-specific images when gender changes
+  useEffect(() => {
+    const loadGenderSpecificImages = async () => {
+      if (!bodyTypes.length || !gender) return;
+      
+      const imageMap: Record<string, string> = {};
+      
+      for (const bodyType of bodyTypes) {
+        let imageName = '';
+        
+        if (gender === 'female') {
+          imageName = `woman_${bodyType.name.toLowerCase()}.png`;
+        } else {
+          imageName = `${bodyType.name}.png`;
+        }
+        
+        const { data } = supabase.storage
+          .from('body-types')
+          .getPublicUrl(imageName);
+          
+        imageMap[bodyType.id] = data.publicUrl;
+      }
+      
+      setGenderSpecificImages(imageMap);
+    };
+    
+    loadGenderSpecificImages();
+  }, [gender, bodyTypes]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,7 +282,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
                 <div className="flex flex-col items-center space-y-3">
                   <div className="w-32 h-32 rounded-lg overflow-hidden">
                     <img
-                      src={bodyTypeImages[bodyType.id] || '/placeholder.svg'}
+                      src={genderSpecificImages[bodyType.id] || bodyTypeImages[bodyType.id] || '/placeholder.svg'}
                       alt={bodyType.name}
                       className="w-full h-full object-cover"
                     />
