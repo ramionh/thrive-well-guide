@@ -8,6 +8,7 @@ import { useUser } from "@/context/UserContext";
 import { QuestionnaireSection, QuestionnaireResponse } from "@/types/questionnaire";
 import { nutritionQuestionnaire, exerciseQuestionnaire, sleepQuestionnaire } from "@/data/questionnaires";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QuestionnaireStepProps {
   onNext: () => void;
@@ -29,7 +30,7 @@ const QuestionnaireStep: React.FC<QuestionnaireStepProps> = ({ onNext, onBack })
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestionnaireIndex < questionnaires.length - 1) {
       setCurrentQuestionnaireIndex(prev => prev + 1);
     } else {
@@ -37,7 +38,56 @@ const QuestionnaireStep: React.FC<QuestionnaireStepProps> = ({ onNext, onBack })
       Object.entries(responses).forEach(([key, value]) => {
         saveMotivationalResponse(key, Array.isArray(value) ? value.join(", ") : value);
       });
+      
+      // Save questionnaire data to ClientOnboarding table
+      await saveQuestionnaireToDatabase();
       onNext();
+    }
+  };
+
+  const saveQuestionnaireToDatabase = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get profile to link the data
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile) return;
+
+      // Prepare questionnaire data
+      const questionnaireData: any[] = [];
+      
+      questionnaires.forEach(questionnaire => {
+        questionnaire.questions.forEach(question => {
+          const answer = responses[question.id];
+          if (answer) {
+            questionnaireData.push({
+              profile_id: profile.id,
+              questionnaire_type: questionnaire.title.toLowerCase(),
+              question_id: question.id,
+              question_text: question.text,
+              answer: Array.isArray(answer) ? answer.join(", ") : answer
+            });
+          }
+        });
+      });
+
+      if (questionnaireData.length > 0) {
+        const { error } = await supabase
+          .from('client_onboarding')
+          .insert(questionnaireData);
+
+        if (error) {
+          console.error('Error saving questionnaire data:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error in saveQuestionnaireToDatabase:', error);
     }
   };
 
