@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ListChecks } from "lucide-react";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 interface HabitsSplashProps {
   onStartJourney: () => void;
@@ -11,9 +12,13 @@ interface HabitsSplashProps {
 
 const HabitsSplash: React.FC<HabitsSplashProps> = ({ onStartJourney }) => {
   const [hideNextTime, setHideNextTime] = useState(false);
+  const { updatePreference } = useUserPreferences();
 
-  const handleStartJourney = () => {
+  const handleStartJourney = async () => {
     if (hideNextTime) {
+      // Update preference in database
+      await updatePreference({ hide_habits_splash: true });
+      // Also set localStorage as a fallback
       localStorage.setItem('hideHabitsSplash', 'true');
     }
     onStartJourney();

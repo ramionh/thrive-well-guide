@@ -11,19 +11,28 @@ import HabitsJourneyOptions from "@/components/habits/HabitsJourneyOptions";
 import HabitRepurposeWizard from "@/components/habits/HabitRepurposeWizard";
 import CoreOptimalHabitAssessment from "@/components/habits/CoreOptimalHabitAssessment";
 import ExistingHabitsAssessment from "@/components/habits/ExistingHabitsAssessment";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose-wizard' | 'core' | 'assessment';
 
 const HabitsPage = () => {
   const [currentView, setCurrentView] = useState<HabitsView>('splash');
+  const { preferences, isLoading: preferencesLoading } = useUserPreferences();
 
   // Check if user has chosen to hide the splash screen
   useEffect(() => {
+    // First check database preference
+    if (preferences?.hide_habits_splash) {
+      setCurrentView('options');
+      return;
+    }
+    
+    // Fallback to localStorage for backward compatibility
     const hideHabitsSplash = localStorage.getItem('hideHabitsSplash');
     if (hideHabitsSplash === 'true') {
       setCurrentView('options');
     }
-  }, []);
+  }, [preferences]);
 
   const { data: habits, isLoading } = useQuery({
     queryKey: ['habits'],
@@ -66,6 +75,17 @@ const HabitsPage = () => {
       setCurrentView('core');
     }
   };
+
+  // Show loading state while preferences are being fetched
+  if (preferencesLoading) {
+    return (
+      <div className="container mx-auto py-6 flex justify-center items-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading preferences...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (currentView === 'splash') {
     return <HabitsSplash onStartJourney={handleStartJourney} />;
