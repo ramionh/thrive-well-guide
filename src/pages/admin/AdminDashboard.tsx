@@ -5,7 +5,9 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Settings, BarChart3, Shield, LogOut } from "lucide-react";
+import UserManagement from "@/components/admin/UserManagement";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -82,98 +84,144 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* User Management */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="h-5 w-5 mr-2" />
-                User Management
-              </CardTitle>
-              <CardDescription>
-                Manage user accounts, roles, and permissions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" disabled>
-                Coming Soon
-              </Button>
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            {isAdmin && <TabsTrigger value="settings">Settings</TabsTrigger>}
+          </TabsList>
 
-          {/* Analytics */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <BarChart3 className="h-5 w-5 mr-2" />
-                Analytics
-              </CardTitle>
-              <CardDescription>
-                View user engagement and platform statistics
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" disabled>
-                Coming Soon
-              </Button>
-            </CardContent>
-          </Card>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {/* User Management */}
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="h-5 w-5 mr-2" />
+                    User Management
+                  </CardTitle>
+                  <CardDescription>
+                    Manage user accounts, roles, and permissions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full" onClick={() => {
+                    const tabsTrigger = document.querySelector('[value="users"]') as HTMLElement;
+                    tabsTrigger?.click();
+                  }}>
+                    Manage Users
+                  </Button>
+                </CardContent>
+              </Card>
 
-          {/* System Settings */}
-          {isAdmin && (
-            <Card className="hover:shadow-lg transition-shadow">
+              {/* Analytics */}
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="h-5 w-5 mr-2" />
+                    Analytics
+                  </CardTitle>
+                  <CardDescription>
+                    View user engagement and platform statistics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full" disabled>
+                    Coming Soon
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* System Settings */}
+              {isAdmin && (
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Settings className="h-5 w-5 mr-2" />
+                      System Settings
+                    </CardTitle>
+                    <CardDescription>
+                      Configure system-wide settings and preferences
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button className="w-full" disabled>
+                      Coming Soon
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Welcome Message */}
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="h-5 w-5 mr-2" />
-                  System Settings
-                </CardTitle>
+                <CardTitle>Welcome to the Admin Dashboard</CardTitle>
                 <CardDescription>
-                  Configure system-wide settings and preferences
+                  You're logged in as a {role}. This dashboard provides tools for managing the platform.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" disabled>
-                  Coming Soon
-                </Button>
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Role Permissions:</strong>
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                    {isAdmin && (
+                      <>
+                        <li>• Full system access and configuration</li>
+                        <li>• User role management</li>
+                        <li>• System analytics and reporting</li>
+                      </>
+                    )}
+                    {isCoach && (
+                      <>
+                        <li>• Client management and coaching tools</li>
+                        <li>• Progress tracking and analytics</li>
+                        <li>• Content management</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
               </CardContent>
             </Card>
-          )}
-        </div>
+          </TabsContent>
 
-        {/* Welcome Message */}
-        <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Welcome to the Admin Dashboard</CardTitle>
-              <CardDescription>
-                You're logged in as a {role}. This dashboard provides tools for managing the platform.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Role Permissions:</strong>
-                </p>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  {isAdmin && (
-                    <>
-                      <li>• Full system access and configuration</li>
-                      <li>• User role management</li>
-                      <li>• System analytics and reporting</li>
-                    </>
-                  )}
-                  {isCoach && (
-                    <>
-                      <li>• Client management and coaching tools</li>
-                      <li>• Progress tracking and analytics</li>
-                      <li>• Content management</li>
-                    </>
-                  )}
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="users">
+            <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <Card>
+              <CardHeader>
+                <CardTitle>Analytics Dashboard</CardTitle>
+                <CardDescription>
+                  Platform analytics and reporting tools will be available here.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Coming soon...</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {isAdmin && (
+            <TabsContent value="settings">
+              <Card>
+                <CardHeader>
+                  <CardTitle>System Settings</CardTitle>
+                  <CardDescription>
+                    Configure system-wide settings and preferences.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">Coming soon...</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+        </Tabs>
       </main>
     </div>
   );

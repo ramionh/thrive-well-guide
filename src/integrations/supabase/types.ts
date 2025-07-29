@@ -3143,6 +3143,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          assigned_coach_id: string | null
           avatar_url: string | null
           created_at: string | null
           date_of_birth: string | null
@@ -3153,14 +3154,17 @@ export type Database = {
           height_feet: number | null
           height_inches: number | null
           id: string
+          is_active: boolean | null
           last_name: string | null
           onboarding_completed: boolean | null
+          phone: string | null
           phone_number: string | null
           preferred_name: string | null
           updated_at: string | null
           weight_lbs: number | null
         }
         Insert: {
+          assigned_coach_id?: string | null
           avatar_url?: string | null
           created_at?: string | null
           date_of_birth?: string | null
@@ -3171,14 +3175,17 @@ export type Database = {
           height_feet?: number | null
           height_inches?: number | null
           id: string
+          is_active?: boolean | null
           last_name?: string | null
           onboarding_completed?: boolean | null
+          phone?: string | null
           phone_number?: string | null
           preferred_name?: string | null
           updated_at?: string | null
           weight_lbs?: number | null
         }
         Update: {
+          assigned_coach_id?: string | null
           avatar_url?: string | null
           created_at?: string | null
           date_of_birth?: string | null
@@ -3189,8 +3196,10 @@ export type Database = {
           height_feet?: number | null
           height_inches?: number | null
           id?: string
+          is_active?: boolean | null
           last_name?: string | null
           onboarding_completed?: boolean | null
+          phone?: string | null
           phone_number?: string | null
           preferred_name?: string | null
           updated_at?: string | null
