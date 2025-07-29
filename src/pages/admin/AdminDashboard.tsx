@@ -10,6 +10,7 @@ import { Users, Settings, BarChart3, Shield, LogOut } from "lucide-react";
 import UserManagement from "@/components/admin/UserManagement";
 import CoachDashboard from "@/components/admin/CoachDashboard";
 import CreateCoachesAction from "@/components/admin/CreateCoachesAction";
+import CreateAdminUserAction from "@/components/admin/CreateAdminUserAction";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -218,17 +219,20 @@ const AdminDashboard = () => {
 
             {isAdmin && (
               <TabsContent value="settings">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>System Settings</CardTitle>
-                    <CardDescription>
-                      Configure system-wide settings and preferences.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">Coming soon...</p>
-                  </CardContent>
-                </Card>
+                <div className="space-y-6">
+                  <CreateAdminUserAction />
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>System Settings</CardTitle>
+                      <CardDescription>
+                        Configure system-wide settings and preferences.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">Additional settings coming soon...</p>
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
             )}
           </Tabs>
