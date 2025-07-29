@@ -3145,6 +3145,7 @@ export type Database = {
         Row: {
           assigned_coach_id: string | null
           avatar_url: string | null
+          bio: string | null
           created_at: string | null
           date_of_birth: string | null
           email: string | null
@@ -3166,6 +3167,7 @@ export type Database = {
         Insert: {
           assigned_coach_id?: string | null
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           email?: string | null
@@ -3187,6 +3189,7 @@ export type Database = {
         Update: {
           assigned_coach_id?: string | null
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           email?: string | null

@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, User, ArrowLeft } from "lucide-react";
+import { Users, User, ArrowLeft, Edit } from "lucide-react";
 import { toast } from "sonner";
 import ClientDetailView from "./ClientDetailView";
+import CoachProfileEditor from "./CoachProfileEditor";
 
 interface Client {
   id: string;
@@ -25,6 +26,7 @@ const CoachDashboard = () => {
   const { isCoach, role } = useUserRole();
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [showProfileEditor, setShowProfileEditor] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,6 +71,10 @@ const CoachDashboard = () => {
     );
   }
 
+  if (showProfileEditor) {
+    return <CoachProfileEditor onBack={() => setShowProfileEditor(false)} />;
+  }
+
   if (selectedClient) {
     return (
       <div className="space-y-6">
@@ -107,13 +113,26 @@ const CoachDashboard = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="h-5 w-5 mr-2" />
-            My Clients
-          </CardTitle>
-          <CardDescription>
-            Manage and track progress for your assigned clients
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center">
+                <Users className="h-5 w-5 mr-2" />
+                My Clients
+              </CardTitle>
+              <CardDescription>
+                Manage and track progress for your assigned clients
+              </CardDescription>
+            </div>
+            
+            <Button
+              variant="outline"
+              onClick={() => setShowProfileEditor(true)}
+              className="flex items-center"
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {clients.length === 0 ? (
