@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import UserInfoStep from "./UserInfoStep";
 import GoalSettingStep from "./GoalSettingStep";
 import QuestionnaireStep from "./QuestionnaireStep";
-import MotivationalInterviewStep from "./MotivationalInterviewStep";
+import InitialCheckInStep from "./InitialCheckInStep";
 import SuccessStep from "./SuccessStep";
 
 const OnboardingWizard: React.FC = () => {
@@ -39,9 +39,9 @@ const OnboardingWizard: React.FC = () => {
       />
     },
     {
-      title: "Your Motivation",
-      description: "Let's understand what drives you to make positive changes after 40.",
-      component: <MotivationalInterviewStep onNext={() => setOnboardingStep(4)} />
+      title: "Initial Check-In",
+      description: "Let's establish your baseline measurements to track your progress.",
+      component: <InitialCheckInStep onNext={() => setOnboardingStep(4)} />
     },
     {
       title: "All Set!",
