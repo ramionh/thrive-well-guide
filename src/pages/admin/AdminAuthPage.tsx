@@ -20,8 +20,10 @@ const AdminAuthPage = () => {
 
   // Redirect if already authenticated with proper role
   useEffect(() => {
-    if (!roleLoading && (role === 'admin' || role === 'coach')) {
+    if (!roleLoading && role === 'admin') {
       navigate('/admin/dashboard');
+    } else if (!roleLoading && role === 'coach') {
+      navigate('/dashboard'); // Coaches go to main dashboard
     }
   }, [role, roleLoading, navigate]);
 
@@ -52,10 +54,12 @@ const AdminAuthPage = () => {
   // Check role after successful login
   useEffect(() => {
     if (!roleLoading && role) {
-      if (role === 'admin' || role === 'coach') {
+      if (role === 'admin') {
         navigate('/admin/dashboard');
+      } else if (role === 'coach') {
+        navigate('/dashboard'); // Coaches go to main dashboard
       } else if (role === 'client') {
-        setError("Access denied. Only coaches and administrators can access this area.");
+        setError("Access denied. Only administrators can access this area.");
         // Sign out the user since they don't have proper permissions
         supabase.auth.signOut();
       }
@@ -82,7 +86,7 @@ const AdminAuthPage = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Admin Access</CardTitle>
           <CardDescription>
-            Sign in to access the admin dashboard. Only coaches and administrators are permitted.
+            Sign in to access the admin dashboard. Only administrators are permitted.
           </CardDescription>
         </CardHeader>
         <CardContent>

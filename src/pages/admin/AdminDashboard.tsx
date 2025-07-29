@@ -16,6 +16,18 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { role, loading, isAdmin, isCoach } = useUserRole();
 
+  // Redirect non-admin users
+  useEffect(() => {
+    if (!loading && !isAdmin) {
+      if (isCoach) {
+        // Coaches should go to a different dashboard or be denied access
+        navigate('/dashboard'); // Redirect coaches to main dashboard
+      } else {
+        // Non-authenticated or client users go to admin auth
+        navigate('/admin/auth');
+      }
+    }
+  }, [loading, isAdmin, isCoach, navigate]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -29,6 +41,30 @@ const AdminDashboard = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading dashboard...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Show access denied for non-admin users (while redirecting)
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center text-destructive">
+              <Shield className="h-5 w-5 mr-2" />
+              Access Denied
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              You don't have permission to access the admin dashboard. This area is restricted to administrators only.
+            </p>
+            <Button onClick={() => navigate('/dashboard')} className="w-full">
+              Go to Main Dashboard
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -61,11 +97,7 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {isCoach && !isAdmin ? (
-          // Coach-specific dashboard
-          <CoachDashboard />
-        ) : (
-          // Admin dashboard with tabs
+        {/* Admin dashboard with tabs */}
           <Tabs defaultValue="overview" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -158,14 +190,7 @@ const AdminDashboard = () => {
                           <li>• User role management</li>
                           <li>• System analytics and reporting</li>
                         </>
-                      )}
-                      {isCoach && (
-                        <>
-                          <li>• Client management and coaching tools</li>
-                          <li>• Progress tracking and analytics</li>
-                          <li>• Content management</li>
-                        </>
-                      )}
+                       )}
                     </ul>
                   </div>
                 </CardContent>
@@ -213,8 +238,7 @@ const AdminDashboard = () => {
                 </div>
               </TabsContent>
             )}
-          </Tabs>
-        )}
+        </Tabs>
       </main>
     </div>
   );
