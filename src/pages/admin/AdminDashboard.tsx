@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Settings, BarChart3, Shield, LogOut } from "lucide-react";
 import UserManagement from "@/components/admin/UserManagement";
 import CoachDashboard from "@/components/admin/CoachDashboard";
+import CreateCoachesAction from "@/components/admin/CreateCoachesAction";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -195,7 +196,10 @@ const AdminDashboard = () => {
             </TabsContent>
 
             <TabsContent value="users">
-              <UserManagement />
+              <div className="space-y-6">
+                <CreateCoachesAction />
+                <UserManagement />
+              </div>
             </TabsContent>
 
             <TabsContent value="analytics">
