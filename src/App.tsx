@@ -28,6 +28,8 @@ import MotivationPage from "./pages/MotivationPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import Index from "./pages/Index";
+import AdminAuthPage from "./pages/admin/AdminAuthPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -138,6 +140,11 @@ const App = () => (
                   </AuthenticatedRoute>
                 }
               />
+              
+              {/* Admin Routes */}
+              <Route path="/admin/auth" element={<AdminAuthPage />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
