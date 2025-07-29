@@ -3381,6 +3381,7 @@ export type Database = {
       weekly_checkins: {
         Row: {
           back_photo_url: string | null
+          body_fat_percentage: number | null
           created_at: string
           estimated_bodyfat_percentage: number | null
           front_photo_url: string | null
@@ -3392,6 +3393,7 @@ export type Database = {
         }
         Insert: {
           back_photo_url?: string | null
+          body_fat_percentage?: number | null
           created_at?: string
           estimated_bodyfat_percentage?: number | null
           front_photo_url?: string | null
@@ -3403,6 +3405,7 @@ export type Database = {
         }
         Update: {
           back_photo_url?: string | null
+          body_fat_percentage?: number | null
           created_at?: string
           estimated_bodyfat_percentage?: number | null
           front_photo_url?: string | null
