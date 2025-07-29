@@ -231,7 +231,14 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
           {isLoadingBodyTypes ? (
             <div>Loading body types...</div>
           ) : (
-            bodyTypes.map((bodyType) => (
+            bodyTypes
+              .sort((a, b) => {
+                const order = ['Ripped', 'Elite', 'Fit', 'Average', 'Overweight', 'Obese'];
+                const aIndex = order.indexOf(a.name);
+                const bIndex = order.indexOf(b.name);
+                return aIndex - bIndex;
+              })
+              .map((bodyType) => (
               <div
                 key={bodyType.id}
                 className={`border rounded-lg p-4 cursor-pointer transition-all ${
