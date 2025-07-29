@@ -62,11 +62,9 @@ const UserManagement = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (isAdmin) {
-      fetchUsers();
-      fetchCoaches();
-    }
-  }, [isAdmin]);
+    fetchUsers();
+    fetchCoaches();
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -268,21 +266,6 @@ const UserManagement = () => {
     setIsEditModalOpen(true);
   };
 
-  if (!isAdmin) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Shield className="h-5 w-5 mr-2 text-destructive" />
-            Access Denied
-          </CardTitle>
-          <CardDescription>
-            You need admin privileges to access user management.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
 
   if (loading) {
     return (
