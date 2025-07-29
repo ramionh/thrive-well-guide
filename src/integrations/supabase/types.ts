@@ -74,6 +74,39 @@ export type Database = {
         }
         Relationships: []
       }
+      client_onboarding: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          profile_id: string
+          question_id: string
+          question_text: string
+          questionnaire_type: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          profile_id: string
+          question_id: string
+          question_text: string
+          questionnaire_type: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+          question_id?: string
+          question_text?: string
+          questionnaire_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string | null
@@ -561,6 +594,39 @@ export type Database = {
           habit_number?: number
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      imessage: {
+        Row: {
+          FromPhone: string
+          iMessageID: string
+          IncomingOutgoing: string
+          IncomingProcessed: boolean
+          Message: string
+          OutgoingProcessed: boolean
+          ReceivedDateTime: string
+          ToPhone: string
+        }
+        Insert: {
+          FromPhone: string
+          iMessageID?: string
+          IncomingOutgoing: string
+          IncomingProcessed?: boolean
+          Message: string
+          OutgoingProcessed?: boolean
+          ReceivedDateTime: string
+          ToPhone: string
+        }
+        Update: {
+          FromPhone?: string
+          iMessageID?: string
+          IncomingOutgoing?: string
+          IncomingProcessed?: boolean
+          Message?: string
+          OutgoingProcessed?: boolean
+          ReceivedDateTime?: string
+          ToPhone?: string
         }
         Relationships: []
       }
