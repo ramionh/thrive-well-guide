@@ -14,18 +14,39 @@ const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete }) => {
         <CheckCircle className="h-10 w-10 text-white" />
       </div>
       
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold">You're All Set!</h2>
+      <div className="space-y-3">
+        <h2 className="text-2xl font-bold">Congratulations!</h2>
         <p className="text-muted-foreground">
-          Thank you for sharing your goals and motivations with us. We're excited to help you on your wellness journey!
+          Thank you for completing your registration and onboarding with GenXShred. We're excited to help you on your fitness journey!
         </p>
+        
+        <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+          <h3 className="font-semibold text-center">Ready for Your Next Step?</h3>
+          <p className="text-sm text-muted-foreground text-center">
+            Schedule a meeting with your assigned coach to receive your personalized macros and complete your initial motivational interviewing assessment.
+          </p>
+          
+          <Button 
+            asChild
+            className="w-full bg-primary hover:bg-primary/90"
+          >
+            <a 
+              href="https://scheduler.zoom.us/gen-x-shred/gen-x-shred-intro" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              Schedule Your Coaching Session
+            </a>
+          </Button>
+        </div>
       </div>
       
       <Button 
         onClick={onComplete}
-        className="bg-thrive-blue hover:bg-thrive-blue/90 w-full"
+        variant="outline"
+        className="w-full"
       >
-        Go to Dashboard
+        Continue to Dashboard
       </Button>
     </div>
   );
