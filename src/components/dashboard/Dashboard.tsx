@@ -14,6 +14,7 @@ import WeeklyCheckIn from "./WeeklyCheckIn";
 import MetricsGrid from "./MetricsGrid";
 import InsightsTabs from "./InsightsTabs";
 import MotivationProgress from "./MotivationProgress";
+import AssignedCoach from "./AssignedCoach";
 
 const Dashboard: React.FC = () => {
   const { user, isLoading } = useAuthCheck();
@@ -122,6 +123,11 @@ const Dashboard: React.FC = () => {
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <MetricsGrid />
+          </div>
+
+          {/* Coach Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <AssignedCoach />
           </div>
 
           {/* Main Content Grid */}
