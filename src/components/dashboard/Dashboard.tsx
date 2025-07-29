@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md text-center p-6">
-          <h2 className="text-2xl font-bold mb-4">Welcome to 40+Ripped</h2>
+          <h2 className="text-2xl font-bold mb-4">Welcome to Gen X Shred</h2>
           <p className="text-muted-foreground mb-6">
             Let's get started with a quick onboarding process to personalize your experience.
           </p>

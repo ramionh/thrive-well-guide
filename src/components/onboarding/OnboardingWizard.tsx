@@ -21,7 +21,7 @@ const OnboardingWizard: React.FC = () => {
   
   const steps = [
     {
-      title: "Welcome to 40+Ripped",
+      title: "Welcome to Gen X Shred",
       description: "Let's get to know you better to personalize your fitness journey.",
       component: <UserInfoStep onNext={() => setOnboardingStep(1)} />
     },
@@ -70,7 +70,7 @@ const OnboardingWizard: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-lg shadow-lg animate-fade-in">
         <CardHeader>
-          <CardTitle className="text-2xl text-thrive-blue">40+Ripped Onboarding</CardTitle>
+          <CardTitle className="text-2xl text-thrive-blue">GenXShred Onboarding</CardTitle>
           <CardDescription>{steps[onboardingStep].description}</CardDescription>
           <Progress value={((onboardingStep + 1) / steps.length) * 100} className="h-2 mt-2" />
         </CardHeader>

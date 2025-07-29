@@ -51,7 +51,7 @@ const MotivationalInterviewStep: React.FC<MotivationalInterviewStepProps> = ({ o
   return (
     <div className="space-y-6">
       <p className="text-sm text-muted-foreground">
-        Take a moment to reflect. Your insights will help us create a personalized 40+Ripped fitness plan.
+        Take a moment to reflect. Your insights will help us create a personalized GenXShred fitness plan.
       </p>
       
       <Tabs defaultValue="sleep" value={activeTab} onValueChange={setActiveTab}>

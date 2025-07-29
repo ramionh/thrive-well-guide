@@ -267,7 +267,7 @@ const UserInfoStep: React.FC<UserInfoStepProps> = ({ onNext }) => {
       </div>
       
       <Button type="submit" className="w-full bg-thrive-blue hover:bg-thrive-blue/90">
-        Start Your 40+Ripped Journey
+        Start Your GenXShred Journey
       </Button>
     </form>
   );
