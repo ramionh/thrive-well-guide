@@ -279,7 +279,7 @@ const UserManagement = () => {
       height_feet: user.height_feet?.toString() || "",
       height_inches: user.height_inches?.toString() || "",
       weight_lbs: user.weight_lbs?.toString() || "",
-      assigned_coach_id: user.assigned_coach_id || "",
+      assigned_coach_id: user.assigned_coach_id || "none",
       is_active: user.is_active
     });
     setIsEditModalOpen(true);
@@ -426,12 +426,12 @@ const UserManagement = () => {
       {formData.role === 'client' && (
         <div className="space-y-2">
           <Label htmlFor="assigned_coach_id">Assigned Coach</Label>
-          <Select value={formData.assigned_coach_id} onValueChange={(value) => setFormData({ ...formData, assigned_coach_id: value })}>
+          <Select value={formData.assigned_coach_id} onValueChange={(value) => setFormData({ ...formData, assigned_coach_id: value === "none" ? "" : value })}>
             <SelectTrigger>
               <SelectValue placeholder="Select a coach (optional)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No coach assigned</SelectItem>
+              <SelectItem value="none">No coach assigned</SelectItem>
               {coaches.map((coach) => (
                 <SelectItem key={coach.id} value={coach.id}>
                   {coach.full_name}
