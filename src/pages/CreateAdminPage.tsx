@@ -42,14 +42,12 @@ export default function CreateAdminPage() {
     setResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+      const { data, error } = await supabase.functions.invoke('bootstrap-admin', {
         body: {
           email,
           password: userPassword,
-          role: 'admin',
-          profile: {
-            full_name: fullName
-          }
+          fullName,
+          bootstrapPassword: ADMIN_PASSWORD
         }
       });
 
