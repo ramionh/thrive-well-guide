@@ -16,16 +16,11 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { role, loading, isAdmin, isCoach } = useUserRole();
 
-  // Redirect non-admin users
+  // Redirect non-authenticated users
   useEffect(() => {
-    if (!loading && !isAdmin) {
-      if (isCoach) {
-        // Coaches should go to a different dashboard or be denied access
-        navigate('/dashboard'); // Redirect coaches to main dashboard
-      } else {
-        // Non-authenticated or client users go to admin auth
-        navigate('/admin/auth');
-      }
+    if (!loading && !isAdmin && !isCoach) {
+      // Only redirect non-authenticated or client users
+      navigate('/admin/auth');
     }
   }, [loading, isAdmin, isCoach, navigate]);
 
@@ -45,8 +40,8 @@ const AdminDashboard = () => {
     );
   }
 
-  // Show access denied for non-admin users (while redirecting)
-  if (!isAdmin) {
+  // Show access denied for non-admin and non-coach users
+  if (!isAdmin && !isCoach) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md">
@@ -58,7 +53,7 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              You don't have permission to access the admin dashboard. This area is restricted to administrators only.
+              You don't have permission to access the admin dashboard. This area is restricted to administrators and coaches only.
             </p>
             <Button onClick={() => navigate('/dashboard')} className="w-full">
               Go to Main Dashboard
@@ -67,6 +62,11 @@ const AdminDashboard = () => {
         </Card>
       </div>
     );
+  }
+
+  // Show coach dashboard for coaches
+  if (isCoach && !isAdmin) {
+    return <CoachDashboard />;
   }
 
 

@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { Calendar, Target, Activity, BookOpen, TrendingUp } from "lucide-react";
+import { Calendar, Target, Activity, BookOpen, TrendingUp, Heart, Moon, Utensils } from "lucide-react";
 import { toast } from "sonner";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 interface Client {
   id: string;
@@ -52,6 +53,19 @@ interface HabitAssessment {
   created_at: string;
 }
 
+interface DailyHealth {
+  id: string;
+  date: string;
+  mood?: number;
+  sleep_hours?: number;
+  exercise_minutes?: number;
+  water?: number;
+  steps?: number;
+  calories?: number;
+  protein?: number;
+  created_at: string;
+}
+
 interface ClientDetailViewProps {
   client: Client;
 }
@@ -61,6 +75,7 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [motivationProgress, setMotivationProgress] = useState<MotivationProgress[]>([]);
   const [habitAssessments, setHabitAssessments] = useState<HabitAssessment[]>([]);
+  const [dailyHealthData, setDailyHealthData] = useState<DailyHealth[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,6 +89,7 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
         fetchGoals(),
         fetchMotivationProgress(),
         fetchHabitAssessments(),
+        fetchDailyHealthData(),
       ]);
     } catch (error: any) {
       console.error('Error fetching client data:', error);
@@ -265,6 +281,18 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
     setHabitAssessments(data || []);
   };
 
+  const fetchDailyHealthData = async () => {
+    const { data, error } = await supabase
+      .from('daily_health_tracking')
+      .select('*')
+      .eq('user_id', client.id)
+      .order('date', { ascending: true })
+      .limit(30); // Last 30 days
+
+    if (error) throw error;
+    setDailyHealthData(data || []);
+  };
+
   const calculateAge = (dateOfBirth: string) => {
     const today = new Date();
     const birthDate = new Date(dateOfBirth);
@@ -311,10 +339,32 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
   const motivationCompletionRate = (motivationProgress.length / 8) * 100; // Assuming 8 total steps
   const uniqueCategories = [...new Set(habitAssessments.map(h => h.category))];
 
+  // Calculate health trends
+  const recentHealthData = dailyHealthData.slice(-7); // Last 7 days
+  const avgMood = recentHealthData.reduce((sum, d) => sum + (d.mood || 0), 0) / recentHealthData.length;
+  const avgSleep = recentHealthData.reduce((sum, d) => sum + (d.sleep_hours || 0), 0) / recentHealthData.length;
+  const avgExercise = recentHealthData.reduce((sum, d) => sum + (d.exercise_minutes || 0), 0) / recentHealthData.length;
+
+  // Prepare chart data
+  const healthChartData = dailyHealthData.map(d => ({
+    date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    mood: d.mood || 0,
+    sleep: d.sleep_hours || 0,
+    exercise: d.exercise_minutes || 0,
+    water: d.water || 0,
+    steps: d.steps || 0
+  }));
+
+  const bodyFatChartData = checkIns.map(c => ({
+    date: new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    estimated: c.estimated_bodyfat_percentage || 0,
+    actual: c.body_fat_percentage || 0
+  })).reverse();
+
   return (
     <div className="space-y-6">
       {/* Overview Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Check-ins</CardTitle>
@@ -339,7 +389,7 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Motivation Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">Motivation</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -350,25 +400,202 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Habit Categories</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Avg Mood</CardTitle>
+            <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{uniqueCategories.length}</div>
-            <p className="text-xs text-muted-foreground">Assessed categories</p>
+            <div className="text-2xl font-bold">{avgMood ? avgMood.toFixed(1) : 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">Last 7 days</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg Sleep</CardTitle>
+            <Moon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{avgSleep ? `${avgSleep.toFixed(1)}h` : 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">Last 7 days</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg Exercise</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{avgExercise ? `${Math.round(avgExercise)}m` : 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">Last 7 days</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Detailed Tabs */}
-      <Tabs defaultValue="demographics" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+      <Tabs defaultValue="analytics" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="demographics">Demographics</TabsTrigger>
           <TabsTrigger value="checkins">Check-ins</TabsTrigger>
           <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="motivation">Motivation</TabsTrigger>
           <TabsTrigger value="habits">Habits</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="analytics">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Body Fat Progress Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Body Fat Progress</CardTitle>
+                <CardDescription>Body fat percentage trends over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {bodyFatChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={bodyFatChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="estimated" 
+                        stroke="hsl(var(--primary))" 
+                        name="Estimated BF%" 
+                        strokeWidth={2}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="actual" 
+                        stroke="hsl(var(--destructive))" 
+                        name="Actual BF%" 
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    No body fat data available
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Health Metrics Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Daily Health Metrics</CardTitle>
+                <CardDescription>Sleep, mood, and exercise trends</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {healthChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={healthChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="mood" 
+                        stroke="hsl(var(--primary))" 
+                        name="Mood (1-10)" 
+                        strokeWidth={2}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="sleep" 
+                        stroke="hsl(var(--secondary))" 
+                        name="Sleep (hours)" 
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    No daily health data available
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Exercise Minutes Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Exercise Activity</CardTitle>
+                <CardDescription>Daily exercise minutes and water intake</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {healthChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={healthChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar 
+                        dataKey="exercise" 
+                        fill="hsl(var(--primary))" 
+                        name="Exercise (min)" 
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    No exercise data available
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Steps and Water Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Activity & Hydration</CardTitle>
+                <CardDescription>Daily steps and water intake</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {healthChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={healthChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis yAxisId="left" />
+                      <YAxis yAxisId="right" orientation="right" />
+                      <Tooltip />
+                      <Legend />
+                      <Line 
+                        yAxisId="left"
+                        type="monotone" 
+                        dataKey="steps" 
+                        stroke="hsl(var(--primary))" 
+                        name="Steps" 
+                        strokeWidth={2}
+                      />
+                      <Line 
+                        yAxisId="right"
+                        type="monotone" 
+                        dataKey="water" 
+                        stroke="hsl(var(--secondary))" 
+                        name="Water (glasses)" 
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    No activity data available
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
         <TabsContent value="demographics">
           <Card>
