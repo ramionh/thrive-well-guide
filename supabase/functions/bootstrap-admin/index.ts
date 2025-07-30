@@ -16,12 +16,17 @@ interface CreateAdminRequest {
 const BOOTSTRAP_PASSWORD = 'Batman0110!';
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("Bootstrap admin function called, method:", req.method);
+  
   if (req.method === "OPTIONS") {
+    console.log("Handling CORS preflight request");
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log("Processing bootstrap admin request");
     const { email, password, fullName, bootstrapPassword }: CreateAdminRequest = await req.json();
+    console.log("Request data:", { email, fullName, hasPassword: !!password, hasBootstrapPassword: !!bootstrapPassword });
 
     // Verify bootstrap password
     if (bootstrapPassword !== BOOTSTRAP_PASSWORD) {

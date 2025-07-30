@@ -42,6 +42,10 @@ export default function CreateAdminPage() {
     setResult(null);
 
     try {
+      console.log('Attempting to create admin user with bootstrap-admin function');
+      console.log('Email:', email);
+      console.log('Full Name:', fullName);
+      
       const { data, error } = await supabase.functions.invoke('bootstrap-admin', {
         body: {
           email,
@@ -51,7 +55,17 @@ export default function CreateAdminPage() {
         }
       });
 
-      if (error) throw error;
+      console.log('Function response:', { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
+
+      if (data?.error) {
+        console.error('Function returned error:', data.error);
+        throw new Error(data.error);
+      }
 
       setResult({
         success: true,
