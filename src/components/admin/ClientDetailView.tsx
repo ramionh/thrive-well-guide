@@ -79,10 +79,16 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("ClientDetailView: Component mounted/updated, client:", {
+      id: client.id,
+      name: client.full_name,
+      email: client.email
+    });
     fetchClientData();
   }, [client.id]);
 
   const fetchClientData = async () => {
+    console.log("ClientDetailView: Starting to fetch data for client:", client.id);
     try {
       await Promise.all([
         fetchCheckIns(),
@@ -91,6 +97,7 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
         fetchHabitAssessments(),
         fetchDailyHealthData(),
       ]);
+      console.log("ClientDetailView: All data fetched successfully");
     } catch (error: any) {
       console.error('Error fetching client data:', error);
       toast.error('Failed to fetch client data');
@@ -100,6 +107,7 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
   };
 
   const fetchCheckIns = async () => {
+    console.log("ClientDetailView: Fetching check-ins for user:", client.id);
     const { data, error } = await supabase
       .from('weekly_checkins')
       .select('*')
@@ -107,8 +115,10 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
       .order('created_at', { ascending: false })
       .limit(10);
 
+    console.log("ClientDetailView: Check-ins query result:", { data, error });
     if (error) throw error;
     setCheckIns(data || []);
+    console.log("ClientDetailView: Set check-ins:", data?.length || 0, "records");
   };
 
   const fetchGoals = async () => {
@@ -282,6 +292,7 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
   };
 
   const fetchDailyHealthData = async () => {
+    console.log("ClientDetailView: Fetching daily health data for user:", client.id);
     const { data, error } = await supabase
       .from('daily_health_tracking')
       .select('*')
@@ -289,8 +300,10 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
       .order('date', { ascending: true })
       .limit(30); // Last 30 days
 
+    console.log("ClientDetailView: Daily health query result:", { data, error });
     if (error) throw error;
     setDailyHealthData(data || []);
+    console.log("ClientDetailView: Set daily health data:", data?.length || 0, "records");
   };
 
   const calculateAge = (dateOfBirth: string) => {
