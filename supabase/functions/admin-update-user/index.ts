@@ -90,9 +90,15 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Update profile if provided
     if (profile) {
+      // Convert "none" to null for assigned_coach_id
+      const profileUpdate = { ...profile };
+      if (profileUpdate.assigned_coach_id === "none" || profileUpdate.assigned_coach_id === "") {
+        profileUpdate.assigned_coach_id = null;
+      }
+
       const { error: profileError } = await supabaseAdmin
         .from('profiles')
-        .update(profile)
+        .update(profileUpdate)
         .eq('id', user_id);
 
       if (profileError) {

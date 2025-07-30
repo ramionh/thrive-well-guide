@@ -86,6 +86,11 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
     // Create/update profile
+    // Convert "none" to null for assigned_coach_id
+    const assignedCoachId = profile.assigned_coach_id === "none" || profile.assigned_coach_id === "" 
+      ? null 
+      : profile.assigned_coach_id;
+
     await supabaseAdmin
       .from('profiles')
       .upsert({
@@ -97,7 +102,7 @@ const handler = async (req: Request): Promise<Response> => {
         height_feet: profile.height_feet,
         height_inches: profile.height_inches,
         weight_lbs: profile.weight_lbs,
-        assigned_coach_id: profile.assigned_coach_id,
+        assigned_coach_id: assignedCoachId,
         is_active: true
       });
 
