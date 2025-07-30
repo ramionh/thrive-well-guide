@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, User, ArrowLeft, Edit } from "lucide-react";
+import { Users, User, ArrowLeft, Edit, LogOut, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import ClientDetailView from "./ClientDetailView";
 import CoachProfileEditor from "./CoachProfileEditor";
 
@@ -24,6 +25,7 @@ interface Client {
 
 const CoachDashboard = () => {
   const { isCoach, role } = useUserRole();
+  const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showProfileEditor, setShowProfileEditor] = useState(false);
@@ -56,6 +58,11 @@ const CoachDashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin/auth');
   };
 
   if (!isCoach) {
@@ -110,7 +117,33 @@ const CoachDashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Shield className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-2xl font-bold">Coach Dashboard</h1>
+              <p className="text-muted-foreground">Manage your assigned clients</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <Badge variant="secondary">
+              {role?.toUpperCase()}
+            </Badge>
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -189,8 +222,10 @@ const CoachDashboard = () => {
             </div>
           )}
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </main>
+  </div>
   );
 };
 
