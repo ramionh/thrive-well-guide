@@ -30,6 +30,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import Index from "./pages/Index";
 import AdminAuthPage from "./pages/admin/AdminAuthPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import CreateAdminPage from "./pages/CreateAdminPage";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -62,6 +63,7 @@ const App = () => (
           <Layout>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/create-admin" element={<CreateAdminPage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
               <Route path="/auth" element={<AuthPage />} />
