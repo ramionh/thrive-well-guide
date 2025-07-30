@@ -3482,6 +3482,22 @@ export type Database = {
       }
     }
     Views: {
+      client_daily_update_data: {
+        Row: {
+          coaching_info: Json | null
+          demographics: Json | null
+          focused_habits: Json | null
+          goals_and_body_types: Json | null
+          habit_plan: Json | null
+          latest_checkin: Json | null
+          latest_motivation_module: Json | null
+          phone_number: string | null
+          progress_summary: Json | null
+          user_id: string | null
+          view_generated_at: string | null
+        }
+        Relationships: []
+      }
       marketing_subscribers: {
         Row: {
           email: string | null
