@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 
 import { useAuthCheck } from "@/hooks/useAuthCheck";
+import { useUserRole } from "@/hooks/useUserRole";
 import DashboardSidebar from "./DashboardSidebar";
 import WeeklyCheckIn from "./WeeklyCheckIn";
 
@@ -18,9 +19,18 @@ import AssignedCoach from "./AssignedCoach";
 
 const Dashboard: React.FC = () => {
   const { user, isLoading } = useAuthCheck();
+  const { isCoach, isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
 
   console.log("Dashboard rendering - User:", user?.id, "isLoading:", isLoading);
+
+  // Redirect coaches and admins to admin dashboard
+  useEffect(() => {
+    if (!roleLoading && (isCoach || isAdmin)) {
+      console.log("Dashboard - User is coach/admin, redirecting to admin dashboard");
+      navigate('/admin/dashboard');
+    }
+  }, [isCoach, isAdmin, roleLoading, navigate]);
 
   // Get the first name or default to "User"
   const firstName = user?.name?.split(' ')[0] || "User";
@@ -44,8 +54,8 @@ const Dashboard: React.FC = () => {
   });
 
 
-  // Show loading state if we're still loading user data
-  if (isLoading) {
+  // Show loading state if we're still loading user data or role data
+  if (isLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
