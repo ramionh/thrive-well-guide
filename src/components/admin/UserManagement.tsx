@@ -34,6 +34,190 @@ interface Coach {
   full_name: string;
 }
 
+interface UserFormProps {
+  formData: any;
+  setFormData: (data: any) => void;
+  error: string;
+  showPassword: boolean;
+  setShowPassword: (show: boolean) => void;
+  coaches: Coach[];
+  isEdit: boolean;
+  handleCreateUser: () => void;
+  handleUpdateUser: () => void;
+}
+
+const UserForm: React.FC<UserFormProps> = ({ 
+  formData, 
+  setFormData, 
+  error, 
+  showPassword, 
+  setShowPassword, 
+  coaches, 
+  isEdit, 
+  handleCreateUser, 
+  handleUpdateUser 
+}) => (
+  <div className="space-y-4">
+    {error && (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    )}
+
+    <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          disabled={isEdit}
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="role">Role</Label>
+        <Select value={formData.role} onValueChange={(value: "client" | "coach") => setFormData({ ...formData, role: value })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="client">Client</SelectItem>
+            <SelectItem value="coach">Coach</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="password">{isEdit ? "New Password (leave blank to keep current)" : "Password"}</Label>
+      <div className="relative">
+        <Input
+          id="password"
+          type={showPassword ? "text" : "password"}
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          required={!isEdit}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </Button>
+      </div>
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="full_name">Full Name</Label>
+      <Input
+        id="full_name"
+        value={formData.full_name}
+        onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+        required
+      />
+    </div>
+
+    <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone</Label>
+        <Input
+          id="phone"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="date_of_birth">Date of Birth</Label>
+        <Input
+          id="date_of_birth"
+          type="date"
+          value={formData.date_of_birth}
+          onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
+        />
+      </div>
+    </div>
+
+    <div className="grid grid-cols-3 gap-4">
+      <div className="space-y-2">
+        <Label htmlFor="height_feet">Height (feet)</Label>
+        <Input
+          id="height_feet"
+          type="number"
+          value={formData.height_feet}
+          onChange={(e) => setFormData({ ...formData, height_feet: e.target.value })}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="height_inches">Height (inches)</Label>
+        <Input
+          id="height_inches"
+          type="number"
+          min="0"
+          max="11"
+          value={formData.height_inches}
+          onChange={(e) => setFormData({ ...formData, height_inches: e.target.value })}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="weight_lbs">Weight (lbs)</Label>
+        <Input
+          id="weight_lbs"
+          type="number"
+          value={formData.weight_lbs}
+          onChange={(e) => setFormData({ ...formData, weight_lbs: e.target.value })}
+        />
+      </div>
+    </div>
+
+    {formData.role === 'client' && (
+      <div className="space-y-2">
+        <Label htmlFor="assigned_coach_id">Assigned Coach</Label>
+        <Select value={formData.assigned_coach_id} onValueChange={(value) => setFormData({ ...formData, assigned_coach_id: value === "none" ? "" : value })}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a coach (optional)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">No coach assigned</SelectItem>
+            {coaches.map((coach) => (
+              <SelectItem key={coach.id} value={coach.id}>
+                {coach.full_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    )}
+
+    {isEdit && (
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_active"
+          checked={formData.is_active}
+          onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+        />
+        <Label htmlFor="is_active">Account Active</Label>
+      </div>
+    )}
+
+    <Button 
+      onClick={isEdit ? handleUpdateUser : handleCreateUser} 
+      className="w-full"
+      disabled={!formData.email || !formData.full_name || (!isEdit && !formData.password)}
+    >
+      {isEdit ? 'Update User' : 'Create User'}
+    </Button>
+  </div>
+);
+
 const UserManagement = () => {
   const { isAdmin, loading: roleLoading } = useUserRole();
   const [users, setUsers] = useState<User[]>([]);
@@ -301,167 +485,6 @@ const UserManagement = () => {
     );
   }
 
-  const UserForm = ({ isEdit = false }) => (
-    <div className="space-y-4">
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            disabled={isEdit}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="role">Role</Label>
-          <Select value={formData.role} onValueChange={(value: "client" | "coach") => setFormData({ ...formData, role: value })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="client">Client</SelectItem>
-              <SelectItem value="coach">Coach</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="password">{isEdit ? "New Password (leave blank to keep current)" : "Password"}</Label>
-        <div className="relative">
-          <Input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            required={!isEdit}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </Button>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="full_name">Full Name</Label>
-        <Input
-          id="full_name"
-          value={formData.full_name}
-          onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-          required
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="phone">Phone</Label>
-          <Input
-            id="phone"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="date_of_birth">Date of Birth</Label>
-          <Input
-            id="date_of_birth"
-            type="date"
-            value={formData.date_of_birth}
-            onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="height_feet">Height (feet)</Label>
-          <Input
-            id="height_feet"
-            type="number"
-            value={formData.height_feet}
-            onChange={(e) => setFormData({ ...formData, height_feet: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="height_inches">Height (inches)</Label>
-          <Input
-            id="height_inches"
-            type="number"
-            min="0"
-            max="11"
-            value={formData.height_inches}
-            onChange={(e) => setFormData({ ...formData, height_inches: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="weight_lbs">Weight (lbs)</Label>
-          <Input
-            id="weight_lbs"
-            type="number"
-            value={formData.weight_lbs}
-            onChange={(e) => setFormData({ ...formData, weight_lbs: e.target.value })}
-          />
-        </div>
-      </div>
-
-      {formData.role === 'client' && (
-        <div className="space-y-2">
-          <Label htmlFor="assigned_coach_id">Assigned Coach</Label>
-          <Select value={formData.assigned_coach_id} onValueChange={(value) => setFormData({ ...formData, assigned_coach_id: value === "none" ? "" : value })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a coach (optional)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No coach assigned</SelectItem>
-              {coaches.map((coach) => (
-                <SelectItem key={coach.id} value={coach.id}>
-                  {coach.full_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      {isEdit && (
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_active"
-            checked={formData.is_active}
-            onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-          />
-          <Label htmlFor="is_active">Account Active</Label>
-        </div>
-      )}
-
-      <Button 
-        onClick={isEdit ? handleUpdateUser : handleCreateUser} 
-        className="w-full"
-        disabled={!formData.email || !formData.full_name || (!isEdit && !formData.password)}
-      >
-        {isEdit ? 'Update User' : 'Create User'}
-      </Button>
-    </div>
-  );
 
   return (
     <div className="space-y-6">
@@ -492,7 +515,17 @@ const UserManagement = () => {
                     Add a new coach or client to the platform
                   </DialogDescription>
                 </DialogHeader>
-                <UserForm />
+                <UserForm 
+                  formData={formData}
+                  setFormData={setFormData}
+                  error={error}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  coaches={coaches}
+                  isEdit={false}
+                  handleCreateUser={handleCreateUser}
+                  handleUpdateUser={handleUpdateUser}
+                />
               </DialogContent>
             </Dialog>
           </div>
@@ -552,7 +585,17 @@ const UserManagement = () => {
               Update user information, role, and settings
             </DialogDescription>
           </DialogHeader>
-          <UserForm isEdit={true} />
+          <UserForm 
+            formData={formData}
+            setFormData={setFormData}
+            error={error}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+            coaches={coaches}
+            isEdit={true}
+            handleCreateUser={handleCreateUser}
+            handleUpdateUser={handleUpdateUser}
+          />
         </DialogContent>
       </Dialog>
     </div>
