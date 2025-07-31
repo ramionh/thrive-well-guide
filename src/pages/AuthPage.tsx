@@ -190,6 +190,14 @@ const AuthPage = () => {
                 setPassword={setPassword}
                 loading={loading}
               />
+              <div className="mt-4 text-center">
+                <button 
+                  onClick={() => navigate('/magic-link')}
+                  className="text-blue-600 hover:underline text-sm"
+                >
+                  Or sign in with magic link
+                </button>
+              </div>
             </TabsContent>
             
             <TabsContent value="register">

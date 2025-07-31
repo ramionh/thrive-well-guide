@@ -25,13 +25,18 @@ const ResetPasswordDialog = ({ open, onOpenChange }: ResetPasswordDialogProps) =
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      // Use magic link OTP for password reset
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/reset-password`,
+          shouldCreateUser: false
+        }
       });
 
       if (error) throw error;
 
-      toast.success("Password reset email sent! Check your inbox.");
+      toast.success("Password reset link sent! Check your email.");
       onOpenChange(false);
       setEmail('');
     } catch (error) {

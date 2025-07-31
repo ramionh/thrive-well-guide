@@ -12,6 +12,7 @@ import { queryClient } from "@/lib/queryClient";
 
 import AuthPage from "./pages/AuthPage";
 import InitialSignupPage from "./pages/InitialSignupPage";
+import MagicLinkPage from "./pages/MagicLinkPage";
 import Dashboard from "./components/dashboard/Dashboard";
 import OnboardingWizard from "./components/onboarding/OnboardingWizard";
 import ProgressPage from "./pages/ProgressPage";
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="/home" element={<HomePage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/magic-link" element={<MagicLinkPage />} />
               <Route path="/initial-signup" element={<InitialSignupPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/onboarding" element={<OnboardingWizard />} />
