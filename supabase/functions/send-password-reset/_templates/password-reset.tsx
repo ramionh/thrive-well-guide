@@ -11,55 +11,70 @@ import {
 import * as React from 'npm:react@18.3.1'
 
 interface PasswordResetEmailProps {
-  resetLink: string
-  userEmail: string
+  confirmationURL: string
+  token: string
+  tokenHash: string
+  siteURL: string
+  email: string
+  data: any
+  redirectTo: string
 }
 
 export const PasswordResetEmail = ({
-  resetLink,
-  userEmail,
-}: PasswordResetEmailProps) => (
-  <Html>
-    <Head />
-    <Preview>Reset your password</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>Reset Your Password</Heading>
-        <Text style={text}>
-          Hello,
-        </Text>
-        <Text style={text}>
-          We received a request to reset the password for your account ({userEmail}). 
-          If you made this request, click the button below to reset your password:
-        </Text>
-        <Link
-          href={resetLink}
-          target="_blank"
-          style={{
-            ...button,
-            display: 'block',
-            marginBottom: '16px',
-          }}
-        >
-          Reset Password
-        </Link>
-        <Text style={text}>
-          This link will expire in 24 hours for security reasons.
-        </Text>
-        <Text style={text}>
-          If you didn't request a password reset, you can safely ignore this email. 
-          Your password will not be changed.
-        </Text>
-        <Text style={footer}>
-          If you're having trouble clicking the button, copy and paste the following link into your browser:
-        </Text>
-        <Text style={footerLink}>
-          {resetLink}
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+  confirmationURL,
+  token,
+  tokenHash,
+  siteURL,
+  email,
+  data,
+  redirectTo,
+}: PasswordResetEmailProps) => {
+  // Construct the reset link using the confirmation URL and redirect
+  const resetLink = `${siteURL}/reset-password?access_token=${tokenHash}&refresh_token=${token}&redirect_to=${encodeURIComponent(redirectTo)}`;
+  
+  return (
+    <Html>
+      <Head />
+      <Preview>Reset your password</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>Reset Your Password</Heading>
+          <Text style={text}>
+            Hello,
+          </Text>
+          <Text style={text}>
+            We received a request to reset the password for your account ({email}). 
+            If you made this request, click the button below to reset your password:
+          </Text>
+          <Link
+            href={resetLink}
+            target="_blank"
+            style={{
+              ...button,
+              display: 'block',
+              marginBottom: '16px',
+            }}
+          >
+            Reset Password
+          </Link>
+          <Text style={text}>
+            This link will expire in 24 hours for security reasons.
+          </Text>
+          <Text style={text}>
+            If you didn't request a password reset, you can safely ignore this email. 
+            Your password will not be changed.
+          </Text>
+          <Text style={footer}>
+            If you're having trouble clicking the button, copy and paste the following link into your browser:
+          </Text>
+          <Text style={footerLink}>
+            {resetLink}
+          </Text>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
 
 export default PasswordResetEmail
 

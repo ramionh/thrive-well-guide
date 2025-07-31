@@ -13,8 +13,13 @@ const corsHeaders = {
 };
 
 interface PasswordResetRequest {
+  confirmationURL: string;
+  token: string;
+  tokenHash: string;
+  siteURL: string;
   email: string;
-  resetLink: string;
+  data: any;
+  redirectTo: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -24,11 +29,11 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, resetLink }: PasswordResetRequest = await req.json();
+    const { confirmationURL, token, tokenHash, siteURL, email, data, redirectTo }: PasswordResetRequest = await req.json();
 
-    if (!email || !resetLink) {
+    if (!email || !confirmationURL) {
       return new Response(
-        JSON.stringify({ error: "Email and reset link are required" }),
+        JSON.stringify({ error: "Email and confirmation URL are required" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -39,15 +44,20 @@ const handler = async (req: Request): Promise<Response> => {
     // Render the React email template
     const html = await renderAsync(
       React.createElement(PasswordResetEmail, {
-        resetLink,
-        userEmail: email,
+        confirmationURL,
+        token,
+        tokenHash,
+        siteURL,
+        email,
+        data,
+        redirectTo,
       })
     );
 
     const emailResponse = await resend.emails.send({
-      from: "noreply@resend.dev", // Replace with your verified domain
+      from: "GenX Shred <support@genxshred.com>",
       to: [email],
-      subject: "Reset your password",
+      subject: "Reset Your Password",
       html,
     });
 
