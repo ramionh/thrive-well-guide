@@ -35,40 +35,34 @@ export const PasswordResetEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>Reset your password</Preview>
+      <Preview>Reset Your GenXShred.com Password</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Reset Your Password</Heading>
           <Text style={text}>
-            Hello,
+            Hi there,
           </Text>
           <Text style={text}>
-            We received a request to reset the password for your account ({email}). 
-            If you made this request, click the button below to reset your password:
+            We received a request to reset the password for your GenXShred.com account.
           </Text>
+          <Text style={text}>
+            To create a new password, click the button below. This link will expire in 24 hours.
+          </Text>
+          <br />
           <Link
             href={resetLink}
             target="_blank"
-            style={{
-              ...button,
-              display: 'block',
-              marginBottom: '16px',
-            }}
+            style={button}
           >
-            Reset Password
+            Reset Your Password
           </Link>
+          <br />
+          <br />
           <Text style={text}>
-            This link will expire in 24 hours for security reasons.
+            If you did not request a password reset, please ignore this email or contact our support team if you have any concerns.
           </Text>
           <Text style={text}>
-            If you didn't request a password reset, you can safely ignore this email. 
-            Your password will not be changed.
-          </Text>
-          <Text style={footer}>
-            If you're having trouble clicking the button, copy and paste the following link into your browser:
-          </Text>
-          <Text style={footerLink}>
-            {resetLink}
+            Thanks,<br />
+            The GenXShred.com Team
           </Text>
         </Container>
       </Body>
@@ -105,15 +99,14 @@ const text = {
 }
 
 const button = {
-  backgroundColor: '#000',
-  borderRadius: '6px',
-  color: '#fff',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  textDecoration: 'none',
+  backgroundColor: '#007bff',
+  color: 'white',
+  padding: '12px 25px',
   textAlign: 'center' as const,
-  padding: '12px 24px',
-  margin: '24px 0',
+  textDecoration: 'none',
+  display: 'inline-block',
+  borderRadius: '5px',
+  fontWeight: 'bold',
 }
 
 const footer = {

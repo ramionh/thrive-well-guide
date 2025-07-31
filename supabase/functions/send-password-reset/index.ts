@@ -57,7 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "GenX Shred <support@genxshred.com>",
       to: [email],
-      subject: "Reset Your Password",
+      subject: "Reset Your GenXShred.com Password",
       html,
     });
 
