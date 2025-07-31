@@ -107,15 +107,6 @@ const LoginForm = ({ email, setEmail, password, setPassword, loading: parentLoad
           {loading ? "Signing in..." : "Sign In with Email"}
         </Button>
         
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={() => setShowResetDialog(true)}
-            className="text-sm text-primary hover:underline"
-          >
-            Forgot your password?
-          </button>
-        </div>
       </form>
       
       <ResetPasswordDialog 
