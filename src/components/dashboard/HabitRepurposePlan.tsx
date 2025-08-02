@@ -5,9 +5,11 @@ import { CheckCircle, RotateCcw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
+import { useClientFeatures } from '@/hooks/useClientFeatures';
 
 const HabitRepurposePlan = () => {
   const { user } = useUser();
+  const { isFeatureEnabled } = useClientFeatures();
 
   const { data: habitRepurposeData, isLoading } = useQuery({
     queryKey: ['habitRepurposeData', user?.id],
@@ -55,6 +57,10 @@ const HabitRepurposePlan = () => {
         </CardContent>
       </Card>
     );
+  }
+
+  if (!isFeatureEnabled('repurpose_habits')) {
+    return null; // Don't show the card if feature is disabled
   }
 
   if (!habitRepurposeData) {

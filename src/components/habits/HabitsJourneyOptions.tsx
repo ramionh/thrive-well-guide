@@ -12,6 +12,7 @@ import HabitRepurposeSummary from "../dashboard/HabitRepurposeSummary";
 import StreamlinedHabitAssessment from "./StreamlinedHabitAssessment";
 import HabitProgressTracker from "./HabitProgressTracker";
 import { useHabitJourneyProgress } from "@/hooks/useHabitJourneyProgress";
+import { useClientFeatures } from "@/hooks/useClientFeatures";
 
 interface HabitsJourneyOptionsProps {
   onSelectOption: (option: 'existing' | 'repurpose' | 'assessment') => void;
@@ -25,6 +26,7 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
     progressSteps, 
     nextStepGuidance 
   } = useHabitJourneyProgress();
+  const { isFeatureEnabled } = useClientFeatures();
 
   // Check if user has completed any habit assessment
   const { data: hasCompletedAssessment, isLoading } = useQuery({
@@ -171,38 +173,40 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
           </CardContent>
         </Card>
 
-        <Card className={`hover:shadow-lg transition-shadow ${isAssessmentCompleted ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
-          <CardHeader className="text-center">
-            <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
-              isAssessmentCompleted ? 'bg-green-100' : 'bg-gray-100'
-            }`}>
-              {isAssessmentCompleted ? (
-                <RefreshCw className="h-6 w-6 text-green-600" />
-              ) : (
-                <Lock className="h-6 w-6 text-gray-400" />
-              )}
-            </div>
-            <CardTitle className={isAssessmentCompleted ? '' : 'text-gray-500'}>
-              Repurpose Habits
-            </CardTitle>
-            <CardDescription className={isAssessmentCompleted ? '' : 'text-gray-400'}>
-              {isAssessmentCompleted 
-                ? "Transform habits for fitness goals"
-                : "Complete assessment first"
-              }
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={() => isAssessmentCompleted && onSelectOption('repurpose')}
-              className="w-full"
-              variant="outline"
-              disabled={!isAssessmentCompleted}
-            >
-              {isAssessmentCompleted ? "Repurpose Habits" : "Assessment Required"}
-            </Button>
-          </CardContent>
-        </Card>
+        {isFeatureEnabled('repurpose_habits') && (
+          <Card className={`hover:shadow-lg transition-shadow ${isAssessmentCompleted ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
+            <CardHeader className="text-center">
+              <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
+                isAssessmentCompleted ? 'bg-green-100' : 'bg-gray-100'
+              }`}>
+                {isAssessmentCompleted ? (
+                  <RefreshCw className="h-6 w-6 text-green-600" />
+                ) : (
+                  <Lock className="h-6 w-6 text-gray-400" />
+                )}
+              </div>
+              <CardTitle className={isAssessmentCompleted ? '' : 'text-gray-500'}>
+                Repurpose Habits
+              </CardTitle>
+              <CardDescription className={isAssessmentCompleted ? '' : 'text-gray-400'}>
+                {isAssessmentCompleted 
+                  ? "Transform habits for fitness goals"
+                  : "Complete assessment first"
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => isAssessmentCompleted && onSelectOption('repurpose')}
+                className="w-full"
+                variant="outline"
+                disabled={!isAssessmentCompleted}
+              >
+                {isAssessmentCompleted ? "Repurpose Habits" : "Assessment Required"}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Summary cards - only show if user has some progress */}
@@ -214,9 +218,11 @@ const HabitsJourneyOptions: React.FC<HabitsJourneyOptionsProps> = ({ onSelectOpt
           <div className="lg:col-span-1">
             <ExistingHabitsAssessmentSummary />
           </div>
-          <div className="lg:col-span-1">
-            <HabitRepurposeSummary />
-          </div>
+          {isFeatureEnabled('repurpose_habits') && (
+            <div className="lg:col-span-1">
+              <HabitRepurposeSummary />
+            </div>
+          )}
         </div>
       )}
     </div>

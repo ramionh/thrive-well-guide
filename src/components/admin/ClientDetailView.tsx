@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Calendar, Target, Activity, BookOpen, TrendingUp, Heart, Moon, Utensils } from "lucide-react";
 import { toast } from "sonner";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import ClientFeatureToggles from './ClientFeatureToggles';
 
 interface Client {
   id: string;
@@ -454,6 +455,7 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
           <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="motivation">Motivation</TabsTrigger>
           <TabsTrigger value="habits">Habits</TabsTrigger>
+          <TabsTrigger value="features">Features</TabsTrigger>
         </TabsList>
 
         <TabsContent value="analytics">
@@ -847,6 +849,13 @@ const ClientDetailView = ({ client }: ClientDetailViewProps) => {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="features">
+          <ClientFeatureToggles 
+            clientId={client.id} 
+            clientName={client.full_name} 
+          />
         </TabsContent>
       </Tabs>
     </div>
