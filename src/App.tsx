@@ -64,7 +64,7 @@ const App = () => (
         <BrowserRouter>
           <Layout>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<AuthPage />} />
               <Route path="/create-admin" element={<CreateAdminPage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
