@@ -567,6 +567,60 @@ export type Database = {
         }
         Relationships: []
       }
+      habit_systems: {
+        Row: {
+          completed_phases: Json | null
+          created_at: string
+          current_week: number | null
+          custom_notes: string | null
+          habit_id: string
+          id: string
+          implementation_plan: Json | null
+          is_active: boolean | null
+          low_friction_strategies: Json | null
+          obstacles_barriers: Json | null
+          root_cause_solutions: Json | null
+          success_metrics: Json | null
+          system_adjustments: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_phases?: Json | null
+          created_at?: string
+          current_week?: number | null
+          custom_notes?: string | null
+          habit_id: string
+          id?: string
+          implementation_plan?: Json | null
+          is_active?: boolean | null
+          low_friction_strategies?: Json | null
+          obstacles_barriers?: Json | null
+          root_cause_solutions?: Json | null
+          success_metrics?: Json | null
+          system_adjustments?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_phases?: Json | null
+          created_at?: string
+          current_week?: number | null
+          custom_notes?: string | null
+          habit_id?: string
+          id?: string
+          implementation_plan?: Json | null
+          is_active?: boolean | null
+          low_friction_strategies?: Json | null
+          obstacles_barriers?: Json | null
+          root_cause_solutions?: Json | null
+          success_metrics?: Json | null
+          system_adjustments?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       habits: {
         Row: {
           category: Database["public"]["Enums"]["habit_category"]
