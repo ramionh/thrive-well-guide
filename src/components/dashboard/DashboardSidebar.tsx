@@ -8,7 +8,8 @@ import {
   TrendingUp, 
   User, 
   Settings, 
-  Activity
+  Activity,
+  RotateCcw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,11 @@ const navigationItems = [
     title: "Habits",
     href: "/habits",
     icon: CheckSquare,
+  },
+  {
+    title: "Habit Circle",
+    href: "/habit-circle",
+    icon: RotateCcw,
   },
   {
     title: "Motivation",

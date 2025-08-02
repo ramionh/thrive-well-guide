@@ -25,6 +25,7 @@ import HomePage from "./components/home/HomePage";
 import DefaultPage from "./components/default/DefaultPage";
 import GoalsPage from "./pages/GoalsPage";
 import HabitsPage from "./pages/HabitsPage";
+import HabitCirclePage from "./pages/HabitCirclePage";
 import BodyTypeSelector from "./components/BodyTypeSelector";
 import MotivationPage from "./pages/MotivationPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
@@ -127,6 +128,14 @@ const App = () => (
                 element={
                   <AuthenticatedRoute>
                     <HabitsPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/habit-circle"
+                element={
+                  <AuthenticatedRoute>
+                    <HabitCirclePage />
                   </AuthenticatedRoute>
                 }
               />
