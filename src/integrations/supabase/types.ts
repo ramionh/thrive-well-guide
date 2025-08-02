@@ -74,6 +74,33 @@ export type Database = {
         }
         Relationships: []
       }
+      client_feature_toggles: {
+        Row: {
+          created_at: string
+          feature_name: string
+          id: string
+          is_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_name: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_name?: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       client_onboarding: {
         Row: {
           answer: string
