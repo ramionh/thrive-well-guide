@@ -1,28 +1,120 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle, AlertCircle, Target, Lightbulb } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, AlertCircle, Target, Lightbulb, Save, Play, ChevronRight } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { Habit } from '@/types/habit';
+
+interface HabitSystemData {
+  id: string;
+  habit_id: string;
+  obstacles_barriers: any; // JSON array from database
+  low_friction_strategies: any;
+  root_cause_solutions: any;
+  current_week: number;
+  implementation_plan: any;
+  completed_phases: any;
+  custom_notes: string | null;
+  system_adjustments: any;
+  is_active: boolean;
+  success_metrics: any;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+}
 
 interface HabitSystemProps {
   habit: Habit;
+  systemData?: HabitSystemData;
+  onSave: (data: Partial<HabitSystemData>) => void;
 }
 
-const HabitSystem: React.FC<HabitSystemProps> = ({ habit }) => {
+const HabitSystem: React.FC<HabitSystemProps> = ({ habit, systemData, onSave }) => {
+  const [customNotes, setCustomNotes] = useState(systemData?.custom_notes || '');
+  const [currentWeek, setCurrentWeek] = useState(systemData?.current_week || 1);
+  
+  const progress = ((currentWeek - 1) / 6) * 100;
+
+  const handleSaveNotes = () => {
+    onSave({ custom_notes: customNotes });
+  };
+
+  const handleAdvanceWeek = () => {
+    const newWeek = Math.min(currentWeek + 1, 7);
+    setCurrentWeek(newWeek);
+    onSave({ current_week: newWeek });
+  };
+
+  const defaultObstacles = [
+    'Lack of time in busy schedule',
+    'Low energy levels after work',
+    'Unexpected disruptions and commitments',
+    'Loss of motivation during challenging periods',
+    'Environmental factors not supporting the habit'
+  ];
+
+  const weeklyPlans = [
+    { week: 1, title: 'Foundation Building', description: 'Establish minimum viable routine' },
+    { week: 2, title: 'Consistency Focus', description: 'Build daily momentum with small wins' },
+    { week: 3, title: 'Obstacle Planning', description: 'Add backup plans for common obstacles' },
+    { week: 4, title: 'Environment Design', description: 'Optimize your environment and triggers' },
+    { week: 5, title: 'System Integration', description: 'Connect with other habits and routines' },
+    { week: 6, title: 'Scaling Up', description: 'Increase intensity and complexity' },
+    { week: 7, title: 'Mastery & Maintenance', description: 'Long-term sustainability strategies' }
+  ];
+
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-primary" />
-          {habit.name}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Target className="h-5 w-5 text-primary" />
+            <CardTitle>{habit.name}</CardTitle>
+          </div>
+          <Badge variant={systemData?.is_active ? 'default' : 'secondary'}>
+            {systemData?.is_active ? 'Active' : 'Inactive'}
+          </Badge>
+        </div>
         <p className="text-sm text-muted-foreground">{habit.description}</p>
+        
+        {/* Progress Section */}
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium">Implementation Progress</span>
+            <span className="text-sm text-muted-foreground">Week {currentWeek} of 7</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
       </CardHeader>
+      
       <CardContent className="space-y-6">
+        {/* Current Week Focus */}
+        <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
+          <div className="flex items-center gap-2 mb-2">
+            <Play className="h-4 w-4 text-primary" />
+            <h4 className="font-semibold text-sm">Current Focus: Week {currentWeek}</h4>
+          </div>
+          {weeklyPlans[currentWeek - 1] && (
+            <div>
+              <p className="font-medium text-sm">{weeklyPlans[currentWeek - 1].title}</p>
+              <p className="text-sm text-muted-foreground">{weeklyPlans[currentWeek - 1].description}</p>
+            </div>
+          )}
+          {currentWeek < 7 && (
+            <Button onClick={handleAdvanceWeek} size="sm" className="mt-3">
+              <ChevronRight className="h-4 w-4 mr-1" />
+              Advance to Week {currentWeek + 1}
+            </Button>
+          )}
+        </div>
+
         {/* Principle 1: Think Holistically */}
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -30,11 +122,9 @@ const HabitSystem: React.FC<HabitSystemProps> = ({ habit }) => {
             <h4 className="font-semibold text-sm">Potential Obstacles & Barriers</h4>
           </div>
           <div className="space-y-2 text-sm">
-            <p>• Lack of time in busy schedule</p>
-            <p>• Low energy levels after work</p>
-            <p>• Unexpected disruptions and commitments</p>
-            <p>• Loss of motivation during challenging periods</p>
-            <p>• Environmental factors not supporting the habit</p>
+            {((Array.isArray(systemData?.obstacles_barriers) ? systemData.obstacles_barriers : defaultObstacles) as string[]).map((obstacle, index) => (
+              <p key={index}>• {obstacle}</p>
+            ))}
           </div>
         </div>
 
@@ -92,15 +182,52 @@ const HabitSystem: React.FC<HabitSystemProps> = ({ habit }) => {
           </div>
         </div>
 
-        {/* Action Plan */}
+        {/* Weekly Implementation Plan */}
         <div className="bg-muted/50 p-4 rounded-lg">
-          <h4 className="font-semibold text-sm mb-2">Your System Implementation</h4>
-          <div className="space-y-2 text-sm">
-            <p>1. <strong>Week 1-2:</strong> Establish minimum viable routine</p>
-            <p>2. <strong>Week 3-4:</strong> Add backup plans for common obstacles</p>
-            <p>3. <strong>Week 5-6:</strong> Optimize environment and triggers</p>
-            <p>4. <strong>Week 7+:</strong> Scale up and integrate advanced strategies</p>
+          <h4 className="font-semibold text-sm mb-3">7-Week Implementation Plan</h4>
+          <div className="space-y-2">
+            {weeklyPlans.map((plan, index) => (
+              <div 
+                key={plan.week} 
+                className={`flex items-center gap-3 p-2 rounded ${
+                  plan.week === currentWeek 
+                    ? 'bg-primary/20 border border-primary/30' 
+                    : plan.week < currentWeek 
+                      ? 'bg-green-50 border border-green-200' 
+                      : 'bg-background border border-border'
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  plan.week < currentWeek 
+                    ? 'bg-green-500 text-white' 
+                    : plan.week === currentWeek 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-muted text-muted-foreground'
+                }`}>
+                  {plan.week < currentWeek ? '✓' : plan.week}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{plan.title}</p>
+                  <p className="text-xs text-muted-foreground">{plan.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+
+        {/* Custom Notes Section */}
+        <div>
+          <h4 className="font-semibold text-sm mb-2">Your Notes & Adjustments</h4>
+          <Textarea
+            value={customNotes}
+            onChange={(e) => setCustomNotes(e.target.value)}
+            placeholder="Add your personal insights, adjustments, or observations about this habit system..."
+            className="min-h-[100px]"
+          />
+          <Button onClick={handleSaveNotes} size="sm" className="mt-2">
+            <Save className="h-4 w-4 mr-1" />
+            Save Notes
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -109,6 +236,8 @@ const HabitSystem: React.FC<HabitSystemProps> = ({ habit }) => {
 
 const HabitCircle: React.FC = () => {
   const { user } = useUser();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: focusedHabitsData, isLoading } = useQuery({
     queryKey: ['focused-habits-with-details', user?.id],
@@ -140,6 +269,59 @@ const HabitCircle: React.FC = () => {
     },
     enabled: !!user
   });
+
+  const { data: habitSystemsData } = useQuery({
+    queryKey: ['habit-systems', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('habit_systems')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user
+  });
+
+  const saveSystemMutation = useMutation({
+    mutationFn: async ({ habitId, data }: { habitId: string; data: Partial<HabitSystemData> }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('habit_systems')
+        .upsert({
+          user_id: user.id,
+          habit_id: habitId,
+          ...data
+        }, {
+          onConflict: 'user_id,habit_id'
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "System Updated",
+        description: "Your habit system has been saved successfully."
+      });
+      queryClient.invalidateQueries({ queryKey: ['habit-systems'] });
+    },
+    onError: (error) => {
+      console.error('Error saving habit system:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your habit system. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleSaveSystem = (habitId: string) => (data: Partial<HabitSystemData>) => {
+    saveSystemMutation.mutate({ habitId, data });
+  };
 
   if (isLoading) {
     return (
@@ -193,9 +375,17 @@ const HabitCircle: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        {focusedHabitsData.map((habit) => (
-          <HabitSystem key={habit.id} habit={habit} />
-        ))}
+        {focusedHabitsData.map((habit) => {
+          const systemData = habitSystemsData?.find(system => system.habit_id === habit.id);
+          return (
+            <HabitSystem 
+              key={habit.id} 
+              habit={habit} 
+              systemData={systemData}
+              onSave={handleSaveSystem(habit.id)}
+            />
+          );
+        })}
       </div>
     </div>
   );
