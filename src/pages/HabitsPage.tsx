@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ListChecks } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/context/UserContext";
 import { Habit } from "@/types/habit";
 import HabitCategorySection from "@/components/habits/HabitCategorySection";
 import HabitsSplash from "@/components/habits/HabitsSplash";
@@ -11,10 +12,12 @@ import HabitsJourneyOptions from "@/components/habits/HabitsJourneyOptions";
 import HabitRepurposeWizard from "@/components/habits/HabitRepurposeWizard";
 import CoreOptimalHabitAssessment from "@/components/habits/CoreOptimalHabitAssessment";
 import ExistingHabitsAssessment from "@/components/habits/ExistingHabitsAssessment";
+import FocusedHabits from "@/components/dashboard/FocusedHabits";
 
 type HabitsView = 'splash' | 'options' | 'existing' | 'repurpose-wizard' | 'core' | 'assessment';
 
 const HabitsPage = () => {
+  const { user } = useUser();
   const [currentView, setCurrentView] = useState<HabitsView>('splash');
 
   // Check if user has chosen to hide the splash screen
@@ -36,6 +39,36 @@ const HabitsPage = () => {
       if (error) throw error;
       return data as Habit[];
     }
+  });
+
+  // Fetch user's focused habits
+  const { data: focusedHabits } = useQuery({
+    queryKey: ['focused-habits', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('focused_habits')
+        .select(`
+          habit_id,
+          habits (
+            id,
+            name,
+            description
+          )
+        `)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      // Transform the data to match the FocusedHabits component interface
+      return data?.map(item => ({
+        id: item.habits.id,
+        name: item.habits.name,
+        description: item.habits.description
+      })) || [];
+    },
+    enabled: !!user
   });
 
   const habitsByCategory = habits?.reduce((acc, habit) => {
@@ -119,6 +152,9 @@ const HabitsPage = () => {
           Back to Journey Options
         </Button>
       </div>
+
+      {/* Show focused habits if user has any */}
+      <FocusedHabits habits={focusedHabits || []} />
 
       <div className="space-y-6">
         {habitsByCategory && Object.entries(habitsByCategory).map(([category, { habits, description }]) => (
