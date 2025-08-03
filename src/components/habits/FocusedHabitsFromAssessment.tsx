@@ -118,12 +118,44 @@ const FocusedHabitsFromAssessment = ({ onComplete }: FocusedHabitsFromAssessment
     }
   });
 
+  // Save completion to motivation steps progress
+  const saveCompletion = useMutation({
+    mutationFn: async () => {
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('motivation_steps_progress')
+        .upsert({
+          user_id: user.id,
+          step_number: 3, // Focused habits step
+          step_name: 'Focused Habits Selection',
+          completed: true,
+          completed_at: new Date().toISOString()
+        }, { 
+          onConflict: 'user_id,step_number' 
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Progress Saved",
+        description: "Your focused habits selection has been saved."
+      });
+    },
+    onError: (error) => {
+      console.error('Error saving completion:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save progress.",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleComplete = () => {
     if (focusedHabits && focusedHabits.length > 0) {
-      toast({
-        title: "Focused Habits Selected",
-        description: `You've selected ${focusedHabits.length} habit(s) to focus on.`
-      });
+      saveCompletion.mutate();
       onComplete?.();
     } else {
       toast({
