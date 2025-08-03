@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/context/UserContext";
+import { useClientFeatures } from "@/hooks/useClientFeatures";
 
 export type HabitJourneyStep = 'quick-start' | 'full-assessment' | 'existing-habits' | 'repurpose' | 'completed';
 
@@ -16,6 +17,7 @@ interface HabitProgressStep {
 
 export const useHabitJourneyProgress = () => {
   const { user } = useUser();
+  const { isFeatureEnabled } = useClientFeatures();
   const [currentStep, setCurrentStep] = useState<HabitJourneyStep>('quick-start');
 
   // Check completion status of various steps
@@ -82,21 +84,23 @@ export const useHabitJourneyProgress = () => {
       setCurrentStep('full-assessment');
     } else if (!existingHabitsComplete) {
       setCurrentStep('existing-habits');
-    } else {
+    } else if (isFeatureEnabled('repurpose_habits')) {
       setCurrentStep('repurpose');
+    } else {
+      setCurrentStep('completed');
     }
-  }, [quickAssessmentComplete, fullAssessmentComplete, existingHabitsComplete]);
+  }, [quickAssessmentComplete, fullAssessmentComplete, existingHabitsComplete, isFeatureEnabled]);
 
   const getProgressSteps = (): HabitProgressStep[] => {
-    return [
+    const steps: HabitProgressStep[] = [
       {
-        id: 'quick-start',
+        id: 'quick-start' as HabitJourneyStep,
         title: 'Quick Start Assessment',
         description: 'Rate your most critical habits (2 minutes)',
         status: quickAssessmentComplete ? 'completed' : 'current'
       },
       {
-        id: 'full-assessment',
+        id: 'full-assessment' as HabitJourneyStep,
         title: 'Complete Assessment',
         description: 'Full evaluation of all core habits',
         status: fullAssessmentComplete 
@@ -106,7 +110,7 @@ export const useHabitJourneyProgress = () => {
           : 'locked'
       },
       {
-        id: 'existing-habits',
+        id: 'existing-habits' as HabitJourneyStep,
         title: 'Discover Existing Habits',
         description: 'Identify habits you already have',
         status: existingHabitsComplete 
@@ -114,14 +118,20 @@ export const useHabitJourneyProgress = () => {
           : fullAssessmentComplete 
           ? 'current' 
           : 'locked'
-      },
-      {
-        id: 'repurpose',
+      }
+    ];
+
+    // Only include repurpose step if the feature is enabled
+    if (isFeatureEnabled('repurpose_habits')) {
+      steps.push({
+        id: 'repurpose' as HabitJourneyStep,
         title: 'Repurpose & Optimize',
         description: 'Transform habits to align with fitness goals',
         status: existingHabitsComplete ? 'current' : 'locked'
-      }
-    ];
+      });
+    }
+
+    return steps;
   };
 
   const getNextStepGuidance = (): { title: string; description: string; action: string } => {
@@ -145,11 +155,14 @@ export const useHabitJourneyProgress = () => {
           action: "Explore Existing Habits"
         };
       case 'repurpose':
-        return {
-          title: "Transform Your Habits",
-          description: "Now let's optimize your existing habits to accelerate your fitness goals.",
-          action: "Repurpose Habits"
-        };
+        if (isFeatureEnabled('repurpose_habits')) {
+          return {
+            title: "Transform Your Habits",
+            description: "Now let's optimize your existing habits to accelerate your fitness goals.",
+            action: "Repurpose Habits"
+          };
+        }
+        // Fallthrough to default if feature is disabled
       default:
         return {
           title: "Journey Complete!",
