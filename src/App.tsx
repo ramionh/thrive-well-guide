@@ -34,6 +34,7 @@ import Index from "./pages/Index";
 import AdminAuthPage from "./pages/admin/AdminAuthPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import CreateAdminPage from "./pages/CreateAdminPage";
+import MacrosPage from "./pages/MacrosPage";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -152,6 +153,14 @@ const App = () => (
                 element={
                   <AuthenticatedRoute>
                     <MotivationPage />
+                  </AuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/macros"
+                element={
+                  <AuthenticatedRoute>
+                    <MacrosPage />
                   </AuthenticatedRoute>
                 }
               />

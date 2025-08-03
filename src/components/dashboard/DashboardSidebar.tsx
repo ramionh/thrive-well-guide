@@ -9,11 +9,20 @@ import {
   User, 
   Settings, 
   Activity,
-  RotateCcw
+  RotateCcw,
+  Calculator
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useClientFeatures } from "@/hooks/useClientFeatures";
 
-const navigationItems = [
+interface NavigationItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  feature?: string;
+}
+
+const navigationItems: NavigationItem[] = [
   {
     title: "Dashboard",
     href: "/dashboard",
@@ -45,6 +54,12 @@ const navigationItems = [
     icon: TrendingUp,
   },
   {
+    title: "Macros",
+    href: "/macros",
+    icon: Calculator,
+    feature: "macros",
+  },
+  {
     title: "Body Type",
     href: "/body-type",
     icon: Activity,
@@ -63,6 +78,7 @@ const navigationItems = [
 
 const DashboardSidebar: React.FC = () => {
   const location = useLocation();
+  const { isFeatureEnabled } = useClientFeatures();
 
   return (
     <div className="w-48 bg-card border-r border-border h-screen fixed left-0 top-0 overflow-y-auto">
@@ -80,6 +96,11 @@ const DashboardSidebar: React.FC = () => {
       {/* Navigation */}
       <nav className="p-4 space-y-2">
         {navigationItems.map((item) => {
+          // Hide feature-gated items if feature is disabled
+          if (item.feature && !isFeatureEnabled(item.feature)) {
+            return null;
+          }
+          
           const isActive = location.pathname === item.href;
           const Icon = item.icon;
           

@@ -101,6 +101,54 @@ export type Database = {
         }
         Relationships: []
       }
+      client_macros: {
+        Row: {
+          activity_level: string | null
+          assigned_date: string
+          calories: number
+          carbs: number
+          created_at: string
+          fat: number
+          goal_type: string | null
+          id: string
+          notes: string | null
+          protein: number
+          updated_at: string
+          user_id: string
+          weight_lbs: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          assigned_date?: string
+          calories: number
+          carbs: number
+          created_at?: string
+          fat: number
+          goal_type?: string | null
+          id?: string
+          notes?: string | null
+          protein: number
+          updated_at?: string
+          user_id: string
+          weight_lbs?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          assigned_date?: string
+          calories?: number
+          carbs?: number
+          created_at?: string
+          fat?: number
+          goal_type?: string | null
+          id?: string
+          notes?: string | null
+          protein?: number
+          updated_at?: string
+          user_id?: string
+          weight_lbs?: number | null
+        }
+        Relationships: []
+      }
       client_onboarding: {
         Row: {
           answer: string

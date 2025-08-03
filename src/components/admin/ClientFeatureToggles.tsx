@@ -16,6 +16,11 @@ const AVAILABLE_FEATURES = [
     name: 'Repurpose Habits',
     key: 'repurpose_habits',
     description: 'Access to habit repurposing wizard and related features'
+  },
+  {
+    name: 'Macros',
+    key: 'macros',
+    description: 'Personalized macronutrient tracking and assignments'
   }
 ];
 

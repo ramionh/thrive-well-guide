@@ -8,6 +8,7 @@ import { Camera, Scale } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useMacros } from "@/hooks/useMacros";
 
 const WeeklyCheckIn: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,7 @@ const WeeklyCheckIn: React.FC = () => {
   const [backPhoto, setBackPhoto] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useUser();
+  const { assignNewMacros } = useMacros();
 
   const estimateBodyFat = (weightLbs: number, height: number) => {
     // Simple BMI-based estimation (this is a placeholder - in reality you'd use computer vision)
@@ -87,6 +89,9 @@ const WeeklyCheckIn: React.FC = () => {
         });
 
       if (error) throw error;
+
+      // Assign new macros based on the check-in weight
+      await assignNewMacros(weightLbs, 'maintain', 'moderate');
 
       toast.success(`Check-in saved! Estimated body fat: ${estimatedBodyFat.toFixed(1)}%`);
       setIsOpen(false);
