@@ -3714,6 +3714,15 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      insert_test_imessage: {
+        Args: {
+          to_phone: string
+          from_phone: string
+          message_text: string
+          direction?: string
+        }
+        Returns: string
+      }
       ivfflat_bit_support: {
         Args: { "": unknown }
         Returns: unknown
