@@ -730,6 +730,7 @@ export type Database = {
         Row: {
           FromPhone: string
           iMessageID: string
+          iMessageRowId: string | null
           IncomingOutgoing: string
           IncomingProcessed: boolean
           Message: string
@@ -740,6 +741,7 @@ export type Database = {
         Insert: {
           FromPhone: string
           iMessageID?: string
+          iMessageRowId?: string | null
           IncomingOutgoing: string
           IncomingProcessed?: boolean
           Message: string
@@ -750,6 +752,7 @@ export type Database = {
         Update: {
           FromPhone?: string
           iMessageID?: string
+          iMessageRowId?: string | null
           IncomingOutgoing?: string
           IncomingProcessed?: boolean
           Message?: string
