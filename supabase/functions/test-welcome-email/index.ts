@@ -18,25 +18,8 @@ async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, 
       throw new Error("RESEND_API_KEY not configured");
     }
 
-    // Use the same OTP method that works for magic links on auth page
-    console.log("Generating OTP magic link...");
-    const { data, error } = await supabaseAdmin.auth.signInWithOtp({
-      email: to,
-      options: {
-        emailRedirectTo: `${Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '')}.vercel.app` || "http://portal.genxshred.com",
-        shouldCreateUser: false
-      }
-    });
-
-    if (error) {
-      console.error("Error generating OTP:", error);
-      throw error;
-    }
-
-    console.log("OTP generation successful:", data);
-    
-    // Since OTP automatically sends email, we'll send our custom welcome email separately
-    console.log("Sending custom welcome email via Resend...");
+    // Send welcome email via Resend (without OTP to avoid rate limiting)
+    console.log("Sending welcome email via Resend...");
     const emailResult = await resend.emails.send({
       from: "GenXShred <onboarding@resend.dev>",
       to: [to],
@@ -44,7 +27,7 @@ async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, 
       html: `
         <h1>Welcome to GenXShred!</h1>
         <p>Your account has been created and you're ready to get started on your fitness journey.</p>
-        <p>Check your email for a magic link to sign in to your account, or visit our login page to access your account.</p>
+        <p>Visit our login page to sign in to your account and begin your fitness journey.</p>
         <p><a href="http://portal.genxshred.com/auth" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Go to Login Page</a></p>
         <p>Welcome to the GenXShred community!</p>
         <p>Best regards,<br>The GenXShred Team</p>
@@ -52,7 +35,17 @@ async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, 
     });
     
     console.log("Welcome email sent successfully:", emailResult);
-    return { emailResult, otpData: data };
+    
+    // Check if email sending failed due to domain verification
+    if (emailResult.error) {
+      console.error("Resend error:", emailResult.error);
+      if (emailResult.error.message?.includes("verify a domain")) {
+        throw new Error("Email domain not verified. Please verify your domain at resend.com/domains or send to your own verified email address.");
+      }
+      throw new Error(`Email sending failed: ${emailResult.error.message}`);
+    }
+    
+    return { emailResult };
   } catch (e) {
     console.error("Failed to send welcome email:", e);
     throw e;
