@@ -47,6 +47,47 @@ async function sendWelcomeEmail(to: string) {
   }
 }
 
+async function sendMagicLinkEmail(to: string) {
+  if (!resend) {
+    log("RESEND_API_KEY not set, skipping magic link email");
+    return;
+  }
+  try {
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email: to,
+      options: {
+        // Omit redirect_to to use Supabase Auth URL configuration
+      },
+    } as any);
+
+    if (error) throw error as any;
+
+    const actionLink = (data as any)?.properties?.action_link as string | undefined;
+    if (!actionLink) {
+      log("No action_link from generateLink, falling back to welcome email", { to });
+      await sendWelcomeEmail(to);
+      return;
+    }
+
+    await resend.emails.send({
+      from: "Lovable <onboarding@resend.dev>",
+      to: [to],
+      subject: "Sign in to get started",
+      html: `
+        <h1>Welcome!</h1>
+        <p>Click the button below to sign in to your account.</p>
+        <p><a href="${actionLink}" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Sign in</a></p>
+        <p>If the button doesn't work, copy and paste this link into your browser:</p>
+        <p>${actionLink}</p>
+      `,
+    });
+    log("Magic link email sent", { to });
+  } catch (e) {
+    console.error("Failed to send magic link email", e);
+  }
+}
+
 async function createOrEnsureUser(email: string | null | undefined, metadata: Record<string, any> = {}) {
   if (!email) {
     log("No email present, skipping user creation");
@@ -77,7 +118,7 @@ async function createOrEnsureUser(email: string | null | undefined, metadata: Re
   }
 
   log("User created", { user_id: data.user?.id, email });
-  await sendWelcomeEmail(email);
+  await sendMagicLinkEmail(email);
 }
 
 serve(async (req) => {
