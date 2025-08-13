@@ -35,6 +35,7 @@ import AdminAuthPage from "./pages/admin/AdminAuthPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import CreateAdminPage from "./pages/CreateAdminPage";
 import MacrosPage from "./pages/MacrosPage";
+import { TestEmailComponent } from "@/components/TestEmailComponent";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -67,6 +68,7 @@ const App = () => (
           <Layout>
             <Routes>
               <Route path="/" element={<AuthPage />} />
+              <Route path="/test-email" element={<TestEmailComponent />} />
               <Route path="/create-admin" element={<CreateAdminPage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
