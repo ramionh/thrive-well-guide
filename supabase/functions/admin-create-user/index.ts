@@ -1,10 +1,13 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "npm:resend@4.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const resend = new Resend(Deno.env.get("RESEND_API_KEY") ?? "");
 
 interface CreateUserRequest {
   email: string;
@@ -19,6 +22,49 @@ interface CreateUserRequest {
     weight_lbs?: number;
     assigned_coach_id?: string;
   };
+}
+
+async function sendMagicLinkEmail(supabaseAdmin: ReturnType<typeof createClient>, to: string) {
+  try {
+    if (!to) return;
+
+    const { data, error } = await (supabaseAdmin as any).auth.admin.generateLink({
+      type: "magiclink",
+      email: to,
+      options: {
+        // Use auth settings' redirect URL
+      },
+    } as any);
+
+    if (error) throw error as any;
+
+    const actionLink = (data as any)?.properties?.action_link as string | undefined;
+    if (!actionLink) {
+      console.log("admin-create-user: No action_link generated for", to);
+      return;
+    }
+
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      console.log("admin-create-user: RESEND_API_KEY not set, skipping magic link email to", to);
+      return;
+    }
+
+    await resend.emails.send({
+      from: "Lovable <onboarding@resend.dev>",
+      to: [to],
+      subject: "Sign in to get started",
+      html: `
+        <h1>Welcome!</h1>
+        <p>Click the button below to sign in to your account.</p>
+        <p><a href="${actionLink}" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Access Account</a></p>
+        <p>If the button doesn't work, copy and paste this link into your browser:</p>
+        <p>${actionLink}</p>
+      `,
+    });
+    console.log("admin-create-user: Magic link email sent to", to);
+  } catch (e) {
+    console.error("admin-create-user: Failed to send magic link email", e);
+  }
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -105,6 +151,8 @@ const handler = async (req: Request): Promise<Response> => {
         assigned_coach_id: assignedCoachId,
         is_active: true
       });
+
+    await sendMagicLinkEmail(supabaseAdmin, email);
 
     return new Response(
       JSON.stringify({ success: true, user: newUser.user }),
