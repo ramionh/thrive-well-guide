@@ -24,7 +24,7 @@ interface CreateUserRequest {
   };
 }
 
-async function sendMagicLinkEmail(supabaseAdmin: ReturnType<typeof createClient>, to: string) {
+async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, to: string, isNewUser: boolean = true) {
   try {
     if (!to) return;
 
@@ -45,25 +45,31 @@ async function sendMagicLinkEmail(supabaseAdmin: ReturnType<typeof createClient>
     }
 
     if (!Deno.env.get("RESEND_API_KEY")) {
-      console.log("admin-create-user: RESEND_API_KEY not set, skipping magic link email to", to);
+      console.log("admin-create-user: RESEND_API_KEY not set, skipping welcome email to", to);
       return;
     }
 
+    const subject = isNewUser ? "Welcome New User - Access Your GenXShred Account" : "Access Your GenXShred Account";
+    const welcomeMessage = isNewUser ? 
+      "<h1>Welcome New User!</h1><p>Your GenXShred account has been created and you're ready to get started.</p>" :
+      "<h1>Welcome Back!</h1><p>Your GenXShred account is ready for access.</p>";
+
     await resend.emails.send({
-      from: "Lovable <onboarding@resend.dev>",
+      from: "GenXShred <onboarding@resend.dev>",
       to: [to],
-      subject: "Sign in to get started",
+      subject: subject,
       html: `
-        <h1>Welcome!</h1>
-        <p>Click the button below to sign in to your account.</p>
-        <p><a href="${actionLink}" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Access Account</a></p>
+        ${welcomeMessage}
+        <p>Click the button below to sign in to your account and begin your fitness journey.</p>
+        <p><a href="${actionLink}" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Access Your Account</a></p>
         <p>If the button doesn't work, copy and paste this link into your browser:</p>
         <p>${actionLink}</p>
+        <p>Welcome to the GenXShred community!</p>
       `,
     });
-    console.log("admin-create-user: Magic link email sent to", to);
+    console.log("admin-create-user: Welcome email sent to", to);
   } catch (e) {
-    console.error("admin-create-user: Failed to send magic link email", e);
+    console.error("admin-create-user: Failed to send welcome email", e);
   }
 }
 
@@ -118,10 +124,10 @@ const handler = async (req: Request): Promise<Response> => {
       // If the user already exists, still send a magic link so they can access the account
       const code = (createError as any)?.code || (createError as any)?.status;
       if (code === 'email_exists' || code === 422) {
-        console.log('admin-create-user: User already exists, sending magic link', email);
-        await sendMagicLinkEmail(supabaseAdmin, email);
+        console.log('admin-create-user: User already exists, sending welcome email', email);
+        await sendWelcomeEmail(supabaseAdmin, email, false);
         return new Response(
-          JSON.stringify({ success: true, message: 'User already existed. Magic link sent.' }),
+          JSON.stringify({ success: true, message: 'User already existed. Welcome email sent.' }),
           { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 200 }
         );
       }
@@ -162,7 +168,7 @@ const handler = async (req: Request): Promise<Response> => {
         is_active: true
       });
 
-    await sendMagicLinkEmail(supabaseAdmin, email);
+    await sendWelcomeEmail(supabaseAdmin, email, true);
 
     return new Response(
       JSON.stringify({ success: true, user: newUser.user }),
