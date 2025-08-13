@@ -11,30 +11,39 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY") ?? "");
 
 async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, to: string) {
   try {
-    if (!to) return;
-
-    const { data, error } = await (supabaseAdmin as any).auth.admin.generateLink({
-      type: "magiclink",
-      email: to,
-      options: {
-        // Use auth settings' redirect URL
-      },
-    } as any);
-
-    if (error) throw error as any;
-
-    const actionLink = (data as any)?.properties?.action_link as string | undefined;
-    if (!actionLink) {
-      console.log("test-welcome-email: No action_link generated for", to);
-      return;
-    }
+    console.log("Starting welcome email generation for:", to);
 
     if (!Deno.env.get("RESEND_API_KEY")) {
-      console.log("test-welcome-email: RESEND_API_KEY not set, skipping welcome email to", to);
-      return;
+      console.log("RESEND_API_KEY not set, cannot send email");
+      throw new Error("RESEND_API_KEY not configured");
     }
 
-    await resend.emails.send({
+    if (!Deno.env.get("SUPABASE_URL") || !Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) {
+      console.log("Supabase environment variables not set");
+      throw new Error("Supabase environment variables not configured");
+    }
+
+    // Generate magic link
+    console.log("Generating magic link...");
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email: to,
+    });
+
+    if (error) {
+      console.error("Error generating magic link:", error);
+      throw error;
+    }
+
+    console.log("Magic link data:", data);
+    const actionLink = data?.properties?.action_link;
+    if (!actionLink) {
+      console.log("No action_link generated");
+      throw new Error("Failed to generate magic link");
+    }
+
+    console.log("Sending email via Resend...");
+    const emailResult = await resend.emails.send({
       from: "GenXShred <onboarding@resend.dev>",
       to: [to],
       subject: "Welcome New User - Access Your GenXShred Account",
@@ -48,9 +57,12 @@ async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, 
         <p>Welcome to the GenXShred community!</p>
       `,
     });
-    console.log("test-welcome-email: Welcome email sent to", to);
+    
+    console.log("Email sent successfully:", emailResult);
+    return emailResult;
   } catch (e) {
-    console.error("test-welcome-email: Failed to send welcome email", e);
+    console.error("Failed to send welcome email:", e);
+    throw e;
   }
 }
 
