@@ -115,6 +115,16 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (createError) {
+      // If the user already exists, still send a magic link so they can access the account
+      const code = (createError as any)?.code || (createError as any)?.status;
+      if (code === 'email_exists' || code === 422) {
+        console.log('admin-create-user: User already exists, sending magic link', email);
+        await sendMagicLinkEmail(supabaseAdmin, email);
+        return new Response(
+          JSON.stringify({ success: true, message: 'User already existed. Magic link sent.' }),
+          { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 200 }
+        );
+      }
       throw createError;
     }
 
