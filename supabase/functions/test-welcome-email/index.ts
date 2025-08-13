@@ -18,48 +18,41 @@ async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, 
       throw new Error("RESEND_API_KEY not configured");
     }
 
-    if (!Deno.env.get("SUPABASE_URL") || !Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) {
-      console.log("Supabase environment variables not set");
-      throw new Error("Supabase environment variables not configured");
-    }
-
-    // Generate magic link
-    console.log("Generating magic link...");
-    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-      type: "magiclink",
+    // Use the same OTP method that works for magic links on auth page
+    console.log("Generating OTP magic link...");
+    const { data, error } = await supabaseAdmin.auth.signInWithOtp({
       email: to,
+      options: {
+        emailRedirectTo: `${Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '')}.vercel.app` || "http://portal.genxshred.com",
+        shouldCreateUser: false
+      }
     });
 
     if (error) {
-      console.error("Error generating magic link:", error);
+      console.error("Error generating OTP:", error);
       throw error;
     }
 
-    console.log("Magic link data:", data);
-    const actionLink = data?.properties?.action_link;
-    if (!actionLink) {
-      console.log("No action_link generated");
-      throw new Error("Failed to generate magic link");
-    }
-
-    console.log("Sending email via Resend...");
+    console.log("OTP generation successful:", data);
+    
+    // Since OTP automatically sends email, we'll send our custom welcome email separately
+    console.log("Sending custom welcome email via Resend...");
     const emailResult = await resend.emails.send({
       from: "GenXShred <onboarding@resend.dev>",
       to: [to],
-      subject: "Welcome New User - Access Your GenXShred Account",
+      subject: "Welcome to GenXShred - Your Account is Ready!",
       html: `
-        <h1>Welcome New User!</h1>
-        <p>Your GenXShred account has been created and you're ready to get started.</p>
-        <p>Click the button below to sign in to your account and begin your fitness journey.</p>
-        <p><a href="${actionLink}" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Access Your Account</a></p>
-        <p>If the button doesn't work, copy and paste this link into your browser:</p>
-        <p>${actionLink}</p>
+        <h1>Welcome to GenXShred!</h1>
+        <p>Your account has been created and you're ready to get started on your fitness journey.</p>
+        <p>Check your email for a magic link to sign in to your account, or visit our login page to access your account.</p>
+        <p><a href="http://portal.genxshred.com/auth" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Go to Login Page</a></p>
         <p>Welcome to the GenXShred community!</p>
+        <p>Best regards,<br>The GenXShred Team</p>
       `,
     });
     
-    console.log("Email sent successfully:", emailResult);
-    return emailResult;
+    console.log("Welcome email sent successfully:", emailResult);
+    return { emailResult, otpData: data };
   } catch (e) {
     console.error("Failed to send welcome email:", e);
     throw e;
