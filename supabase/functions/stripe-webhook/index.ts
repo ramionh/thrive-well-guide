@@ -31,61 +31,63 @@ async function sendWelcomeEmail(to: string) {
     return;
   }
   try {
-    await resend.emails.send({
-      from: "Lovable <onboarding@resend.dev>",
+    log("Starting GenXShred welcome email generation for:", to);
+
+    // Generate magic link for the user
+    log("Generating magic link for:", to);
+    const { data, error } = await supabaseAdmin.auth.signInWithOtp({
+      email: to,
+      options: {
+        emailRedirectTo: "http://portal.genxshred.com",
+        shouldCreateUser: false
+      }
+    });
+
+    if (error) {
+      log("Error generating magic link:", error);
+      // Continue with welcome email even if magic link fails
+    }
+
+    log("Magic link generation result:", data);
+
+    // Send GenXShred welcome email via Resend with magic link
+    log("Sending GenXShred welcome email via Resend...");
+    const emailResult = await resend.emails.send({
+      from: "GenXShred <onboarding@resend.dev>",
       to: [to],
-      subject: "Welcome! Your account is ready",
+      subject: "Welcome to GenXShred - Your Magic Link is Ready!",
       html: `
-        <h1>Welcome!</h1>
-        <p>Thanks for joining. Your account has been created successfully.</p>
-        <p>You can now sign in with your email address.</p>
+        <h1>Welcome to GenXShred!</h1>
+        <p>Your account has been created and you're ready to get started on your fitness journey.</p>
+        <p>Click the magic link below to sign in instantly - no password required!</p>
+        <p><a href="http://portal.genxshred.com/auth" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">🔗 Sign In with Magic Link</a></p>
+        <p>This magic link will expire in 1 hour for security. If it expires, you can always request a new one on our login page.</p>
+        <p>Welcome to the GenXShred community!</p>
+        <p>Best regards,<br>The GenXShred Team</p>
       `,
     });
-    log("Welcome email sent", { to });
+    
+    log("GenXShred welcome email sent successfully:", emailResult);
+    
+    // Check if email sending failed due to domain verification
+    if (emailResult.error) {
+      log("Resend error:", emailResult.error);
+      if (emailResult.error.message?.includes("verify a domain")) {
+        throw new Error("Email domain not verified. Please verify your domain at resend.com/domains or send to your own verified email address.");
+      }
+      throw new Error(`Email sending failed: ${emailResult.error.message}`);
+    }
+    
+    return { emailResult, magicLinkData: data };
   } catch (e) {
-    console.error("Failed to send welcome email", e);
+    console.error("Failed to send GenXShred welcome email:", e);
+    throw e;
   }
 }
 
 async function sendMagicLinkEmail(to: string) {
-  if (!resend) {
-    log("RESEND_API_KEY not set, skipping magic link email");
-    return;
-  }
-  try {
-    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-      type: "magiclink",
-      email: to,
-      options: {
-        // Omit redirect_to to use Supabase Auth URL configuration
-      },
-    } as any);
-
-    if (error) throw error as any;
-
-    const actionLink = (data as any)?.properties?.action_link as string | undefined;
-    if (!actionLink) {
-      log("No action_link from generateLink, falling back to welcome email", { to });
-      await sendWelcomeEmail(to);
-      return;
-    }
-
-    await resend.emails.send({
-      from: "Lovable <onboarding@resend.dev>",
-      to: [to],
-      subject: "Sign in to get started",
-      html: `
-        <h1>Welcome!</h1>
-        <p>Click the button below to sign in to your account.</p>
-        <p><a href="${actionLink}" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Sign in</a></p>
-        <p>If the button doesn't work, copy and paste this link into your browser:</p>
-        <p>${actionLink}</p>
-      `,
-    });
-    log("Magic link email sent", { to });
-  } catch (e) {
-    console.error("Failed to send magic link email", e);
-  }
+  // Use the new GenXShred welcome email function instead
+  await sendWelcomeEmail(to);
 }
 
 async function createOrEnsureUser(email: string | null | undefined, metadata: Record<string, any> = {}) {
