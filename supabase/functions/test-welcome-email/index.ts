@@ -64,8 +64,8 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Send welcome email to forthwilliam2@gmail.com
-    await sendWelcomeEmail(supabaseAdmin, "forthwilliam2@gmail.com");
+    // Send welcome email to the verified email address
+    await sendWelcomeEmail(supabaseAdmin, "ramion.drew.hampton@gmail.com");
 
     return new Response(
       JSON.stringify({ success: true, message: "Welcome email sent to forthwilliam2@gmail.com" }),
