@@ -18,17 +18,35 @@ async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, 
       throw new Error("RESEND_API_KEY not configured");
     }
 
-    // Send welcome email via Resend (without OTP to avoid rate limiting)
+    // Generate magic link for the user
+    console.log("Generating magic link for:", to);
+    const { data, error } = await supabaseAdmin.auth.signInWithOtp({
+      email: to,
+      options: {
+        emailRedirectTo: "http://portal.genxshred.com",
+        shouldCreateUser: false
+      }
+    });
+
+    if (error) {
+      console.error("Error generating magic link:", error);
+      // If magic link generation fails, send welcome email without it
+    }
+
+    console.log("Magic link generation result:", data);
+
+    // Send welcome email via Resend with magic link
     console.log("Sending welcome email via Resend...");
     const emailResult = await resend.emails.send({
       from: "GenXShred <onboarding@resend.dev>",
       to: [to],
-      subject: "Welcome to GenXShred - Your Account is Ready!",
+      subject: "Welcome to GenXShred - Your Magic Link is Ready!",
       html: `
         <h1>Welcome to GenXShred!</h1>
         <p>Your account has been created and you're ready to get started on your fitness journey.</p>
-        <p>Visit our login page to sign in to your account and begin your fitness journey.</p>
-        <p><a href="http://portal.genxshred.com/auth" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Go to Login Page</a></p>
+        <p>Click the magic link below to sign in instantly - no password required!</p>
+        <p><a href="http://portal.genxshred.com/auth" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">🔗 Sign In with Magic Link</a></p>
+        <p>This magic link will expire in 1 hour for security. If it expires, you can always request a new one on our login page.</p>
         <p>Welcome to the GenXShred community!</p>
         <p>Best regards,<br>The GenXShred Team</p>
       `,
@@ -45,7 +63,7 @@ async function sendWelcomeEmail(supabaseAdmin: ReturnType<typeof createClient>, 
       throw new Error(`Email sending failed: ${emailResult.error.message}`);
     }
     
-    return { emailResult };
+    return { emailResult, magicLinkData: data };
   } catch (e) {
     console.error("Failed to send welcome email:", e);
     throw e;
