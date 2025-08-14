@@ -1,6 +1,9 @@
 
 project_id = "fxbgfoymkdtmnlnuqqty"
 
+[functions.auth-webhook]
+verify_jwt = false
+
 [functions.bootstrap-admin]
 verify_jwt = false
 
