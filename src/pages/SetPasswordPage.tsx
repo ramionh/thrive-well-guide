@@ -48,6 +48,8 @@ const SetPasswordPage = () => {
       }
 
       toast.success("Password set successfully!");
+      // Clear the password set flag
+      sessionStorage.removeItem('needsPasswordSet');
       navigate('/dashboard');
       
     } catch (error) {

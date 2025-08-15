@@ -44,6 +44,15 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!isLoading && !user) {
       navigate("/auth");
+      return;
+    }
+
+    if (!isLoading && user) {
+      // Check if user needs to set password after magic link login
+      const needsPasswordSet = sessionStorage.getItem('needsPasswordSet');
+      if (needsPasswordSet === 'true') {
+        navigate("/set-password");
+      }
     }
   }, [user, isLoading, navigate]);
 

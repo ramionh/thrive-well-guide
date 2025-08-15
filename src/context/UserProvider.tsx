@@ -103,10 +103,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log("UserProvider - Auth state changed:", event);
       
       if (event === 'SIGNED_IN' && session) {
+        // Check if user came from magic link (token_hash exists and no password set)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenHash = urlParams.get('token_hash');
+        const type = urlParams.get('type');
+        
+        if (tokenHash && type === 'magiclink') {
+          // Store flag that user needs to set password
+          sessionStorage.setItem('needsPasswordSet', 'true');
+          // Clear URL params but stay on current page to let routing handle redirect
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
         loadUser();
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setIsLoading(false);
+        sessionStorage.removeItem('needsPasswordSet');
       }
     });
 
