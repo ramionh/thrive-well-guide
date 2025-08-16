@@ -90,6 +90,36 @@ async function sendMagicLinkEmail(to: string) {
   await sendWelcomeEmail(to);
 }
 
+async function sendSupabaseConfirmationEmail(to: string) {
+  try {
+    log("Sending Supabase confirmation email to:", to);
+    
+    // Send confirmation email using Supabase email templates
+    const { data, error } = await supabaseAdmin.auth.signInWithOtp({
+      email: to,
+      options: {
+        emailRedirectTo: "http://portal.genxshred.com",
+        shouldCreateUser: false,
+        data: {
+          confirmation: true,
+          welcome: true
+        }
+      }
+    });
+
+    if (error) {
+      log("Error sending Supabase confirmation email:", error);
+      throw error;
+    }
+
+    log("Supabase confirmation email sent successfully:", data);
+    return data;
+  } catch (e) {
+    console.error("Failed to send Supabase confirmation email:", e);
+    throw e;
+  }
+}
+
 async function createOrEnsureUser(email: string | null | undefined, metadata: Record<string, any> = {}) {
   if (!email) {
     log("No email present, skipping user creation");
@@ -120,7 +150,12 @@ async function createOrEnsureUser(email: string | null | undefined, metadata: Re
   }
 
   log("User created", { user_id: data.user?.id, email });
-  await sendMagicLinkEmail(email);
+  
+  // Send both the magic link email and Supabase confirmation email
+  await Promise.all([
+    sendMagicLinkEmail(email),
+    sendSupabaseConfirmationEmail(email)
+  ]);
 }
 
 serve(async (req) => {
