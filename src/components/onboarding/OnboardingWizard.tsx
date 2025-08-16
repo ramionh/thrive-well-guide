@@ -9,6 +9,7 @@ import UserInfoStep from "./UserInfoStep";
 import GoalSettingStep from "./GoalSettingStep";
 import QuestionnaireStep from "./QuestionnaireStep";
 import InitialCheckInStep from "./InitialCheckInStep";
+import PasswordSetupStep from "./PasswordSetupStep";
 import SuccessStep from "./SuccessStep";
 
 const OnboardingWizard: React.FC = () => {
@@ -42,6 +43,11 @@ const OnboardingWizard: React.FC = () => {
       title: "Initial Check-In",
       description: "Let's establish your baseline measurements to track your progress.",
       component: <InitialCheckInStep onNext={() => setOnboardingStep(4)} />
+    },
+    {
+      title: "Secure Your Account",
+      description: "Set a secure password to protect your account.",
+      component: <PasswordSetupStep onNext={() => setOnboardingStep(5)} />
     },
     {
       title: "All Set!",
