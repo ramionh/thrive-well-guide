@@ -135,10 +135,12 @@ async function createOrEnsureUser(email: string | null | undefined, metadata: Re
     return;
   }
 
-  // Create new user with confirmation email + send magic link
+  // Create new user with confirmation email first
+  log("Creating new user with confirmation email first");
   const userData = await createUserWithConfirmation(email, metadata);
   if (userData) {
-    // Send magic link email after user creation
+    log("User created, now sending magic link email");
+    // Send magic link email after confirmation email
     await sendMagicLinkEmail(email);
   }
 }
