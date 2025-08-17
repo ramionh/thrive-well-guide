@@ -90,49 +90,14 @@ async function sendMagicLinkEmail(to: string) {
   await sendWelcomeEmail(to);
 }
 
-async function sendSupabaseConfirmationEmail(to: string) {
-  try {
-    log("Sending Supabase confirmation email to:", to);
-    
-    // Send confirmation email using Supabase email templates
-    const { data, error } = await supabaseAdmin.auth.signInWithOtp({
-      email: to,
-      options: {
-        emailRedirectTo: "http://portal.genxshred.com",
-        shouldCreateUser: false,
-        data: {
-          confirmation: true,
-          welcome: true
-        }
-      }
-    });
-
-    if (error) {
-      log("Error sending Supabase confirmation email:", error);
-      throw error;
-    }
-
-    log("Supabase confirmation email sent successfully:", data);
-    return data;
-  } catch (e) {
-    console.error("Failed to send Supabase confirmation email:", e);
-    throw e;
-  }
-}
-
-async function createOrEnsureUser(email: string | null | undefined, metadata: Record<string, any> = {}) {
-  if (!email) {
-    log("No email present, skipping user creation");
-    return;
-  }
-
+async function createUserWithConfirmation(email: string, metadata: Record<string, any> = {}) {
   const randomPassword = crypto.randomUUID() + "!Aa1"; // simple strong random default
 
-  // Try to create the user; if already exists, ignore error
+  // Create user without email confirmation to trigger Supabase confirmation email
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password: metadata?.password || randomPassword,
-    email_confirm: true,
+    email_confirm: false, // This will trigger the confirmation email
     user_metadata: {
       ...metadata,
       source: metadata?.source ?? "stripe-webhook",
@@ -143,19 +108,39 @@ async function createOrEnsureUser(email: string | null | undefined, metadata: Re
     const msg = String(error.message || "");
     if (msg.toLowerCase().includes("already registered")) {
       log("User already exists", { email });
-      return;
+      return null;
     }
     console.error("createUser error", error);
     throw error;
   }
 
-  log("User created", { user_id: data.user?.id, email });
+  log("User created with confirmation email", { user_id: data.user?.id, email });
+  return data;
+}
+
+async function createOrEnsureUser(email: string | null | undefined, metadata: Record<string, any> = {}) {
+  if (!email) {
+    log("No email present, skipping user creation");
+    return;
+  }
+
+  // Check if user already exists
+  const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+  const userExists = existingUsers.users.some(user => user.email === email);
   
-  // Send both the magic link email and Supabase confirmation email
-  await Promise.all([
-    sendMagicLinkEmail(email),
-    sendSupabaseConfirmationEmail(email)
-  ]);
+  if (userExists) {
+    log("User already exists", { email });
+    // Just send magic link for existing users
+    await sendMagicLinkEmail(email);
+    return;
+  }
+
+  // Create new user with confirmation email + send magic link
+  const userData = await createUserWithConfirmation(email, metadata);
+  if (userData) {
+    // Send magic link email after user creation
+    await sendMagicLinkEmail(email);
+  }
 }
 
 serve(async (req) => {
