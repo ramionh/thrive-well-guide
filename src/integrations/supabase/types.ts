@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -449,6 +449,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      habit_day_plans: {
+        Row: {
+          created_at: string
+          description: string
+          habit_id: string
+          id: string
+          obstacles: Json
+          plan_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          habit_id: string
+          id?: string
+          obstacles?: Json
+          plan_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          habit_id?: string
+          id?: string
+          obstacles?: Json
+          plan_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       habit_repurpose_environment: {
         Row: {
@@ -3693,8 +3726,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -3716,10 +3749,10 @@ export type Database = {
       }
       insert_test_imessage: {
         Args: {
-          to_phone: string
+          direction?: string
           from_phone: string
           message_text: string
-          direction?: string
+          to_phone: string
         }
         Returns: string
       }
@@ -3744,10 +3777,10 @@ export type Database = {
         Returns: string
       }
       match_documents: {
-        Args: { query_embedding: string; match_count?: number; filter?: Json }
+        Args: { filter?: Json; match_count?: number; query_embedding: string }
         Returns: {
-          id: number
           content: string
+          id: number
           metadata: Json
           similarity: number
         }[]

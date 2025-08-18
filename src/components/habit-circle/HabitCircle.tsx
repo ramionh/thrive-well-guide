@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { CheckCircle, AlertCircle, Target, Lightbulb, Save, Play, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Habit } from '@/types/habit';
+import DayPlanEditor from './DayPlanEditor';
 
 interface HabitSystemData {
   id: string;
@@ -30,15 +31,31 @@ interface HabitSystemData {
   user_id: string;
 }
 
+interface DayPlanData {
+  id: string;
+  user_id: string;
+  habit_id: string;
+  plan_type: 'best_day' | 'worst_day';
+  description: string;
+  obstacles: any; // JSON from database
+  created_at: string;
+  updated_at: string;
+}
+
 interface HabitSystemProps {
   habit: Habit;
   systemData?: HabitSystemData;
+  dayPlansData?: DayPlanData[];
   onSave: (data: Partial<HabitSystemData>) => void;
+  onSaveDayPlan: (planType: 'best_day' | 'worst_day', data: any) => void;
 }
 
-const HabitSystem: React.FC<HabitSystemProps> = ({ habit, systemData, onSave }) => {
+const HabitSystem: React.FC<HabitSystemProps> = ({ habit, systemData, dayPlansData, onSave, onSaveDayPlan }) => {
   const [customNotes, setCustomNotes] = useState(systemData?.custom_notes || '');
   const [currentWeek, setCurrentWeek] = useState(systemData?.current_week || 1);
+  
+  const bestDayPlan = dayPlansData?.find(plan => plan.plan_type === 'best_day');
+  const worstDayPlan = dayPlansData?.find(plan => plan.plan_type === 'worst_day');
   
   const progress = ((currentWeek - 1) / 6) * 100;
 
@@ -130,31 +147,33 @@ const HabitSystem: React.FC<HabitSystemProps> = ({ habit, systemData, onSave }) 
 
         <Separator />
 
-        {/* Principle 2: Build for Repeatability */}
+        {/* Editable Day Plans */}
         <div>
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="h-4 w-4 text-green-500" />
-            <h4 className="font-semibold text-sm">Low-Friction Strategies</h4>
+            <h4 className="font-semibold text-sm">Day Plans & Obstacle Management</h4>
           </div>
-          <div className="space-y-3">
-            <div>
-              <Badge variant="outline" className="mb-2">Best Day Plan</Badge>
-              <p className="text-sm text-muted-foreground">
-                When energy is high: Follow your ideal routine with full commitment
-              </p>
-            </div>
-            <div>
-              <Badge variant="outline" className="mb-2">Worst Day Plan</Badge>
-              <p className="text-sm text-muted-foreground">
-                When exhausted/busy: Minimum viable action (2-minute rule)
-              </p>
-            </div>
-            <div>
-              <Badge variant="outline" className="mb-2">If-Then Scenarios</Badge>
-              <p className="text-sm text-muted-foreground">
-                If [trigger situation] → Then [specific backup action]
-              </p>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <DayPlanEditor
+              planType="best_day"
+              habitId={habit.id}
+              initialData={bestDayPlan ? {
+                id: bestDayPlan.id,
+                description: bestDayPlan.description,
+                obstacles: bestDayPlan.obstacles || []
+              } : undefined}
+              onSave={onSaveDayPlan}
+            />
+            <DayPlanEditor
+              planType="worst_day"
+              habitId={habit.id}
+              initialData={worstDayPlan ? {
+                id: worstDayPlan.id,
+                description: worstDayPlan.description,
+                obstacles: worstDayPlan.obstacles || []
+              } : undefined}
+              onSave={onSaveDayPlan}
+            />
           </div>
         </div>
 
@@ -286,6 +305,22 @@ const HabitCircle: React.FC = () => {
     enabled: !!user
   });
 
+  const { data: dayPlansData } = useQuery({
+    queryKey: ['habit-day-plans', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('habit_day_plans')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user
+  });
+
   const saveSystemMutation = useMutation({
     mutationFn: async ({ habitId, data }: { habitId: string; data: Partial<HabitSystemData> }) => {
       if (!user) throw new Error('User not authenticated');
@@ -319,8 +354,51 @@ const HabitCircle: React.FC = () => {
     }
   });
 
+  const saveDayPlanMutation = useMutation({
+    mutationFn: async ({ habitId, planType, data }: { 
+      habitId: string; 
+      planType: 'best_day' | 'worst_day'; 
+      data: { description: string; obstacles: Array<{ pitfall: string; contingency: string }> } 
+    }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('habit_day_plans')
+        .upsert({
+          user_id: user.id,
+          habit_id: habitId,
+          plan_type: planType,
+          description: data.description,
+          obstacles: data.obstacles
+        }, {
+          onConflict: 'user_id,habit_id,plan_type'
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Day Plan Saved",
+        description: "Your day plan has been saved successfully."
+      });
+      queryClient.invalidateQueries({ queryKey: ['habit-day-plans'] });
+    },
+    onError: (error) => {
+      console.error('Error saving day plan:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your day plan. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleSaveSystem = (habitId: string) => (data: Partial<HabitSystemData>) => {
     saveSystemMutation.mutate({ habitId, data });
+  };
+
+  const handleSaveDayPlan = (habitId: string) => (planType: 'best_day' | 'worst_day', data: any) => {
+    saveDayPlanMutation.mutate({ habitId, planType, data });
   };
 
   if (isLoading) {
@@ -377,12 +455,15 @@ const HabitCircle: React.FC = () => {
       <div className="space-y-6">
         {focusedHabitsData.map((habit) => {
           const systemData = habitSystemsData?.find(system => system.habit_id === habit.id);
+          const habitDayPlans = (dayPlansData?.filter(plan => plan.habit_id === habit.id) || []) as DayPlanData[];
           return (
             <HabitSystem 
               key={habit.id} 
               habit={habit} 
               systemData={systemData}
+              dayPlansData={habitDayPlans}
               onSave={handleSaveSystem(habit.id)}
+              onSaveDayPlan={handleSaveDayPlan(habit.id)}
             />
           );
         })}
