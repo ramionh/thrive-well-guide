@@ -36,6 +36,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import CreateAdminPage from "./pages/CreateAdminPage";
 import MacrosPage from "./pages/MacrosPage";
 import { TestEmailComponent } from "@/components/TestEmailComponent";
+import { InactivityTracker } from "@/components/InactivityTracker";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -70,6 +71,7 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <UserProvider>
+      <InactivityTracker />
       <TooltipProvider>
         <Toaster />
         <Sonner />
