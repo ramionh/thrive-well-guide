@@ -483,6 +483,36 @@ export type Database = {
         }
         Relationships: []
       }
+      habit_implementation_steps: {
+        Row: {
+          created_at: string
+          habit_id: string
+          id: string
+          step_content: string
+          updated_at: string
+          user_id: string
+          week_number: number
+        }
+        Insert: {
+          created_at?: string
+          habit_id: string
+          id?: string
+          step_content?: string
+          updated_at?: string
+          user_id: string
+          week_number: number
+        }
+        Update: {
+          created_at?: string
+          habit_id?: string
+          id?: string
+          step_content?: string
+          updated_at?: string
+          user_id?: string
+          week_number?: number
+        }
+        Relationships: []
+      }
       habit_repurpose_environment: {
         Row: {
           created_at: string

@@ -12,6 +12,7 @@ import { CheckCircle, AlertCircle, Target, Lightbulb, Save, Play, ChevronRight }
 import { useToast } from '@/hooks/use-toast';
 import { Habit } from '@/types/habit';
 import DayPlanEditor from './DayPlanEditor';
+import WeeklyStepEditor from './WeeklyStepEditor';
 
 interface HabitSystemData {
   id: string;
@@ -42,15 +43,27 @@ interface DayPlanData {
   updated_at: string;
 }
 
+interface WeeklyStepData {
+  id: string;
+  user_id: string;
+  habit_id: string;
+  week_number: number;
+  step_content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface HabitSystemProps {
   habit: Habit;
   systemData?: HabitSystemData;
   dayPlansData?: DayPlanData[];
+  weeklyStepsData?: WeeklyStepData[];
   onSave: (data: Partial<HabitSystemData>) => void;
   onSaveDayPlan: (planType: 'best_day' | 'worst_day', data: any) => void;
+  onSaveWeeklyStep: (weekNumber: number, content: string) => void;
 }
 
-const HabitSystem: React.FC<HabitSystemProps> = ({ habit, systemData, dayPlansData, onSave, onSaveDayPlan }) => {
+const HabitSystem: React.FC<HabitSystemProps> = ({ habit, systemData, dayPlansData, weeklyStepsData, onSave, onSaveDayPlan, onSaveWeeklyStep }) => {
   const [customNotes, setCustomNotes] = useState(systemData?.custom_notes || '');
   const [currentWeek, setCurrentWeek] = useState(systemData?.current_week || 1);
   
@@ -201,36 +214,25 @@ const HabitSystem: React.FC<HabitSystemProps> = ({ habit, systemData, dayPlansDa
           </div>
         </div>
 
-        {/* Weekly Implementation Plan */}
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <h4 className="font-semibold text-sm mb-3">7-Week Implementation Plan</h4>
-          <div className="space-y-2">
-            {weeklyPlans.map((plan, index) => (
-              <div 
-                key={plan.week} 
-                className={`flex items-center gap-3 p-2 rounded ${
-                  plan.week === currentWeek 
-                    ? 'bg-primary/20 border border-primary/30' 
-                    : plan.week < currentWeek 
-                      ? 'bg-green-50 border border-green-200' 
-                      : 'bg-background border border-border'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  plan.week < currentWeek 
-                    ? 'bg-green-500 text-white' 
-                    : plan.week === currentWeek 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-muted-foreground'
-                }`}>
-                  {plan.week < currentWeek ? '✓' : plan.week}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{plan.title}</p>
-                  <p className="text-xs text-muted-foreground">{plan.description}</p>
-                </div>
-              </div>
-            ))}
+        {/* Weekly Implementation Steps */}
+        <div>
+          <h4 className="font-semibold text-sm mb-3">7-Week Implementation Steps</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {weeklyPlans.map((plan) => {
+              const stepData = weeklyStepsData?.find(step => step.week_number === plan.week);
+              return (
+                <WeeklyStepEditor
+                  key={plan.week}
+                  weekNumber={plan.week}
+                  title={plan.title}
+                  description={plan.description}
+                  initialContent={stepData?.step_content || ''}
+                  isCurrentWeek={plan.week === currentWeek}
+                  isCompleted={plan.week < currentWeek}
+                  onSave={onSaveWeeklyStep}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -321,6 +323,22 @@ const HabitCircle: React.FC = () => {
     enabled: !!user
   });
 
+  const { data: weeklyStepsData } = useQuery({
+    queryKey: ['habit-implementation-steps', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('habit_implementation_steps')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user
+  });
+
   const saveSystemMutation = useMutation({
     mutationFn: async ({ habitId, data }: { habitId: string; data: Partial<HabitSystemData> }) => {
       if (!user) throw new Error('User not authenticated');
@@ -393,12 +411,54 @@ const HabitCircle: React.FC = () => {
     }
   });
 
+  const saveWeeklyStepMutation = useMutation({
+    mutationFn: async ({ habitId, weekNumber, content }: { 
+      habitId: string; 
+      weekNumber: number; 
+      content: string; 
+    }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('habit_implementation_steps')
+        .upsert({
+          user_id: user.id,
+          habit_id: habitId,
+          week_number: weekNumber,
+          step_content: content
+        }, {
+          onConflict: 'user_id,habit_id,week_number'
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Implementation Step Saved",
+        description: "Your weekly implementation step has been saved successfully."
+      });
+      queryClient.invalidateQueries({ queryKey: ['habit-implementation-steps'] });
+    },
+    onError: (error) => {
+      console.error('Error saving weekly step:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your implementation step. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleSaveSystem = (habitId: string) => (data: Partial<HabitSystemData>) => {
     saveSystemMutation.mutate({ habitId, data });
   };
 
   const handleSaveDayPlan = (habitId: string) => (planType: 'best_day' | 'worst_day', data: any) => {
     saveDayPlanMutation.mutate({ habitId, planType, data });
+  };
+
+  const handleSaveWeeklyStep = (habitId: string) => (weekNumber: number, content: string) => {
+    saveWeeklyStepMutation.mutate({ habitId, weekNumber, content });
   };
 
   if (isLoading) {
@@ -456,14 +516,17 @@ const HabitCircle: React.FC = () => {
         {focusedHabitsData.map((habit) => {
           const systemData = habitSystemsData?.find(system => system.habit_id === habit.id);
           const habitDayPlans = (dayPlansData?.filter(plan => plan.habit_id === habit.id) || []) as DayPlanData[];
+          const habitWeeklySteps = (weeklyStepsData?.filter(step => step.habit_id === habit.id) || []) as WeeklyStepData[];
           return (
             <HabitSystem 
               key={habit.id} 
               habit={habit} 
               systemData={systemData}
               dayPlansData={habitDayPlans}
+              weeklyStepsData={habitWeeklySteps}
               onSave={handleSaveSystem(habit.id)}
               onSaveDayPlan={handleSaveDayPlan(habit.id)}
+              onSaveWeeklyStep={handleSaveWeeklyStep(habit.id)}
             />
           );
         })}
