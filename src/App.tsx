@@ -71,11 +71,11 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <UserProvider>
-      <InactivityTracker />
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <InactivityTracker />
           <Layout>
             <Routes>
               <Route path="/" element={<AuthPage />} />
