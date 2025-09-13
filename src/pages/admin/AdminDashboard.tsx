@@ -11,6 +11,7 @@ import UserManagement from "@/components/admin/UserManagement";
 import CoachDashboard from "@/components/admin/CoachDashboard";
 import CreateCoachesAction from "@/components/admin/CreateCoachesAction";
 import CreateAdminUserAction from "@/components/admin/CreateAdminUserAction";
+import PasswordUpdater from "@/components/admin/PasswordUpdater";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -200,6 +201,7 @@ const AdminDashboard = () => {
             {isAdmin && (
               <TabsContent value="users">
                 <div className="space-y-6">
+                  <PasswordUpdater />
                   <CreateCoachesAction />
                   <UserManagement />
                 </div>
