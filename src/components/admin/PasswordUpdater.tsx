@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const PasswordUpdater: React.FC = () => {
   const [email, setEmail] = useState('sumaccircle@gmail.com');
-  const [password, setPassword] = useState('Batman0110!');
+  const [password, setPassword] = useState('Bonus0110!');
   const [loading, setLoading] = useState(false);
 
   const handleUpdatePassword = async () => {
