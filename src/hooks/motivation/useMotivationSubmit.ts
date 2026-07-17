@@ -116,7 +116,7 @@ export const useMotivationSubmit = <T extends Record<string, any>, U extends Rec
             ...dataToSubmit,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-          });
+          } as any);
       }
       
       if (result && result.error) {
